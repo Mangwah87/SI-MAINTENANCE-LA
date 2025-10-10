@@ -209,7 +209,7 @@
 
         .signature-box {
             border: 1px solid #000;
-            height: 80px;
+            height: 100px;
             width: 100%;
             margin-top: 5px;
             background: white;
@@ -542,10 +542,12 @@
                 </div>
                 <div class="pelaksana-right">
                     <h3>Mengetahui,</h3>
-                    <div class="signature-box"></div>
-                    <div style="margin-top: 5px; font-size: 9px;">
-                        ( _________________ )
+                    <div class="signature-box">
+                        <div style="margin-top: 80px; font-size: 9px;">
+                            ( ____________________________)
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
