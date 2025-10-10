@@ -82,12 +82,13 @@
                     </div>
                     <span class="text-sm sm:text-base font-medium text-white text-center">Preventive Maintenance Inverter -48VDC-220VAC</span>
                 </div>
-                <div class=" bg-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer group">
-                    <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                       <i data-lucide="house" class="w-12 h-12  text-white"></i>
-                    </div>
-                    <span class="text-sm sm:text-base font-medium text-white text-center">Preventive Maintenance Ruang Shelter</span>
-                </div>
+                <!-- Preventive Maintenance Ruang Shelter -->
+<a href="{{ route('pm-shelter.index') }}" class="bg-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer group">
+    <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+       <i data-lucide="house" class="w-12 h-12 text-white"></i>
+    </div>
+    <span class="text-sm sm:text-base font-medium text-white text-center">Preventive Maintenance Ruang Shelter</span>
+</a>
                 <div class=" bg-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer group">
                     <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                        <i data-lucide="arrow-left-right" class="w-12 h-12  text-white"></i>
