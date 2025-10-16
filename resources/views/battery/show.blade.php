@@ -6,7 +6,7 @@
             </h2>
             <div class="flex gap-2">
                 <a href="{{ route('battery.pdf', $maintenance->id) }}"
-                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors duration-200" target="_blank">
+                    class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors duration-200" target="_blank">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
@@ -39,7 +39,7 @@
 
             <!-- Header Information -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6 bg-gradient-to-r from-blue-50 to-white-450 border-b border-gray-200">
+                <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
                     <h3 class="text-xl font-bold text-blue-600">Informasi Dokumen</h3>
                 </div>
                 <div class="p-6">
@@ -61,8 +61,14 @@
                             <p class="text-lg text-gray-800">{{ $maintenance->battery_temperature ? $maintenance->battery_temperature . ' °C' : '-' }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-600 mb-1">Technician</label>
-                            <p class="text-lg text-gray-800">{{ $maintenance->technician_name }}</p>
+                            <label class="block text-sm font-semibold text-gray-600 mb-1">Battery Brand</label>
+                            <p class="text-lg text-gray-800 font-semibold text-grey-600">
+                                @if($maintenance->readings->isNotEmpty())
+                                {{ $maintenance->readings->first()->battery_brand ?? '-' }}
+                                @else
+                                -
+                                @endif
+                            </p>
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-600 mb-1">Company</label>
@@ -70,7 +76,45 @@
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-600 mb-1">Total Battery</label>
-                            <p class="text-lg text-gray-800">{{ $maintenance->readings->count() }} Battery</p>
+                            <p class="text-lg text-gray-800 font-bold">{{ $maintenance->readings->count() }} Battery</p>
+                        </div>
+
+                        <!-- Technicians Section -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-600 mb-2">Pelaksana</label>
+                            <div class="bg-gradient-to-r from-green-50 to-teal-50 p-4 rounded-lg border border-green-200">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    @if($maintenance->technician_1_name)
+                                    <div class="flex items-start">
+                                        <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-green-600 text-white font-bold text-sm mr-3 flex-shrink-0">1</span>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-800">{{ $maintenance->technician_1_name }}</p>
+                                            <p class="text-xs text-gray-600">{{ $maintenance->technician_1_company ?? '-' }}</p>
+                                        </div>
+                                    </div>
+                                    @endif
+
+                                    @if($maintenance->technician_2_name)
+                                    <div class="flex items-start">
+                                        <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-green-600 text-white font-bold text-sm mr-3 flex-shrink-0">2</span>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-800">{{ $maintenance->technician_2_name }}</p>
+                                            <p class="text-xs text-gray-600">{{ $maintenance->technician_2_company ?? '-' }}</p>
+                                        </div>
+                                    </div>
+                                    @endif
+
+                                    @if($maintenance->technician_3_name)
+                                    <div class="flex items-start">
+                                        <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-green-600 text-white font-bold text-sm mr-3 flex-shrink-0">3</span>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-800">{{ $maintenance->technician_3_name }}</p>
+                                            <p class="text-xs text-gray-600">{{ $maintenance->technician_3_company ?? '-' }}</p>
+                                        </div>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
 
                         @if($maintenance->notes)
@@ -132,7 +176,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         @if($reading->photo_path && Storage::disk('public')->exists($reading->photo_path))
-                                        <button onclick="showPhotoModal('{{ Storage::url($reading->photo_path) }}', '{{ $reading->photo_latitude }}', '{{ $reading->photo_longitude }}', '{{ $reading->photo_timestamp }}')"
+                                        <button type="button" onclick="showPhotoModal('{{ Storage::url($reading->photo_path) }}', '{{ $reading->photo_latitude }}', '{{ $reading->photo_longitude }}', '{{ $reading->photo_timestamp }}', 'Bank {{ $bankNumber }} - No. {{ $reading->battery_number }}')"
                                             class="inline-flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded-md transition-colors duration-150">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -174,44 +218,145 @@
     </div>
 
     <!-- Photo Modal -->
-    <div id="photoModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50" onclick="closePhotoModal()">
-        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-lg bg-white" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-gray-900">Dokumentasi Foto Battery</h3>
-                <button onclick="closePhotoModal()" class="text-gray-400 hover:text-gray-600">
+    <div id="photoModal" class="hidden fixed inset-0 bg-black bg-opacity-60 overflow-y-auto h-full w-full z-50 transition-opacity duration-300" onclick="closePhotoModal()">
+        <div class="relative top-10 mx-auto p-6 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-2xl rounded-xl bg-white animate-fade-in-down" onclick="event.stopPropagation()">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-200">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900">Dokumentasi Foto Battery</h3>
+                    <p id="modalTitle" class="text-sm text-gray-600 mt-1"></p>
+                </div>
+                <button onclick="closePhotoModal()" class="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-2 hover:bg-gray-100 rounded-full">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
-            <div class="mt-2">
-                <img id="modalImage" src="" alt="Battery Photo" class="w-full h-auto rounded-lg">
-                <div id="modalInfo" class="mt-4 p-3 bg-gray-100 rounded-lg text-sm text-gray-700"></div>
+
+            <!-- Image -->
+            <div class="mt-4 mb-4">
+                <img id="modalImage" src="" alt="Battery Photo" class="w-full h-auto max-h-[70vh] object-contain rounded-lg shadow-lg bg-gray-100">
             </div>
+
+            <!-- Info -->
+            <div id="modalInfo" class="mt-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200"></div>
         </div>
     </div>
 
-    @push('scripts')
-    <script>
-        function showPhotoModal(imageSrc, lat, lng, timestamp) {
-            document.getElementById('modalImage').src = imageSrc;
-
-            let infoHtml = '';
-            if (lat && lng) {
-                infoHtml += `<p class="mb-2"><strong>📍 Koordinat:</strong> ${parseFloat(lat).toFixed(6)}, ${parseFloat(lng).toFixed(6)}</p>`;
+    <style>
+        @keyframes fade-in-down {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
             }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-down {
+            animation: fade-in-down 0.3s ease-out;
+        }
+
+        #photoModal.show {
+            display: block !important;
+        }
+    </style>
+
+    <script>
+        function showPhotoModal(imageSrc, lat, lng, timestamp, title) {
+            // Set title
+            document.getElementById('modalTitle').textContent = title || '';
+
+            // Set image
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = imageSrc;
+
+            // Build info HTML
+            let infoHtml = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">';
+
+            if (lat && lng) {
+                const latitude = parseFloat(lat).toFixed(6);
+                const longitude = parseFloat(lng).toFixed(6);
+                infoHtml += `
+                    <div class="flex items-start">
+                        <svg class="h-5 w-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <div>
+                            <p class="font-semibold text-gray-700">Koordinat GPS</p>
+                            <p class="text-gray-600">Lat: ${latitude}</p>
+                            <p class="text-gray-600">Lng: ${longitude}</p>
+                            <a href="https://www.google.com/maps?q=${latitude},${longitude}" target="_blank" class="text-blue-600 hover:text-blue-800 text-xs mt-1 inline-block">
+                                Buka di Google Maps →
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+
             if (timestamp) {
                 const date = new Date(timestamp);
-                infoHtml += `<p><strong>🕐 Waktu:</strong> ${date.toLocaleDateString('id-ID')} ${date.toLocaleTimeString('id-ID')}</p>`;
+                const formattedDate = date.toLocaleDateString('id-ID', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                const formattedTime = date.toLocaleTimeString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+
+                infoHtml += `
+                    <div class="flex items-start">
+                        <svg class="h-5 w-5 text-purple-600 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <p class="font-semibold text-gray-700">Waktu Pengambilan</p>
+                            <p class="text-gray-600">${formattedDate}</p>
+                            <p class="text-gray-600">${formattedTime} WIB</p>
+                        </div>
+                    </div>
+                `;
             }
 
-            document.getElementById('modalInfo').innerHTML = infoHtml || '<p class="text-gray-500">Tidak ada informasi tambahan</p>';
-            document.getElementById('photoModal').classList.remove('hidden');
+            infoHtml += '</div>';
+
+            if (!lat && !lng && !timestamp) {
+                infoHtml = '<p class="text-gray-500 text-center py-2">Tidak ada informasi tambahan</p>';
+            }
+
+            document.getElementById('modalInfo').innerHTML = infoHtml;
+
+            // Show modal with fade effect
+            const modal = document.getElementById('photoModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('show'), 10);
+
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
         }
 
         function closePhotoModal() {
-            document.getElementById('photoModal').classList.add('hidden');
+            const modal = document.getElementById('photoModal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+
+            // Restore body scroll
+            document.body.style.overflow = 'auto';
         }
+
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closePhotoModal();
+            }
+        });
     </script>
-    @endpush
 </x-app-layout>
