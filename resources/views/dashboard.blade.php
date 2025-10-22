@@ -6,12 +6,16 @@
             </h2>
         </div>
     </x-slot>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 
     <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Job Categories Grid -->
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
-                
+
                 <!-- Battery -->
                 <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-6 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer group">
                     <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
@@ -40,12 +44,12 @@
                     </div>
                     <span class="text-sm sm:text-base font-medium text-white text-center"> Maintenance 1 Phase UPS</span>
                 </div>
-                <div class=" bg-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                <a href="{{ route('ups') }}" class="bg-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer group">
                     <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                        <i data-lucide="pc-case" class="w-12 h-12  text-white"></i>
                     </div>
                     <span class="text-sm sm:text-base font-medium text-white text-center"> Maintenance 3 Phase UPS</span>
-                </div>
+                </a>
                 <div class=" bg-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer group">
                     <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                        <i data-lucide="air-vent" class="w-12 h-12  text-white"></i>
