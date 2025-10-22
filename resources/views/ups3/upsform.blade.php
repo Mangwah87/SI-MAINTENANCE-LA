@@ -115,7 +115,7 @@
                         }
                     @endphp
 
-                    <form action="{{ isset($maintenance) ? route('ups.update', $maintenance->id) : route('ups.store') }}" method="POST" enctype="multipart/form-data" id="mainForm">
+                    <form action="{{ isset($maintenance) ? route('ups3.update', $maintenance->id) : route('ups3.store') }}" method="POST" enctype="multipart/form-data" id="mainForm">
                         @csrf
                         @if(isset($maintenance)) @method('PUT') @endif
 
@@ -463,7 +463,7 @@
 
                         <!-- Submit Buttons -->
                         <div class="flex flex-col sm:flex-row gap-3 justify-end pt-6 border-t border-gray-300">
-                            <a href="{{ route('ups') }}" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md font-semibold text-xs uppercase hover:bg-gray-400 transition">
+                            <a href="{{ route('ups3.index') }}" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md font-semibold text-xs uppercase hover:bg-gray-400 transition">
                                 Batal
                             </a>
                             <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md font-semibold text-xs uppercase hover:bg-blue-700 transition">

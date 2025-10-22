@@ -24,7 +24,7 @@ class UpsMaintenanceController extends Controller
                 ->count(),
         ];
 
-        return view('ups', compact('maintenances', 'stats'));
+        return view('ups3.ups', compact('maintenances', 'stats'));
     }
 
     /**
@@ -32,7 +32,7 @@ class UpsMaintenanceController extends Controller
      */
     public function create()
     {
-        return view('upsform');
+        return view('ups3.upsform');
     }
 
     /**
@@ -79,7 +79,7 @@ class UpsMaintenanceController extends Controller
 
             Log::info('Maintenance Created:', ['id' => $maintenance->id, 'images_count' => count($savedImages)]);
 
-            return redirect()->route('ups')
+            return redirect()->route('ups3.show', $maintenance->id)
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()
@@ -101,7 +101,7 @@ class UpsMaintenanceController extends Controller
      */
     public function show(UpsMaintenance $upsMaintenance)
     {
-        return view('upsdetail', ['maintenance' => $upsMaintenance]);
+        return view('ups3.upsdetail', ['maintenance' => $upsMaintenance]);
     }
 
     /**
@@ -109,7 +109,7 @@ class UpsMaintenanceController extends Controller
      */
     public function edit(UpsMaintenance $upsMaintenance)
     {
-        return view('upsform', ['maintenance' => $upsMaintenance]);
+        return view('ups3.upsform', ['maintenance' => $upsMaintenance]);
     }
 
     /**
@@ -195,7 +195,7 @@ class UpsMaintenanceController extends Controller
 
             $upsMaintenance->update($validated);
 
-            return redirect()->route('ups')
+            return redirect()->route('ups3.show', $upsMaintenance->id)
                 ->with('success', 'Data berhasil diupdate!');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()
@@ -305,7 +305,7 @@ class UpsMaintenanceController extends Controller
 
             $upsMaintenance->delete();
 
-            return redirect()->route('ups')
+            return redirect()->route('ups3.index')
                 ->with('success', 'Data berhasil dihapus!');
         } catch (\Exception $e) {
             Log::error('Error deleting maintenance: ' . $e->getMessage());
@@ -431,7 +431,7 @@ class UpsMaintenanceController extends Controller
     public function print(UpsMaintenance $upsMaintenance)
     {
         $maintenance = $upsMaintenance;
-        $pdf = PDF::loadView('upsdetail_pdf', compact('maintenance'));
+        $pdf = PDF::loadView('ups3.upsdetail_pdf', compact('maintenance'));
         return $pdf->stream('preventive_maintenance_ups_'.$maintenance->id.'.pdf');
     }
 }

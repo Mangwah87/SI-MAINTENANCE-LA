@@ -15,13 +15,13 @@
                     </div>
                 </div>
                 <div class="flex gap-2">
-                    <a href="{{ route('ups.edit', $maintenance->id) }}" class="inline-block px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
+                    <a href="{{ route('ups3.edit', $maintenance->id) }}" class="inline-block px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
                         Edit
                     </a>
-                    <a href="{{ route('ups') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    <a href="{{ route('ups3.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                         Kembali
                     </a>
-                    <a href="{{ route('ups.print', $maintenance->id) }}" target="_blank" class="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                    <a href="{{ route('ups3.print', $maintenance->id) }}" target="_blank" class="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
                         Cetak PDF
                     </a>
                 </div>
