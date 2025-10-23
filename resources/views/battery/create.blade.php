@@ -65,7 +65,7 @@
 
                 <!-- Informasi Umum -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4 sm:mb-6">
-                    <div class="p-4 sm:p-6 bg-gradient-to-r from-purple-50 to-blue-50 border-b border-gray-200">
+                    <div class="p-4 sm:p-6 bg-gradient-to-r from-white-500 to-blue-50 border-b border-gray-200">
                         <h3 class="text-lg sm:text-xl font-bold text-gray-800"> Informasi Umum</h3>
                     </div>
                     <div class="p-4 sm:p-6">
@@ -79,7 +79,7 @@
 
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Date / Time *</label>
-                                <input type="datetime-local" name="maintenance_date" value="{{ old('maintenance_date', now()->format('Y-m-d\TH:i')) }}" required
+                                <input type="datetime-local" name="maintenance_date" id="maintenance_date" required
                                     class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                             </div>
 
@@ -97,6 +97,13 @@
                                     placeholder="Nama Perusahaan">
                             </div>
 
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Battery Brand *</label>
+                                <input type="text" name="battery_brand" id="main_battery_brand" value="{{ old('battery_brand', 'Ritar') }}" required
+                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    placeholder="Contoh: Ritar, Yuasa, Panasonic">
+                            </div>
+
                             <div class="sm:col-span-2">
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Notes / Additional Informations</label>
                                 <textarea name="notes" rows="4"
@@ -109,7 +116,7 @@
 
                 <!-- Data Pelaksana -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4 sm:mb-6">
-                    <div class="p-4 sm:p-6 bg-gradient-to-r from-green-50 to-teal-50 border-b border-gray-200">
+                    <div class="p-4 sm:p-6 bg-gradient-to-r from-white-50 to-teal-50 border-b border-gray-200">
                         <h3 class="text-lg sm:text-xl font-bold text-gray-800"> Data Pelaksana</h3>
                     </div>
                     <div class="p-4 sm:p-6">
@@ -179,7 +186,7 @@
 
                 <!-- Data Battery Readings -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4 sm:mb-6">
-                    <div class="p-4 sm:p-6 bg-gradient-to-r from-blue-200 to-blue-50 border-b border-gray-200">
+                    <div class="p-4 sm:p-6 bg-gradient-to-r from-white-200 to-blue-50 border-b border-gray-200">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                             <h3 class="text-lg sm:text-xl font-bold text-gray-800"> Data Pembacaan Battery</h3>
                             <button type="button" id="add-battery"
@@ -206,12 +213,12 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
                                     <div>
                                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Bank *</label>
-                                        <input type="number" name="readings[0][bank_number]" value="1" required min="1"
+                                        <input type="number" name="readings[0][bank_number]" value="" required min="1" placeholder="1"
                                             class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-white-500 focus:border-transparent">
                                     </div>
                                     <div>
                                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">No *</label>
-                                        <input type="number" name="readings[0][battery_number]" value="1" required min="1"
+                                        <input type="number" name="readings[0][battery_number]" value="" required min="1" placeholder="1"
                                             class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-white-500 focus:border-transparent">
                                     </div>
                                     <div>
@@ -219,8 +226,10 @@
                                         <input type="number" step="0.1" name="readings[0][voltage]" required min="0" max="20" placeholder="13.8"
                                             class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-white-500 focus:border-transparent">
                                     </div>
-                                    <input type="hidden" name="readings[0][battery_brand]" value="Ritar">
                                 </div>
+
+                                <!-- Hidden battery_brand field -->
+                                <input type="hidden" name="readings[0][battery_brand]" class="reading-battery-brand">
 
                                 <!-- Camera Section -->
                                 <div class="mt-4 border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 bg-white">
@@ -261,7 +270,7 @@
                         Batal
                     </a>
                     <button type="submit"
-                        class="px-6 sm:px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white text-sm sm:text-base font-bold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200">
+                        class="px-6 sm:px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-500 hover:from-blue-600 hover:to-blue-600 text-white text-sm sm:text-base font-bold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200">
                         Simpan Data
                     </button>
                 </div>
@@ -288,20 +297,15 @@
                     </button>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
                     <div>
                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Bank *</label>
-                        <input type="number" name="readings[${batteryCount}][bank_number]" value="1" required min="1"
-                               class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                    </div>
-                    <div>
-                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Batt. Brand *</label>
-                        <input type="text" name="readings[${batteryCount}][battery_brand]" value="Ritar" required
+                        <input type="number" name="readings[${batteryCount}][bank_number]" value="" required min="1" placeholder="1"
                                class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                     </div>
                     <div>
                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">No *</label>
-                        <input type="number" name="readings[${batteryCount}][battery_number]" value="${batteryCount + 1}" required min="1"
+                        <input type="number" name="readings[${batteryCount}][battery_number]" value="" required min="1" placeholder="${batteryCount + 1}"
                                class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                     </div>
                     <div>
@@ -311,8 +315,11 @@
                     </div>
                 </div>
 
+                <!-- Hidden battery_brand field -->
+                <input type="hidden" name="readings[${batteryCount}][battery_brand]" class="reading-battery-brand">
+
                 <div class="mt-4 border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 bg-white">
-                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-3"> Dokumentasi Foto Battery (Opsional)</label>
+                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-3">Dokumentasi Foto Battery (Opsional)</label>
 
                     <video class="camera-preview w-full h-48 sm:h-64 bg-black rounded-lg mb-3 hidden" data-index="${batteryCount}" autoplay playsinline></video>
                     <img class="captured-image w-full h-auto max-h-64 sm:max-h-96 rounded-lg mb-3 hidden" data-index="${batteryCount}" alt="Captured">
@@ -320,13 +327,13 @@
 
                     <div class="flex flex-wrap gap-2 justify-center mb-3">
                         <button type="button" class="start-camera px-3 sm:px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${batteryCount}">
-                             Buka Kamera
+                            Buka Kamera
                         </button>
                         <button type="button" class="capture-photo hidden px-3 sm:px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${batteryCount}">
-                            ✓ Ambil Foto
+                            Ambil Foto
                         </button>
                         <button type="button" class="retake-photo hidden px-3 sm:px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${batteryCount}">
-                             Foto Ulang
+                            Foto Ulang
                         </button>
                     </div>
 
@@ -421,99 +428,145 @@
             });
         }
 
+        // Get address from coordinates
+        async function getAddress(lat, lng) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+                const data = await response.json();
+                return data.display_name || 'Alamat tidak ditemukan';
+            } catch (error) {
+                console.error('Error getting address:', error);
+                return 'Alamat tidak tersedia';
+            }
+        }
+
         function capturePhoto(index, video, canvas, capturedImage, captureBtn, retakeBtn, photoInfo) {
             if (navigator.geolocation) {
                 photoInfo.innerHTML = '<p class="text-blue-600">⏳ Mendapatkan lokasi GPS...</p>';
 
                 navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        const timestamp = new Date();
+                    async function(position) {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            const timestamp = new Date();
 
-                        // Set canvas size to match video
-                        canvas.width = video.videoWidth || 1280;
-                        canvas.height = video.videoHeight || 720;
-                        const ctx = canvas.getContext('2d');
+                            // Update info to show getting address
+                            photoInfo.innerHTML = '<p class="text-blue-600">⏳ Mendapatkan alamat...</p>';
 
-                        // Draw video frame
-                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            // Get address
+                            const address = await getAddress(lat, lng);
 
-                        // Add overlay
-                        const overlayHeight = Math.max(100, canvas.height * 0.15);
-                        ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-                        ctx.fillRect(0, canvas.height - overlayHeight, canvas.width, overlayHeight);
+                            // Set canvas size to match video
+                            canvas.width = video.videoWidth || 1280;
+                            canvas.height = video.videoHeight || 720;
+                            const ctx = canvas.getContext('2d');
 
-                        // Format date and time
-                        const dateStr = timestamp.toLocaleDateString('id-ID', {
-                            day: '2-digit',
-                            month: 'long',
-                            year: 'numeric'
-                        });
-                        const timeStr = timestamp.toLocaleTimeString('id-ID', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
-                        });
+                            // Draw video frame
+                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                        // Draw text
-                        const fontSize = Math.max(16, canvas.width * 0.02);
-                        ctx.fillStyle = 'white';
-                        ctx.font = `bold ${fontSize}px Arial`;
-                        const padding = 15;
-                        const lineHeight = fontSize * 1.5;
+                            // Format date and time
+                            const dateStr = timestamp.toLocaleDateString('id-ID', {
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric'
+                            });
+                            const timeStr = timestamp.toLocaleTimeString('id-ID', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
+                            });
 
-                        ctx.fillText(`📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}`, padding, canvas.height - overlayHeight + lineHeight);
-                        ctx.fillText(`📅 ${dateStr}`, padding, canvas.height - overlayHeight + lineHeight * 2);
-                        ctx.fillText(`🕐 ${timeStr}`, padding, canvas.height - overlayHeight + lineHeight * 3);
+                            // Draw text with shadow for better readability
+                            const fontSize = Math.max(14, canvas.width * 0.018);
+                            const padding = 15;
+                            const lineHeight = fontSize * 1.8;
+                            const startY = canvas.height - (lineHeight * 4.5);
 
-                        // Convert to image
-                        const imageData = canvas.toDataURL('image/jpeg', 0.85);
-                        capturedImage.src = imageData;
-                        capturedImage.classList.remove('hidden');
-                        video.classList.add('hidden');
+                            // Add text shadow
+                            ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+                            ctx.shadowBlur = 10;
+                            ctx.shadowOffsetX = 2;
+                            ctx.shadowOffsetY = 2;
 
-                        // Save data
-                        document.querySelector(`input[data-photo="${index}"]`).value = imageData;
-                        document.querySelector(`input[data-lat="${index}"]`).value = lat;
-                        document.querySelector(`input[data-lng="${index}"]`).value = lng;
-                        document.querySelector(`input[data-time="${index}"]`).value = timestamp.toISOString();
+                            // Draw text
+                            ctx.fillStyle = 'white';
+                            ctx.font = `${fontSize}px Arial`;
 
-                        // Stop camera
-                        if (streams[index]) {
-                            streams[index].getTracks().forEach(track => track.stop());
-                            delete streams[index];
-                        }
+                            ctx.fillText(`Longitude: ${lng.toFixed(6)}, Latitude: ${lat.toFixed(6)}`, padding, startY);
+                            ctx.fillText(`Alamat: ${address}`, padding, startY + lineHeight);
+                            ctx.fillText(`Tanggal: ${dateStr}`, padding, startY + (lineHeight * 2));
+                            ctx.fillText(`Waktu: ${timeStr}`, padding, startY + (lineHeight * 3));
 
-                        captureBtn.classList.add('hidden');
-                        retakeBtn.classList.remove('hidden');
+                            // Convert to image
+                            const imageData = canvas.toDataURL('image/jpeg', 0.85);
+                            capturedImage.src = imageData;
+                            capturedImage.classList.remove('hidden');
+                            video.classList.add('hidden');
 
-                        photoInfo.innerHTML = `
+                            // Save data
+                            document.querySelector(`input[data-photo="${index}"]`).value = imageData;
+                            document.querySelector(`input[data-lat="${index}"]`).value = lat;
+                            document.querySelector(`input[data-lng="${index}"]`).value = lng;
+                            document.querySelector(`input[data-time="${index}"]`).value = timestamp.toISOString();
+
+                            // Stop camera
+                            if (streams[index]) {
+                                streams[index].getTracks().forEach(track => track.stop());
+                                delete streams[index];
+                            }
+
+                            captureBtn.classList.add('hidden');
+                            retakeBtn.classList.remove('hidden');
+
+                            photoInfo.innerHTML = `
                             <p class="text-green-600 font-semibold">✓ Foto berhasil diambil!</p>
-                            <p class="mt-1"><strong>📍 Koordinat:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}</p>
-                            <p><strong>📅 Tanggal:</strong> ${dateStr}</p>
-                            <p><strong>🕐 Waktu:</strong> ${timeStr}</p>
+                            <p class="mt-1"><strong>Longitude:</strong> ${lng.toFixed(6)}, <strong>Latitude:</strong> ${lat.toFixed(6)}</p>
+                            <p><strong>Alamat:</strong> ${address}</p>
+                            <p><strong>Tanggal:</strong> ${dateStr}</p>
+                            <p><strong>Waktu:</strong> ${timeStr}</p>
                         `;
 
-                        console.log('Photo captured successfully for index:', index);
-                    },
-                    function(error) {
-                        console.error('Geolocation error:', error);
-                        photoInfo.innerHTML = '<p class="text-red-600">❌ Gagal mendapatkan lokasi GPS</p>';
-                        alert('Tidak dapat mengakses lokasi GPS: ' + error.message + '\n\nPastikan browser memiliki izin akses lokasi.');
-                    }, {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 0
-                    }
+                            console.log('Photo captured successfully for index:', index);
+                        },
+                        function(error) {
+                            console.error('Geolocation error:', error);
+                            photoInfo.innerHTML = '<p class="text-red-600">❌ Gagal mendapatkan lokasi GPS</p>';
+                            alert('Tidak dapat mengakses lokasi GPS: ' + error.message + '\n\nPastikan browser memiliki izin akses lokasi.');
+                        }, {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 0
+                        }
                 );
             } else {
                 alert('Geolokasi tidak didukung oleh browser ini');
             }
         }
 
+        // Sync battery_brand to all readings before submit
+        document.getElementById('mainForm').addEventListener('submit', function(e) {
+            const mainBatteryBrand = document.getElementById('main_battery_brand').value;
+            document.querySelectorAll('.reading-battery-brand').forEach(function(input) {
+                input.value = mainBatteryBrand;
+            });
+        });
+
         // Initialize first battery camera
         document.addEventListener('DOMContentLoaded', function() {
+            // Set current datetime in local timezone
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const localDatetime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+            const datetimeInput = document.getElementById('maintenance_date');
+            if (datetimeInput && !datetimeInput.value) {
+                datetimeInput.value = localDatetime;
+            }
+
             attachCameraEvents(0);
             console.log('Camera events initialized');
         });

@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UpsMaintenanceController;
 use App\Http\Controllers\BatteryController;
 use App\Http\Controllers\PMShelterController;
 use App\Http\Controllers\FollowUpRequestController;
@@ -15,6 +16,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -30,6 +32,16 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{pmShelter}', [PmShelterController::class, 'destroy'])->name('destroy');
         Route::delete('/{pmShelter}/photo/{index}', [PmShelterController::class, 'deletePhoto'])->name('photo.delete');
         Route::get('/{pmShelter}/export-pdf', [PmShelterController::class, 'exportPdf'])->name('export-pdf');
+    // UPS3 Maintenance routes (Grouped under 'ups3' prefix)
+    Route::prefix('ups3')->name('ups3.')->group(function () {
+        Route::get('/', [UpsMaintenanceController::class, 'index'])->name('index');
+        Route::get('/create', [UpsMaintenanceController::class, 'create'])->name('create');
+        Route::post('/', [UpsMaintenanceController::class, 'store'])->name('store');
+        Route::get('/{upsMaintenance}', [UpsMaintenanceController::class, 'show'])->name('show');
+        Route::get('/{upsMaintenance}/edit', [UpsMaintenanceController::class, 'edit'])->name('edit');
+        Route::put('/{upsMaintenance}', [UpsMaintenanceController::class, 'update'])->name('update');
+        Route::delete('/{upsMaintenance}', [UpsMaintenanceController::class, 'destroy'])->name('destroy');
+        Route::get('/{upsMaintenance}/print', [UpsMaintenanceController::class, 'print'])->name('print');
     });
 
     // Battery Routes

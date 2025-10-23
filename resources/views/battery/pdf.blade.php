@@ -238,17 +238,18 @@
             bottom: 0;
             left: 0;
             right: 0;
-            font-size: 8px;
-            color: #666;
-            padding: 10px 15mm;
-            border-top: 1px solid #ccc;
+            font-size: 9px;
+            color: #333;
+            padding: 8px 15mm;
+            border-top: 1px solid #000;
             background: white;
             text-align: left;
             z-index: 999;
+            line-height: 1.4;
         }
 
         .content-wrapper {
-            margin-bottom: 40px;
+            margin-bottom: 50px;
         }
 
         .page-break {
@@ -553,9 +554,9 @@
         </div>
     </div>
 
-    <!-- Fixed Footer -->
+    <!-- Fixed Footer - Halaman 1 -->
     <div class="company-info">
-        ©HakCipta PT. APLIKARUSA LINTASARTA, Indonesia<br>
+        <strong>©HakCipta PT. APLIKARUSA LINTASARTA, Indonesia</strong><br>
         FM-LAP- D2-SOP-003-013 Formulir Preventive Maintenance Battery
     </div>
 
@@ -656,10 +657,10 @@
         </div>
     </div>
 
-    <!-- Fixed Footer untuk halaman 2 -->
+    <!-- Fixed Footer - Halaman 2 -->
     <div class="company-info">
-        ©HakCipta PT. APLIKARUSA LINTASARTA, Indonesia<br>
-        {{ $maintenance->doc_number }} Formulir Preventive Maintenance Battery - Dokumentasi Foto
+        <strong>©HakCipta PT. APLIKARUSA LINTASARTA, Indonesia</strong><br>
+        FM-LAP- D2-SOP-003-013 Formulir Preventive Maintenance Battery - Dokumentasi Foto
     </div>
     @endif
 </body>
