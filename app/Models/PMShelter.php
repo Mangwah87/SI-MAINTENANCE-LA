@@ -6,14 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PMShelter extends Model
+class PmShelter extends Model
 {
     use HasFactory;
 
-    protected $table = 'pm_shelters';
     protected $fillable = [
+        'document_number',
+        'version',
+        'user_id',
         'location',
-        'date_time',
+        'date',
+        'time',
         'brand_type',
         'reg_number',
         'serial_number',
@@ -21,8 +24,8 @@ class PMShelter extends Model
         'kondisi_ruangan_status',
         'kondisi_kunci_result',
         'kondisi_kunci_status',
-        'layout_result',
-        'layout_status',
+        'layout_tata_ruang_result',
+        'layout_tata_ruang_status',
         'kontrol_keamanan_result',
         'kontrol_keamanan_status',
         'aksesibilitas_result',
@@ -30,24 +33,30 @@ class PMShelter extends Model
         'aspek_teknis_result',
         'aspek_teknis_status',
         'notes',
-        'pelaksana',
-        'mengetahui',
-        'created_by',
+        'photos',
+        'executors',
+        'approver_name',
     ];
 
     protected $casts = [
-        'date_time' => 'datetime',
-        'pelaksana' => 'array',
-        'kondisi_ruangan_status' => 'boolean',
-        'kondisi_kunci_status' => 'boolean',
-        'layout_status' => 'boolean',
-        'kontrol_keamanan_status' => 'boolean',
-        'aksesibilitas_status' => 'boolean',
-        'aspek_teknis_status' => 'boolean',
+        'date' => 'date',
+        'photos' => 'array',
+        'executors' => 'array',
     ];
 
-    public function creator(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->document_number)) {
+                $model->document_number = 'FM-LAP-D2-SOP-003-009';
+            }
+        });
     }
 }

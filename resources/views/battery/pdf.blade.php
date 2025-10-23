@@ -350,7 +350,7 @@
                         <div style="font-size: 14px;">Battery</div>
                     </td>
                     <td class="right-section">
-                        <div class="logo">
+                        {{-- <div class="logo">
                             @php
                             $logoPath = public_path('images/Lintasarta_Logo_Logogram.png');
                             @endphp
@@ -359,7 +359,7 @@
                             <img src="data:image/png;base64,{{ base64_encode(file_get_contents($logoPath)) }}" alt="Company Logo" style="width: 80px; height: 80px; object-fit: contain;">
                             @else
                             <div style="font-size:8px; color:red;">Logo not found</div>
-                            @endif
+                            @endif --}}
                         </div>
                     </td>
                 </tr>

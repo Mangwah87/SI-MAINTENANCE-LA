@@ -9,33 +9,46 @@ return new class extends Migration {
     {
         Schema::create('pm_shelters', function (Blueprint $table) {
             $table->id();
-            $table->string('location');
-            $table->dateTime('date_time');
-            $table->string('brand_type');
-            $table->string('reg_number');
-            $table->string('serial_number');
+            $table->string('document_number');
+            $table->integer('version')->default(10);
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
-            // Visual Check
+            // Location & Equipment Info
+            $table->string('location')->nullable();
+            $table->date('date')->nullable();
+            $table->time('time')->nullable();
+            $table->string('brand_type')->nullable();
+            $table->string('reg_number')->nullable();
+            $table->string('serial_number')->nullable();
+
+            // Check Results - Visual Check
             $table->string('kondisi_ruangan_result')->nullable();
-            $table->boolean('kondisi_ruangan_status')->default(false);
+            $table->enum('kondisi_ruangan_status', ['OK', 'NOK'])->nullable();
             $table->string('kondisi_kunci_result')->nullable();
-            $table->boolean('kondisi_kunci_status')->default(false);
+            $table->enum('kondisi_kunci_status', ['OK', 'NOK'])->nullable();
 
-            // Fasilitas Ruangan
-            $table->string('layout_result')->nullable();
-            $table->boolean('layout_status')->default(false);
+            // Check Results - Fasilitas Ruangan
+            $table->string('layout_tata_ruang_result')->nullable();
+            $table->enum('layout_tata_ruang_status', ['OK', 'NOK'])->nullable();
             $table->string('kontrol_keamanan_result')->nullable();
-            $table->boolean('kontrol_keamanan_status')->default(false);
+            $table->enum('kontrol_keamanan_status', ['OK', 'NOK'])->nullable();
             $table->string('aksesibilitas_result')->nullable();
-            $table->boolean('aksesibilitas_status')->default(false);
+            $table->enum('aksesibilitas_status', ['OK', 'NOK'])->nullable();
             $table->string('aspek_teknis_result')->nullable();
-            $table->boolean('aspek_teknis_status')->default(false);
+            $table->enum('aspek_teknis_status', ['OK', 'NOK'])->nullable();
 
+            // Notes
             $table->text('notes')->nullable();
-            $table->json('pelaksana')->nullable(); // Array of executors
-            $table->string('mengetahui')->nullable();
 
-            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            // Photos with metadata (stored as JSON)
+            $table->json('photos')->nullable(); // [{path, latitude, longitude, taken_at, location_name}]
+
+            // Executors (stored as JSON)
+            $table->json('executors')->nullable(); // [{name, department, sub_department}]
+
+            // Approver
+            $table->string('approver_name')->nullable();
+
             $table->timestamps();
         });
     }
