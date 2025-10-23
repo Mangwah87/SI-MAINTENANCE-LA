@@ -6,6 +6,7 @@
             </h2>
         </div>
     </x-slot>
+
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script>
         lucide.createIcons();
@@ -66,30 +67,23 @@
                     </div>
                 </a>
 
-                <!-- Permohonan Tindak Lanjut -->
-                <a href="#" class="block h-full">
-                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
-                        <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                            <i data-lucide="arrow-up-wide-narrow" class="w-12 h-12 text-white"></i>
-                        </div>
-                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Permohonan Tindak Lanjut PM</span>
-                    </div>
-                    <span class="text-sm sm:text-base font-medium text-white text-center"> Maintenance AC</span>
-                </div>
-                <a href="{{ route('tindak-lanjut.index') }}" class="block h-full">
-                    <div class="bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl p-6 shadow-xl border-2 border-orange-300 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
-                        <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                            <i data-lucide="clipboard-check" class="w-12 h-12 text-white"></i>
-                        </div>
-                        <span class="text-sm sm:text-base font-bold text-white text-center leading-tight">Formulir Tindak Lanjut Preventive Maintenance</span>
-                    </div>
-                </a>
-                 <a href="{{ route('followup.index') }}" class="block h-full">
+                <!-- Permohonan Tindak Lanjut Preventive Maintenance -->
+                <a href="{{ route('followup.index') }}" class="block h-full">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                             <i data-lucide="arrow-up-wide-narrow" class="w-12 h-12 text-white"></i>
                         </div>
                         <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Permohonan Tindak Lanjut Preventive Maintenance</span>
+                    </div>
+                </a>
+
+                <!-- Formulir Tindak Lanjut Preventive Maintenance -->
+                <a href="{{ route('tindak-lanjut.index') }}" class="block h-full">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-xl border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
+                        <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                            <i data-lucide="clipboard-check" class="w-12 h-12 text-white"></i>
+                        </div>
+                        <span class="text-sm sm:text-base font-bold text-white text-center leading-tight">Formulir Tindak Lanjut Preventive Maintenance</span>
                     </div>
                 </a>
 
@@ -113,26 +107,13 @@
                     </div>
                 </a>
 
-                <!-- PM Ruang Shelter -->
-                <a href="#" class="block h-full">
+                <!-- Preventive Maintenance Ruang Shelter -->
+                <a href="{{ route('pm-shelter.index') }}" class="block h-full">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                             <i data-lucide="house" class="w-12 h-12 text-white"></i>
                         </div>
-                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">PM Ruang Shelter</span>
-                    </div>
-                    <span class="text-sm sm:text-base font-medium text-white text-center">Preventive Maintenance Inverter -48VDC-220VAC</span>
-                </div>
-                <!-- Preventive Maintenance Ruang Shelter -->
-                <a href="{{ route('pm-shelter.index') }}" class="bg-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer group">
-                    <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                    <i data-lucide="house" class="w-12 h-12 text-white"></i>
-                    </div>
-                    <span class="text-sm sm:text-base font-medium text-white text-center">Preventive Maintenance Ruang Shelter</span>
-                </a>
-                <div class=" bg-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer group">
-                    <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                        <i data-lucide="house" class="w-12 h-12  text-white"></i>
+                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Preventive Maintenance Ruang Shelter</span>
                     </div>
                 </a>
 

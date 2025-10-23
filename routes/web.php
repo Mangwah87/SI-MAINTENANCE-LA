@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{pmShelter}', [PmShelterController::class, 'destroy'])->name('destroy');
         Route::delete('/{pmShelter}/photo/{index}', [PmShelterController::class, 'deletePhoto'])->name('photo.delete');
         Route::get('/{pmShelter}/export-pdf', [PmShelterController::class, 'exportPdf'])->name('export-pdf');
+    });
     // UPS3 Maintenance routes (Grouped under 'ups3' prefix)
     Route::prefix('ups3')->name('ups3.')->group(function () {
         Route::get('/', [UpsMaintenanceController::class, 'index'])->name('index');
