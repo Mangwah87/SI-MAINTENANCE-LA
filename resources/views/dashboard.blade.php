@@ -29,12 +29,15 @@
                     </div>
                     <span class="text-sm sm:text-base font-medium text-gray-700 text-center"> Maintenance Env</span>
                 </div> --}}
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                <a href="{{ route('genset.index') }}">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer group">
                     <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="ev-charger" class="w-12 h-12  text-blue-500"></i>
                     </div>
                     <span class="text-sm sm:text-base font-medium text-gray-700 text-center"> Maintenance Genset</span>
                 </div>
+                </a>
+                
                 <div class=" bg-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer group">
                     <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="pc-case" class="w-12 h-12  text-white"></i>
