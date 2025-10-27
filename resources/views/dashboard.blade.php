@@ -7,6 +7,11 @@
         </div>
     </x-slot>
 
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+
     <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Job Categories Grid -->
@@ -43,7 +48,7 @@
                 </a>
 
                 <!-- 3 Phase UPS -->
-                <a href="#" class="block h-full">
+                <a href="{{ route('ups3.index') }}" class="block h-full">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                             <i data-lucide="cpu" class="w-12 h-12 text-white"></i>
@@ -62,33 +67,23 @@
                     </div>
                 </a>
 
-                <!-- Permohonan Tindak Lanjut -->
-                <a href="#" class="block h-full">
+                <!-- Permohonan Tindak Lanjut Preventive Maintenance -->
+                <a href="{{ route('followup.index') }}" class="block h-full">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                             <i data-lucide="arrow-up-wide-narrow" class="w-12 h-12 text-white"></i>
                         </div>
-                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Permohonan Tindak Lanjut PM</span>
+                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Permohonan Tindak Lanjut Preventive Maintenance</span>
                     </div>
                 </a>
 
-                <!-- Tindak Lanjut -->
-                <a href="#" class="block h-full">
-                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
+                <!-- Formulir Tindak Lanjut Preventive Maintenance -->
+                <a href="{{ route('tindak-lanjut.index') }}" class="block h-full">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-xl border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                            <i data-lucide="arrow-up-narrow-wide" class="w-12 h-12 text-white"></i>
+                            <i data-lucide="clipboard-check" class="w-12 h-12 text-white"></i>
                         </div>
-                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Tindak Lanjut PM</span>
-                    </div>
-                </a>
-
-                <!-- Dokumentasi -->
-                <a href="#" class="block h-full">
-                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
-                        <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                            <i data-lucide="file-text" class="w-12 h-12 text-white"></i>
-                        </div>
-                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Dokumentasi dan Pendataan Perangkat</span>
+                        <span class="text-sm sm:text-base font-bold text-white text-center leading-tight">Formulir Tindak Lanjut Preventive Maintenance</span>
                     </div>
                 </a>
 
@@ -112,23 +107,13 @@
                     </div>
                 </a>
 
-                <!-- PM Ruang Shelter -->
-                <a href="#" class="block h-full">
+                <!-- Preventive Maintenance Ruang Shelter -->
+                <a href="{{ route('pm-shelter.index') }}" class="block h-full">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                             <i data-lucide="house" class="w-12 h-12 text-white"></i>
                         </div>
-                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">PM Ruang Shelter</span>
-                    </div>
-                </a>
-
-                <!-- PM Rectifier -->
-                <a href="#" class="block h-full">
-                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
-                        <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                            <i data-lucide="arrow-left-right" class="w-12 h-12 text-white"></i>
-                        </div>
-                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">PM Rectifier</span>
+                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Preventive Maintenance Ruang Shelter</span>
                     </div>
                 </a>
 

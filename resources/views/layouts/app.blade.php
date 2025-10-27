@@ -32,11 +32,13 @@
                 {{ $slot }}
             </main>
         </div>
-        
+
     </body>
     <script src="https://unpkg.com/lucide@latest"></script>
         <script>
             lucide.createIcons();
         </script>
+        @stack('scripts')
+
 
 </html>
