@@ -38,5 +38,7 @@
         <script>
             lucide.createIcons();
         </script>
+        @stack('scripts')
+
 
 </html>
