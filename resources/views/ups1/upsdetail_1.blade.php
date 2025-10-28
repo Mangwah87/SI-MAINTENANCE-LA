@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Detail Preventive Maintenance 3 Phase UPS
+            Detail Preventive Maintenance UPS 1 Phase
         </h2>
     </x-slot>
 
@@ -11,16 +11,16 @@
             <div class="mb-6 pb-4 border-b-2">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Detail Preventive Maintenance 3 Phase UPS</h2>
+                        <h2 class="text-2xl font-bold text-gray-800">Detail Preventive Maintenance UPS 1 Phase</h2>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <a href="{{ route('ups3.edit', $maintenance->id) }}" class="inline-block px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
+                        <a href="{{ route('ups1.edit', $maintenance->id) }}" class="inline-block px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
                             Edit
                         </a>
-                        <a href="{{ route('ups3.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        <a href="{{ route('ups1.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                             Kembali
                         </a>
-                        <a href="{{ route('ups3.print', $maintenance->id) }}" target="_blank" class="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                        <a href="{{ route('ups1.print', $maintenance->id) }}" target="_blank" class="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
                             Cetak PDF
                         </a>
                     </div>
@@ -123,12 +123,8 @@
                         <tbody>
                             <tr>
                                 <td class="border p-2">a. AC input voltage</td>
-                                <td class="border p-2 font-semibold">
-                                    RS={{ $maintenance->ac_input_voltage_rs }}V,
-                                    ST={{ $maintenance->ac_input_voltage_st }}V,
-                                    TR={{ $maintenance->ac_input_voltage_tr }}V
-                                </td>
-                                <td class="border p-2 text-sm text-gray-600">360 - 400 VAC</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->ac_input_voltage }} V</td>
+                                <td class="border p-2 text-sm text-gray-600">200 - 240 VAC</td>
                                 <td class="border p-2 text-center">
                                     <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ac_input_voltage ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                         {{ $maintenance->status_ac_input_voltage ?? 'OK' }}
@@ -137,12 +133,8 @@
                             </tr>
                             <tr>
                                 <td class="border p-2">b. AC output voltage</td>
-                                <td class="border p-2 font-semibold">
-                                    RS={{ $maintenance->ac_output_voltage_rs }}V,
-                                    ST={{ $maintenance->ac_output_voltage_st }}V,
-                                    TR={{ $maintenance->ac_output_voltage_tr }}V
-                                </td>
-                                <td class="border p-2 text-sm text-gray-600">370 - 390 VAC</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->ac_output_voltage }} V</td>
+                                <td class="border p-2 text-sm text-gray-600">210 - 230 VAC</td>
                                 <td class="border p-2 text-center">
                                     <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ac_output_voltage ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                         {{ $maintenance->status_ac_output_voltage ?? 'OK' }}
@@ -150,12 +142,18 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">c. AC current input</td>
-                                <td class="border p-2 font-semibold">
-                                    R={{ $maintenance->ac_current_input_r }}A,
-                                    S={{ $maintenance->ac_current_input_s }}A,
-                                    T={{ $maintenance->ac_current_input_t }}A
+                                <td class="border p-2">c. Neutral - ground voltage</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->neutral_ground_voltage }} V</td>
+                                <td class="border p-2 text-sm text-gray-600">< 5 V</td>
+                                <td class="border p-2 text-center">
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_neutral_ground_voltage ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_neutral_ground_voltage ?? 'OK' }}
+                                    </span>
                                 </td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">d. AC current input</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->ac_current_input }} A</td>
                                 <td class="border p-2 text-sm text-gray-600">Sesuai kapasitas UPS</td>
                                 <td class="border p-2 text-center">
                                     <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ac_current_input ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -164,12 +162,8 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">d. AC current output</td>
-                                <td class="border p-2 font-semibold">
-                                    R={{ $maintenance->ac_current_output_r }}A,
-                                    S={{ $maintenance->ac_current_output_s }}A,
-                                    T={{ $maintenance->ac_current_output_t }}A
-                                </td>
+                                <td class="border p-2">e. AC current output</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->ac_current_output }} A</td>
                                 <td class="border p-2 text-sm text-gray-600">Sesuai kapasitas UPS</td>
                                 <td class="border p-2 text-center">
                                     <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ac_current_output ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -178,7 +172,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">e. UPS temperature</td>
+                                <td class="border p-2">f. UPS temperature</td>
                                 <td class="border p-2 font-semibold">{{ $maintenance->ups_temperature }} °C</td>
                                 <td class="border p-2 text-sm text-gray-600">0-40 °C</td>
                                 <td class="border p-2 text-center">
@@ -188,7 +182,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">f. Output frequency</td>
+                                <td class="border p-2">g. Output frequency</td>
                                 <td class="border p-2 font-semibold">{{ $maintenance->output_frequency }} Hz</td>
                                 <td class="border p-2 text-sm text-gray-600">48.75-50.25 Hz</td>
                                 <td class="border p-2 text-center">
@@ -198,7 +192,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">g. Charging voltage</td>
+                                <td class="border p-2">h. Charging voltage</td>
                                 <td class="border p-2 font-semibold">{{ $maintenance->charging_voltage }} V</td>
                                 <td class="border p-2 text-sm text-gray-600">See Battery Performance table</td>
                                 <td class="border p-2 text-center">
@@ -208,12 +202,100 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">h. Charging current</td>
+                                <td class="border p-2">i. Charging current</td>
                                 <td class="border p-2 font-semibold">{{ $maintenance->charging_current }} A</td>
                                 <td class="border p-2 text-sm text-gray-600">0 Ampere, on-line mode</td>
                                 <td class="border p-2 text-center">
                                     <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_charging_current ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                         {{ $maintenance->status_charging_current ?? 'OK' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">j. Fan</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->fan }}</td>
+                                <td class="border p-2 text-sm text-gray-600">Normal operation</td>
+                                <td class="border p-2 text-center">
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_fan ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_fan ?? 'OK' }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- Backup Tests --}}
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">3. Backup Tests</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="border p-2 text-left">Activity</th>
+                                <th class="border p-2 text-left">Result</th>
+                                <th class="border p-2 text-left">Operational Standard</th>
+                                <th class="border p-2 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border p-2">a. UPS switching test</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->ups_switching_test }}</td>
+                                <td class="border p-2 text-sm text-gray-600">Normal, No interruption</td>
+                                <td class="border p-2 text-center">
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ups_switching_test ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_ups_switching_test ?? 'OK' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">b. Battery voltage measurement (start)</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->battery_voltage_measurement_1 }} V</td>
+                                <td class="border p-2 text-sm text-gray-600">See Battery Performance table</td>
+                                <td class="border p-2 text-center">
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_battery_voltage_measurement_1 ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_battery_voltage_measurement_1 ?? 'OK' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">c. Battery voltage measurement (end)</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->battery_voltage_measurement_2 }} V</td>
+                                <td class="border p-2 text-sm text-gray-600">See Battery Performance table</td>
+                                <td class="border p-2 text-center">
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_battery_voltage_measurement_2 ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_battery_voltage_measurement_2 ?? 'OK' }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- Power Alarm Monitoring Test --}}
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">4. Power Alarm Monitoring Test</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="border p-2 text-left">Activity</th>
+                                <th class="border p-2 text-left">Result</th>
+                                <th class="border p-2 text-left">Operational Standard</th>
+                                <th class="border p-2 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border p-2">a. Simulated alarm testing (Simonica)</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->simonica_alarm_test }}</td>
+                                <td class="border p-2 text-sm text-gray-600">Alarm received correctly</td>
+                                <td class="border p-2 text-center">
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_simonica_alarm_test ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_simonica_alarm_test ?? 'OK' }}
                                     </span>
                                 </td>
                             </tr>
@@ -225,7 +307,7 @@
             {{-- Notes --}}
             @if($maintenance->notes)
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Notes / additional informations</h3>
+                    <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Notes / Additional Informations</h3>
                     <div class="border p-4 rounded bg-gray-50">
                         <p class="whitespace-pre-wrap">{{ $maintenance->notes }}</p>
                     </div>
@@ -276,7 +358,7 @@
                                     </div>
                                 </div>
                             @elseif(is_array($imagePath) && isset($imagePath['path']))
-                                {{-- Support old format with category structure --}}
+                                {{-- Support format with category structure --}}
                                 <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
                                     <img src="{{ asset('storage/' . $imagePath['path']) }}"
                                          alt="{{ $imagePath['category'] ?? 'Documentation Image' }}"

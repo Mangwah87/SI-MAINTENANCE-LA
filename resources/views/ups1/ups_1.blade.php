@@ -2,9 +2,9 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Maintenance 3 Phase UPS') }}
+                {{ __('Maintenance 1 Phase UPS') }}
             </h2>
-            <a href="{{ route('ups3.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm">
+            <a href="{{ route('ups1.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm">
                 + Add New
             </a>
         </div>
@@ -57,8 +57,8 @@
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ $maintenance->sn ?? '-' }}</td>
                                     <td class="px-6 py-4 text-right">
                                         <div class="flex justify-end gap-3">
-                                            <a href="{{ route('ups3.show', $maintenance->id) }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm">View</a>
-                                            <a href="{{ route('ups3.edit', $maintenance->id) }}" class="text-orange-600 hover:text-orange-800 font-medium text-sm">Edit</a>
+                                            <a href="{{ route('ups1.show', $maintenance->id) }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm">View</a>
+                                            <a href="{{ route('ups1.edit', $maintenance->id) }}" class="text-orange-600 hover:text-orange-800 font-medium text-sm">Edit</a>
                                             <button onclick="deleteRecord({{ $maintenance->id }})" class="text-red-600 hover:text-red-800 font-medium text-sm">Delete</button>
                                         </div>
                                     </td>
@@ -106,9 +106,9 @@
                         </div>
 
                         <div class="flex gap-2 text-xs">
-                            <a href="{{ route('ups3.show', $maintenance->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">View</a>
+                            <a href="{{ route('ups1.show', $maintenance->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">View</a>
                             <span class="text-gray-400">/</span>
-                            <a href="{{ route('ups3.edit', $maintenance->id) }}" class="text-orange-600 hover:text-orange-800 font-medium">Edit</a>
+                            <a href="{{ route('ups1.edit', $maintenance->id) }}" class="text-orange-600 hover:text-orange-800 font-medium">Edit</a>
                             <span class="text-gray-400">/</span>
                             <button onclick="deleteRecord({{ $maintenance->id }})" class="text-red-600 hover:text-red-800 font-medium">Delete</button>
                         </div>
@@ -155,7 +155,7 @@
         function deleteRecord(id) {
             currentDeleteId = id;
             const form = document.getElementById('deleteForm');
-            form.action = `/ups3/${id}`;
+            form.action = `/ups1/${id}`;
             document.getElementById('deleteModal').classList.remove('hidden');
         }
 
@@ -191,4 +191,4 @@
             }
         });
     </script>
-</x-app-layout>
+</x-app-layout> 

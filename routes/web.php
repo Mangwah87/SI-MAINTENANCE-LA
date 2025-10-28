@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UpsMaintenanceController;
+use App\Http\Controllers\UpsMaintenance1Controller;
 use App\Http\Controllers\BatteryController;
+use App\Http\Controllers\AcMaintenanceConrtoller;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -18,6 +20,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // UPS1 Maintenance routes (Grouped under 'ups1' prefix)
+    Route::prefix('ups1')->name('ups1.')->group(function () {
+        Route::get('/', [UpsMaintenance1Controller::class, 'index'])->name('index');
+        Route::get('/create', [UpsMaintenance1Controller::class, 'create'])->name('create');
+        Route::post('/', [UpsMaintenance1Controller::class, 'store'])->name('store');
+        Route::get('/{upsMaintenance1}', [UpsMaintenance1Controller::class, 'show'])->name('show');
+        Route::get('/{upsMaintenance1}/edit', [UpsMaintenance1Controller::class, 'edit'])->name('edit');
+        Route::put('/{upsMaintenance1}', [UpsMaintenance1Controller::class, 'update'])->name('update');
+        Route::delete('/{upsMaintenance1}', [UpsMaintenance1Controller::class, 'destroy'])->name('destroy');
+        Route::get('/{upsMaintenance1}/print', [UpsMaintenance1Controller::class, 'print'])->name('print');
+    });
 
     // UPS3 Maintenance routes (Grouped under 'ups3' prefix)
     Route::prefix('ups3')->name('ups3.')->group(function () {
@@ -41,6 +55,18 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}', [BatteryController::class, 'update'])->name('update');
         Route::delete('/{id}', [BatteryController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [BatteryController::class, 'pdf'])->name('pdf');
+    });
+
+    // AC Maintenance Routes (Grouped under 'ac' prefix)
+    Route::prefix('ac')->name('ac.')->group(function () {
+        Route::get('/', [AcMaintenanceConrtoller::class, 'index'])->name('index');
+        Route::get('/create', [AcMaintenanceConrtoller::class, 'create'])->name('create');
+        Route::post('/', [AcMaintenanceConrtoller::class, 'store'])->name('store');
+        Route::get('/{id}', [AcMaintenanceConrtoller::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [AcMaintenanceConrtoller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [AcMaintenanceConrtoller::class, 'update'])->name('update');
+        Route::delete('/{id}', [AcMaintenanceConrtoller::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/print', [AcMaintenanceConrtoller::class, 'print'])->name('print');
     });
 });
 
