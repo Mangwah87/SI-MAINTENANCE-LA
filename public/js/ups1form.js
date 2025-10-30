@@ -40,6 +40,9 @@
   function init() {
     console.log('Initializing UPS1 Form Handler...');
 
+    // Initialize DateTime Handler FIRST
+    initDateTimeHandler();
+
     // DOM ELEMENTS
     const modal = document.getElementById('cameraModal');
     const video = document.getElementById('video');
@@ -152,6 +155,83 @@
     console.log('UPS1 Form Handler initialized successfully');
 
     // ========================================================================
+    // DATE TIME HANDLER
+    // ========================================================================
+    function initDateTimeHandler() {
+      console.log('Initializing DateTime Handler...');
+
+      const form = document.getElementById('mainForm');
+      const dateInput = document.getElementById('ups1_date_input');
+      const timeInput = document.getElementById('ups1_time_input');
+      const dateTimeHidden = document.getElementById('ups1_date_time_hidden');
+
+      if (!form || !dateInput || !timeInput || !dateTimeHidden) {
+        console.warn('DateTime Handler: Required elements not found');
+        return;
+      }
+
+      function updateDateTime() {
+        const date = dateInput.value;
+        const time = timeInput.value;
+
+        if (date && time) {
+          dateTimeHidden.value = date + ' ' + time + ':00';
+          console.log('DateTime updated:', dateTimeHidden.value);
+        } else {
+          dateTimeHidden.value = '';
+        }
+      }
+
+      dateInput.addEventListener('change', updateDateTime);
+      timeInput.addEventListener('change', updateDateTime);
+      dateInput.addEventListener('blur', updateDateTime);
+      timeInput.addEventListener('blur', updateDateTime);
+
+      // Handle form submission - ONLY ONE LISTENER
+      form.addEventListener('submit', function(e) {
+        console.log('Form submit event triggered');
+
+        // Force update date_time
+        updateDateTime();
+
+        // Validate date_time
+        if (!dateTimeHidden.value) {
+          e.preventDefault();
+          e.stopPropagation();
+          alert('Mohon isi tanggal dan waktu dengan lengkap');
+
+          if (!dateInput.value) {
+            dateInput.focus();
+          } else if (!timeInput.value) {
+            timeInput.focus();
+          }
+
+          return false;
+        }
+
+        // Disable submit button to prevent double submission
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn && !submitBtn.disabled) {
+          submitBtn.disabled = true;
+          const originalText = submitBtn.textContent;
+          submitBtn.textContent = 'Menyimpan...';
+
+          // Re-enable after delay (safety)
+          setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+          }, 5000);
+        }
+
+        console.log('Form validation passed, submitting...');
+      }, { once: false });
+
+      // Set initial value
+      updateDateTime();
+      console.log('DateTime Handler initialized');
+    }
+
+    // ========================================================================
     // CAMERA FUNCTIONS
     // ========================================================================
 
@@ -218,10 +298,9 @@
     // ========================================================================
 
     async function updateGeolocation() {
-      // Konversi waktu lokal ke WITA (UTC+8)
       const now = new Date();
       const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
-      const witaTime = new Date(utcTime + (8 * 3600000)); // UTC+8
+      const witaTime = new Date(utcTime + (8 * 3600000));
 
       const day = String(witaTime.getDate()).padStart(2, '0');
       const month = String(witaTime.getMonth() + 1).padStart(2, '0');
@@ -244,9 +323,9 @@
       try {
         const position = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,  // Paksa gunakan GPS
-            timeout: 15000,            // Tunggu lebih lama untuk GPS
-            maximumAge: 0              // Jangan gunakan cache
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
           });
         });
 
@@ -258,7 +337,6 @@
         console.log('  Latitude:', lat);
         console.log('  Longitude:', lon);
         console.log('  Accuracy:', accuracy, 'meters');
-        console.log('  Source:', accuracy < 100 ? '✓ GPS (Akurat)' : '⚠ WiFi/IP (Kurang akurat)');
 
         document.getElementById('lat').textContent = lat;
         document.getElementById('lon').textContent = lon;
@@ -309,18 +387,13 @@
         if (data.address) {
           const addr = data.address;
 
-          if (addr.road) {
-            locationParts.push(addr.road);
-          }
-
+          if (addr.road) locationParts.push(addr.road);
           if (addr.village || addr.suburb || addr.neighbourhood || addr.hamlet) {
             locationParts.push(addr.village || addr.suburb || addr.neighbourhood || addr.hamlet);
           }
-
           if (addr.municipality || addr.city_district || addr.county) {
             locationParts.push(addr.municipality || addr.city_district || addr.county);
           }
-
           if (addr.city || addr.town) {
             locationParts.push(addr.city || addr.town);
           }
@@ -405,7 +478,6 @@
 
       const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
-      // Hitung hari berdasarkan waktu WITA
       const now = new Date();
       const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
       const witaDate = new Date(utcTime + (8 * 3600000));
@@ -462,9 +534,7 @@
       const imageData = capturedImg.src;
       if (currentSection && currentCategory) {
         if (currentReplaceTarget !== null) {
-          console.log('Replace mode: position =', currentReplacePosition);
           replaceImageWithData(currentReplaceTarget, imageData, currentCategory, currentReplacePosition);
-
           currentReplaceTarget.style.border = '';
           currentReplaceTarget.style.boxShadow = '';
           currentReplaceTarget = null;
@@ -474,15 +544,12 @@
           const existingImageWithSameCategory = previewContainer.querySelector('.existing-image');
 
           if (existingImageWithSameCategory) {
-            console.log('Auto replace mode: mendeteksi gambar lama');
             const existingImages = Array.from(previewContainer.querySelectorAll('.existing-image'));
             const indexOfImage = existingImages.indexOf(existingImageWithSameCategory);
             replaceImageWithData(existingImageWithSameCategory, imageData, currentCategory, indexOfImage);
-
             existingImageWithSameCategory.style.border = '';
             existingImageWithSameCategory.style.boxShadow = '';
           } else {
-            console.log('Add mode: menambah gambar baru');
             addImageToPreview(imageData, currentSection, currentCategory);
           }
         }
@@ -499,9 +566,7 @@
         if (file && file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = e => {
-            console.log('Replace from upload: position =', currentReplacePosition);
             replaceImageWithData(currentReplaceTarget, e.target.result, category, currentReplacePosition);
-
             currentReplaceTarget.style.border = '';
             currentReplaceTarget.style.boxShadow = '';
             currentReplaceTarget = null;
@@ -516,23 +581,19 @@
         if (existingImageWithSameCategory && files.length === 1) {
           const file = files[0];
           if (file && file.type.startsWith('image/')) {
-            console.log('Auto replace from upload: mendeteksi gambar lama');
             const reader = new FileReader();
             reader.onload = e => {
               const existingImages = Array.from(previewContainer.querySelectorAll('.existing-image'));
               const indexOfImage = existingImages.indexOf(existingImageWithSameCategory);
               replaceImageWithData(existingImageWithSameCategory, e.target.result, category, indexOfImage);
-
               existingImageWithSameCategory.style.border = '';
               existingImageWithSameCategory.style.boxShadow = '';
             };
             reader.readAsDataURL(file);
           }
         } else {
-          console.log('Add from upload: menambah gambar baru');
           Array.from(files).forEach(file => {
             if (!file.type.startsWith('image/')) return;
-
             const reader = new FileReader();
             reader.onload = e => addImageToPreview(e.target.result, section, category);
             reader.readAsDataURL(file);
@@ -557,14 +618,11 @@
     }
 
     function replaceImageWithData(imageDiv, newImageData, category, position) {
-      console.log('replaceImageWithData called with position:', position);
-
       const img = imageDiv.querySelector('img');
       if (img) img.src = newImageData;
 
       if (imageDiv.classList.contains('existing-image')) {
         const imagePath = imageDiv.dataset.path;
-
         const deleteInput = document.createElement('input');
         deleteInput.type = 'hidden';
         deleteInput.name = 'delete_images[]';
@@ -576,7 +634,6 @@
       }
 
       const mainForm = document.getElementById('mainForm');
-
       const hiddenInput = document.createElement('input');
       hiddenInput.type = 'hidden';
       hiddenInput.name = 'images[]';
@@ -594,13 +651,10 @@
       hiddenInput.value = JSON.stringify(imageDataObj);
       mainForm.appendChild(hiddenInput);
 
-      console.log('Hidden input value:', hiddenInput.value);
       showNotification('✓ Gambar berhasil diganti!');
     }
 
     function addImageToPreview(imageData, section, category) {
-      console.log('addImageToPreview - category:', category);
-
       const previewContainer = section.querySelector('.preview-container');
       if (!previewContainer) return;
 
@@ -626,13 +680,10 @@
       editBtn.title = 'Ganti gambar';
       editBtn.addEventListener('click', (e) => {
         e.preventDefault();
-
         currentReplaceTarget = imageDiv;
         currentCategory = category;
         currentSection = section;
         currentReplacePosition = null;
-
-        console.log('Edit button clicked - setting replace mode, position:', currentReplacePosition);
 
         imageDiv.style.border = '3px solid #3b82f6';
         imageDiv.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.5)';
@@ -668,8 +719,6 @@
     }
 
     function addEditButtonToExisting(imageDiv, section, category, index) {
-      console.log('addEditButtonToExisting - category:', category, 'index:', index);
-
       if (imageDiv.querySelector('.edit-existing-btn')) return;
 
       const editBtn = document.createElement('button');
@@ -681,13 +730,10 @@
 
       editBtn.addEventListener('click', (e) => {
         e.preventDefault();
-
         currentReplaceTarget = imageDiv;
         currentCategory = category;
         currentSection = section;
         currentReplacePosition = index;
-
-        console.log('Edit existing button clicked - position set to:', currentReplacePosition);
 
         imageDiv.style.border = '3px solid #3b82f6';
         imageDiv.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.5)';

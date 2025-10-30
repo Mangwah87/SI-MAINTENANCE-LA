@@ -31,27 +31,27 @@
             <div class="mb-6">
                 <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Informasi Lokasi dan Perangkat</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="border-l-4 border-blue-500 pl-3">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Location</p>
                         <p class="font-semibold">{{ $maintenance->location }}</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Date / Time</p>
                         <p class="font-semibold">{{ \Carbon\Carbon::parse($maintenance->date_time)->format('d/m/Y H:i') }}</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Brand / Type</p>
                         <p class="font-semibold">{{ $maintenance->brand_type }}</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Kapasitas</p>
                         <p class="font-semibold">{{ $maintenance->capacity }}</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Reg. Number</p>
                         <p class="font-semibold">{{ $maintenance->reg_number ?? '-' }}</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">S/N</p>
                         <p class="font-semibold">{{ $maintenance->sn ?? '-' }}</p>
                     </div>
@@ -60,7 +60,7 @@
 
             {{-- Visual Check --}}
             <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-3 bg-green-50 p-2 rounded">1. Visual Check</h3>
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">1. Visual Check</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full border">
                         <thead class="bg-gray-100">
@@ -129,7 +129,7 @@
 
             {{-- Room Temperature --}}
             <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-3 bg-purple-50 p-2 rounded">2. Room Temperature Shelter/ODC</h3>
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">2. Room Temperature Shelter/ODC</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full border">
                         <thead class="bg-gray-100">
@@ -166,57 +166,59 @@
                 </div>
             </div>
 
-            {{-- Input Current Air Cond --}}
+            {{-- Input Current Air Cond - Show All 7 Standards --}}
             <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-3 bg-orange-50 p-2 rounded">3. Input Current Air Cond</h3>
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">3. Input Current Air Cond</h3>
                 <div class="overflow-x-auto">
-                    <table class="w-full border">
+                    <table class="w-full border-collapse">
                         <thead class="bg-gray-100">
                             <tr>
-                                <th class="border p-2 text-left">AC Unit</th>
-                                <th class="border p-2 text-left">Input Current (Amp)</th>
-                                <th class="border p-2 text-left">Operational Standard</th>
-                                <th class="border p-2 text-center">Status</th>
+                                <th class="border border-gray-300 p-2 text-left">AC Unit</th>
+                                <th class="border border-gray-300 p-2 text-left">Input Current (Amp)</th>
+                                <th class="border border-gray-300 p-2 text-left">Operational Standard</th>
+                                <th class="border border-gray-300 p-2 text-center">Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @for($i = 1; $i <= 7; $i++)
+                            @php
+                                // Define all AC standards
+                                $acStandards = [
+                                    1 => ['label' => '', 'standard' => '¾-1 PK ≤ 4 A'],
+                                    2 => ['label' => '', 'standard' => '2 PK ≤ 10 A'],
+                                    3 => ['label' => '', 'standard' => '2.5 PK ≤ 13.5 A'],
+                                    4 => ['label' => '', 'standard' => '5-7 PK ≤ 8 A / Phase'],
+                                    5 => ['label' => '', 'standard' => '10 PK ≤ 15 A / Phase'],
+                                    6 => ['label' => '', 'standard' => '15 PK ≤ 25 A / Phase'],
+                                    7 => ['label' => '', 'standard' => '']
+                                ];
+                            @endphp
+
+                            @foreach($acStandards as $acNum => $acInfo)
                                 @php
-                                    $currentField = "ac{$i}_current";
-                                    $statusField = "status_ac{$i}";
-                                    $currentValue = $maintenance->{$currentField};
-                                    $statusValue = $maintenance->{$statusField};
+                                    $currentField = "ac{$acNum}_current";
+                                    $statusField = "status_ac{$acNum}";
+                                    $currentValue = $maintenance->{$currentField} ?? null;
+                                    $statusValue = $maintenance->{$statusField} ?? '-';
 
-                                    // Determine standard based on AC number
-                                    $standard = match($i) {
-                                        1 => '¾-1 PK ≤ 4 A',
-                                        2 => '2 PK ≤ 10 A',
-                                        3 => '2.5 PK ≤ 13.5 A',
-                                        4 => '5-7 PK ≤ 8 A / Phase',
-                                        5 => '10 PK ≤ 15 A / Phase',
-                                        6 => '15 PK ≤ 25 A / Phase',
-                                        7 => 'Sesuai kapasitas AC',
-                                        default => 'Sesuai kapasitas AC'
-                                    };
+                                    // Determine if this is the last row for border styling
+                                    $isLast = ($acNum === 7);
+                                    $borderClass = $isLast ? 'border border-gray-300' : 'border-l border-r border-t border-gray-300';
                                 @endphp
-
-                                @if($currentValue !== null || $statusValue !== null)
-                                    <tr>
-                                        <td class="border p-2 font-semibold">AC {{ $i }}</td>
-                                        <td class="border p-2">{{ $currentValue ?? '-' }} A</td>
-                                        <td class="border p-2 text-sm text-gray-600">{{ $standard }}</td>
-                                        <td class="border p-2 text-center">
-                                            @if($statusValue)
-                                                <span class="px-2 py-1 rounded text-xs font-semibold {{ $statusValue === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                    {{ $statusValue }}
-                                                </span>
-                                            @else
-                                                <span class="text-gray-400">-</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endif
-                            @endfor
+                                <tr class="{{ $currentValue ? 'bg-white' : 'bg-gray-50' }}">
+                                    <td class="{{ $borderClass }} p-2 font-semibold">AC {{ $acNum }} = {{ $acInfo['label'] }}</td>
+                                    <td class="{{ $borderClass }} p-2">{{ $currentValue ? $currentValue . ' Amp' : '-' }}</td>
+                                    <td class="{{ $borderClass }} p-2 text-sm text-gray-600">{{ $acInfo['standard'] }}</td>
+                                    <td class="{{ $borderClass }} p-2 text-center">
+                                        @if($currentValue)
+                                            <span class="px-2 py-1 rounded text-xs font-semibold {{ $statusValue === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                {{ $statusValue }}
+                                            </span>
+                                        @else
+                                            <span class="text-gray-400">-</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -225,7 +227,7 @@
             {{-- Notes --}}
             @if($maintenance->notes)
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold mb-3 bg-yellow-50 p-2 rounded">Notes / Additional Informations</h3>
+                    <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Notes / Additional Informations</h3>
                     <div class="border p-4 rounded bg-gray-50">
                         <p class="whitespace-pre-wrap">{{ $maintenance->notes }}</p>
                     </div>
@@ -271,81 +273,56 @@
 
             @if(!empty($images) && count($images) > 0)
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Documentation Images</h3>
+                    <h3 class="text-lg font-semibold mb-4 bg-blue-50 p-3 rounded">Documentation Images</h3>
 
-                    @if(!empty($groupedImages))
-                        {{-- Display images grouped by category --}}
-                        @foreach($groupedImages as $category => $categoryImages)
-                            <div class="mb-6">
-                                <h4 class="text-md font-semibold mb-2 text-gray-700 border-l-4 border-blue-500 pl-2">
-                                    {{ ucwords(str_replace('_', ' ', $category)) }}
-                                </h4>
-                                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                    @foreach($categoryImages as $index => $img)
-                                        <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
-                                            <img src="{{ asset('storage/' . $img['path']) }}"
-                                                 alt="{{ $category }}"
-                                                 class="w-full h-48 object-cover cursor-pointer"
-                                                 onclick="openImageModal('{{ asset('storage/' . $img['path']) }}')"
-                                                 onerror="this.parentElement.innerHTML='<div class=\'w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500 text-xs\'>Image not found</div>'">
-                                            <div class="p-2 bg-gray-50">
-                                                @if(isset($img['timestamp']))
-                                                    <p class="text-xs text-gray-500 mb-1">
-                                                        {{ \Carbon\Carbon::parse($img['timestamp'])->format('d/m/Y H:i') }}
-                                                    </p>
-                                                @endif
-                                                <a href="{{ asset('storage/' . $img['path']) }}"
-                                                   target="_blank"
-                                                   class="text-sm text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
-                                            </div>
-                                        </div>
-                                    @endforeach
+                    {{-- Display all images in horizontal order --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach($images as $index => $img)
+                            @if(is_string($img))
+                                {{-- Handle simple string path --}}
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                                    <div class="relative bg-gray-100 aspect-video">
+                                        <img src="{{ asset('storage/' . $img) }}"
+                                            alt="Documentation Image {{ $index + 1 }}"
+                                            class="w-full h-full object-cover cursor-pointer"
+                                            onclick="openImageModal('{{ asset('storage/' . $img) }}')"
+                                            onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm\'>Image not found</div>'">
+                                    </div>
+                                    <div class="p-3 bg-white">
+                                        <p class="text-sm font-medium text-gray-700 mb-1">Image {{ $index + 1 }}</p>
+                                        <a href="{{ asset('storage/' . $img) }}"
+                                        target="_blank"
+                                        class="text-sm text-blue-600 hover:text-blue-800 hover:underline inline-block">
+                                            View Full Size
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
+                            @elseif(is_array($img) && isset($img['path']))
+                                {{-- Handle array with path and category --}}
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                                    <div class="relative bg-gray-100 aspect-video">
+                                        <img src="{{ asset('storage/' . $img['path']) }}"
+                                            alt="{{ $img['category'] ?? 'Documentation Image' }}"
+                                            class="w-full h-full object-cover cursor-pointer"
+                                            onclick="openImageModal('{{ asset('storage/' . $img['path']) }}')"
+                                            onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm\'>Image not found</div>'">
+                                    </div>
+                                    <div class="p-3 bg-white">
+                                        @if(isset($img['category']))
+                                            <p class="text-sm font-medium text-gray-700 mb-1">
+                                                {{ ucwords(str_replace('_', ' ', $img['category'])) }}
+                                            </p>
+                                        @endif
+                                        <a href="{{ asset('storage/' . $img['path']) }}"
+                                        target="_blank"
+                                        class="text-sm text-blue-600 hover:text-blue-800 hover:underline inline-block">
+                                            View Full Size
+                                        </a>
+                                    </div>
+                                </div>
+                            @endif
                         @endforeach
-                    @else
-                        {{-- Fallback: display all images without grouping --}}
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            @foreach($images as $index => $imagePath)
-                                @if(is_string($imagePath))
-                                    <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
-                                        <img src="{{ asset('storage/' . $imagePath) }}"
-                                             alt="Documentation Image {{ $index + 1 }}"
-                                             class="w-full h-48 object-cover cursor-pointer"
-                                             onclick="openImageModal('{{ asset('storage/' . $imagePath) }}')"
-                                             onerror="this.parentElement.innerHTML='<div class=\'w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500 text-xs\'>Image not found</div>'">
-                                        <div class="p-2 bg-gray-50">
-                                            <p class="text-xs text-gray-600 mb-1">Image {{ $index + 1 }}</p>
-                                            <a href="{{ asset('storage/' . $imagePath) }}"
-                                               target="_blank"
-                                               class="text-sm text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
-                                        </div>
-                                    </div>
-                                @elseif(is_array($imagePath) && isset($imagePath['path']))
-                                    <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
-                                        <img src="{{ asset('storage/' . $imagePath['path']) }}"
-                                             alt="{{ $imagePath['category'] ?? 'Documentation Image' }}"
-                                             class="w-full h-48 object-cover cursor-pointer"
-                                             onclick="openImageModal('{{ asset('storage/' . $imagePath['path']) }}')"
-                                             onerror="this.parentElement.innerHTML='<div class=\'w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500 text-xs\'>Image not found</div>'">
-                                        <div class="p-2 bg-gray-50">
-                                            @if(isset($imagePath['category']))
-                                                <p class="text-xs text-gray-600 mb-1">{{ ucwords(str_replace('_', ' ', $imagePath['category'])) }}</p>
-                                            @endif
-                                            @if(isset($imagePath['timestamp']))
-                                                <p class="text-xs text-gray-500 mb-1">
-                                                    {{ \Carbon\Carbon::parse($imagePath['timestamp'])->format('d/m/Y H:i') }}
-                                                </p>
-                                            @endif
-                                            <a href="{{ asset('storage/' . $imagePath['path']) }}"
-                                               target="_blank"
-                                               class="text-sm text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endforeach
-                        </div>
-                    @endif
+                    </div>
                 </div>
             @endif
 
@@ -356,17 +333,23 @@
                     <div class="border p-3 rounded">
                         <p class="text-sm text-gray-600">Pelaksana 1</p>
                         <p class="font-semibold mt-1">{{ $maintenance->executor_1 ?? '-' }}</p>
-                        <p class="text-xs text-gray-500 mt-2">Departemen: {{ $maintenance->department ?? '-' }} | Sub Dept: {{ $maintenance->sub_department ?? '-' }}</p>
+                        @if($maintenance->executor_1)
+                            <p class="text-xs text-gray-500 mt-2">Departemen: {{ $maintenance->department ?? '-' }} | Sub Dept: {{ $maintenance->sub_department ?? '-' }}</p>
+                        @endif
                     </div>
                     <div class="border p-3 rounded">
                         <p class="text-sm text-gray-600">Pelaksana 2</p>
                         <p class="font-semibold mt-1">{{ $maintenance->executor_2 ?? '-' }}</p>
-                        <p class="text-xs text-gray-500 mt-2">Departemen: {{ $maintenance->department ?? '-' }} | Sub Dept: {{ $maintenance->sub_department ?? '-' }}</p>
+                        @if($maintenance->executor_2)
+                            <p class="text-xs text-gray-500 mt-2">Departemen: {{ $maintenance->department ?? '-' }} | Sub Dept: {{ $maintenance->sub_department ?? '-' }}</p>
+                        @endif
                     </div>
                     <div class="border p-3 rounded">
                         <p class="text-sm text-gray-600">Pelaksana 3</p>
                         <p class="font-semibold mt-1">{{ $maintenance->executor_3 ?? '-' }}</p>
-                        <p class="text-xs text-gray-500 mt-2">Departemen: {{ $maintenance->department ?? '-' }} | Sub Dept: {{ $maintenance->sub_department ?? '-' }}</p>
+                        @if($maintenance->executor_3)
+                            <p class="text-xs text-gray-500 mt-2">Departemen: {{ $maintenance->department ?? '-' }} | Sub Dept: {{ $maintenance->sub_department ?? '-' }}</p>
+                        @endif
                     </div>
                     <div class="border p-3 rounded bg-blue-50 md:col-span-3">
                         <p class="text-sm text-gray-600">Mengetahui (Supervisor)</p>

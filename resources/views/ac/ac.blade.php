@@ -83,11 +83,6 @@
                         <div class="space-y-2 mb-4">
                             <div class="flex justify-between items-start">
                                 <h3 class="font-semibold text-gray-900 text-base">{{ $maintenance->location }}</h3>
-                                @if($maintenance->overall_status === 'OK')
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">OK</span>
-                                @else
-                                    <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-medium">NOK</span>
-                                @endif
                             </div>
                             <p class="text-xs text-gray-500">{{ $maintenance->date_time->format('d/m/Y H:i') }}</p>
                         </div>
@@ -100,14 +95,6 @@
                             <div>
                                 <span class="text-gray-500">Capacity:</span>
                                 <p class="font-medium text-gray-900 mt-0.5">{{ $maintenance->capacity }}</p>
-                            </div>
-                            <div>
-                                <span class="text-gray-500">AC Units:</span>
-                                <p class="font-medium text-gray-900 mt-0.5">
-                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
-                                        {{ $maintenance->active_ac_units }} Unit{{ $maintenance->active_ac_units > 1 ? 's' : '' }}
-                                    </span>
-                                </p>
                             </div>
                             <div>
                                 <span class="text-gray-500">Reg. Number:</span>

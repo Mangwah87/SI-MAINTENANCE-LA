@@ -10,9 +10,7 @@
             <!-- Header section with responsive layout -->
             <div class="mb-6 pb-4 border-b-2">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Detail Preventive Maintenance 3 Phase UPS</h2>
-                    </div>
+
                     <div class="flex flex-wrap gap-2">
                         <a href="{{ route('ups3.edit', $maintenance->id) }}" class="inline-block px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
                             Edit
@@ -31,27 +29,27 @@
             <div class="mb-6">
                 <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Informasi Lokasi dan Perangkat</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="border-l-4 border-blue-500 pl-3">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Location</p>
                         <p class="font-semibold">{{ $maintenance->location }}</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Date / Time</p>
                         <p class="font-semibold">{{ \Carbon\Carbon::parse($maintenance->date_time)->format('d/m/Y H:i') }}</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Brand / Type</p>
                         <p class="font-semibold">{{ $maintenance->brand_type }}</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Kapasitas</p>
                         <p class="font-semibold">{{ $maintenance->capacity }}</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Reg. Number</p>
                         <p class="font-semibold">{{ $maintenance->reg_number ?? '-' }}</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">S/N</p>
                         <p class="font-semibold">{{ $maintenance->sn ?? '-' }}</p>
                     </div>

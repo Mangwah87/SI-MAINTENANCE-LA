@@ -284,59 +284,54 @@
                 <td class="center">{{ $maintenance->status_temp_outdoor_cabinet ?? 'OK' }}</td>
             </tr>
 
-            {{-- Input Current Air Cond - ALTERNATIVE METHOD: Use border-left/right/top only --}}
+            {{-- Input Current Air Cond - SHOW ALL 7 AC STANDARDS --}}
             <tr>
                 <td class="center bold">3.</td>
                 <td class="bold" colspan="4">Input Current Air Cond *)</td>
             </tr>
 
             @php
-                // Collect all AC data first
-                $acData = [];
-                for($i = 1; $i <= 7; $i++) {
-                    $currentField = "ac{$i}_current";
-                    $statusField = "status_ac{$i}";
-                    $currentValue = $maintenance->{$currentField} ?? null;
-
-                    if($currentValue !== null) {
-                        $acData[] = [
-                            'number' => $i,
-                            'current' => $currentValue,
-                            'status' => $maintenance->{$statusField} ?? '-'
-                        ];
-                    }
-                }
-                $totalAC = count($acData);
+                // Define all AC standards
+                $acStandards = [
+                    1 => ['label' => '¾-1 PK', 'standard' => '<span class="symbol">&frac34;</span>-1 PK <span class="symbol">&le;</span> 4 A'],
+                    2 => ['label' => '2 PK', 'standard' => '2 PK <span class="symbol">&le;</span> 10 A'],
+                    3 => ['label' => '2.5 PK', 'standard' => '2.5 PK <span class="symbol">&le;</span> 13.5 A'],
+                    4 => ['label' => '5-7 PK', 'standard' => '5-7 PK <span class="symbol">&le;</span> 8 A / Phase'],
+                    5 => ['label' => '10 PK', 'standard' => '10 PK <span class="symbol">&le;</span> 15 A / Phase'],
+                    6 => ['label' => '15 PK', 'standard' => '15 PK <span class="symbol">&le;</span> 25 A / Phase'],
+                    7 => ['label' => '', 'standard' => '']
+                ];
             @endphp
 
-            {{-- Alternative: Manually define borders for each cell --}}
-            @foreach($acData as $index => $ac)
+            {{-- Loop through all 7 AC standards --}}
+            @foreach($acStandards as $acNum => $acInfo)
                 @php
-                    $isLast = ($index === $totalAC - 1);
-                    // Only add bottom border to the last row
+                    $currentField = "ac{$acNum}_current";
+                    $statusField = "status_ac{$acNum}";
+                    $currentValue = $maintenance->{$currentField} ?? null;
+                    $statusValue = $maintenance->{$statusField} ?? '-';
+
+                    // Determine if this is the last row
+                    $isLast = ($acNum === 7);
+
+                    // All rows have no bottom border except the last one
                     if ($isLast) {
-                        $borderStyle = 'border-left: 1px solid #000; border-right: 1px solid #000; border-top: 1px solid #000; border-bottom: 1px solid #000;';
+                        $borderStyle = 'border-top: none; border-bottom: 1px solid #000;';
                     } else {
-                        $borderStyle = 'border-left: 1px solid #000; border-right: 1px solid #000; border-top: 1px solid #000; border-bottom: none;';
+                        $borderStyle = 'border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none;';
                     }
                 @endphp
                 <tr>
                     <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 8.5pt;"></td>
-                    <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 8.5pt;">AC {{ $ac['number'] }} = PK</td>
-                    <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 8.5pt;">{{ $ac['current'] }} Amp</td>
+                    <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 8.5pt;">AC {{ $acNum }} = {{ $acInfo['label'] }}</td>
+                    <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 8.5pt;">{{ $currentValue ? $currentValue . ' Amp' : '-' }}</td>
                     <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 7.5pt; line-height: 1.2;">
-                        @if($ac['number'] == 1) <span class="symbol">&frac34;</span>-1 PK <span class="symbol">&le;</span> 4 A
-                        @elseif($ac['number'] == 2) 2 PK <span class="symbol">&le;</span> 10 A
-                        @elseif($ac['number'] == 3) 2.5 PK <span class="symbol">&le;</span> 13.5 A
-                        @elseif($ac['number'] == 4) 5-7 PK <span class="symbol">&le;</span> 8 A / Phase
-                        @elseif($ac['number'] == 5) 10 PK <span class="symbol">&le;</span> 15 A / Phase
-                        @elseif($ac['number'] == 6) 15 PK <span class="symbol">&le;</span> 25 A / Phase
-                        @elseif($ac['number'] == 7) AC 7
-                        @endif
+                        {!! $acInfo['standard'] !!}
                     </td>
-                    <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 8.5pt; text-align: center;">{{ $ac['status'] }}</td>
+                    <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 8.5pt; text-align: center;">{{ $currentValue ? $statusValue : '-' }}</td>
                 </tr>
             @endforeach
+
 
             </tbody>
         </table>

@@ -708,4 +708,43 @@
       imageDiv.appendChild(editBtn);
     }
   }
+
+    // Kombinasikan date dan time menjadi date_time sebelum submit
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('mainForm');
+        const dateInput = document.getElementById('date_input');
+        const timeInput = document.getElementById('time_input');
+        const dateTimeHidden = document.getElementById('date_time_hidden');
+
+        // Function untuk update date_time hidden field
+        function updateDateTime() {
+            const date = dateInput.value;
+            const time = timeInput.value;
+
+            if (date && time) {
+                // Format: YYYY-MM-DD HH:MM:SS
+                dateTimeHidden.value = date + ' ' + time + ':00';
+            }
+        }
+
+        // Update saat date atau time berubah
+        dateInput.addEventListener('change', updateDateTime);
+        timeInput.addEventListener('change', updateDateTime);
+
+        // Update saat form akan di-submit
+        form.addEventListener('submit', function(e) {
+            updateDateTime();
+
+            // Validasi bahwa date_time sudah terisi
+            if (!dateTimeHidden.value) {
+                e.preventDefault();
+                alert('Mohon isi tanggal dan waktu');
+                return false;
+            }
+        });
+
+        // Set initial value saat load
+        updateDateTime();
+    });
+
 })();
