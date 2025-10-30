@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ isset($maintenance) ? 'Edit Data Preventive Maintenance 3 Phase UPS' : 'Input Data Preventive Maintenance 3 Phase UPS' }}
+            {{ isset($maintenance) ? 'Edit Data Preventive Maintenance UPS 1 Phase' : 'Tambah Data Preventive Maintenance UPS 1 Phase' }}
         </h2>
     </x-slot>
 
@@ -50,72 +50,34 @@
                     <canvas id="canvas" class="hidden"></canvas>
 
                     @php
-                        // Helper function untuk safely get nilai field
                         function safeGetValue($maintenance, $fieldName, $default = '') {
-                            if (!isset($maintenance)) {
-                                return $default;
-                            }
-
-                            if (!isset($maintenance->{$fieldName})) {
-                                return $default;
-                            }
-
+                            if (!isset($maintenance)) return $default;
+                            if (!isset($maintenance->{$fieldName})) return $default;
                             $value = $maintenance->{$fieldName};
-
-                            // Jika array atau object, return default
-                            if (is_array($value) || is_object($value)) {
-                                return $default;
-                            }
-
-                            // Jika null atau empty string (kecuali "0")
-                            if (is_null($value) || ($value === '' && $value !== '0')) {
-                                return $default;
-                            }
-
+                            if (is_array($value) || is_object($value)) return $default;
+                            if (is_null($value) || ($value === '' && $value !== '0')) return $default;
                             return $value;
                         }
 
-                        // Helper untuk get notes (bisa array atau string)
                         function safeGetNotes($maintenance) {
-                            if (!isset($maintenance) || !isset($maintenance->notes)) {
-                                return '';
-                            }
-
+                            if (!isset($maintenance) || !isset($maintenance->notes)) return '';
                             $notes = $maintenance->notes;
-
-                            // Jika array, gabungkan dengan newline
-                            if (is_array($notes)) {
-                                return implode("\n", array_filter($notes));
-                            }
-
-                            // Jika object, convert ke JSON string
-                            if (is_object($notes)) {
-                                return json_encode($notes, JSON_PRETTY_PRINT);
-                            }
-
-                            // Return as string
+                            if (is_array($notes)) return implode("\n", array_filter($notes));
+                            if (is_object($notes)) return json_encode($notes, JSON_PRETTY_PRINT);
                             return (string) $notes;
                         }
 
-                        // Helper untuk get existing images by category
                         function getExistingImages($maintenance, $category) {
-                            if (!isset($maintenance) || !isset($maintenance->images)) {
-                                return [];
-                            }
-
+                            if (!isset($maintenance) || !isset($maintenance->images)) return [];
                             $images = $maintenance->images;
-
-                            if (!is_array($images)) {
-                                return [];
-                            }
-
+                            if (!is_array($images)) return [];
                             return array_filter($images, function($img) use ($category) {
                                 return isset($img['category']) && $img['category'] === $category;
                             });
                         }
                     @endphp
 
-                    <form action="{{ isset($maintenance) ? route('ups3.update', $maintenance->id) : route('ups3.store') }}" method="POST" enctype="multipart/form-data" id="mainForm">
+                    <form action="{{ isset($maintenance) ? route('ups1.update', $maintenance->id) : route('ups1.store') }}" method="POST" enctype="multipart/form-data" id="mainForm">
                         @csrf
                         @if(isset($maintenance)) @method('PUT') @endif
 
@@ -136,24 +98,25 @@
                                     @error('location') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
-                                <div> ?0
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
                                         Tanggal <span class="text-red-500">*</span>
                                     </label>
                                     @php
-                                        $dateValue = old('date');
-                                        if (!$dateValue && isset($maintenance->date_time)) {
+                                        $dateValue = '';
+                                        if (old('date')) {
+                                            $dateValue = old('date');
+                                        } elseif (isset($maintenance) && isset($maintenance->date_time)) {
                                             try {
                                                 $dateValue = \Carbon\Carbon::parse($maintenance->date_time)->format('Y-m-d');
                                             } catch (\Exception $e) {
                                                 $dateValue = date('Y-m-d');
                                             }
-                                        }
-                                        if (!$dateValue) {
+                                        } else {
                                             $dateValue = date('Y-m-d');
                                         }
                                     @endphp
-                                    <input type="date" id="ups3_date_input" name="date"
+                                    <input type="date" id="ups1_date_input" name="date"
                                         value="{{ $dateValue }}"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
                                     @error('date') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
@@ -164,26 +127,27 @@
                                         Waktu <span class="text-red-500">*</span>
                                     </label>
                                     @php
-                                        $timeValue = old('time');
-                                        if (!$timeValue && isset($maintenance->date_time)) {
+                                        $timeValue = '';
+                                        if (old('time')) {
+                                            $timeValue = old('time');
+                                        } elseif (isset($maintenance) && isset($maintenance->date_time)) {
                                             try {
                                                 $timeValue = \Carbon\Carbon::parse($maintenance->date_time)->format('H:i');
                                             } catch (\Exception $e) {
                                                 $timeValue = date('H:i');
                                             }
-                                        }
-                                        if (!$timeValue) {
+                                        } else {
                                             $timeValue = date('H:i');
                                         }
                                     @endphp
-                                    <input type="time" id="ups3_time_input" name="time"
+                                    <input type="time" id="ups1_time_input" name="time"
                                         value="{{ $timeValue }}"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
                                     @error('time') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
-                                <!-- Hidden field untuk date_time -->
-                                <input type="hidden" id="ups3_date_time_hidden" name="date_time" value="">
+                                <!-- Hidden field untuk date_time yang akan dikirim ke controller -->
+                                <input type="hidden" id="ups1_date_time_hidden" name="date_time">
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -191,7 +155,7 @@
                                     </label>
                                     <input type="text" name="brand_type"
                                         value="{{ old('brand_type', safeGetValue($maintenance ?? null, 'brand_type')) }}"
-                                        placeholder="Contoh: APC Smart-UPS 10KVA"
+                                        placeholder="Contoh: APC Smart-UPS 3KVA"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
                                     @error('brand_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
@@ -202,7 +166,7 @@
                                     </label>
                                     <input type="text" name="capacity"
                                         value="{{ old('capacity', safeGetValue($maintenance ?? null, 'capacity')) }}"
-                                        placeholder="Contoh: 10 KVA"
+                                        placeholder="Contoh: 3 KVA"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
                                     @error('capacity') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
@@ -211,7 +175,7 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Reg. Number</label>
                                     <input type="text" name="reg_number"
                                         value="{{ old('reg_number', safeGetValue($maintenance ?? null, 'reg_number')) }}"
-                                        placeholder="Contoh: UPS-001"
+                                        placeholder="Contoh: UPS1-001"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                     @error('reg_number') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
@@ -305,90 +269,18 @@
                             </h3>
 
                             <div class="space-y-3 sm:space-y-4">
-                                <!-- AC Measurements with 3 inputs and individual photo uploads -->
-                                @php
-                                    $acMeasurements = [
-                                        ['ac_input_voltage', 'a. AC input voltage', ['RS', 'ST', 'TR'], 'Volt', '360-400 VAC'],
-                                        ['ac_output_voltage', 'b. AC output voltage', ['RS', 'ST', 'TR'], 'Volt', '370-390 VAC'],
-                                        ['ac_current_input', 'c. AC current input', ['R', 'S', 'T'], 'Amp', 'Sesuai kapasitas UPS'],
-                                        ['ac_current_output', 'd. AC current output', ['R', 'S', 'T'], 'Amp', 'Sesuai kapasitas UPS'],
-                                    ];
-                                @endphp
-                                @foreach($acMeasurements as $measure)
-                                    <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ $measure[1] }}</label>
-                                        <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
-                                            <strong>Operational Standard:</strong> {{ $measure[4] }}
-                                        </div>
-
-                                        <div class="space-y-3">
-                                            <div>
-                                                <label class="block text-xs text-gray-600 mb-1.5">Pengukuran per Phase:</label>
-                                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                    @foreach($measure[2] as $phase)
-                                                        @php
-                                                            $fieldName = $measure[0] . '_' . strtolower($phase);
-                                                            $photoFieldName = 'performance_' . $measure[0] . '_' . strtolower($phase);
-                                                        @endphp
-                                                        <div class="border rounded-lg p-3 bg-white">
-                                                            <label class="block text-xs font-semibold text-gray-700 mb-2">Phase {{ $phase }}</label>
-                                                            <input type="number" step="0.1" name="{{ $fieldName }}"
-                                                                value="{{ old($fieldName, safeGetValue($maintenance ?? null, $fieldName)) }}"
-                                                                placeholder="0.0"
-                                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm mb-2" required>
-
-                                                            <!-- Photo upload for this phase -->
-                                                            <div class="image-upload-section" data-field-name="{{ $photoFieldName }}">
-                                                                <label class="block text-xs text-gray-600 mb-1.5">Foto Phase {{ $phase }}:</label>
-                                                                <div class="flex gap-2 mb-2">
-                                                                    <button type="button" class="upload-local-btn px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload</button>
-                                                                    <button type="button" class="camera-btn px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">Kamera</button>
-                                                                </div>
-                                                                <input type="file" class="file-input hidden" accept="image/*" multiple>
-                                                                <div class="preview-container grid grid-cols-2 gap-2">
-                                                                    @if(isset($maintenance))
-                                                                        @foreach(getExistingImages($maintenance, $photoFieldName) as $img)
-                                                                            @if(isset($img['path']))
-                                                                                <div class="relative group existing-image" data-path="{{ $img['path'] }}">
-                                                                                    <img src="{{ asset('storage/' . $img['path']) }}" class="w-full h-16 object-cover rounded border">
-                                                                                    <button type="button" class="delete-existing-btn absolute top-1 right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">×</button>
-                                                                                </div>
-                                                                            @endif
-                                                                        @endforeach
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Status Overall <span class="text-red-500">*</span>
-                                                </label>
-                                                <div class="flex flex-wrap gap-4">
-                                                    @foreach(['OK', 'NOK'] as $status)
-                                                        <label class="inline-flex items-center cursor-pointer">
-                                                            <input type="radio" name="status_{{ $measure[0] }}" value="{{ $status }}"
-                                                                {{ old("status_{$measure[0]}", safeGetValue($maintenance ?? null, "status_{$measure[0]}", 'OK')) == $status ? 'checked' : '' }}
-                                                                class="form-radio {{ $status === 'OK' ? 'text-blue-600 focus:ring-blue-500' : 'text-blue-600 focus:ring-blue-500' }}" required>
-                                                            <span class="ml-2 text-sm sm:text-base text-gray-700">{{ $status }}</span>
-                                                        </label>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-
-                                <!-- Single measurements -->
                                 @php
                                     $singleMeasurements = [
-                                        ['e. UPS temperature', 'ups_temperature', '°C', '25', '0-40 °C'],
-                                        ['f. Output frequency', 'output_frequency', 'Hz', '50', '48.75-50.25 Hz'],
-                                        ['g. Charging voltage', 'charging_voltage', 'Volt', '270', 'See Battery Performance table'],
-                                        ['h. Charging current', 'charging_current', 'Amp', '0', '0 Ampere, on-line mode'],
+                                        ['a. AC input voltage', 'ac_input_voltage', 'Volt', '220', '180-240 VAC', 'number'],
+                                        ['b. AC output voltage', 'ac_output_voltage', 'Volt', '220', '210-230 VAC', 'number'],
+                                        ['c. Neutral-Ground voltage', 'neutral_ground_voltage', 'Volt', '0', '≤ 2 VAC', 'number'],
+                                        ['d. AC current input', 'ac_current_input', 'Amp', '5', 'Sesuai kapasitas UPS', 'number'],
+                                        ['e. AC current output', 'ac_current_output', 'Amp', '3', 'Sesuai kapasitas UPS', 'number'],
+                                        ['f. UPS temperature', 'ups_temperature', '°C', '25', '0-40 °C', 'number'],
+                                        ['g. Output frequency', 'output_frequency', 'Hz', '50', '48.75-50.25 Hz', 'number'],
+                                        ['h. Charging voltage', 'charging_voltage', 'Volt', '270', 'See Battery Performance table', 'number'],
+                                        ['i. Charging current', 'charging_current', 'Amp', '0', '0 Ampere, on-line mode', 'number'],
+                                        ['j. Fan', 'fan', '', 'Normal', 'Normal operation, no abnormal noise', 'text'],
                                     ];
                                 @endphp
                                 @foreach($singleMeasurements as $measure)
@@ -400,10 +292,17 @@
 
                                         <div class="space-y-3">
                                             <div>
-                                                <input type="number" step="0.01" name="{{ $measure[1] }}"
-                                                    value="{{ old($measure[1], safeGetValue($maintenance ?? null, $measure[1])) }}"
-                                                    placeholder="{{ $measure[3] }}"
-                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                                @if($measure[5] === 'text')
+                                                    <input type="text" name="{{ $measure[1] }}"
+                                                        value="{{ old($measure[1], safeGetValue($maintenance ?? null, $measure[1])) }}"
+                                                        placeholder="{{ $measure[3] }}"
+                                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                                @else
+                                                    <input type="number" step="0.01" name="{{ $measure[1] }}"
+                                                        value="{{ old($measure[1], safeGetValue($maintenance ?? null, $measure[1])) }}"
+                                                        placeholder="{{ $measure[3] }}"
+                                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                                @endif
                                             </div>
 
                                             <div>
@@ -448,6 +347,144 @@
                             </div>
                         </div>
 
+                        <!-- Backup Tests -->
+                        <div class="mb-6 sm:mb-8">
+                            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
+                                3. Backup Tests
+                            </h3>
+
+                            <div class="space-y-3 sm:space-y-4">
+                                @php
+                                    $backupTests = [
+                                        ['a. UPS switching test (Normal to Battery)', 'ups_switching_test', 'text', 'Contoh: Success, switchover <10ms', 'Success'],
+                                        ['b. Battery voltage measurement 1 (5 minutes after test)', 'battery_voltage_measurement_1', 'number', '12.5', '≥12.0V per cell'],
+                                        ['c. Battery voltage measurement 2 (10 minutes after test)', 'battery_voltage_measurement_2', 'number', '12.3', '≥11.8V per cell'],
+                                    ];
+                                @endphp
+                                @foreach($backupTests as $test)
+                                    <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ $test[0] }}</label>
+                                        <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                            <strong>Operational Standard:</strong> {{ $test[4] }}
+                                        </div>
+
+                                        <div class="space-y-3">
+                                            <div>
+                                                @if($test[2] === 'number')
+                                                    <input type="number" step="0.01" name="{{ $test[1] }}"
+                                                        value="{{ old($test[1], safeGetValue($maintenance ?? null, $test[1])) }}"
+                                                        placeholder="{{ $test[3] }}"
+                                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                                @else
+                                                    <input type="text" name="{{ $test[1] }}"
+                                                        value="{{ old($test[1], safeGetValue($maintenance ?? null, $test[1])) }}"
+                                                        placeholder="{{ $test[3] }}"
+                                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                                @endif
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                    Status <span class="text-red-500">*</span>
+                                                </label>
+                                                <div class="flex flex-wrap gap-4">
+                                                    @foreach(['OK', 'NOK'] as $status)
+                                                        <label class="inline-flex items-center cursor-pointer">
+                                                            <input type="radio" name="status_{{ $test[1] }}" value="{{ $status }}"
+                                                                {{ old("status_{$test[1]}", safeGetValue($maintenance ?? null, "status_{$test[1]}", 'OK')) == $status ? 'checked' : '' }}
+                                                                class="form-radio {{ $status === 'OK' ? 'text-blue-600 focus:ring-blue-500' : 'text-blue-600 focus:ring-blue-500' }}" required>
+                                                            <span class="ml-2 text-sm sm:text-base text-gray-700">{{ $status }}</span>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+
+                                            <div class="image-upload-section" data-field-name="backup_{{ $test[1] }}">
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">Foto (Opsional)</label>
+                                                <div class="flex gap-2 mb-2">
+                                                    <button type="button" class="upload-local-btn px-3 py-1.5 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload Gambar</button>
+                                                    <button type="button" class="camera-btn px-3 py-1.5 bg-green-500 text-white rounded text-xs hover:bg-green-600">Ambil Foto</button>
+                                                </div>
+                                                <input type="file" class="file-input hidden" accept="image/*" multiple>
+                                                <div class="preview-container grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                                                    @if(isset($maintenance))
+                                                        @foreach(getExistingImages($maintenance, 'backup_'.$test[1]) as $img)
+                                                            @if(isset($img['path']))
+                                                                <div class="relative group existing-image" data-path="{{ $img['path'] }}">
+                                                                    <img src="{{ asset('storage/' . $img['path']) }}" class="w-full h-20 object-cover rounded border">
+                                                                    <button type="button" class="delete-existing-btn absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">×</button>
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Power Alarm Monitoring Test -->
+                        <div class="mb-6 sm:mb-8">
+                            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
+                                4. Power Alarm Monitoring Test
+                            </h3>
+
+                            <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">SIMONICA Alarm Test</label>
+                                <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                    <strong>Operational Standard:</strong> Alarm responds correctly
+                                </div>
+
+                                <div class="space-y-3">
+                                    <div>
+                                        <input type="text" name="simonica_alarm_test"
+                                            value="{{ old('simonica_alarm_test', safeGetValue($maintenance ?? null, 'simonica_alarm_test')) }}"
+                                            placeholder="Contoh: Alarm triggered successfully"
+                                            class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                            Status <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="flex flex-wrap gap-4">
+                                            @foreach(['OK', 'NOK'] as $status)
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="status_simonica_alarm_test" value="{{ $status }}"
+                                                        {{ old('status_simonica_alarm_test', safeGetValue($maintenance ?? null, 'status_simonica_alarm_test', 'OK')) == $status ? 'checked' : '' }}
+                                                        class="form-radio {{ $status === 'OK' ? 'text-blue-600 focus:ring-blue-500' : 'text-blue-600 focus:ring-blue-500' }}" required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">{{ $status }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <div class="image-upload-section" data-field-name="alarm_simonica_alarm_test">
+                                        <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">Foto (Opsional)</label>
+                                        <div class="flex gap-2 mb-2">
+                                            <button type="button" class="upload-local-btn px-3 py-1.5 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload Gambar</button>
+                                            <button type="button" class="camera-btn px-3 py-1.5 bg-green-500 text-white rounded text-xs hover:bg-green-600">Ambil Foto</button>
+                                        </div>
+                                        <input type="file" class="file-input hidden" accept="image/*" multiple>
+                                        <div class="preview-container grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                                            @if(isset($maintenance))
+                                                @foreach(getExistingImages($maintenance, 'alarm_simonica_alarm_test') as $img)
+                                                    @if(isset($img['path']))
+                                                        <div class="relative group existing-image" data-path="{{ $img['path'] }}">
+                                                            <img src="{{ asset('storage/' . $img['path']) }}" class="w-full h-20 object-cover rounded border">
+                                                            <button type="button" class="delete-existing-btn absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">×</button>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Notes -->
                         <div class="mb-6 sm:mb-8">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Catatan / Additional Informations</label>
@@ -474,14 +511,6 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Pelaksana 2</label>
                                     <input type="text" name="executor_2"
                                            value="{{ old('executor_2', safeGetValue($maintenance ?? null, 'executor_2')) }}"
-                                           placeholder="Nama teknisi pendamping (opsional)"
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Pelaksana 3</label>
-                                    <input type="text" name="executor_3"
-                                           value="{{ old('executor_3', safeGetValue($maintenance ?? null, 'executor_3')) }}"
                                            placeholder="Nama teknisi pendamping (opsional)"
                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                 </div>
@@ -530,7 +559,7 @@
 
                         <!-- Submit Buttons -->
                         <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
-                            <a href="{{ route('ups3.index') }}"
+                            <a href="{{ route('ups1.index') }}"
                                class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg text-center text-sm sm:text-base">
                                 Batal
                             </a>
@@ -545,5 +574,5 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/ups3form.js') }}"></script>
+    <script src="{{ asset('js/ups1form.js') }}"></script>
 </x-app-layout>
