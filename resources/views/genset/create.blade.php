@@ -11,12 +11,48 @@
         </div>
     </x-slot>
 
+    <div id="cameraModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-0 md:p-4">
+        <div class="bg-white rounded-lg w-full md:max-w-2xl h-screen md:h-auto md:max-h-screen overflow-y-auto flex flex-col">
+            <div class="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+                <h2 class="text-lg font-bold">Ambil Foto</h2>
+                <button id="closeModalBtn" type="button" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+            </div>
+            <div class="flex-1 flex flex-col overflow-y-auto">
+                <div id="geoInfo" class="m-4 p-3 bg-blue-50 rounded border border-blue-200 text-xs space-y-1">
+                    <p><strong>Latitude:</strong> <span id="lat">-</span></p>
+                    <p><strong>Longitude:</strong> <span id="lon">-</span></p>
+                    <p><strong>Tanggal & Waktu:</strong> <span id="datetime">-</span></p>
+                    <p><strong>Lokasi:</strong> <span id="location">-</span></p> {{-- <-- TAMBAHKAN BARIS INI --}}
+                </div>
+                <div id="videoSection" class="flex-1 flex bg-black relative mx-4 mt-2 rounded">
+                    <video id="video" class="w-full" playsinline autoplay muted style="transform: scaleX(-1);"></video>
+                </div>
+                <div id="capturedImage" class="hidden mx-4 mt-2">
+                    <img id="capturedImg" class="w-full rounded" alt="Captured">
+                </div>
+                <div class="m-4 space-y-2">
+                    <div id="captureControls" class="flex gap-2">
+                        <button id="captureBtn" type="button" class="flex-1 px-4 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium">Ambil Foto</button>
+                        <button id="switchCameraBtn" type="button" class="px-4 py-3 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm font-medium">Tukar</button>
+                    </div>
+                    <div id="retakeControls" class="hidden flex gap-2">
+                        <button id="retakeBtn" type="button" class="flex-1 px-4 py-3 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm font-medium">Ulangi</button>
+                        <button id="usePhotoBtn" type="button" class="flex-1 px-4 py-3 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-medium">Gunakan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <canvas id="canvas" class="hidden"></canvas>
+    <div id="fileInputContainer" class="hidden"></div>
+
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <form action="{{ route('genset.store') }}" method="POST" enctype="multipart/form-data" id="genset-form">
                 @csrf
+                <div id="image-data-container"></div>
 
-                {{-- ... Bagian Informasi Umum (Tidak ada perubahan) ... --}}
+                {{-- ... Bagian Informasi Umum ... --}}
                 <div class="bg-white shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6 bg-gradient-to-r from-purple-50 to-blue-50 border-b border-gray-200">
                         <h3 class="text-xl font-bold text-gray-800">Informasi Umum</h3>
@@ -47,7 +83,8 @@
                     <div class="p-6 bg-gray-50 border-b border-gray-200">
                         <h3 class="text-xl font-bold text-gray-800">1. Visual Check</h3>
                     </div>
-                    <div class="p-6 space-y-4">
+                    
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                         @php
                         $visualChecks = [
                             ['name' => 'environment_condition', 'label' => 'a. Environment Condition', 'std' => 'Clean, No dust'],
@@ -62,22 +99,22 @@
                         @endphp
 
                         @foreach($visualChecks as $check)
-                        <div class="p-4 border rounded-lg">
+                        <div class="p-4 border rounded-lg flex flex-col h-full image-upload-section" data-field-name="{{ $check['name'] }}">
                             <label class="block text-sm font-semibold text-gray-700">{{ $check['label'] }}</label>
                             <p class="text-xs text-gray-500 mb-2">Standard: {{ $check['std'] }}</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                            
+                            <div class="space-y-2 flex-grow">
                                 <input type="text" name="{{ $check['name'] }}_result" class="w-full text-sm border-gray-300 rounded-md" placeholder="Result...">
                                 <textarea name="{{ $check['name'] }}_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment..."></textarea>
                             </div>
-                            <div class="mt-2 flex items-center space-x-2">
-                                <label for="{{ $check['name'] }}_image" class="camera-button cursor-pointer p-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white inline-flex items-center" data-gps-target="#{{ $check['name'] }}_gps">
-                                    <i data-lucide="camera" class="h-5 w-5"></i>
-                                </label>
-                                <input type="file" accept="image/*" capture="environment" id="{{ $check['name'] }}_image" name="{{ $check['name'] }}_image" class="hidden" data-preview-target="#{{ $check['name'] }}_preview">
-                                <input type="hidden" name="{{ $check['name'] }}_gps" id="{{ $check['name'] }}_gps">
-                                
-                                {{-- PERUBAHAN DI SINI: Mengganti <img> dan <span> dengan <canvas> --}}
-                                <canvas id="{{ $check['name'] }}_preview" width="150" height="112" class="rounded-md hidden" style="border: 1px solid #ddd;"></canvas>
+                            
+                            <div class="mt-2 space-y-2">
+                                <div class="flex gap-2">
+                                    <button type="button" class="upload-local-btn px-3 py-1.5 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload</button>
+                                    <button type="button" class="camera-btn px-3 py-1.5 bg-green-500 text-white rounded text-xs hover:bg-green-600">Kamera</button>
+                                </div>
+                                <div class="preview-container grid grid-cols-3 gap-2">
+                                    </div>
                             </div>
                         </div>
                         @endforeach
@@ -93,30 +130,29 @@
                     {{-- I. No Load Test --}}
                     <div class="p-6 border-b border-gray-200">
                         <h4 class="font-bold text-lg text-gray-700 mb-4">I. No Load Test (30 minute)</h4>
-                        <div class="space-y-4">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {{-- No Load: AC Output Voltage --}}
-                            <div class="p-4 border rounded-lg">
+                            <div class="p-4 border rounded-lg flex flex-col h-full">
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">a. AC Output Voltage</label>
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 items-center">
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-12">R - S:</label><input type="text" name="no_load_ac_voltage_rs" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-12">S - T:</label><input type="text" name="no_load_ac_voltage_st" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-12">T - R:</label><input type="text" name="no_load_ac_voltage_tr" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <p class="text-sm text-gray-500">Std: 360-400 VAC</p>
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-12">R - N:</label><input type="text" name="no_load_ac_voltage_rn" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-12">S - N:</label><input type="text" name="no_load_ac_voltage_sn" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-12">T - N:</label><input type="text" name="no_load_ac_voltage_tn" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <p class="text-sm text-gray-500">Std: 180-230 VAC</p>
-                                </div>
-                                <div class="mt-4">
-                                    <textarea name="no_load_ac_voltage_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment..."></textarea>
-                                </div>
-                                <div class="mt-2 flex items-center space-x-2">
-                                    <label for="no_load_ac_voltage_image" class="camera-button cursor-pointer p-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white inline-flex items-center" data-gps-target="#no_load_ac_voltage_gps">
-                                        <i data-lucide="camera" class="h-5 w-5"></i>
-                                    </label>
-                                    <input type="file" accept="image/*" capture="environment" id="no_load_ac_voltage_image" name="no_load_ac_voltage_image" class="hidden" data-preview-target="#no_load_ac_voltage_preview">
-                                    <input type="hidden" name="no_load_ac_voltage_gps" id="no_load_ac_voltage_gps">
-                                    <canvas id="no_load_ac_voltage_preview" width="150" height="112" class="rounded-md hidden" style="border: 1px solid #ddd;"></canvas>
+                                <div class="space-y-4 flex-grow">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        @foreach(['rs', 'st', 'tr', 'rn', 'sn', 'tn'] as $phase)
+                                        @php $name = 'no_load_ac_voltage_' . $phase; @endphp
+                                        <div class="border rounded-lg p-3 bg-gray-50 image-upload-section" data-field-name="{{ $name }}">
+                                            <label class="block text-xs font-semibold text-gray-700 mb-2">Phase {{ strtoupper(implode(' - ', str_split($phase))) }}</label>
+                                            <input type="text" name="{{ $name }}" class="w-full text-sm border-gray-300 rounded-md mb-2" placeholder="Volt">
+                                            <div class="flex gap-2 mb-2">
+                                                <button type="button" class="upload-local-btn px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload</button>
+                                                <button type="button" class="camera-btn px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">Kamera</button>
+                                            </div>
+                                            <div class="preview-container grid grid-cols-2 gap-2"></div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="mt-4">
+                                        <textarea name="no_load_ac_voltage_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment..."></textarea>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -130,20 +166,19 @@
                             ];
                             @endphp
                             @foreach($noLoadTests as $test)
-                             <div class="p-4 border rounded-lg">
+                             <div class="p-4 border rounded-lg flex flex-col h-full image-upload-section" data-field-name="{{ $test['name'] }}">
                                 <label class="block text-sm font-semibold text-gray-700">{{ $test['label'] }}</label>
                                 <p class="text-xs text-gray-500 mb-2">Standard: {{ $test['std'] }}</p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                                <div class="space-y-2 flex-grow">
                                     <input type="text" name="{{ $test['name'] }}_result" class="w-full text-sm border-gray-300 rounded-md" placeholder="Result...">
                                     <textarea name="{{ $test['name'] }}_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment..."></textarea>
                                 </div>
-                                <div class="mt-2 flex items-center space-x-2">
-                                    <label for="{{ $test['name'] }}_image" class="camera-button cursor-pointer p-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white inline-flex items-center" data-gps-target="#{{ $test['name'] }}_gps">
-                                        <i data-lucide="camera" class="h-5 w-5"></i>
-                                    </label>
-                                    <input type="file" accept="image/*" capture="environment" id="{{ $test['name'] }}_image" name="{{ $test['name'] }}_image" class="hidden" data-preview-target="#{{ $test['name'] }}_preview">
-                                    <input type="hidden" name="{{ $test['name'] }}_gps" id="{{ $test['name'] }}_gps">
-                                    <canvas id="{{ $test['name'] }}_preview" width="150" height="112" class="rounded-md hidden" style="border: 1px solid #ddd;"></canvas>
+                                <div class="mt-2 space-y-2">
+                                    <div class="flex gap-2">
+                                        <button type="button" class="upload-local-btn px-3 py-1.5 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload</button>
+                                        <button type="button" class="camera-btn px-3 py-1.5 bg-green-500 text-white rounded text-xs hover:bg-green-600">Kamera</button>
+                                    </div>
+                                    <div class="preview-container grid grid-cols-3 gap-2"></div>
                                 </div>
                             </div>
                             @endforeach
@@ -153,52 +188,53 @@
                     {{-- II. Load Test --}}
                     <div class="p-6">
                         <h4 class="font-bold text-lg text-gray-700 mb-4">II. Load Test (30 minute)</h4>
-                        <div class="space-y-4">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {{-- Load: AC Output Voltage --}}
-                            <div class="p-4 border rounded-lg">
+                            <div class="p-4 border rounded-lg flex flex-col h-full">
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">a. AC Output Voltage</label>
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 items-center">
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-12">R - S:</label><input type="text" name="load_ac_voltage_rs" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-12">S - T:</label><input type="text" name="load_ac_voltage_st" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-12">T - R:</label><input type="text" name="load_ac_voltage_tr" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <p class="text-sm text-gray-500">Std: 360-400 VAC</p>
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-12">R - N:</label><input type="text" name="load_ac_voltage_rn" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-12">S - N:</label><input type="text" name="load_ac_voltage_sn" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-12">T - N:</label><input type="text" name="load_ac_voltage_tn" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <p class="text-sm text-gray-500">Std: 180-230 VAC</p>
-                                </div>
-                                <div class="mt-4">
-                                    <textarea name="load_ac_voltage_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment..."></textarea>
-                                </div>
-                                <div class="mt-2 flex items-center space-x-2">
-                                    <label for="load_ac_voltage_image" class="camera-button cursor-pointer p-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white inline-flex items-center" data-gps-target="#load_ac_voltage_gps">
-                                        <i data-lucide="camera" class="h-5 w-5"></i>
-                                    </label>
-                                    <input type="file" accept="image/*" capture="environment" id="load_ac_voltage_image" name="load_ac_voltage_image" class="hidden" data-preview-target="#load_ac_voltage_preview">
-                                    <input type="hidden" name="load_ac_voltage_gps" id="load_ac_voltage_gps">
-                                    <canvas id="load_ac_voltage_preview" width="150" height="112" class="rounded-md hidden" style="border: 1px solid #ddd;"></canvas>
+                                <div class="space-y-4 flex-grow">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        @foreach(['rs', 'st', 'tr', 'rn', 'sn', 'tn'] as $phase)
+                                        @php $name = 'load_ac_voltage_' . $phase; @endphp
+                                        <div class="border rounded-lg p-3 bg-gray-50 image-upload-section" data-field-name="{{ $name }}">
+                                            <label class="block text-xs font-semibold text-gray-700 mb-2">Phase {{ strtoupper(implode(' - ', str_split($phase))) }}</label>
+                                            <input type="text" name="{{ $name }}" class="w-full text-sm border-gray-300 rounded-md mb-2" placeholder="Volt">
+                                            <div class="flex gap-2 mb-2">
+                                                <button type="button" class="upload-local-btn px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload</button>
+                                                <button type="button" class="camera-btn px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">Kamera</button>
+                                            </div>
+                                            <div class="preview-container grid grid-cols-2 gap-2"></div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="mt-4">
+                                        <textarea name="load_ac_voltage_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment..."></textarea>
+                                    </div>
                                 </div>
                             </div>
                             
                             {{-- Load: AC Output Current --}}
-                            <div class="p-4 border rounded-lg">
+                            <div class="p-4 border rounded-lg flex flex-col h-full">
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">b. AC Output Current</label>
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 items-center">
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-8">R:</label><input type="text" name="load_ac_current_r" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-8">S:</label><input type="text" name="load_ac_current_s" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <div class="flex items-center gap-2"><label class="font-medium text-sm w-8">T:</label><input type="text" name="load_ac_current_t" class="w-full text-sm border-gray-300 rounded-md"></div>
-                                    <p class="text-xs text-gray-500">Std: Lihat form</p>
-                                </div>
-                                <div class="mt-4">
-                                    <textarea name="load_ac_current_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment..."></textarea>
-                                </div>
-                                <div class="mt-2 flex items-center space-x-2">
-                                    <label for="load_ac_current_image" class="camera-button cursor-pointer p-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white inline-flex items-center" data-gps-target="#load_ac_current_gps">
-                                        <i data-lucide="camera" class="h-5 w-5"></i>
-                                    </label>
-                                    <input type="file" accept="image/*" capture="environment" id="load_ac_current_image" name="load_ac_current_image" class="hidden" data-preview-target="#load_ac_current_preview">
-                                    <input type="hidden" name="load_ac_current_gps" id="load_ac_current_gps">
-                                    <canvas id="load_ac_current_preview" width="150" height="112" class="rounded-md hidden" style="border: 1px solid #ddd;"></canvas>
+                                <div class="space-y-4 flex-grow">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        @foreach(['r', 's', 't'] as $phase)
+                                        @php $name = 'load_ac_current_' . $phase; @endphp
+                                        <div class="border rounded-lg p-3 bg-gray-50 image-upload-section" data-field-name="{{ $name }}">
+                                            <label class="block text-xs font-semibold text-gray-700 mb-2">Phase {{ strtoupper($phase) }}</label>
+                                            <input type="text" name="{{ $name }}" class="w-full text-sm border-gray-300 rounded-md mb-2" placeholder="Amp">
+                                            <div class="flex gap-2 mb-2">
+                                                <button type="button" class="upload-local-btn px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload</button>
+                                                <button type="button" class="camera-btn px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">Kamera</button>
+                                            </div>
+                                            <div class="preview-container grid grid-cols-2 gap-2"></div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="mt-4">
+                                        <textarea name="load_ac_current_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment..."></textarea>
+                                    </div>
                                 </div>
                             </div>
 
@@ -212,20 +248,19 @@
                             ];
                             @endphp
                             @foreach($loadTests as $test)
-                             <div class="p-4 border rounded-lg">
+                             <div class="p-4 border rounded-lg flex flex-col h-full image-upload-section" data-field-name="{{ $test['name'] }}">
                                 <label class="block text-sm font-semibold text-gray-700">{{ $test['label'] }}</label>
                                 <p class="text-xs text-gray-500 mb-2">Standard: {{ $test['std'] }}</p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                                <div class="space-y-2 flex-grow">
                                     <input type="text" name="{{ $test['name'] }}_result" class="w-full text-sm border-gray-300 rounded-md" placeholder="Result...">
                                     <textarea name="{{ $test['name'] }}_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment..."></textarea>
                                 </div>
-                                <div class="mt-2 flex items-center space-x-2">
-                                    <label for="{{ $test['name'] }}_image" class="camera-button cursor-pointer p-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white inline-flex items-center" data-gps-target="#{{ $test['name'] }}_gps">
-                                        <i data-lucide="camera" class="h-5 w-5"></i>
-                                    </label>
-                                    <input type="file" accept="image/*" capture="environment" id="{{ $test['name'] }}_image" name="{{ $test['name'] }}_image" class="hidden" data-preview-target="#{{ $test['name'] }}_preview">
-                                    <input type="hidden" name="{{ $test['name'] }}_gps" id="{{ $test['name'] }}_gps">
-                                    <canvas id="{{ $test['name'] }}_preview" width="150" height="112" class="rounded-md hidden" style="border: 1px solid #ddd;"></canvas>
+                                <div class="mt-2 space-y-2">
+                                    <div class="flex gap-2">
+                                        <button type="button" class="upload-local-btn px-3 py-1.5 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload</button>
+                                        <button type="button" class="camera-btn px-3 py-1.5 bg-green-500 text-white rounded text-xs hover:bg-green-600">Kamera</button>
+                                    </div>
+                                    <div class="preview-container grid grid-cols-3 gap-2"></div>
                                 </div>
                             </div>
                             @endforeach
@@ -233,7 +268,7 @@
                     </div>
                 </div>
 
-                {{-- ... Bagian Notes, Pelaksana, Approver (Tidak ada perubahan) ... --}}
+                {{-- ... Bagian Notes, Pelaksana, Approver ... --}}
                 <div class="bg-white shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Notes / Additional Informations</label>
@@ -242,7 +277,7 @@
                     <div class="p-6 border-t border-gray-200">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Pelaksana</h3>
                         <div class="space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded-md">
+                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded-md">
                                 <span class="md:col-span-1 font-semibold self-center">Pelaksana #1 *</span>
                                 <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                                      <input type="text" name="technician_1_name" placeholder="Pelaksana 1" class="w-full text-sm border-gray-300 rounded-md" required>
@@ -290,124 +325,18 @@
         </div>
     </div>
 
-    {{-- SCRIPT JAVASCRIPT UNTUK PREVIEW CANVAS --}}
+    {{-- Ganti script lama dengan referensi ke file JS baru --}}
     @push('scripts')
     <script>
+        // --- Script Aktivasi Lucide Icons ---
         document.addEventListener('DOMContentLoaded', function () {
-            
-            // --- Script Aktivasi Lucide Icons ---
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
-
-            // --- Script untuk Mengambil GPS ---
-            const cameraButtons = document.querySelectorAll('.camera-button');
-            cameraButtons.forEach(button => {
-                button.addEventListener('click', function(event) {
-                    const gpsTargetSelector = event.currentTarget.dataset.gpsTarget;
-                    const gpsInput = document.querySelector(gpsTargetSelector);
-                    
-                    if (!gpsInput || !navigator.geolocation) {
-                        console.warn('Geolocation is not supported or GPS input not found.');
-                        if(gpsInput) gpsInput.value = 'GPS Not Supported';
-                        return;
-                    }
-                    
-                    // Set status default
-                    gpsInput.value = 'Getting GPS...';
-
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            const lat = position.coords.latitude;
-                            const lon = position.coords.longitude;
-                            gpsInput.value = `${lat.toFixed(6)},${lon.toFixed(6)}`;
-                        },
-                        (error) => {
-                            gpsInput.value = 'GPS Access Denied';
-                            console.error(`Geolocation Error: ${error.message}`);
-                        }
-                    );
-                });
-            });
-
-            // --- SCRIPT BARU UNTUK PREVIEW CANVAS (MENGGANTIKAN SCRIPT IMG) ---
-            const fileInputs = document.querySelectorAll('input[type="file"][data-preview-target]');
-            
-            fileInputs.forEach(input => {
-                input.addEventListener('change', function (event) {
-                    const file = event.target.files[0];
-                    if (!file) return;
-
-                    // Dapatkan elemen canvas
-                    const previewTargetSelector = event.target.dataset.previewTarget;
-                    const canvas = document.querySelector(previewTargetSelector);
-                    if (!canvas) return;
-
-                    // Dapatkan input GPS yang terkait
-                    const gpsInputId = '#' + event.target.id.replace('_image', '_gps');
-                    const gpsInput = document.querySelector(gpsInputId);
-                    const gpsText = gpsInput ? gpsInput.value : 'No GPS Data';
-
-                    // Panggil fungsi untuk menggambar preview
-                    drawTimestampPreview(canvas, file, gpsText);
-                });
-            });
-
-            /**
-             * Fungsi untuk menggambar gambar dan timestamp ke canvas
-             */
-            function drawTimestampPreview(canvas, file, gpsText) {
-                const ctx = canvas.getContext('2d');
-                const reader = new FileReader();
-                const timestamp = new Date();
-                
-                // Format tanggal dan waktu (sesuaikan dengan timezone Anda)
-                const timeZone = 'Asia/Makassar'; // WITA
-                const dateString = timestamp.toLocaleDateString('id-ID', { timeZone, day: '2-digit', month: 'short', year: 'numeric' });
-                const timeString = timestamp.toLocaleTimeString('id-ID', { timeZone, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                const timestampText = `${dateString}, ${timeString} WITA`;
-
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        // Bersihkan canvas
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        
-                        // Gambar gambar agar pas (aspect fill)
-                        const hRatio = canvas.width / img.width;
-                        const vRatio = canvas.height / img.height;
-                        const ratio = Math.max(hRatio, vRatio);
-                        const centerShift_x = (canvas.width - img.width * ratio) / 2;
-                        const centerShift_y = (canvas.height - img.height * ratio) / 2;
-                        
-                        ctx.drawImage(img, 0, 0, img.width, img.height,
-                                      centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
-
-                        // ---- Tambahkan watermark (simulasi) ----
-                        
-                        // 1. Latar belakang hitam semi-transparan
-                        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-                        ctx.fillRect(0, 0, canvas.width, 32); // Kotak di atas
-
-                        // 2. Teks Timestamp
-                        ctx.fillStyle = 'white';
-                        ctx.font = '10px Arial';
-                        ctx.textAlign = 'left';
-                        ctx.textBaseline = 'top';
-                        ctx.fillText(timestampText, 5, 4);
-
-                        // 3. Teks GPS
-                        ctx.fillText(gpsText, 5, 18);
-                        
-                        // Tampilkan canvas-nya
-                        canvas.classList.remove('hidden');
-                    }
-                    img.src = event.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
         });
     </script>
+    {{-- Kita akan memuat JS utama dari file eksternal --}}
+    <script src="{{ asset('js/genset-form.js') }}"></script>
     @endpush
 
 </x-app-layout>

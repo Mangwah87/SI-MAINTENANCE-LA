@@ -1,10 +1,12 @@
 <?php
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\GensetController;
 use App\Http\Controllers\UpsMaintenanceController;
 use App\Http\Controllers\BatteryController;
 use App\Http\Controllers\PMShelterController;
 use App\Http\Controllers\FollowUpRequestController;
 use App\Http\Controllers\TindakLanjutController;
+use App\Http\Controllers\GroundingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -56,7 +58,19 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [GensetController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [GensetController::class, 'pdf'])->name('pdf');
     });
-    
+
+    // === GROUNDING ROUTES (BARU) ===
+    Route::prefix('grounding')->name('grounding.')->group(function () {
+        Route::get('/', [GroundingController::class, 'index'])->name('index');
+        Route::get('/create', [GroundingController::class, 'create'])->name('create');
+        Route::post('/', [GroundingController::class, 'store'])->name('store');
+        Route::get('/{id}', [GroundingController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [GroundingController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [GroundingController::class, 'update'])->name('update');
+        Route::delete('/{id}', [GroundingController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [GroundingController::class, 'pdf'])->name('pdf');
+    });
+
     // Battery Routes
     Route::prefix('battery')->name('battery.')->group(function () {
         Route::get('/', [BatteryController::class, 'index'])->name('index');

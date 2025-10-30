@@ -6,13 +6,16 @@
             </h2>
             <div class="flex gap-2">
                 <a href="{{ route('genset.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                    <i data-lucide="arrow-left" class="h-4 w-4 mr-2"></i>
                     Kembali
                 </a>
-                {{-- Tombol Edit --}}
                 <a href="{{ route('genset.edit', $maintenance->id) }}" class="inline-flex items-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    <i data-lucide="edit-3" class="h-4 w-4 mr-2"></i>
                     Edit
+                </a>
+                <a href="{{ route('genset.pdf', $maintenance->id) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg text-sm">
+                    <i data-lucide="printer" class="h-4 w-4 mr-2"></i>
+                    Cetak PDF
                 </a>
             </div>
         </div>
@@ -50,7 +53,7 @@
                         <div class="md:col-span-2">
                             <label class="block text-sm font-semibold text-gray-600 mb-1">Notes</label>
                             <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                                <p class="text-sm text-gray-700 whitespace-pre-wrap">{{ $maintenance->notes }}</p>
+                                <p class="text-sm text-gray-700 whitespace-pre-wrap">{!! nl2br(e($maintenance->notes)) !!}</p>
                             </div>
                         </div>
                     @endif
@@ -99,17 +102,19 @@
                             <div class="space-y-3">
                                 <p class="font-semibold text-gray-600">AC Output Voltage:</p>
                                 <div class="pl-4 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                                    <span>R-S: <b class="text-gray-900">{{ $maintenance->no_load_ac_voltage_rs ?? '-' }}</b></span>
-                                    <span>R-N: <b class="text-gray-900">{{ $maintenance->no_load_ac_voltage_rn ?? '-' }}</b></span>
-                                    <span>S-T: <b class="text-gray-900">{{ $maintenance->no_load_ac_voltage_st ?? '-' }}</b></span>
-                                    <span>S-N: <b class="text-gray-900">{{ $maintenance->no_load_ac_voltage_sn ?? '-' }}</b></span>
-                                    <span>T-R: <b class="text-gray-900">{{ $maintenance->no_load_ac_voltage_tr ?? '-' }}</b></span>
-                                    <span>T-N: <b class="text-gray-900">{{ $maintenance->no_load_ac_voltage_tn ?? '-' }}</b></span>
+                                    <span>R-S: <b class="text-gray-900">{{ $maintenance->no_load_ac_voltage_rs ?? '-' }}</b> V</span>
+                                    <span>R-N: <b class="text-gray-900">{{ $maintenance->no_load_ac_voltage_rn ?? '-' }}</b> V</span>
+                                    <span>S-T: <b class="text-gray-900">{{ $maintenance->no_load_ac_voltage_st ?? '-' }}</b> V</span>
+                                    <span>S-N: <b class="text-gray-900">{{ $maintenance->no_load_ac_voltage_sn ?? '-' }}</b> V</span>
+                                    <span>T-R: <b class="text-gray-900">{{ $maintenance->no_load_ac_voltage_tr ?? '-' }}</b> V</span>
+                                    <span>T-N: <b class="text-gray-900">{{ $maintenance->no_load_ac_voltage_tn ?? '-' }}</b> V</span>
                                 </div>
-                                <p class="text-sm">Output Freq: <b class="text-gray-900">{{ $maintenance->no_load_output_frequency ?? '-' }}</b></p>
-                                <p class="text-sm">Batt. Charging Current: <b class="text-gray-900">{{ $maintenance->no_load_battery_charging_current ?? '-' }}</b></p>
-                                <p class="text-sm">Cooling Water Temp: <b class="text-gray-900">{{ $maintenance->no_load_engine_cooling_water_temp ?? '-' }}</b></p>
-                                <p class="text-sm">Engine Oil Press: <b class="text-gray-900">{{ $maintenance->no_load_engine_oil_press ?? '-' }}</b></p>
+                                <p class="text-sm text-gray-600">Comment: <i class="text-gray-800">{{ $maintenance->no_load_ac_voltage_comment ?? '-' }}</i></p>
+
+                                <p class="text-sm">Output Freq: <b class="text-gray-900">{{ $maintenance->no_load_output_frequency_result ?? '-' }}</b> Hz</p>
+                                <p class="text-sm">Batt. Charging Current: <b class="text-gray-900">{{ $maintenance->no_load_battery_charging_current_result ?? '-' }}</b> A</p>
+                                <p class="text-sm">Cooling Water Temp: <b class="text-gray-900">{{ $maintenance->no_load_engine_cooling_water_temp_result ?? '-' }}</b> °C</p>
+                                <p class="text-sm">Engine Oil Press: <b class="text-gray-900">{{ $maintenance->no_load_engine_oil_press_result ?? '-' }}</b> Psi</p>
                             </div>
                         </div>
 
@@ -118,28 +123,109 @@
                             <div class="space-y-3">
                                 <p class="font-semibold text-gray-600">AC Output Voltage:</p>
                                 <div class="pl-4 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                                    <span>R-S: <b class="text-gray-900">{{ $maintenance->load_ac_voltage_rs ?? '-' }}</b></span>
-                                    <span>R-N: <b class="text-gray-900">{{ $maintenance->load_ac_voltage_rn ?? '-' }}</b></span>
-                                    <span>S-T: <b class="text-gray-900">{{ $maintenance->load_ac_voltage_st ?? '-' }}</b></span>
-                                    <span>S-N: <b class="text-gray-900">{{ $maintenance->load_ac_voltage_sn ?? '-' }}</b></span>
-                                    <span>T-R: <b class="text-gray-900">{{ $maintenance->load_ac_voltage_tr ?? '-' }}</b></span>
-                                    <span>T-N: <b class="text-gray-900">{{ $maintenance->load_ac_voltage_tn ?? '-' }}</b></span>
+                                    <span>R-S: <b class="text-gray-900">{{ $maintenance->load_ac_voltage_rs ?? '-' }}</b> V</span>
+                                    <span>R-N: <b class="text-gray-900">{{ $maintenance->load_ac_voltage_rn ?? '-' }}</b> V</span>
+                                    <span>S-T: <b class="text-gray-900">{{ $maintenance->load_ac_voltage_st ?? '-' }}</b> V</span>
+                                    <span>S-N: <b class="text-gray-900">{{ $maintenance->load_ac_voltage_sn ?? '-' }}</b> V</span>
+                                    <span>T-R: <b class="text-gray-900">{{ $maintenance->load_ac_voltage_tr ?? '-' }}</b> V</span>
+                                    <span>T-N: <b class="text-gray-900">{{ $maintenance->load_ac_voltage_tn ?? '-' }}</b> V</span>
                                 </div>
+                                <p class="text-sm text-gray-600">Comment: <i class="text-gray-800">{{ $maintenance->load_ac_voltage_comment ?? '-' }}</i></p>
+
                                  <p class="font-semibold text-gray-600 mt-3">AC Output Current:</p>
                                 <div class="pl-4 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                                    <span>R: <b class="text-gray-900">{{ $maintenance->load_ac_current_r ?? '-' }}</b></span>
-                                    <span>S: <b class="text-gray-900">{{ $maintenance->load_ac_current_s ?? '-' }}</b></span>
-                                    <span>T: <b class="text-gray-900">{{ $maintenance->load_ac_current_t ?? '-' }}</b></span>
+                                    <span>R: <b class="text-gray-900">{{ $maintenance->load_ac_current_r ?? '-' }}</b> A</span>
+                                    <span>S: <b class="text-gray-900">{{ $maintenance->load_ac_current_s ?? '-' }}</b> A</span>
+                                    <span>T: <b class="text-gray-900">{{ $maintenance->load_ac_current_t ?? '-' }}</b> A</span>
                                 </div>
-                                <p class="text-sm">Output Freq: <b class="text-gray-900">{{ $maintenance->load_output_frequency ?? '-' }}</b></p>
-                                <p class="text-sm">Batt. Charging Current: <b class="text-gray-900">{{ $maintenance->load_battery_charging_current ?? '-' }}</b></p>
-                                <p class="text-sm">Cooling Water Temp: <b class="text-gray-900">{{ $maintenance->load_engine_cooling_water_temp ?? '-' }}</b></p>
-                                <p class="text-sm">Engine Oil Press: <b class="text-gray-900">{{ $maintenance->load_engine_oil_press ?? '-' }}</b></p>
+                                <p class="text-sm text-gray-600">Comment: <i class="text-gray-800">{{ $maintenance->load_ac_current_comment ?? '-' }}</i></p>
+
+                                <p class="text-sm">Output Freq: <b class="text-gray-900">{{ $maintenance->load_output_frequency_result ?? '-' }}</b> Hz</p>
+                                <p class="text-sm">Batt. Charging Current: <b class="text-gray-900">{{ $maintenance->load_battery_charging_current_result ?? '-' }}</b> A</p>
+                                <p class="text-sm">Cooling Water Temp: <b class="text-gray-900">{{ $maintenance->load_engine_cooling_water_temp_result ?? '-' }}</b> °C</p>
+                                <p class="text-sm">Engine Oil Press: <b class="text-gray-900">{{ $maintenance->load_engine_oil_press_result ?? '-' }}</b> Psi</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            @php
+                $images = $maintenance->images ?? [];
+            @endphp
+
+            @if(!empty($images) && count($images) > 0)
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-800">3. Documentation Images</h3>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach($images as $index => $image)
+                            @if(is_array($image) && isset($image['path']))
+                                <div class="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
+                                    <a href="{{ asset('storage/' . $image['path']) }}" target="_blank" class="block">
+                                        <img src="{{ asset('storage/' . $image['path']) }}"
+                                             alt="{{ $image['category'] ?? 'Documentation Image' }}"
+                                             class="w-full h-48 object-cover"
+                                             onerror="this.parentElement.innerHTML='<div class=\'w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500\'>Image not found</div>'">
+                                    </a>
+                                    <div class="p-3 bg-gray-50">
+                                        @if(isset($image['category']))
+                                            <p class="text-sm font-semibold text-gray-700 mb-1">{{ ucwords(str_replace('_', ' ', $image['category'])) }}</p>
+                                        @endif
+                                        @if(isset($image['locationName']) && $image['locationName'] !== 'Getting...')
+                                            <p class="text-xs text-gray-500">{{ $image['locationName'] }}</p>
+                                        @elseif(isset($image['latitude']))
+                                            <p class="text-xs text-gray-500">{{ $image['latitude'] }}, {{ $image['longitude'] }}</p>
+                                        @endif
+                                         <p class="text-xs text-gray-500 mt-1">{{ \Carbon\Carbon::parse($image['timestamp'])->setTimezone('Asia/Makassar')->format('d M Y, H:i:s') }} WITA</p>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-800">4. Pelaksana & Approver</h3>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <p class="text-sm text-gray-600">Pelaksana 1</p>
+                        <p class="font-semibold text-gray-900">{{ $maintenance->technician_1_name }}</p>
+                        <p class="text-xs text-gray-500">{{ $maintenance->technician_1_department ?? '-' }}</p>
+                    </div>
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <p class="text-sm text-gray-600">Pelaksana 2</p>
+                        <p class="font-semibold text-gray-900">{{ $maintenance->technician_2_name ?? '-' }}</p>
+                        <p class="text-xs text-gray-500">{{ $maintenance->technician_2_department ?? '-' }}</p>
+                    </div>
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <p class="text-sm text-gray-600">Pelaksana 3</p>
+                        <p class="font-semibold text-gray-900">{{ $maintenance->technician_3_name ?? '-' }}</p>
+                        <p class="text-xs text-gray-500">{{ $maintenance->technician_3_department ?? '-' }}</p>
+                    </div>
+                    <div class="border-l-4 border-gray-500 pl-4">
+                        <p class="text-sm text-gray-600">Approver (Mengetahui)</p>
+                        <p class="font-semibold text-gray-900">{{ $maintenance->approver_name ?? '-' }}</p>
+                        <p class="text-xs text-gray-500">{{ $maintenance->approver_department ?? '-' }}</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>
