@@ -10,6 +10,7 @@ class RectifierMaintenance extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'location',
         'date_time',
         'reg_number',

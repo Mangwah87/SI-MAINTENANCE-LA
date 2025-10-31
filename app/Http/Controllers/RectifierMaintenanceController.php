@@ -108,6 +108,8 @@ class RectifierMaintenanceController extends Controller
         $images = $this->handleAllImages($request);
         $validated['images'] = $images;
 
+        $validated['user_id'] = auth()->id();
+
         $maintenance = RectifierMaintenance::create($validated);
 
         return redirect()->route('rectifier.show', $maintenance->id)

@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('rectifier_maintenances', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
             // Informasi Lokasi dan Perangkat
             $table->string('location');

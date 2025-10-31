@@ -110,7 +110,17 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [BatteryController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [BatteryController::class, 'pdf'])->name('pdf');
     });
-
+    // Rectifier Maintenance routes
+    Route::prefix('rectifier')->name('rectifier.')->middleware('auth')->group(function () {
+        Route::get('/', [RectifierMaintenanceController::class, 'index'])->name('index');
+        Route::get('/create', [RectifierMaintenanceController::class, 'create'])->name('create');
+        Route::post('/', [RectifierMaintenanceController::class, 'store'])->name('store');
+        Route::get('/{id}', [RectifierMaintenanceController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [RectifierMaintenanceController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [RectifierMaintenanceController::class, 'update'])->name('update');
+        Route::delete('/{id}', [RectifierMaintenanceController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/export-pdf', [RectifierMaintenanceController::class, 'exportPdf'])->name('export-pdf');
+    });
     // PMPermohonan Routes
     Route::prefix('pm-permohonan')->name('pm-permohonan.')->group(function () {
         Route::get('/', [PMPermohonanController::class, 'index'])->name('index');
