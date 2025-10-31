@@ -29,25 +29,6 @@
                         </div>
                     </div>
 
-                    {{-- Alert Sukses --}}
-                    @if(session('success'))
-                    <div class="mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-sm" role="alert">
-                         <div class="flex items-center">
-                            <i data-lucide="check-circle" class="h-5 w-5 mr-2"></i>
-                            <span class="font-medium">{{ session('success') }}</span>
-                        </div>
-                    </div>
-                    @endif
-                     {{-- Alert Error --}}
-                    @if(session('error'))
-                    <div class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm" role="alert">
-                         <div class="flex items-center">
-                            <i data-lucide="alert-circle" class="h-5 w-5 mr-2"></i>
-                            <span class="font-medium">{{ session('error') }}</span>
-                        </div>
-                    </div>
-                    @endif
-
                     {{-- Search Bar --}}
                     <div class="mb-6 relative">
                         <input type="text" id="searchInput" placeholder="Cari berdasarkan No Dok, Lokasi, Brand..."
