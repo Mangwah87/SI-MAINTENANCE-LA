@@ -17,7 +17,7 @@
     <div class="py-4 sm:py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Alert Messages -->
-            @if(session('success'))
+            <!-- @if(session('success'))
             <div class="mb-4 sm:mb-6 bg-green-50 border-l-4 border-green-500 text-green-700 p-3 sm:p-4 rounded-lg shadow-sm">
                 <div class="flex items-center">
                     <svg class="h-5 w-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -57,7 +57,7 @@
                     </div>
                 </div>
             </div>
-            @endif
+            @endif -->
 
             <!-- Form -->
             <form action="{{ route('battery.store') }}" method="POST" enctype="multipart/form-data" id="mainForm">

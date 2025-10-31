@@ -7,75 +7,167 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-
-                    <!-- Header dengan Tombol Tambah dan Kembali -->
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-6">
-                        <h3 class="text-xl sm:text-2xl font-bold text-gray-800">Data Battery Maintenance</h3>
-
-                        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+                <div class="p-6">
+                    <!-- Header Section -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Daftar Battery Maintenance</h3>
+                            <p class="text-sm text-gray-600 mt-1">Total: {{ $maintenances->total() }} data</p>
+                        </div>
+                        <div class="flex gap-2">
                             <a href="{{ route('battery.create') }}"
-                                class="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-600 text-white text-sm sm:text-base font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition shadow-sm">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                 </svg>
                                 Tambah Data
                             </a>
-
                             <a href="{{ route('dashboard') }}"
-                                class="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-gray-600 hover:bg-gray-700 text-white text-sm sm:text-base font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                                </svg>s
+                                class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition shadow-sm">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                </svg>
                                 Kembali
                             </a>
                         </div>
                     </div>
 
-                    <!-- Alert Success -->
-                    @if(session('success'))
-                    <div class="mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-sm" role="alert">
-                        <div class="flex items-center">
-                            <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="font-medium">{{ session('success') }}</span>
+                    <!-- Filter Section -->
+                    <div class="mb-6 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-sm font-semibold text-gray-700">
+                                <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                </svg>
+                                Filter Pencarian
+                            </h4>
+                            <button type="button" id="toggleFilter" class="text-sm text-blue-600 hover:text-blue-800">
+                                <span id="filterText">Sembunyikan</span>
+                            </button>
                         </div>
-                    </div>
-                    @endif
 
-                    <!-- Table -->
+                        <form method="GET" action="{{ route('battery.index') }}" id="filterForm">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <!-- Doc Number -->
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Doc Number
+                                    </label>
+                                    <input type="text"
+                                        name="doc_number"
+                                        value="{{ request('doc_number') }}"
+                                        placeholder="Cari doc number..."
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+
+                                <!-- Location -->
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                        Lokasi
+                                    </label>
+                                    <input type="text"
+                                        name="location"
+                                        value="{{ request('location') }}"
+                                        placeholder="Cari berdasarkan lokasi..."
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+
+                                <!-- Date From -->
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Dari Tanggal
+                                    </label>
+                                    <input type="date"
+                                        name="date_from"
+                                        value="{{ request('date_from') }}"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+
+                                <!-- Date To -->
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Sampai Tanggal
+                                    </label>
+                                    <input type="date"
+                                        name="date_to"
+                                        value="{{ request('date_to') }}"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+
+                            <!-- Filter Buttons -->
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                <button type="submit"
+                                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                    Cari
+                                </button>
+                                <a href="{{ route('battery.index') }}"
+                                    class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 transition">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    Reset
+                                </a>
+
+                                @if(request()->hasAny(['doc_number', 'location', 'date_from', 'date_to']))
+                                <span class="inline-flex items-center px-3 py-2 text-sm text-gray-600 bg-yellow-50 border border-yellow-200 rounded-md">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Filter aktif
+                                </span>
+                                @endif
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Table Section -->
+                    @if($maintenances->count() > 0)
                     <div class="overflow-x-auto rounded-lg border border-gray-200">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gradient-to-r from-purple-50 to-blue-50">
                                 <tr>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">No</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Doc Number</th>
+                                    <!-- <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Doc Number</th> -->
                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Location</th>
-                                    <!-- <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Technician</th> -->
                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Total Battery</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Date</th>
                                     <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse($maintenances as $index => $maintenance)
+                                @foreach($maintenances as $index => $maintenance)
                                 <tr class="hover:bg-gray-50 transition-colors duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {{ $maintenances->firstItem() + $index }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <!-- <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-semibold text-purple-600">
                                             {{ $maintenance->doc_number }}
                                         </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    </td> -->
+                                    <td class="px-6 py-4 text-sm text-gray-900">
                                         {{ $maintenance->location }}
                                     </td>
-                                    <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $maintenance->technician_name }}
-                                    </td> -->
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                                             {{ $maintenance->readings->count() }} Battery
@@ -88,74 +180,101 @@
                                         <div class="flex justify-center gap-2">
                                             <!-- View Button -->
                                             <a href="{{ route('battery.show', $maintenance->id) }}"
-                                                class="inline-flex items-center px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded-md transition-colors duration-150"
-                                                title="Lihat Detail">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                </svg>
+                                                class="text-blue-600 hover:text-blue-900" title="Lihat Detail">
+                                                <i data-lucide="eye" class="w-5 h-5"></i>
                                             </a>
 
                                             <!-- Edit Button -->
                                             <a href="{{ route('battery.edit', $maintenance->id) }}"
-                                                class="inline-flex items-center px-3 py-1.5 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-medium rounded-md transition-colors duration-150"
-                                                title="Edit">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                </svg>
+                                                class="text-yellow-600 hover:text-yellow-900" title="Edit">
+                                                <i data-lucide="edit" class="w-5 h-5"></i>
                                             </a>
 
                                             <!-- PDF Button -->
                                             <a href="{{ route('battery.pdf', $maintenance->id) }}"
-                                                class="inline-flex items-center px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-md transition-colors duration-150"
-                                                title="Download PDF" target="_blank">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                </svg>
+                                                class="text-green-600 hover:text-green-900" title="Download PDF" target="_blank">
+                                                <i data-lucide="file-down" class="w-5 h-5"></i>
                                             </a>
 
                                             <!-- Delete Button -->
-                                            <form action="{{ route('battery.destroy', $maintenance->id) }}" method="POST" class="inline-block"
+                                            <form action="{{ route('battery.destroy', $maintenance->id) }}" method="POST" class="inline"
                                                 onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit"
-                                                    class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-md transition-colors duration-150"
-                                                    title="Hapus">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
+                                                <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
+                                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
                                                 </button>
                                             </form>
                                         </div>
                                     </td>
                                 </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">
-                                        <div class="flex flex-col items-center">
-                                            <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                                            </svg>
-                                            <p class="text-lg font-medium">Belum Ada Data</p>
-                                            <p class="text-sm mt-1">Klik "Tambah Data" untuk menambahkan data battery maintenance</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
 
                     <!-- Pagination -->
-                    @if($maintenances->hasPages())
-                    <div class="mt-6">
-                        {{ $maintenances->links() }}
+                    <div class="mt-4">
+                        {{ $maintenances->appends(request()->query())->links() }}
+                    </div>
+                    @else
+                    <!-- Empty State -->
+                    <div class="text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">
+                            @if(request()->hasAny(['doc_number', 'location', 'date_from', 'date_to']))
+                            Tidak ada data yang sesuai dengan filter
+                            @else
+                            Belum ada data
+                            @endif
+                        </h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            @if(request()->hasAny(['doc_number', 'location', 'date_from', 'date_to']))
+                            Coba ubah kriteria pencarian Anda.
+                            @else
+                            Mulai dengan menambahkan data battery maintenance baru.
+                            @endif
+                        </p>
+                        <div class="mt-6">
+                            @if(request()->hasAny(['doc_number', 'location', 'date_from', 'date_to']))
+                            <a href="{{ route('battery.index') }}"
+                                class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 mr-2">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                Reset Filter
+                            </a>
+                            @endif
+                            <a href="{{ route('battery.create') }}"
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                Tambah Data
+                            </a>
+                        </div>
                     </div>
                     @endif
-
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        // Toggle filter visibility
+        document.getElementById('toggleFilter').addEventListener('click', function() {
+            const filterForm = document.getElementById('filterForm');
+            const filterText = document.getElementById('filterText');
+
+            if (filterForm.style.display === 'none') {
+                filterForm.style.display = 'block';
+                filterText.textContent = 'Sembunyikan';
+            } else {
+                filterForm.style.display = 'none';
+                filterText.textContent = 'Tampilkan';
+            }
+        });
+    </script>
 </x-app-layout>

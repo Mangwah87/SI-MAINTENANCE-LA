@@ -1,10 +1,12 @@
 <?php
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UpsMaintenanceController;
 use App\Http\Controllers\BatteryController;
 use App\Http\Controllers\PMShelterController;
 use App\Http\Controllers\FollowUpRequestController;
 use App\Http\Controllers\TindakLanjutController;
+use App\Http\Controllers\RectifierMaintenanceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -55,6 +57,23 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}', [BatteryController::class, 'update'])->name('update');
         Route::delete('/{id}', [BatteryController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [BatteryController::class, 'pdf'])->name('pdf');
+    });
+
+    // Rectifier Maintenance routes
+    Route::prefix('rectifier')->name('rectifier.')->middleware('auth')->group(function () {
+        Route::get('/', [RectifierMaintenanceController::class, 'index'])->name('index');
+        Route::get('/create', [RectifierMaintenanceController::class, 'create'])->name('create');
+        Route::post('/', [RectifierMaintenanceController::class, 'store'])->name('store');
+        Route::get('/{id}', [RectifierMaintenanceController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [RectifierMaintenanceController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [RectifierMaintenanceController::class, 'update'])->name('update');
+        Route::delete('/{id}', [RectifierMaintenanceController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/export-pdf', [RectifierMaintenanceController::class, 'exportPdf'])->name('export-pdf');
+
+
+        // 🔍 TAMBAHAN UNTUK DEBUGGING
+        Route::get('/{id}/debug-images', [RectifierMaintenanceController::class, 'debugImages'])->name('debug-images');
+        Route::get('/{id}/preview-pdf', [RectifierMaintenanceController::class, 'previewPdf'])->name('preview-pdf');
     });
 
     // Follow Up Request Routes

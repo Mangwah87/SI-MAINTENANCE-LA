@@ -15,13 +15,34 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class BatteryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource with filtering
      */
-    public function index()
+    public function index(Request $request)
     {
-        $maintenances = BatteryMaintenance::with('user', 'readings')
-            ->orderBy('maintenance_date', 'desc')
-            ->paginate(10);
+        $query = BatteryMaintenance::with('user', 'readings');
+
+        // Filter by doc_number
+        if ($request->filled('doc_number')) {
+            $query->where('doc_number', 'like', '%' . $request->doc_number . '%');
+        }
+
+        // Filter by location
+        if ($request->filled('location')) {
+            $query->where('location', 'like', '%' . $request->location . '%');
+        }
+
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('maintenance_date', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('maintenance_date', '<=', $request->date_to);
+        }
+
+        // Order by latest maintenance date
+        $maintenances = $query->orderBy('maintenance_date', 'desc')
+            ->paginate(15);
 
         return view('battery.index', compact('maintenances'));
     }
@@ -82,7 +103,7 @@ class BatteryController extends Controller
                 'company' => $validated['company'] ?? 'PT. Aplikarusa Lintasarta',
                 'notes' => $validated['notes'] ?? null,
                 'doc_number' => $docNumber,
-                'user_id' => Auth::id(), // ← TAMBAHKAN INI
+                'user_id' => Auth::id(),
                 'technician_name' => $validated['technician_1_name'],
 
                 // Data Pelaksana Baru
@@ -143,6 +164,7 @@ class BatteryController extends Controller
                 ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage());
         }
     }
+
     /**
      * Display the specified resource.
      */
