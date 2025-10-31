@@ -7,6 +7,7 @@
         </div>
     </x-slot>
 
+
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script>
         lucide.createIcons();
@@ -28,7 +29,7 @@
                 </a>
 
                 <!-- Genset -->
-                <a href="#" class="block h-full">
+                <a href="{{ route('genset.index') }}" class="block h-full">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                             <i data-lucide="zap" class="w-12 h-12 text-white"></i>
@@ -38,7 +39,7 @@
                 </a>
 
                 <!-- 1 Phase UPS -->
-                <a href="#" class="block h-full">
+                <a href="{{ route('ups1.index') }}" class="block h-full">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                             <i data-lucide="pc-case" class="w-12 h-12 text-white"></i>
@@ -58,7 +59,7 @@
                 </a>
 
                 <!-- AC -->
-                <a href="#" class="block h-full">
+                <a href="{{ route('ac.index')}}" class="block h-full">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                             <i data-lucide="air-vent" class="w-12 h-12 text-white"></i>
@@ -74,11 +75,16 @@
                             <i data-lucide="arrow-up-wide-narrow" class="w-12 h-12 text-white"></i>
                         </div>
                         <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Permohonan Tindak Lanjut Preventive Maintenance</span>
+                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Permohonan Tindak Lanjut Preventive Maintenance</span>
                     </div>
                 </a>
 
                 <!-- Formulir Tindak Lanjut Preventive Maintenance -->
+                </a>
+
+                <!-- Formulir Tindak Lanjut Preventive Maintenance -->
                 <a href="{{ route('tindak-lanjut.index') }}" class="block h-full">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-xl border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-xl border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                             <i data-lucide="clipboard-check" class="w-12 h-12 text-white"></i>
@@ -109,16 +115,19 @@
 
                 <!-- Preventive Maintenance Ruang Shelter -->
                 <a href="{{ route('pm-shelter.index') }}" class="block h-full">
+                <!-- Preventive Maintenance Ruang Shelter -->
+                <a href="{{ route('pm-shelter.index') }}" class="block h-full">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                             <i data-lucide="house" class="w-12 h-12 text-white"></i>
                         </div>
                         <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Preventive Maintenance Ruang Shelter</span>
+                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Preventive Maintenance Ruang Shelter</span>
                     </div>
                 </a>
 
                 <!-- PM Petir dan Grounding -->
-                <a href="#" class="block h-full">
+                <a href="{{ route('grounding.index') }}" class="block h-full">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                             <i data-lucide="zap" class="w-12 h-12 text-white"></i>

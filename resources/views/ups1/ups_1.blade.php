@@ -2,8 +2,11 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Preventive Maintenance 3 Phase UPS') }}
+                {{ __('Maintenance 1 Phase UPS') }}
             </h2>
+            <a href="{{ route('ups1.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm">
+                + Add New
+            </a>
         </div>
     </x-slot>
 
@@ -20,17 +23,12 @@
             @endif
 
             <!-- Search Bar -->
-            <div class="mb-6 flex flex-col sm:flex-row gap-3">
-                <div class="relative flex-1">
-                    <input type="text" id="searchInput" placeholder="Search location, brand, capacity..."
-                           class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
-                    <svg class="w-4 h-4 absolute left-3 top-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </div>
-                <a href="{{ route('ups3.create') }}" class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm whitespace-nowrap flex items-center justify-center">
-                    + Add New
-                </a>
+            <div class="mb-6 relative">
+                <input type="text" id="searchInput" placeholder="Search location, brand, capacity..."
+                       class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+                <svg class="w-4 h-4 absolute left-3 top-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
             </div>
 
             <!-- Desktop Table View -->
@@ -59,8 +57,8 @@
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ $maintenance->sn ?? '-' }}</td>
                                     <td class="px-6 py-4 text-right">
                                         <div class="flex justify-end gap-3">
-                                            <a href="{{ route('ups3.show', $maintenance->id) }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm">View</a>
-                                            <a href="{{ route('ups3.edit', $maintenance->id) }}" class="text-orange-600 hover:text-orange-800 font-medium text-sm">Edit</a>
+                                            <a href="{{ route('ups1.show', $maintenance->id) }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm">View</a>
+                                            <a href="{{ route('ups1.edit', $maintenance->id) }}" class="text-orange-600 hover:text-orange-800 font-medium text-sm">Edit</a>
                                             <button onclick="deleteRecord({{ $maintenance->id }})" class="text-red-600 hover:text-red-800 font-medium text-sm">Delete</button>
                                         </div>
                                     </td>
@@ -108,9 +106,9 @@
                         </div>
 
                         <div class="flex gap-2 text-xs">
-                            <a href="{{ route('ups3.show', $maintenance->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">View</a>
+                            <a href="{{ route('ups1.show', $maintenance->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">View</a>
                             <span class="text-gray-400">/</span>
-                            <a href="{{ route('ups3.edit', $maintenance->id) }}" class="text-orange-600 hover:text-orange-800 font-medium">Edit</a>
+                            <a href="{{ route('ups1.edit', $maintenance->id) }}" class="text-orange-600 hover:text-orange-800 font-medium">Edit</a>
                             <span class="text-gray-400">/</span>
                             <button onclick="deleteRecord({{ $maintenance->id }})" class="text-red-600 hover:text-red-800 font-medium">Delete</button>
                         </div>
@@ -157,7 +155,7 @@
         function deleteRecord(id) {
             currentDeleteId = id;
             const form = document.getElementById('deleteForm');
-            form.action = `/ups3/${id}`;
+            form.action = `/ups1/${id}`;
             document.getElementById('deleteModal').classList.remove('hidden');
         }
 
@@ -193,4 +191,4 @@
             }
         });
     </script>
-</x-app-layout>
+</x-app-layout> 

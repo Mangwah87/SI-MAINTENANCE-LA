@@ -2,8 +2,11 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Preventive Maintenance 3 Phase UPS') }}
+                {{ __('Preventive Maintenance AC') }}
             </h2>
+            <a href="{{ route('ac.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm">
+                + Add New
+            </a>
         </div>
     </x-slot>
 
@@ -20,17 +23,12 @@
             @endif
 
             <!-- Search Bar -->
-            <div class="mb-6 flex flex-col sm:flex-row gap-3">
-                <div class="relative flex-1">
-                    <input type="text" id="searchInput" placeholder="Search location, brand, capacity..."
-                           class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
-                    <svg class="w-4 h-4 absolute left-3 top-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </div>
-                <a href="{{ route('ups3.create') }}" class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm whitespace-nowrap flex items-center justify-center">
-                    + Add New
-                </a>
+            <div class="mb-6 relative">
+                <input type="text" id="searchInput" placeholder="Search location, brand, capacity..."
+                       class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+                <svg class="w-4 h-4 absolute left-3 top-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
             </div>
 
             <!-- Desktop Table View -->
@@ -43,8 +41,6 @@
                                 <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Date / Time</th>
                                 <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Brand / Type</th>
                                 <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Capacity</th>
-                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Reg. Number</th>
-                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">S/N</th>
                                 <th class="px-6 py-3 text-right text-sm font-semibold text-gray-700 pr-8">Actions</th>
                             </tr>
                         </thead>
@@ -55,12 +51,11 @@
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ $maintenance->date_time->format('d/m/Y H:i') }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-900">{{ $maintenance->brand_type }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-900">{{ $maintenance->capacity }}</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">{{ $maintenance->reg_number ?? '-' }}</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">{{ $maintenance->sn ?? '-' }}</td>
+
                                     <td class="px-6 py-4 text-right">
                                         <div class="flex justify-end gap-3">
-                                            <a href="{{ route('ups3.show', $maintenance->id) }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm">View</a>
-                                            <a href="{{ route('ups3.edit', $maintenance->id) }}" class="text-orange-600 hover:text-orange-800 font-medium text-sm">Edit</a>
+                                            <a href="{{ route('ac.show', $maintenance->id) }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm">View</a>
+                                            <a href="{{ route('ac.edit', $maintenance->id) }}" class="text-orange-600 hover:text-orange-800 font-medium text-sm">Edit</a>
                                             <button onclick="deleteRecord({{ $maintenance->id }})" class="text-red-600 hover:text-red-800 font-medium text-sm">Delete</button>
                                         </div>
                                     </td>
@@ -72,7 +67,11 @@
 
                 @if($maintenances->isEmpty())
                     <div class="px-6 py-12 text-center text-gray-500">
+                        <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                        </svg>
                         <p class="text-lg">No maintenance records found</p>
+                        <p class="text-sm text-gray-400 mt-1">Start by adding a new maintenance record</p>
                     </div>
                 @endif
             </div>
@@ -101,16 +100,12 @@
                                 <span class="text-gray-500">Reg. Number:</span>
                                 <p class="font-medium text-gray-900 mt-0.5">{{ $maintenance->reg_number ?? '-' }}</p>
                             </div>
-                            <div>
-                                <span class="text-gray-500">S/N:</span>
-                                <p class="font-medium text-gray-900 mt-0.5">{{ $maintenance->sn ?? '-' }}</p>
-                            </div>
                         </div>
 
                         <div class="flex gap-2 text-xs">
-                            <a href="{{ route('ups3.show', $maintenance->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">View</a>
+                            <a href="{{ route('ac.show', $maintenance->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">View</a>
                             <span class="text-gray-400">/</span>
-                            <a href="{{ route('ups3.edit', $maintenance->id) }}" class="text-orange-600 hover:text-orange-800 font-medium">Edit</a>
+                            <a href="{{ route('ac.edit', $maintenance->id) }}" class="text-orange-600 hover:text-orange-800 font-medium">Edit</a>
                             <span class="text-gray-400">/</span>
                             <button onclick="deleteRecord({{ $maintenance->id }})" class="text-red-600 hover:text-red-800 font-medium">Delete</button>
                         </div>
@@ -118,8 +113,12 @@
                 @endforeach
 
                 @if($maintenances->isEmpty())
-                    <div class="text-center py-8 text-gray-500">
+                    <div class="text-center py-12 text-gray-500">
+                        <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                        </svg>
                         <p class="text-base">No maintenance records found</p>
+                        <p class="text-sm text-gray-400 mt-1">Start by adding a new maintenance record</p>
                     </div>
                 @endif
             </div>
@@ -157,7 +156,7 @@
         function deleteRecord(id) {
             currentDeleteId = id;
             const form = document.getElementById('deleteForm');
-            form.action = `/ups3/${id}`;
+            form.action = `/ac/${id}`;
             document.getElementById('deleteModal').classList.remove('hidden');
         }
 
@@ -192,5 +191,15 @@
                 closeDeleteModal();
             }
         });
+
+        // Auto-hide success message after 5 seconds
+        setTimeout(function() {
+            const successAlert = document.querySelector('.animate-pulse');
+            if (successAlert) {
+                successAlert.style.transition = 'opacity 0.5s';
+                successAlert.style.opacity = '0';
+                setTimeout(() => successAlert.remove(), 500);
+            }
+        }, 5000);
     </script>
 </x-app-layout>

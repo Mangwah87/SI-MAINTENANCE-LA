@@ -470,17 +470,29 @@
                                 month: 'long',
                                 year: 'numeric'
                             });
+                            const dayStr = timestamp.toLocaleDateString('id-ID', {
+                                weekday: 'long'
+                            });
+
+                            // Determine timezone based on longitude
+                            let timezone = 'WIB';
+                            if (lng >= 120 && lng < 130) {
+                                timezone = 'WITA';
+                            } else if (lng >= 130) {
+                                timezone = 'WIT';
+                            }
+
                             const timeStr = timestamp.toLocaleTimeString('id-ID', {
                                 hour: '2-digit',
                                 minute: '2-digit',
                                 second: '2-digit'
-                            });
+                            }) + ' ' + timezone;
 
                             // Draw text with shadow for better readability
                             const fontSize = Math.max(14, canvas.width * 0.018);
                             const padding = 15;
                             const lineHeight = fontSize * 1.8;
-                            const startY = canvas.height - (lineHeight * 4.5);
+                            const startY = canvas.height - (lineHeight * 5.5);
 
                             // Add text shadow
                             ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
@@ -492,10 +504,17 @@
                             ctx.fillStyle = 'white';
                             ctx.font = `${fontSize}px Arial`;
 
-                            ctx.fillText(`Longitude: ${lng.toFixed(6)}, Latitude: ${lat.toFixed(6)}`, padding, startY);
-                            ctx.fillText(`Alamat: ${address}`, padding, startY + lineHeight);
-                            ctx.fillText(`Tanggal: ${dateStr}`, padding, startY + (lineHeight * 2));
-                            ctx.fillText(`Waktu: ${timeStr}`, padding, startY + (lineHeight * 3));
+                            ctx.fillText(`${dateStr}`, padding, startY);
+                            ctx.fillText(`${dayStr}`, padding, startY + lineHeight);
+
+                            // Make time bigger and bold
+                            ctx.font = `bold ${fontSize * 2.5}px Arial`;
+                            ctx.fillText(`${timeStr}`, padding, startY + (lineHeight * 2.3));
+
+                            // Return to normal size for remaining text
+                            ctx.font = `${fontSize}px Arial`;
+                            ctx.fillText(`Latitude: ${lat.toFixed(6)}, Longitude: ${lng.toFixed(6)}`, padding, startY + (lineHeight * 3.5));
+                            ctx.fillText(`${address}`, padding, startY + (lineHeight * 4.5));
 
                             // Convert to image
                             const imageData = canvas.toDataURL('image/jpeg', 0.85);
@@ -518,13 +537,13 @@
                             captureBtn.classList.add('hidden');
                             retakeBtn.classList.remove('hidden');
 
-                            photoInfo.innerHTML = `
-                            <p class="text-green-600 font-semibold">✓ Foto berhasil diambil!</p>
-                            <p class="mt-1"><strong>Longitude:</strong> ${lng.toFixed(6)}, <strong>Latitude:</strong> ${lat.toFixed(6)}</p>
-                            <p><strong>Alamat:</strong> ${address}</p>
-                            <p><strong>Tanggal:</strong> ${dateStr}</p>
-                            <p><strong>Waktu:</strong> ${timeStr}</p>
-                        `;
+                            //     photoInfo.innerHTML = `
+                            //     <p class="text-green-600 font-semibold">✓ Foto berhasil diambil!</p>
+                            //     <p><strong>Tanggal:</strong> ${dateStr}</p>
+                            //     <p class="mt-1"><strong>Longitude:</strong> ${lng.toFixed(6)}, <strong>Latitude:</strong> ${lat.toFixed(6)}</p>
+                            //     <p><strong>Alamat:</strong> ${address}</p>
+                            //     <p><strong>Waktu:</strong> ${timeStr}</p>
+                            // `;
 
                             console.log('Photo captured successfully for index:', index);
                         },
