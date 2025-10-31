@@ -9,7 +9,7 @@ use App\Http\Controllers\PMPermohonanController;
 use App\Http\Controllers\TindakLanjutController;
 use App\Http\Controllers\AcMaintenanceConrtoller;
 use App\Http\Controllers\GroundingController;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; 
 
 Route::get('/', function () {
     return view('welcome');
