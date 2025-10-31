@@ -51,7 +51,6 @@ class PMPermohonanController extends Controller
         ]);
 
         $validated['user_id'] = auth()->id();
-        $validated['ditujukan_department'] = 'Operations & Maintenance Support';
 
         $permohonan = PMPermohonan::create($validated);
 
