@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BatteryController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\InstalasiKabelController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,6 +29,28 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}', [BatteryController::class, 'update'])->name('update');
         Route::delete('/{id}', [BatteryController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [BatteryController::class, 'pdf'])->name('pdf');
+    });
+    // Schedule Routes (Jadwal Preventive Maintenance Sentral)
+    Route::prefix('schedule')->name('schedule.')->group(function () {
+        Route::get('/', [ScheduleController::class, 'index'])->name('index');
+        Route::get('/create', [ScheduleController::class, 'create'])->name('create');
+        Route::post('/', [ScheduleController::class, 'store'])->name('store');
+        Route::get('/{id}', [ScheduleController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [ScheduleController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [ScheduleController::class, 'update'])->name('update');
+        Route::delete('/{id}', [ScheduleController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [ScheduleController::class, 'pdf'])->name('pdf');
+    });
+    // PM Instalasi Kabel dan Panel Distribusi Routes
+    Route::prefix('instalasi-kabel')->name('instalasi-kabel.')->group(function () {
+        Route::get('/', [InstalasiKabelController::class, 'index'])->name('index');
+        Route::get('/create', [InstalasiKabelController::class, 'create'])->name('create');
+        Route::post('/', [InstalasiKabelController::class, 'store'])->name('store');
+        Route::get('/{id}', [InstalasiKabelController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [InstalasiKabelController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [InstalasiKabelController::class, 'update'])->name('update');
+        Route::delete('/{id}', [InstalasiKabelController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [InstalasiKabelController::class, 'pdf'])->name('pdf');
     });
 });
 
