@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Buat Permohonan Tindak Lanjut PM') }}
             </h2>
-            <a href="{{ route('followup.index') }}" 
+            <a href="{{ route('pm-permohonan.index') }}" 
                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
                 <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
                 Kembali
@@ -16,7 +16,7 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <form action="{{ route('followup.store') }}" method="POST" class="space-y-6">
+                    <form action="{{ route('pm-permohonan.store') }}" method="POST" class="space-y-6">
                         @csrf
 
                         <!-- Tanggal dan Jam -->
@@ -256,7 +256,7 @@
                                 <i data-lucide="save" class="w-4 h-4 mr-2"></i>
                                 Simpan Permohonan
                             </button>
-                            <a href="{{ route('followup.index') }}" 
+                            <a href="{{ route('pm-permohonan.index') }}" 
                                class="inline-flex items-center justify-center px-6 py-3 bg-gray-300 border border-transparent rounded-md font-semibold text-sm text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:outline-none focus:border-gray-400 focus:ring ring-gray-200 transition ease-in-out duration-150">
                                 <i data-lucide="x" class="w-4 h-4 mr-2"></i>
                                 Batal

@@ -4,15 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PmShelter extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'document_number',
-        'version',
         'user_id',
         'location',
         'date',
@@ -32,31 +29,67 @@ class PmShelter extends Model
         'aksesibilitas_status',
         'aspek_teknis_result',
         'aspek_teknis_status',
-        'notes',
         'photos',
+        'notes',
         'executors',
-        'approver_name',
+        'approvers',
     ];
 
     protected $casts = [
         'date' => 'date',
         'photos' => 'array',
         'executors' => 'array',
+        'approvers' => 'array'
     ];
 
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    protected static function boot()
+    // Accessor untuk memfilter foto berdasarkan field
+    public function getKondisiRuanganPhotosAttribute()
     {
-        parent::boot();
+        return $this->filterPhotosByField('kondisi_ruangan_photos');
+    }
 
-        static::creating(function ($model) {
-            if (empty($model->document_number)) {
-                $model->document_number = 'FM-LAP-D2-SOP-003-009';
-            }
+    public function getKondisiKunciPhotosAttribute()
+    {
+        return $this->filterPhotosByField('kondisi_kunci_photos');
+    }
+
+    public function getLayoutTataRuangPhotosAttribute()
+    {
+        return $this->filterPhotosByField('layout_tata_ruang_photos');
+    }
+
+    public function getKontrolKeamananPhotosAttribute()
+    {
+        return $this->filterPhotosByField('kontrol_keamanan_photos');
+    }
+
+    public function getAksesibilitasPhotosAttribute()
+    {
+        return $this->filterPhotosByField('aksesibilitas_photos');
+    }
+
+    public function getAspekTeknisPhotosAttribute()
+    {
+        return $this->filterPhotosByField('aspek_teknis_photos');
+    }
+
+    // Helper method untuk filter
+    private function filterPhotosByField($fieldName)
+    {
+        if (!$this->photos || !is_array($this->photos)) {
+            return [];
+        }
+
+        $filtered = array_filter($this->photos, function ($photo) use ($fieldName) {
+            return isset($photo['field']) && $photo['field'] === $fieldName;
         });
+
+        // ⭐ PENTING: Re-index array agar index berurutan dari 0
+        return array_values($filtered);
     }
 }

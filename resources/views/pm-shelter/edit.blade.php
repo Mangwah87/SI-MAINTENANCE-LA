@@ -9,6 +9,7 @@
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6">
+                     
                     <form action="{{ route('pm-shelter.update', $pmShelter) }}" method="POST" id="pmForm" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
@@ -406,17 +407,34 @@
 
                         <!-- Approver -->
                         <div class="mb-6 sm:mb-8">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Mengetahui <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="approver_name" 
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
-                                   value="{{ old('approver_name', $pmShelter->approver_name) }}" 
-                                   placeholder="Nama atasan yang mengetahui" required>
-                            @error('approver_name')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+    <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">Mengetahui</h3>
+    <div class="border rounded-lg p-4 bg-gray-50">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Nama <span class="text-red-500">*</span>
+                </label>
+                <input type="text" name="approvers[0][name]" 
+                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
+                       value="{{ old('approvers.0.name', $pmShelter->approvers[0]['name'] ?? '') }}" 
+                       placeholder="Nama yang mengetahui" required>
+                @error('approvers.0.name')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">NIK</label>
+                <input type="text" name="approvers[0][nik]" 
+                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
+                       value="{{ old('approvers.0.nik', $pmShelter->approvers[0]['nik'] ?? '') }}" 
+                       placeholder="Nomor Induk Karyawan">
+                @error('approvers.0.nik')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+    </div>
+</div>
 
                         <!-- Submit -->
                         <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
@@ -435,6 +453,7 @@
         </div>
     </div>
 
+   
     @push('scripts')
     <script src="{{ asset('js/photo-manager.js') }}"></script>
     <script>
@@ -524,6 +543,7 @@
 
         // Initialize Lucide icons
         lucide.createIcons();
+        
     </script>
     @endpush
 </x-app-layout>

@@ -105,13 +105,13 @@
                                             <div class="flex flex-wrap gap-4">
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="kondisi_ruangan_status" value="OK" 
-                                                           class="form-radio text-green-600 focus:ring-green-500" 
+                                                           class="form-radio text-blue-600 focus:ring-blue-500" 
                                                            {{ old('kondisi_ruangan_status') == 'OK' ? 'checked' : '' }} required>
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
                                                 </label>
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="kondisi_ruangan_status" value="NOK" 
-                                                           class="form-radio text-red-600 focus:ring-red-500" 
+                                                           class="form-radio text-blue-600 focus:ring-blue-500" 
                                                            {{ old('kondisi_ruangan_status') == 'NOK' ? 'checked' : '' }} required>
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
                                                 </label>
@@ -149,13 +149,13 @@
                                             <div class="flex flex-wrap gap-4">
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="kondisi_kunci_status" value="OK" 
-                                                           class="form-radio text-green-600 focus:ring-green-500" 
+                                                           class="form-radio text-blue-600 focus:ring-blue-500" 
                                                            {{ old('kondisi_kunci_status') == 'OK' ? 'checked' : '' }} required>
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
                                                 </label>
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="kondisi_kunci_status" value="NOK" 
-                                                           class="form-radio text-red-600 focus:ring-red-500" 
+                                                           class="form-radio text-blue-600 focus:ring-blue-500" 
                                                            {{ old('kondisi_kunci_status') == 'NOK' ? 'checked' : '' }} required>
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
                                                 </label>
@@ -202,13 +202,13 @@
                                             <div class="flex flex-wrap gap-4">
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="layout_tata_ruang_status" value="OK" 
-                                                           class="form-radio text-green-600 focus:ring-green-500" 
+                                                           class="form-radio text-blue-600 focus:ring-blue-500" 
                                                            {{ old('layout_tata_ruang_status') == 'OK' ? 'checked' : '' }} required>
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
                                                 </label>
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="layout_tata_ruang_status" value="NOK" 
-                                                           class="form-radio text-red-600 focus:ring-red-500" 
+                                                           class="form-radio text-blue-600 focus:ring-blue-500" 
                                                            {{ old('layout_tata_ruang_status') == 'NOK' ? 'checked' : '' }} required>
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
                                                 </label>
@@ -246,13 +246,13 @@
                                             <div class="flex flex-wrap gap-4">
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="kontrol_keamanan_status" value="OK" 
-                                                           class="form-radio text-green-600 focus:ring-green-500" 
+                                                           class="form-radio text-blue-600 focus:ring-blue-500" 
                                                            {{ old('kontrol_keamanan_status') == 'OK' ? 'checked' : '' }} required>
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
                                                 </label>
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="kontrol_keamanan_status" value="NOK" 
-                                                           class="form-radio text-red-600 focus:ring-red-500" 
+                                                           class="form-radio text-blue-600 focus:ring-blue-500" 
                                                            {{ old('kontrol_keamanan_status') == 'NOK' ? 'checked' : '' }} required>
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
                                                 </label>
@@ -290,13 +290,13 @@
                                             <div class="flex flex-wrap gap-4">
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="aksesibilitas_status" value="OK" 
-                                                           class="form-radio text-green-600 focus:ring-green-500" 
+                                                           class="form-radio text-blue-600 focus:ring-blue-500" 
                                                            {{ old('aksesibilitas_status') == 'OK' ? 'checked' : '' }} required>
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
                                                 </label>
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="aksesibilitas_status" value="NOK" 
-                                                           class="form-radio text-red-600 focus:ring-red-500" 
+                                                           class="form-radio text-blue-600 focus:ring-blue-500" 
                                                            {{ old('aksesibilitas_status') == 'NOK' ? 'checked' : '' }} required>
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
                                                 </label>
@@ -334,13 +334,13 @@
                                             <div class="flex flex-wrap gap-4">
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="aspek_teknis_status" value="OK" 
-                                                           class="form-radio text-green-600 focus:ring-green-500" 
+                                                           class="form-radio text-blue-600 focus:ring-blue-500" 
                                                            {{ old('aspek_teknis_status') == 'OK' ? 'checked' : '' }} required>
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
                                                 </label>
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="aspek_teknis_status" value="NOK" 
-                                                           class="form-radio text-red-600 focus:ring-red-500" 
+                                                           class="form-radio text-blue-600 focus:ring-blue-500" 
                                                            {{ old('aspek_teknis_status') == 'NOK' ? 'checked' : '' }} required>
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
                                                 </label>
@@ -384,16 +384,33 @@
 
                         <!-- Approver -->
                         <div class="mb-6 sm:mb-8">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Mengetahui <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="approver_name" 
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
-                                   value="{{ old('approver_name') }}" 
-                                   placeholder="Nama atasan yang mengetahui" required>
-                            @error('approver_name')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">Mengetahui</h3>
+                            <div class="border rounded-lg p-4 bg-gray-50">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                                            Nama <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" name="approvers[0][name]" 
+                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
+                                            value="{{ old('approvers.0.name') }}" 
+                                            placeholder="Nama yang mengetahui" required>
+                                        @error('approvers.0.name')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">NIK</label>
+                                        <input type="text" name="approvers[0][nik]" 
+                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
+                                            value="{{ old('approvers.0.nik') }}" 
+                                            placeholder="Nomor Induk Karyawan">
+                                        @error('approvers.0.nik')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Submit -->

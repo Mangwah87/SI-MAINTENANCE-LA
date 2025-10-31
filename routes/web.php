@@ -3,7 +3,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UpsMaintenanceController;
 use App\Http\Controllers\BatteryController;
 use App\Http\Controllers\PMShelterController;
-use App\Http\Controllers\FollowUpRequestController;
+use App\Http\Controllers\PMPermohonanController;
 use App\Http\Controllers\TindakLanjutController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{pmShelter}', [PmShelterController::class, 'destroy'])->name('destroy');
         Route::delete('/{pmShelter}/photo/{index}', [PmShelterController::class, 'deletePhoto'])->name('photo.delete');
         Route::get('/{pmShelter}/export-pdf', [PmShelterController::class, 'exportPdf'])->name('export-pdf');
+    });
     // UPS3 Maintenance routes (Grouped under 'ups3' prefix)
     Route::prefix('ups3')->name('ups3.')->group(function () {
         Route::get('/', [UpsMaintenanceController::class, 'index'])->name('index');
@@ -56,16 +57,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/pdf', [BatteryController::class, 'pdf'])->name('pdf');
     });
 
-    // Follow Up Request Routes
-    Route::prefix('followup')->name('followup.')->group(function () {
-        Route::get('/', [FollowUpRequestController::class, 'index'])->name('index');
-        Route::get('/create', [FollowUpRequestController::class, 'create'])->name('create');
-        Route::post('/', [FollowUpRequestController::class, 'store'])->name('store');
-        Route::get('/{id}', [FollowUpRequestController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [FollowUpRequestController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [FollowUpRequestController::class, 'update'])->name('update');
-        Route::delete('/{id}', [FollowUpRequestController::class, 'destroy'])->name('destroy');
-        Route::get('/{id}/pdf', [FollowUpRequestController::class, 'pdf'])->name('pdf');
+    // PMPermohonan Routes
+    Route::prefix('pm-permohonan')->name('pm-permohonan.')->group(function () {
+        Route::get('/', [PMPermohonanController::class, 'index'])->name('index');
+        Route::get('/create', [PMPermohonanController::class, 'create'])->name('create');
+        Route::post('/', [PMPermohonanController::class, 'store'])->name('store');
+        Route::get('/{id}', [PMPermohonanController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [PMPermohonanController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [PMPermohonanController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PMPermohonanController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [PMPermohonanController::class, 'pdf'])->name('pdf');
     });
 
     // Tindak Lanjut Routes
