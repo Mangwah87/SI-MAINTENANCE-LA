@@ -49,39 +49,16 @@
         }
 
         /* Footer section - REDUCED SPACING */
+        /* Footer fixed at bottom */
         .page-footer {
-            margin-top: 8px;
-            padding-top: 3px;
+            position: fixed;
+            bottom: 10mm;
+            left: 1mm;
+            right: 1mm;
+            padding-top: 2px;
             border-top: 1px solid #000;
-            font-size: 8px;
+            font-size: 7.5px;
             text-align: left;
-        }
-
-        /* Image container - OPTIMIZED */
-        .image-grid {
-            width: 100%;
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
-
-        .image-cell {
-            width: 33.33%;
-            padding: 3px;
-            text-align: center;
-            border: 1px solid #ddd;
-            vertical-align: top;
-        }
-
-        .image-cell img {
-            width: 100%;
-            max-height: 200px;
-            object-fit: contain;
-        }
-
-        .image-label {
-            font-size: 7pt;
-            color: #666;
-            margin-top: 2px;
         }
 
         /* OPTIMIZED TABLE SPACING */

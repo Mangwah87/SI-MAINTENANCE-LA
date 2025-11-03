@@ -1,457 +1,379 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Detail PM Ruang Shelter') }}
-            </h2>
-            <div class="flex flex-wrap gap-2">
-                <a href="{{ route('pm-shelter.export-pdf', $pmShelter) }}" target="_blank"
-                   class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg inline-flex items-center text-sm">
-                    <i data-lucide="download" class="w-4 h-4 mr-1"></i> Export PDF
-                </a>
-                <a href="{{ route('pm-shelter.edit', $pmShelter) }}" 
-                   class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg inline-flex items-center text-sm">
-                    <i data-lucide="edit" class="w-4 h-4 mr-1"></i> Edit
-                </a>
-                <a href="{{ route('pm-shelter.index') }}" 
-                   class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg inline-flex items-center text-sm">
-                    <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Kembali
-                </a>
-            </div>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Detail Preventive Maintenance Ruang Shelter
+        </h2>
     </x-slot>
 
-    <div class="py-6 sm:py-12">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-4 sm:p-6">
-                    
-                    <!-- Location & Equipment Info -->
-                    <div class="mb-6">
-                        <h3 class="text-base sm:text-lg font-semibold mb-3 text-gray-700 border-b pb-2">
-                            Informasi Lokasi & Perangkat
-                        </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <span class="font-semibold">Lokasi:</span> {{ $pmShelter->location ?? '-' }}
-                            </div>
-                            <div>
-                                <span class="font-semibold">Tanggal:</span> {{ $pmShelter->date ? $pmShelter->date->format('d/m/Y') : '-' }}
-                            </div>
-                            <div>
-                                <span class="font-semibold">Waktu:</span> {{ $pmShelter->time ?? '-' }}
-                            </div>
-                            <div>
-                                <span class="font-semibold">Brand/Type:</span> {{ $pmShelter->brand_type ?? '-' }}
-                            </div>
-                            <div>
-                                <span class="font-semibold">Reg. Number:</span> {{ $pmShelter->reg_number ?? '-' }}
-                            </div>
-                            <div>
-                                <span class="font-semibold">S/N:</span> {{ $pmShelter->serial_number ?? '-' }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Check Results -->
-                    <div class="mb-6">
-                        <h3 class="text-base sm:text-lg font-semibold mb-3 text-gray-700 border-b pb-2">
-                            Hasil Pemeriksaan
-                        </h3>
-                        
-                        <!-- Visual Check Section -->
-                        <div class="mb-6">
-                            <h4 class="font-semibold text-gray-800 mb-3">1. Visual Check</h4>
-                            
-                            <!-- Kondisi Ruangan -->
-                            <div class="mb-4 bg-gray-50 rounded-lg p-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm mb-3">
-                                    <div class="sm:col-span-2">
-                                        <span class="font-semibold">a. Kondisi Ruangan</span>
-                                        <p class="text-gray-600">{{ $pmShelter->kondisi_ruangan_result ?? '-' }}</p>
-                                    </div>
-                                    <div>
-                                        <span class="font-semibold">Status:</span>
-                                        @if($pmShelter->kondisi_ruangan_status)
-                                        <span class="px-2 py-1 text-xs rounded {{ $pmShelter->kondisi_ruangan_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                            {{ $pmShelter->kondisi_ruangan_status }}
-                                        </span>
-                                        @else
-                                        -
-                                        @endif
-                                    </div>
-                                </div>
-                                @if($pmShelter->kondisi_ruangan_photos && count($pmShelter->kondisi_ruangan_photos) > 0)
-                                <div>
-                                    <span class="font-semibold text-sm">Foto:</span>
-                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                                        @foreach($pmShelter->kondisi_ruangan_photos as $photo)
-                                        <div class="relative border rounded-lg overflow-hidden bg-white cursor-pointer group" onclick="viewPhoto('{{ asset('storage/' . $photo['path']) }}', @json($photo))">
-                                            <img src="{{ asset('storage/' . $photo['path']) }}" class="w-full h-32 object-cover">
-                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-                                                <i data-lucide="zoom-in" class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-all"></i>
-                                            </div>
-                                            @if(isset($photo['location_name']) || isset($photo['latitude']))
-                                            <div class="p-2 text-xs bg-white">
-                                                @if(isset($photo['location_name']))
-                                                <div class="truncate" title="{{ $photo['location_name'] }}">
-                                                    <i data-lucide="map-pin" class="w-3 h-3 inline text-red-500"></i> {{ $photo['location_name'] }}
-                                                </div>
-                                                @endif
-                                                @if(isset($photo['taken_at']))
-                                                <div class="text-gray-600 truncate">
-                                                    <i data-lucide="clock" class="w-3 h-3 inline"></i> {{ \Carbon\Carbon::parse($photo['taken_at'])->format('d/m/Y H:i') }}
-                                                </div>
-                                                @endif
-                                            </div>
-                                            @endif
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
-
-                            <!-- Kondisi Kunci -->
-                            <div class="mb-4 bg-gray-50 rounded-lg p-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm mb-3">
-                                    <div class="sm:col-span-2">
-                                        <span class="font-semibold">b. Kondisi Kunci Ruang/Shelter</span>
-                                        <p class="text-gray-600">{{ $pmShelter->kondisi_kunci_result ?? '-' }}</p>
-                                    </div>
-                                    <div>
-                                        <span class="font-semibold">Status:</span>
-                                        @if($pmShelter->kondisi_kunci_status)
-                                        <span class="px-2 py-1 text-xs rounded {{ $pmShelter->kondisi_kunci_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                            {{ $pmShelter->kondisi_kunci_status }}
-                                        </span>
-                                        @else
-                                        -
-                                        @endif
-                                    </div>
-                                </div>
-                                @if($pmShelter->kondisi_kunci_photos && count($pmShelter->kondisi_kunci_photos) > 0)
-                                <div>
-                                    <span class="font-semibold text-sm">Foto:</span>
-                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                                        @foreach($pmShelter->kondisi_kunci_photos as $photo)
-                                        <div class="relative border rounded-lg overflow-hidden bg-white cursor-pointer group" onclick="viewPhoto('{{ asset('storage/' . $photo['path']) }}', @json($photo))">
-                                            <img src="{{ asset('storage/' . $photo['path']) }}" class="w-full h-32 object-cover">
-                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-                                                <i data-lucide="zoom-in" class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-all"></i>
-                                            </div>
-                                            @if(isset($photo['location_name']) || isset($photo['latitude']))
-                                            <div class="p-2 text-xs bg-white">
-                                                @if(isset($photo['location_name']))
-                                                <div class="truncate" title="{{ $photo['location_name'] }}">
-                                                    <i data-lucide="map-pin" class="w-3 h-3 inline text-red-500"></i> {{ $photo['location_name'] }}
-                                                </div>
-                                                @endif
-                                                @if(isset($photo['taken_at']))
-                                                <div class="text-gray-600 truncate">
-                                                    <i data-lucide="clock" class="w-3 h-3 inline"></i> {{ \Carbon\Carbon::parse($photo['taken_at'])->format('d/m/Y H:i') }}
-                                                </div>
-                                                @endif
-                                            </div>
-                                            @endif
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Fasilitas Ruangan Section -->
-                        <div class="mb-6">
-                            <h4 class="font-semibold text-gray-800 mb-3">2. Fasilitas Ruangan</h4>
-                            
-                            <!-- Layout Tata Ruang -->
-                            <div class="mb-4 bg-gray-50 rounded-lg p-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm mb-3">
-                                    <div class="sm:col-span-2">
-                                        <span class="font-semibold">a. Layout / Tata Ruang</span>
-                                        <p class="text-gray-600">{{ $pmShelter->layout_tata_ruang_result ?? '-' }}</p>
-                                    </div>
-                                    <div>
-                                        <span class="font-semibold">Status:</span>
-                                        @if($pmShelter->layout_tata_ruang_status)
-                                        <span class="px-2 py-1 text-xs rounded {{ $pmShelter->layout_tata_ruang_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                            {{ $pmShelter->layout_tata_ruang_status }}
-                                        </span>
-                                        @else
-                                        -
-                                        @endif
-                                    </div>
-                                </div>
-                                @if($pmShelter->layout_tata_ruang_photos && count($pmShelter->layout_tata_ruang_photos) > 0)
-                                <div>
-                                    <span class="font-semibold text-sm">Foto:</span>
-                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                                        @foreach($pmShelter->layout_tata_ruang_photos as $photo)
-                                        <div class="relative border rounded-lg overflow-hidden bg-white cursor-pointer group" onclick="viewPhoto('{{ asset('storage/' . $photo['path']) }}', @json($photo))">
-                                            <img src="{{ asset('storage/' . $photo['path']) }}" class="w-full h-32 object-cover">
-                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-                                                <i data-lucide="zoom-in" class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-all"></i>
-                                            </div>
-                                            @if(isset($photo['location_name']) || isset($photo['latitude']))
-                                            <div class="p-2 text-xs bg-white">
-                                                @if(isset($photo['location_name']))
-                                                <div class="truncate" title="{{ $photo['location_name'] }}">
-                                                    <i data-lucide="map-pin" class="w-3 h-3 inline text-red-500"></i> {{ $photo['location_name'] }}
-                                                </div>
-                                                @endif
-                                                @if(isset($photo['taken_at']))
-                                                <div class="text-gray-600 truncate">
-                                                    <i data-lucide="clock" class="w-3 h-3 inline"></i> {{ \Carbon\Carbon::parse($photo['taken_at'])->format('d/m/Y H:i') }}
-                                                </div>
-                                                @endif
-                                            </div>
-                                            @endif
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
-
-                            <!-- Kontrol Keamanan -->
-                            <div class="mb-4 bg-gray-50 rounded-lg p-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm mb-3">
-                                    <div class="sm:col-span-2">
-                                        <span class="font-semibold">b. Kontrol Keamanan</span>
-                                        <p class="text-gray-600">{{ $pmShelter->kontrol_keamanan_result ?? '-' }}</p>
-                                    </div>
-                                    <div>
-                                        <span class="font-semibold">Status:</span>
-                                        @if($pmShelter->kontrol_keamanan_status)
-                                        <span class="px-2 py-1 text-xs rounded {{ $pmShelter->kontrol_keamanan_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                            {{ $pmShelter->kontrol_keamanan_status }}
-                                        </span>
-                                        @else
-                                        -
-                                        @endif
-                                    </div>
-                                </div>
-                                @if($pmShelter->kontrol_keamanan_photos && count($pmShelter->kontrol_keamanan_photos) > 0)
-                                <div>
-                                    <span class="font-semibold text-sm">Foto:</span>
-                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                                        @foreach($pmShelter->kontrol_keamanan_photos as $photo)
-                                        <div class="relative border rounded-lg overflow-hidden bg-white cursor-pointer group" onclick="viewPhoto('{{ asset('storage/' . $photo['path']) }}', @json($photo))">
-                                            <img src="{{ asset('storage/' . $photo['path']) }}" class="w-full h-32 object-cover">
-                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-                                                <i data-lucide="zoom-in" class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-all"></i>
-                                            </div>
-                                            @if(isset($photo['location_name']) || isset($photo['latitude']))
-                                            <div class="p-2 text-xs bg-white">
-                                                @if(isset($photo['location_name']))
-                                                <div class="truncate" title="{{ $photo['location_name'] }}">
-                                                    <i data-lucide="map-pin" class="w-3 h-3 inline text-red-500"></i> {{ $photo['location_name'] }}
-                                                </div>
-                                                @endif
-                                                @if(isset($photo['taken_at']))
-                                                <div class="text-gray-600 truncate">
-                                                    <i data-lucide="clock" class="w-3 h-3 inline"></i> {{ \Carbon\Carbon::parse($photo['taken_at'])->format('d/m/Y H:i') }}
-                                                </div>
-                                                @endif
-                                            </div>
-                                            @endif
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
-
-                            <!-- Aksesibilitas -->
-                            <div class="mb-4 bg-gray-50 rounded-lg p-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm mb-3">
-                                    <div class="sm:col-span-2">
-                                        <span class="font-semibold">c. Aksesibilitas</span>
-                                        <p class="text-gray-600">{{ $pmShelter->aksesibilitas_result ?? '-' }}</p>
-                                    </div>
-                                    <div>
-                                        <span class="font-semibold">Status:</span>
-                                        @if($pmShelter->aksesibilitas_status)
-                                        <span class="px-2 py-1 text-xs rounded {{ $pmShelter->aksesibilitas_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                            {{ $pmShelter->aksesibilitas_status }}
-                                        </span>
-                                        @else
-                                        -
-                                        @endif
-                                    </div>
-                                </div>
-                                @if($pmShelter->aksesibilitas_photos && count($pmShelter->aksesibilitas_photos) > 0)
-                                <div>
-                                    <span class="font-semibold text-sm">Foto:</span>
-                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                                        @foreach($pmShelter->aksesibilitas_photos as $photo)
-                                        <div class="relative border rounded-lg overflow-hidden bg-white cursor-pointer group" onclick="viewPhoto('{{ asset('storage/' . $photo['path']) }}', @json($photo))">
-                                            <img src="{{ asset('storage/' . $photo['path']) }}" class="w-full h-32 object-cover">
-                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-                                                <i data-lucide="zoom-in" class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-all"></i>
-                                            </div>
-                                            @if(isset($photo['location_name']) || isset($photo['latitude']))
-                                            <div class="p-2 text-xs bg-white">
-                                                @if(isset($photo['location_name']))
-                                                <div class="truncate" title="{{ $photo['location_name'] }}">
-                                                    <i data-lucide="map-pin" class="w-3 h-3 inline text-red-500"></i> {{ $photo['location_name'] }}
-                                                </div>
-                                                @endif
-                                                @if(isset($photo['taken_at']))
-                                                <div class="text-gray-600 truncate">
-                                                    <i data-lucide="clock" class="w-3 h-3 inline"></i> {{ \Carbon\Carbon::parse($photo['taken_at'])->format('d/m/Y H:i') }}
-                                                </div>
-                                                @endif
-                                            </div>
-                                            @endif
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
-
-                            <!-- Aspek Teknis -->
-                            <div class="mb-4 bg-gray-50 rounded-lg p-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm mb-3">
-                                    <div class="sm:col-span-2">
-                                        <span class="font-semibold">d. Aspek Teknis</span>
-                                        <p class="text-gray-600">{{ $pmShelter->aspek_teknis_result ?? '-' }}</p>
-                                    </div>
-                                    <div>
-                                        <span class="font-semibold">Status:</span>
-                                        @if($pmShelter->aspek_teknis_status)
-                                        <span class="px-2 py-1 text-xs rounded {{ $pmShelter->aspek_teknis_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                            {{ $pmShelter->aspek_teknis_status }}
-                                        </span>
-                                        @else
-                                        -
-                                        @endif
-                                    </div>
-                                </div>
-                                @if($pmShelter->aspek_teknis_photos && count($pmShelter->aspek_teknis_photos) > 0)
-                                <div>
-                                    <span class="font-semibold text-sm">Foto:</span>
-                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                                        @foreach($pmShelter->aspek_teknis_photos as $photo)
-                                        <div class="relative border rounded-lg overflow-hidden bg-white cursor-pointer group" onclick="viewPhoto('{{ asset('storage/' . $photo['path']) }}', @json($photo))">
-                                            <img src="{{ asset('storage/' . $photo['path']) }}" class="w-full h-32 object-cover">
-                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-                                                <i data-lucide="zoom-in" class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-all"></i>
-                                            </div>
-                                            @if(isset($photo['location_name']) || isset($photo['latitude']))
-                                            <div class="p-2 text-xs bg-white">
-                                                @if(isset($photo['location_name']))
-                                                <div class="truncate" title="{{ $photo['location_name'] }}">
-                                                    <i data-lucide="map-pin" class="w-3 h-3 inline text-red-500"></i> {{ $photo['location_name'] }}
-                                                </div>
-                                                @endif
-                                                @if(isset($photo['taken_at']))
-                                                <div class="text-gray-600 truncate">
-                                                    <i data-lucide="clock" class="w-3 h-3 inline"></i> {{ \Carbon\Carbon::parse($photo['taken_at'])->format('d/m/Y H:i') }}
-                                                </div>
-                                                @endif
-                                            </div>
-                                            @endif
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Notes -->
-                    @if($pmShelter->notes)
-                    <div class="mb-6">
-                        <h3 class="text-base sm:text-lg font-semibold mb-3 text-gray-700 border-b pb-2">Catatan</h3>
-                        <p class="text-sm text-gray-700 whitespace-pre-line bg-gray-50 p-4 rounded-lg">{{ $pmShelter->notes }}</p>
-                    </div>
-                    @endif
-
-                    <!-- Executors -->
-                    @if($pmShelter->executors && count($pmShelter->executors) > 0)
-                    <div class="mb-6">
-                        <h3 class="text-base sm:text-lg font-semibold mb-3 text-gray-700 border-b pb-2">Pelaksana</h3>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Departemen</th>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sub Departemen</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($pmShelter->executors as $index => $executor)
-                                    <tr>
-                                        <td class="px-4 py-3">{{ $index + 1 }}</td>
-                                        <td class="px-4 py-3">{{ $executor['name'] ?? '-' }}</td>
-                                        <td class="px-4 py-3">{{ $executor['department'] ?? '-' }}</td>
-                                        <td class="px-4 py-3">{{ $executor['sub_department'] ?? '-' }}</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- Approver -->
-                    @if($pmShelter->approver_name)
-                    <div class="mb-6">
-                        <h3 class="text-base sm:text-lg font-semibold mb-3 text-gray-700 border-b pb-2">Mengetahui</h3>
-                        <p class="text-sm bg-gray-50 p-4 rounded-lg">{{ $pmShelter->approver_name }}</p>
-                    </div>
-                    @endif
-
+    <div class="container mx-auto p-6 max-w-6xl">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-end items-center mb-6 pb-4 border-b-2">
+                <div class="flex gap-2">
+                    <a href="{{ route('pm-shelter.edit', $pmShelter) }}" 
+                       class="inline-block px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
+                        <i data-lucide="edit" class="w-4 h-4 inline mr-1"></i> Edit
+                    </a>
+                    <a href="{{ route('pm-shelter.index') }}" 
+                       class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        <i data-lucide="arrow-left" class="w-4 h-4 inline mr-1"></i> Kembali
+                    </a>
+                    <a href="{{ route('pm-shelter.export-pdf', $pmShelter) }}" target="_blank"
+                       class="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                        <i data-lucide="download" class="w-4 h-4 inline mr-1"></i> Cetak PDF
+                    </a>
                 </div>
+            </div>
+
+            {{-- Informasi Lokasi dan Perangkat --}}
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Informasi Lokasi dan Perangkat</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
+                        <p class="text-sm text-gray-600">Lokasi</p>
+                        <p class="font-semibold">{{ $pmShelter->location ?? '-' }}</p>
+                    </div>
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
+                        <p class="text-sm text-gray-600">Tanggal</p>
+                        <p class="font-semibold">{{ $pmShelter->date ? $pmShelter->date->format('d/m/Y') : '-' }}</p>
+                    </div>
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
+                        <p class="text-sm text-gray-600">Waktu</p>
+                        <p class="font-semibold">{{ $pmShelter->time ?? '-' }}</p>
+                    </div>
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
+                        <p class="text-sm text-gray-600">Brand / Type</p>
+                        <p class="font-semibold">{{ $pmShelter->brand_type ?? '-' }}</p>
+                    </div>
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
+                        <p class="text-sm text-gray-600">Reg. Number</p>
+                        <p class="font-semibold">{{ $pmShelter->reg_number ?? '-' }}</p>
+                    </div>
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
+                        <p class="text-sm text-gray-600">S/N</p>
+                        <p class="font-semibold">{{ $pmShelter->serial_number ?? '-' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Visual Check --}}
+            <div class="mb-6 over">
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">1. Visual Check</h3>
+                <div class="overflow-auto">
+                <table class="w-full border">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="border p-2 text-left w-1/4">Item Pemeriksaan</th>
+                            <th class="border p-2 text-left w-1/3">Hasil</th>
+                            <th class="border p-2 text-center">Status</th>
+                            <th class="border p-2 text-center">Foto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border p-2">a. Kondisi Ruangan</td>
+                            <td class="border p-2 font-semibold">{{ $pmShelter->kondisi_ruangan_result ?? '-' }}</td>
+                            <td class="border p-2 text-center">
+                                @if($pmShelter->kondisi_ruangan_status)
+                                <span class="px-2 py-1 rounded text-xs font-semibold {{ $pmShelter->kondisi_ruangan_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $pmShelter->kondisi_ruangan_status }}
+                                </span>
+                                @else
+                                -
+                                @endif
+                            </td>
+                            <td class="border p-2 text-center">
+                                @if($pmShelter->kondisi_ruangan_photos && count($pmShelter->kondisi_ruangan_photos) > 0)
+                                <button onclick="showPhotos('kondisi_ruangan')" 
+                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5  shadow-sm hover:bg-blue-200 transition">
+                                    <i data-lucide="image" class="w-3 h-3"></i> Lihat ({{ count($pmShelter->kondisi_ruangan_photos) }})
+                                </button>
+                                @else
+                                -
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">b. Kondisi Kunci Ruang/Shelter</td>
+                            <td class="border p-2 font-semibold">{{ $pmShelter->kondisi_kunci_result ?? '-' }}</td>
+                            <td class="border p-2 text-center">
+                                @if($pmShelter->kondisi_kunci_status)
+                                <span class="px-2 py-1 rounded text-xs font-semibold {{ $pmShelter->kondisi_kunci_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $pmShelter->kondisi_kunci_status }}
+                                </span>
+                                @else
+                                -
+                                @endif
+                            </td>
+                            <td class="border p-2 text-center">
+                                @if($pmShelter->kondisi_kunci_photos && count($pmShelter->kondisi_kunci_photos) > 0)
+                                <button onclick="showPhotos('kondisi_kunci')" 
+                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5  shadow-sm hover:bg-blue-200 transition">
+                                    <i data-lucide="image" class="w-3 h-3"></i> Lihat ({{ count($pmShelter->kondisi_kunci_photos) }})
+                                </button>
+                                @else
+                                -
+                                @endif
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+
+            {{-- Fasilitas Ruangan --}}
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">2. Fasilitas Ruangan</h3>
+                <div class="overflow-auto">
+                <table class="w-full border">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="border p-2 text-left w-1/4">Item Pemeriksaan</th>
+                            <th class="border p-2 text-left w-1/3">Hasil</th>
+                            <th class="border p-2 text-center">Status</th>
+                            <th class="border p-2 text-center">Foto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border p-2">a. Layout / Tata Ruang</td>
+                            <td class="border p-2 font-semibold">{{ $pmShelter->layout_tata_ruang_result ?? '-' }}</td>
+                            <td class="border p-2 text-center">
+                                @if($pmShelter->layout_tata_ruang_status)
+                                <span class="px-2 py-1 rounded text-xs font-semibold {{ $pmShelter->layout_tata_ruang_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $pmShelter->layout_tata_ruang_status }}
+                                </span>
+                                @else
+                                -
+                                @endif
+                            </td>
+                            <td class="border p-2 text-center">
+                                @if($pmShelter->layout_tata_ruang_photos && count($pmShelter->layout_tata_ruang_photos) > 0)
+                                <button onclick="showPhotos('layout_tata_ruang')" 
+                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
+                                    <i data-lucide="image" class="w-3 h-3"></i> Lihat ({{ count($pmShelter->layout_tata_ruang_photos) }})
+                                </button>
+                                @else
+                                -
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">b. Kontrol Keamanan</td>
+                            <td class="border p-2 font-semibold">{{ $pmShelter->kontrol_keamanan_result ?? '-' }}</td>
+                            <td class="border p-2 text-center">
+                                @if($pmShelter->kontrol_keamanan_status)
+                                <span class="px-2 py-1 rounded text-xs font-semibold {{ $pmShelter->kontrol_keamanan_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $pmShelter->kontrol_keamanan_status }}
+                                </span>
+                                @else
+                                -
+                                @endif
+                            </td>
+                            <td class="border p-2 text-center">
+                                @if($pmShelter->kontrol_keamanan_photos && count($pmShelter->kontrol_keamanan_photos) > 0)
+                                <button onclick="showPhotos('kontrol_keamanan')" 
+                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5  shadow-sm hover:bg-blue-200 transition">
+                                    <i data-lucide="image" class="w-3 h-3"></i> Lihat ({{ count($pmShelter->kontrol_keamanan_photos) }})
+                                </button>
+                                @else
+                                -
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">c. Aksesibilitas</td>
+                            <td class="border p-2 font-semibold">{{ $pmShelter->aksesibilitas_result ?? '-' }}</td>
+                            <td class="border p-2 text-center">
+                                @if($pmShelter->aksesibilitas_status)
+                                <span class="px-2 py-1 rounded text-xs font-semibold {{ $pmShelter->aksesibilitas_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $pmShelter->aksesibilitas_status }}
+                                </span>
+                                @else
+                                -
+                                @endif
+                            </td>
+                            <td class="border p-2 text-center">
+                                @if($pmShelter->aksesibilitas_photos && count($pmShelter->aksesibilitas_photos) > 0)
+                                <button onclick="showPhotos('aksesibilitas')" 
+                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5  shadow-sm hover:bg-blue-200 transition">
+                                    <i data-lucide="image" class="w-3 h-3"></i> Lihat ({{ count($pmShelter->aksesibilitas_photos) }})
+                                </button>
+                                @else
+                                -
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">d. Aspek Teknis</td>
+                            <td class="border p-2 font-semibold">{{ $pmShelter->aspek_teknis_result ?? '-' }}</td>
+                            <td class="border p-2 text-center">
+                                @if($pmShelter->aspek_teknis_status)
+                                <span class="px-2 py-1 rounded text-xs font-semibold {{ $pmShelter->aspek_teknis_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $pmShelter->aspek_teknis_status }}
+                                </span>
+                                @else
+                                -
+                                @endif
+                            </td>
+                            <td class="border p-2 text-center">
+                                @if($pmShelter->aspek_teknis_photos && count($pmShelter->aspek_teknis_photos) > 0)
+                                <button onclick="showPhotos('aspek_teknis')" 
+                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5  shadow-sm hover:bg-blue-200 transition">
+                                    <i data-lucide="image" class="w-3 h-3"></i> Lihat ({{ count($pmShelter->aspek_teknis_photos) }})
+                                </button>
+                                @else
+                                -
+                                @endif
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+
+            {{-- Notes --}}
+            @if($pmShelter->notes)
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Catatan / Informasi Tambahan</h3>
+                <div class="border p-4 rounded">
+                    <p class="whitespace-pre-wrap">{{ $pmShelter->notes }}</p>
+                </div>
+            </div>
+            @endif
+
+            {{-- Pelaksana --}}
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Pelaksana</h3>
+                
+                @if($pmShelter->executors && count($pmShelter->executors) > 0)
+                <div class="grid grid-cols-1 md:grid-cols-{{ count($pmShelter->executors) > 2 ? '3' : '2' }} gap-4 mb-4">
+                    @foreach($pmShelter->executors as $index => $executor)
+                    <div class="border p-3 rounded">
+                        <p class="text-sm text-gray-600">Pelaksana {{ $index + 1 }}</p>
+                        <p class="font-semibold mt-1">{{ $executor['name'] ?? '-' }}</p>
+                        <p class="text-xs text-gray-500 mt-2">
+                            Departemen: {{ $executor['department'] ?? '-' }} | 
+                            Sub Dept: {{ $executor['sub_department'] ?? '-' }}
+                        </p>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+
+                @if($pmShelter->approvers && count($pmShelter->approvers) > 0 && !empty($pmShelter->approvers[0]['name']))
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Mengetahui</h3>
+                    <div class="border p-3 rounded">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                            <div class=" font-semibold">
+                                 {{ $pmShelter->approvers[0]['name'] ?? '-' }}
+                            </div>
+                            <div class=" font-semibold">
+                               NIK : {{ $pmShelter->approvers[0]['nik']?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>
 
-    <!-- Photo Modal -->
+    {{-- Photo Modal --}}
     <div id="photoModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4" onclick="closePhotoModal()">
         <div class="max-w-6xl w-full" onclick="event.stopPropagation()">
-            <div class="flex justify-end mb-2">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalTitle" class="text-white text-xl font-semibold"></h3>
                 <button onclick="closePhotoModal()" class="text-white hover:text-gray-300">
                     <i data-lucide="x" class="w-8 h-8"></i>
                 </button>
             </div>
-            <img id="modalImage" src="" class="w-full h-auto rounded">
-            <div id="modalInfo" class="mt-4 bg-white rounded p-4 text-sm"></div>
+            <div id="photoGallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[80vh] overflow-y-auto">
+                <!-- Photos will be inserted here -->
+            </div>
         </div>
     </div>
 
     @push('scripts')
     <script>
-        function viewPhoto(imageSrc, photoData) {
+        const photoData = {
+            kondisi_ruangan: @json($pmShelter->kondisi_ruangan_photos ?? []),
+            kondisi_kunci: @json($pmShelter->kondisi_kunci_photos ?? []),
+            layout_tata_ruang: @json($pmShelter->layout_tata_ruang_photos ?? []),
+            kontrol_keamanan: @json($pmShelter->kontrol_keamanan_photos ?? []),
+            aksesibilitas: @json($pmShelter->aksesibilitas_photos ?? []),
+            aspek_teknis: @json($pmShelter->aspek_teknis_photos ?? [])
+        };
+
+        const titleMap = {
+            kondisi_ruangan: 'Kondisi Ruangan',
+            kondisi_kunci: 'Kondisi Kunci Ruang/Shelter',
+            layout_tata_ruang: 'Layout / Tata Ruang',
+            kontrol_keamanan: 'Kontrol Keamanan',
+            aksesibilitas: 'Aksesibilitas',
+            aspek_teknis: 'Aspek Teknis'
+        };
+
+        function showPhotos(category) {
             const modal = document.getElementById('photoModal');
-            const modalImage = document.getElementById('modalImage');
-            const modalInfo = document.getElementById('modalInfo');
-            
-            modalImage.src = imageSrc;
-            
-            let infoHTML = '';
-            if (photoData.location_name) {
-                infoHTML += `<div class="mb-2"><i data-lucide="map-pin" class="w-4 h-4 inline text-red-500"></i> <strong>Lokasi:</strong> ${photoData.location_name}</div>`;
-            }
-            if (photoData.latitude) {
-                infoHTML += `<div class="mb-2"><i data-lucide="navigation" class="w-4 h-4 inline"></i> <strong>Koordinat:</strong> ${photoData.latitude.toFixed(6)}, ${photoData.longitude.toFixed(6)}</div>`;
-            }
-            if (photoData.taken_at) {
-                const date = new Date(photoData.taken_at);
-                infoHTML += `<div><i data-lucide="clock" class="w-4 h-4 inline"></i> <strong>Waktu:</strong> ${date.toLocaleString('id-ID', { timeZone: 'Asia/Makassar' })} WITA</div>`;
-            }
-            
-            modalInfo.innerHTML = infoHTML || '<div class="text-gray-500">Tidak ada informasi tambahan</div>';
-            
+            const gallery = document.getElementById('photoGallery');
+            const modalTitle = document.getElementById('modalTitle');
+            const photos = photoData[category] || [];
+
+            modalTitle.textContent = titleMap[category] || 'Foto Dokumentasi';
+            gallery.innerHTML = '';
+
+            photos.forEach((photo, index) => {
+                const photoDiv = document.createElement('div');
+                photoDiv.className = 'border rounded overflow-hidden shadow-sm bg-white';
+                
+                let photoHTML = `
+                    <img src="{{ asset('storage/') }}/${photo.path}" 
+                         alt="Photo ${index + 1}" 
+                         class="w-full h-48 object-cover cursor-pointer"
+                         onclick="viewFullPhoto('{{ asset('storage/') }}/${photo.path}')">
+                    <div class="p-3">
+                        <p class="text-xs text-gray-600 mb-2">Foto ${index + 1}</p>
+                `;
+
+                if (photo.location_name) {
+                    photoHTML += `
+                        <div class="text-xs text-gray-700 mb-1">
+                            <i data-lucide="map-pin" class="w-3 h-3 inline text-red-500"></i> 
+                            ${photo.location_name}
+                        </div>
+                    `;
+                }
+
+                if (photo.taken_at) {
+                    const date = new Date(photo.taken_at);
+                    photoHTML += `
+                        <div class="text-xs text-gray-600">
+                            <i data-lucide="clock" class="w-3 h-3 inline"></i> 
+                            ${date.toLocaleString('id-ID', { timeZone: 'Asia/Makassar' })} WITA
+                        </div>
+                    `;
+                }
+
+                photoHTML += `
+                        <a href="{{ asset('storage/') }}/${photo.path}" 
+                           target="_blank" 
+                           class="text-sm text-blue-600 hover:text-blue-800 hover:underline mt-2 inline-block">
+                            Lihat Ukuran Penuh
+                        </a>
+                    </div>
+                `;
+
+                photoDiv.innerHTML = photoHTML;
+                gallery.appendChild(photoDiv);
+            });
+
             modal.classList.remove('hidden');
             lucide.createIcons();
+        }
+
+        function viewFullPhoto(src) {
+            window.open(src, '_blank');
         }
 
         function closePhotoModal() {

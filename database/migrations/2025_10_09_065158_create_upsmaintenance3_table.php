@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('ups_maintenances', function (Blueprint $table) {
             $table->id();
 
+            // Images - JSON field untuk menyimpan semua gambar
+            $table->json('images')->nullable();
+
             // Informasi Lokasi dan Perangkat
             $table->string('location');
             $table->dateTime('date_time');
@@ -24,9 +27,11 @@ return new class extends Migration
 
             // Visual Check
             $table->string('env_condition');
+            $table->string('status_env_condition')->default('OK');
             $table->string('led_display');
+            $table->string('status_led_display')->default('OK');
             $table->string('battery_connection');
-            $table->enum('status_visual_check', ['OK', 'NOK'])->default('OK');
+            $table->string('status_battery_connection')->default('OK');
 
             // Performance and Capacity Check
             // a. AC Input Voltage
@@ -76,6 +81,11 @@ return new class extends Migration
             $table->string('executor_1');
             $table->string('executor_2')->nullable();
             $table->string('supervisor');
+            $table->string('supervisor_id_number')->nullable();
+
+            // Department Information
+            $table->string('department')->nullable();
+            $table->string('sub_department')->nullable();
 
             $table->timestamps();
         });

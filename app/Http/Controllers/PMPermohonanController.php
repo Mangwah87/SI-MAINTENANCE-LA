@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FollowUpRequest;
+use App\Models\PMPermohonan;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class FollowUpRequestController extends Controller
+class PMPermohonanController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $requests = FollowUpRequest::with('user')
+        $permohonan = PMPermohonan::with('user')
+            ->where('user_id', auth()->id())
             ->latest()
             ->paginate(10);
 
-        return view('followup.index', compact('requests'));
+        return view('pm-permohonan.index', compact('permohonan'));
     }
 
     /**
@@ -25,7 +26,7 @@ class FollowUpRequestController extends Controller
      */
     public function create()
     {
-        return view('followup.create');
+        return view('pm-permohonan.create');
     }
 
     /**
@@ -43,17 +44,17 @@ class FollowUpRequestController extends Controller
             'usulan_tindak_lanjut' => 'required|string',
             'department' => 'required|string|max:255',
             'sub_department' => 'nullable|string|max:255',
+            'ditujukan_department' => 'nullable|string|max:255',
             'ditujukan_sub_department' => 'nullable|string|max:255',
             'diinformasikan_melalui' => 'required|in:email,fax,hardcopy',
             'catatan' => 'nullable|string',
         ]);
 
         $validated['user_id'] = auth()->id();
-        $validated['ditujukan_department'] = 'Operations & Maintenance Support';
 
-        FollowUpRequest::create($validated);
+        $permohonan = PMPermohonan::create($validated);
 
-        return redirect()->route('followup.index')
+        return redirect()->route('pm-permohonan.show', $permohonan->id)
             ->with('success', 'Permohonan tindak lanjut berhasil dibuat.');
     }
 
@@ -62,8 +63,8 @@ class FollowUpRequestController extends Controller
      */
     public function show(string $id)
     {
-        $request = FollowUpRequest::with('user')->findOrFail($id);
-        return view('followup.show', compact('request'));
+        $permohonan = PMPermohonan::with('user')->findOrFail($id);
+        return view('pm-permohonan.show', compact('permohonan'));
     }
 
     /**
@@ -71,14 +72,11 @@ class FollowUpRequestController extends Controller
      */
     public function edit(string $id)
     {
-        $followup = FollowUpRequest::findOrFail($id);
+        $pmPermohonan = PMPermohonan::findOrFail($id);
 
-        // Check if user owns this request
-        if ($followup->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized action.');
-        }
 
-        return view('followup.edit', compact('followup'));
+
+        return view('pm-permohonan.edit', compact('pmPermohonan'));
     }
 
     /**
@@ -86,12 +84,9 @@ class FollowUpRequestController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $followup = FollowUpRequest::findOrFail($id);
+        $pmPermohonan = PMPermohonan::findOrFail($id);
 
-        // Check if user owns this request
-        if ($followup->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
@@ -103,14 +98,15 @@ class FollowUpRequestController extends Controller
             'usulan_tindak_lanjut' => 'required|string',
             'department' => 'required|string|max:255',
             'sub_department' => 'nullable|string|max:255',
+            'ditujukan_department' => 'nullable|string|max:255',
             'ditujukan_sub_department' => 'nullable|string|max:255',
             'diinformasikan_melalui' => 'required|in:email,fax,hardcopy',
             'catatan' => 'nullable|string',
         ]);
 
-        $followup->update($validated);
+        $pmPermohonan->update($validated);
 
-        return redirect()->route('followup.index')
+        return redirect()->route('pm-permohonan.show', $pmPermohonan->id)
             ->with('success', 'Permohonan tindak lanjut berhasil diperbarui.');
     }
 
@@ -119,16 +115,11 @@ class FollowUpRequestController extends Controller
      */
     public function destroy(string $id)
     {
-        $followup = FollowUpRequest::findOrFail($id);
+        $pmPermohonan = PMPermohonan::findOrFail($id);
 
-        // Check if user owns this request
-        if ($followup->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized action.');
-        }
+        $pmPermohonan->delete();
 
-        $followup->delete();
-
-        return redirect()->route('followup.index')
+        return redirect()->route('pm-permohonan.index')
             ->with('success', 'Permohonan tindak lanjut berhasil dihapus.');
     }
 
@@ -137,11 +128,11 @@ class FollowUpRequestController extends Controller
      */
     public function pdf(string $id)
     {
-        $request = FollowUpRequest::with('user')->findOrFail($id);
+        $permohonan = PMPermohonan::with('user')->findOrFail($id);
 
-        $pdf = Pdf::loadView('followup.pdf', compact('request'))
+        $pdf = Pdf::loadView('pm-permohonan.pdf', compact('permohonan'))
             ->setPaper('a4', 'portrait');
 
-        return $pdf->stream('permohonan-tindak-lanjut-' . $request->id . '.pdf');
+        return $pdf->stream('PM Shelter-FM-LAP-D2-SOP-003-004-' . $permohonan->id . '.pdf');
     }
 }
