@@ -65,7 +65,7 @@ class CablePanelMaintenanceController extends Controller
 
             $maintenance = CablePanelMaintenance::create($validatedData);
             Log::info('Cable Panel Maintenance Created:', ['id' => $maintenance->id, 'images_count' => count($savedImages)]);
-            return redirect()->route('cable-panel.index')->with('success', 'Data Kabel & Panel berhasil ditambahkan.');
+            return redirect()->route('cable-panel.index')->with('success', 'Data Kabel dan Panel berhasil ditambahkan.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput()->with('error', 'Validasi gagal.');
@@ -144,7 +144,7 @@ class CablePanelMaintenanceController extends Controller
             if (empty($validatedData['images'])) $validatedData['images'] = null;
 
             $maintenance->update($validatedData);
-            return redirect()->route('cable-panel.index')->with('success', 'Data Kabel & Panel berhasil diperbarui.');
+            return redirect()->route('cable-panel.index')->with('success', 'Data Kabel dan Panel berhasil diperbarui.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput()->with('error', 'Validasi gagal.');
@@ -167,7 +167,7 @@ class CablePanelMaintenanceController extends Controller
                 }
             }
             $maintenance->delete();
-            return redirect()->route('cable-panel.index')->with('success', 'Data Kabel & Panel berhasil dihapus.');
+            return redirect()->route('cable-panel.index')->with('success', 'Data Kabel dan Panel berhasil dihapus.');
         } catch (\Exception $e) {
             Log::error('Error deleting cable-panel maintenance: ' . $e->getMessage());
             return redirect()->route('cable-panel.index')->with('error', 'Gagal menghapus data.');

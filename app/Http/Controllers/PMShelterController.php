@@ -61,7 +61,8 @@ class PmShelterController extends Controller
             'executors.*.name' => 'required|string|max:255',
             'executors.*.department' => 'nullable|string|max:255',
             'executors.*.sub_department' => 'nullable|string|max:255',
-            'approver_name' => 'required|string|max:255',
+            'approvers.*.name' => 'required|string|max:255',
+            'approvers.*.nik' => 'nullable|string|max:255',
         ]);
 
         $validated['user_id'] = auth()->id();
@@ -77,12 +78,24 @@ class PmShelterController extends Controller
         }
         $validated['executors'] = $executors;
 
+        // Simpan approvers
+        $approvers = [];
+        if ($request->has('approvers')) {
+            foreach ($request->approvers as $approver) {
+                if (!empty($approver['name'])) {
+                    $approvers[] = $approver;
+                }
+            }
+        }
+        $validated['approvers'] = $approvers;
+
         // Proses semua foto ke dalam 1 array
         $validated['photos'] = $this->processAllPhotos($request);
 
-        PmShelter::create($validated);
+        $pmShelter = PmShelter::create($validated);
 
-        return redirect()->route('pm-shelter.index')
+
+        return redirect()->route('pm-shelter.show', $pmShelter->id)
             ->with('success', 'Data PM Shelter berhasil ditambahkan');
     }
 
@@ -139,7 +152,8 @@ class PmShelterController extends Controller
             'executors.*.name' => 'required|string|max:255',
             'executors.*.department' => 'nullable|string|max:255',
             'executors.*.sub_department' => 'nullable|string|max:255',
-            'approver_name' => 'required|string|max:255',
+            'approvers.*.name' => 'required|string|max:255',
+            'approvers.*.nik' => 'nullable|string|max:255',
         ]);
 
         // Update pelaksana
@@ -152,6 +166,17 @@ class PmShelterController extends Controller
             }
         }
         $validated['executors'] = $executors;
+
+        // Update approvers
+        $approvers = [];
+        if ($request->has('approvers')) {
+            foreach ($request->approvers as $approver) {
+                if (!empty($approver['name'])) {
+                    $approvers[] = $approver;
+                }
+            }
+        }
+        $validated['approvers'] = $approvers;
 
         // Hapus foto yang dihapus user
         $existingPhotos = $pmShelter->photos ?? [];
@@ -172,7 +197,7 @@ class PmShelterController extends Controller
 
         $pmShelter->update($validated);
 
-        return redirect()->route('pm-shelter.index')
+        return redirect()->route('pm-shelter.show', $pmShelter->id)
             ->with('success', 'Data PM Shelter berhasil diperbarui');
     }
 
@@ -196,7 +221,9 @@ class PmShelterController extends Controller
         $pdf = Pdf::loadView('pm-shelter.pdf', compact('pmShelter'))
             ->setPaper('a4', 'portrait');
         $pdf->getDomPDF()->set_option('enable_php', true);
-        return $pdf->stream('PM-Shelter-' . ($pmShelter->document_number ?? 'document') . '.pdf');
+        $fileName = 'PM Shelter-FM-LAP-D2-SOP-003-009-' . $pmShelter->id . '.pdf';
+
+        return $pdf->stream($fileName);
     }
 
     /**
@@ -233,7 +260,7 @@ class PmShelterController extends Controller
                     }
 
                     $allPhotos[] = [
-                        'field' => $fieldName, // Identifier untuk field mana foto ini
+                        'field' => $fieldName,
                         'path' => $path,
                         'latitude' => $metadata['latitude'] ?? null,
                         'longitude' => $metadata['longitude'] ?? null,

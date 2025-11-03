@@ -284,14 +284,14 @@
         <div class="form-row">
             <span class="form-label">Tanggal</span>
             <span class="form-colon">:</span>
-            <span class="form-value">{{ $request->tanggal->format('d/m/Y') }}</span>
+            <span class="form-value">{{ $permohonan->tanggal->format('d/m/Y') }}</span>
         </div>
     </div>
     <div class="form-col">
         <div class="form-row">
             <span class="form-label">Jam</span>
             <span class="form-colon">:</span>
-            <span class="form-value">{{ $request->jam }}</span>
+            <span class="form-value">{{ $permohonan->jam }}</span>
         </div>
     </div>
 </div>
@@ -301,14 +301,14 @@
         <div class="form-row">
             <span class="form-label">Lokasi</span>
             <span class="form-colon">:</span>
-            <span class="form-value">{{ $request->lokasi }}</span>
+            <span class="form-value">{{ $permohonan->lokasi }}</span>
         </div>
     </div>
     <div class="form-col">
         <div class="form-row">
             <span class="form-label">Ruang</span>
             <span class="form-colon">:</span>
-            <span class="form-value">{{ $request->ruang }}</span>
+            <span class="form-value">{{ $permohonan->ruang }}</span>
         </div>
     </div>
 </div>
@@ -316,10 +316,10 @@
 <div class="divider"></div>
 
 <div class="section-title">Permasalahan yang terjadi :</div>
-<div class="text-box">{{ $request->permasalahan }}</div>
+<div class="text-box">{{ $permohonan->permasalahan }}</div>
 
 <div class="section-title">Usulan tindak lanjut :</div>
-<div class="text-box">{{ $request->usulan_tindak_lanjut }}</div>
+<div class="text-box">{{ $permohonan->usulan_tindak_lanjut }}</div>
 
 <!-- PEMOHON -->
 <div class="info-section">
@@ -330,7 +330,7 @@
         <tr>
             <td class="label">Nama</td>
             <td class="colon">:</td>
-            <td class="value">{{ $request->user->name }}</td>
+            <td class="value">{{ $permohonan->nama }}</td>
 
             <td class="right-label">Tanda tangan</td>
             <td class="right-colon">:</td>
@@ -340,11 +340,11 @@
         <tr>
             <td class="label">Departement</td>
             <td class="colon">:</td>
-            <td class="value">{{ $request->department }}</td>
+            <td class="value">{{ $permohonan->department }}</td>
 
             <td class="right-label">Sub Departement</td>
             <td class="right-colon">:</td>
-            <td class="right-value">{{ $request->sub_department ?? '' }}</td>
+            <td class="right-value">{{ $permohonan->sub_department ?? '' }}</td>
         </tr>
     </table>
 </div>
@@ -358,11 +358,11 @@
         <tr>
             <td class="label">Departement</td>
             <td class="colon">:</td>
-            <td class="value">{{ $request->ditujukan_department }}</td>
+            <td class="value">{{ $permohonan->ditujukan_department }}</td>
 
             <td class="right-label">Sub Departement</td>
             <td class="right-colon">:</td>
-            <td class="right-value">{{ $request->ditujukan_sub_department ?? '' }}</td>
+            <td class="right-value">{{ $permohonan->ditujukan_sub_department ?? '' }}</td>
         </tr>
     </table>
 </div>
@@ -372,13 +372,13 @@
     <br>
     <div class="checkbox-group">
         <div class="checkbox-item">
-            <span class="checkbox-box {{ $request->diinformasikan_melalui == 'email' ? 'checked' : '' }}"></span>Email
+            <span class="checkbox-box {{ $permohonan->diinformasikan_melalui == 'email' ? 'checked' : '' }}"></span>Email
         </div>
         <div class="checkbox-item">
-            <span class="checkbox-box {{ $request->diinformasikan_melalui == 'fax' ? 'checked' : '' }}"></span>Fax
+            <span class="checkbox-box {{ $permohonan->diinformasikan_melalui == 'fax' ? 'checked' : '' }}"></span>Fax
         </div>
         <div class="checkbox-item">
-            <span class="checkbox-box {{ $request->diinformasikan_melalui == 'hardcopy' ? 'checked' : '' }}"></span>Hardcopy
+            <span class="checkbox-box {{ $permohonan->diinformasikan_melalui == 'hardcopy' ? 'checked' : '' }}"></span>Hardcopy
         </div>
     </div>
 </div>
@@ -386,7 +386,7 @@
 <div class="info-section">
     <div class="bold">Catatan :</div>
     <br>
-    <div class="notes-box">{{ $request->catatan ?? '' }}</div>
+    <div class="notes-box">{{ $permohonan->catatan ?? '' }}</div>
 </div>
 
 <!-- FOOTER -->

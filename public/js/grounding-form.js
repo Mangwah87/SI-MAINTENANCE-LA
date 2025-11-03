@@ -144,10 +144,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const timestamp = getFormattedTimestamp();
 
         // Ukuran font sekarang tetap, tidak peduli ukuran gambar
-        const basePadding = 10;
-        const largeFontSize = 48;
-        const mediumFontSize = 18;
-        const smallFontSize = 14;
+        const basePadding = 30;
+        const largeFontSize = 55;
+        const mediumFontSize = 25;
+        const smallFontSize = 20;
         const font = "sans-serif";
 
         const yPosTime = canvas.height - basePadding;
@@ -321,9 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 2. Gambar file (di-letterbox)
             drawLetterboxedImage(context, img);
-
-            // 3. Gambar watermark di atas
-            drawWatermark(context, canvas);
             
             const watermarkedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
             callback(watermarkedDataUrl);

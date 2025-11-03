@@ -9,8 +9,6 @@ return new class extends Migration {
     {
         Schema::create('pm_shelters', function (Blueprint $table) {
             $table->id();
-            $table->string('document_number');
-            $table->integer('version')->default(10);
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
             // Location & Equipment Info
@@ -47,7 +45,7 @@ return new class extends Migration {
             $table->json('executors')->nullable(); // [{name, department, sub_department}]
 
             // Approver
-            $table->string('approver_name')->nullable();
+            $table->json('approvers')->nullable(); // [{name,nik}]
 
             $table->timestamps();
         });

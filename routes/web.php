@@ -5,7 +5,7 @@ use App\Http\Controllers\UpsMaintenanceController;
 use App\Http\Controllers\UpsMaintenance1Controller;
 use App\Http\Controllers\BatteryController;
 use App\Http\Controllers\PMShelterController;
-use App\Http\Controllers\FollowUpRequestController;
+use App\Http\Controllers\PMPermohonanController;
 use App\Http\Controllers\TindakLanjutController;
 use App\Http\Controllers\AcMaintenanceConrtoller;
 use App\Http\Controllers\GroundingController;
@@ -110,16 +110,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/pdf', [BatteryController::class, 'pdf'])->name('pdf');
     });
 
-    // Follow Up Request Routes
-    Route::prefix('followup')->name('followup.')->group(function () {
-        Route::get('/', [FollowUpRequestController::class, 'index'])->name('index');
-        Route::get('/create', [FollowUpRequestController::class, 'create'])->name('create');
-        Route::post('/', [FollowUpRequestController::class, 'store'])->name('store');
-        Route::get('/{id}', [FollowUpRequestController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [FollowUpRequestController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [FollowUpRequestController::class, 'update'])->name('update');
-        Route::delete('/{id}', [FollowUpRequestController::class, 'destroy'])->name('destroy');
-        Route::get('/{id}/pdf', [FollowUpRequestController::class, 'pdf'])->name('pdf');
+    // PMPermohonan Routes
+    Route::prefix('pm-permohonan')->name('pm-permohonan.')->group(function () {
+        Route::get('/', [PMPermohonanController::class, 'index'])->name('index');
+        Route::get('/create', [PMPermohonanController::class, 'create'])->name('create');
+        Route::post('/', [PMPermohonanController::class, 'store'])->name('store');
+        Route::get('/{id}', [PMPermohonanController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [PMPermohonanController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [PMPermohonanController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PMPermohonanController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [PMPermohonanController::class, 'pdf'])->name('pdf');
     });
 
     // Tindak Lanjut Routes
