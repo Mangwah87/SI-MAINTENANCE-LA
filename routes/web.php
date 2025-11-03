@@ -1,9 +1,16 @@
 <?php
-
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\GensetController;
+use App\Http\Controllers\UpsMaintenanceController;
+use App\Http\Controllers\UpsMaintenance1Controller;
 use App\Http\Controllers\BatteryController;
+use App\Http\Controllers\PMShelterController;
+use App\Http\Controllers\PMPermohonanController;
+use App\Http\Controllers\TindakLanjutController;
+use App\Http\Controllers\AcMaintenanceConrtoller;
+use App\Http\Controllers\GroundingController;
+use App\Http\Controllers\CablePanelMaintenanceController;
 use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\InstalasiKabelController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,9 +22,82 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // UPS1 Maintenance routes (Grouped under 'ups1' prefix)
+    Route::prefix('ups1')->name('ups1.')->group(function () {
+        Route::get('/', [UpsMaintenance1Controller::class, 'index'])->name('index');
+        Route::get('/create', [UpsMaintenance1Controller::class, 'create'])->name('create');
+        Route::post('/', [UpsMaintenance1Controller::class, 'store'])->name('store');
+        Route::get('/{upsMaintenance1}', [UpsMaintenance1Controller::class, 'show'])->name('show');
+        Route::get('/{upsMaintenance1}/edit', [UpsMaintenance1Controller::class, 'edit'])->name('edit');
+        Route::put('/{upsMaintenance1}', [UpsMaintenance1Controller::class, 'update'])->name('update');
+        Route::delete('/{upsMaintenance1}', [UpsMaintenance1Controller::class, 'destroy'])->name('destroy');
+        Route::get('/{upsMaintenance1}/print', [UpsMaintenance1Controller::class, 'print'])->name('print');
+    });
+
+    // UPS1 Maintenance routes (Grouped under 'ups1' prefix)
+    Route::prefix('ups1')->name('ups1.')->group(function () {
+        Route::get('/', [UpsMaintenance1Controller::class, 'index'])->name('index');
+        Route::get('/create', [UpsMaintenance1Controller::class, 'create'])->name('create');
+        Route::post('/', [UpsMaintenance1Controller::class, 'store'])->name('store');
+        Route::get('/{upsMaintenance1}', [UpsMaintenance1Controller::class, 'show'])->name('show');
+        Route::get('/{upsMaintenance1}/edit', [UpsMaintenance1Controller::class, 'edit'])->name('edit');
+        Route::put('/{upsMaintenance1}', [UpsMaintenance1Controller::class, 'update'])->name('update');
+        Route::delete('/{upsMaintenance1}', [UpsMaintenance1Controller::class, 'destroy'])->name('destroy');
+        Route::get('/{upsMaintenance1}/print', [UpsMaintenance1Controller::class, 'print'])->name('print');
+    });
+
+    //PM shelter
+    Route::prefix('pm-shelter')->name('pm-shelter.')->group(function () {
+        Route::get('/', [PmShelterController::class, 'index'])->name('index');
+        Route::get('/create', [PmShelterController::class, 'create'])->name('create');
+        Route::post('/', [PmShelterController::class, 'store'])->name('store');
+        Route::get('/{pmShelter}', [PmShelterController::class, 'show'])->name('show');
+        Route::get('/{pmShelter}/edit', [PmShelterController::class, 'edit'])->name('edit');
+        Route::put('/{pmShelter}', [PmShelterController::class, 'update'])->name('update');
+        Route::delete('/{pmShelter}', [PmShelterController::class, 'destroy'])->name('destroy');
+        Route::delete('/{pmShelter}/photo/{index}', [PmShelterController::class, 'deletePhoto'])->name('photo.delete');
+        Route::get('/{pmShelter}/export-pdf', [PmShelterController::class, 'exportPdf'])->name('export-pdf');
+    });
+    // UPS3 Maintenance routes (Grouped under 'ups3' prefix)
+    Route::prefix('ups3')->name('ups3.')->group(function () {
+        Route::get('/', [UpsMaintenanceController::class, 'index'])->name('index');
+        Route::get('/create', [UpsMaintenanceController::class, 'create'])->name('create');
+        Route::post('/', [UpsMaintenanceController::class, 'store'])->name('store');
+        Route::get('/{upsMaintenance}', [UpsMaintenanceController::class, 'show'])->name('show');
+        Route::get('/{upsMaintenance}/edit', [UpsMaintenanceController::class, 'edit'])->name('edit');
+        Route::put('/{upsMaintenance}', [UpsMaintenanceController::class, 'update'])->name('update');
+        Route::delete('/{upsMaintenance}', [UpsMaintenanceController::class, 'destroy'])->name('destroy');
+        Route::get('/{upsMaintenance}/print', [UpsMaintenanceController::class, 'print'])->name('print');
+    });
+
+    // Genset Routes (NEW)
+    Route::prefix('genset')->name('genset.')->group(function () {
+        Route::get('/', [GensetController::class, 'index'])->name('index');
+        Route::get('/create', [GensetController::class, 'create'])->name('create');
+        Route::post('/', [GensetController::class, 'store'])->name('store');
+        Route::get('/{id}', [GensetController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [GensetController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [GensetController::class, 'update'])->name('update');
+        Route::delete('/{id}', [GensetController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [GensetController::class, 'pdf'])->name('pdf');
+    });
+
+    // === GROUNDING ROUTES (BARU) ===
+    Route::prefix('grounding')->name('grounding.')->group(function () {
+        Route::get('/', [GroundingController::class, 'index'])->name('index');
+        Route::get('/create', [GroundingController::class, 'create'])->name('create');
+        Route::post('/', [GroundingController::class, 'store'])->name('store');
+        Route::get('/{id}', [GroundingController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [GroundingController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [GroundingController::class, 'update'])->name('update');
+        Route::delete('/{id}', [GroundingController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [GroundingController::class, 'pdf'])->name('pdf');
+    });
 
     // Battery Routes
     Route::prefix('battery')->name('battery.')->group(function () {
@@ -30,27 +110,46 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [BatteryController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [BatteryController::class, 'pdf'])->name('pdf');
     });
-    // Schedule Routes (Jadwal Preventive Maintenance Sentral)
-    Route::prefix('schedule')->name('schedule.')->group(function () {
-        Route::get('/', [ScheduleController::class, 'index'])->name('index');
-        Route::get('/create', [ScheduleController::class, 'create'])->name('create');
-        Route::post('/', [ScheduleController::class, 'store'])->name('store');
-        Route::get('/{id}', [ScheduleController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [ScheduleController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [ScheduleController::class, 'update'])->name('update');
-        Route::delete('/{id}', [ScheduleController::class, 'destroy'])->name('destroy');
-        Route::get('/{id}/pdf', [ScheduleController::class, 'pdf'])->name('pdf');
+
+    // PMPermohonan Routes
+    Route::prefix('pm-permohonan')->name('pm-permohonan.')->group(function () {
+        Route::get('/', [PMPermohonanController::class, 'index'])->name('index');
+        Route::get('/create', [PMPermohonanController::class, 'create'])->name('create');
+        Route::post('/', [PMPermohonanController::class, 'store'])->name('store');
+        Route::get('/{id}', [PMPermohonanController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [PMPermohonanController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [PMPermohonanController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PMPermohonanController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [PMPermohonanController::class, 'pdf'])->name('pdf');
     });
-    // PM Instalasi Kabel dan Panel Distribusi Routes
-    Route::prefix('instalasi-kabel')->name('instalasi-kabel.')->group(function () {
-        Route::get('/', [InstalasiKabelController::class, 'index'])->name('index');
-        Route::get('/create', [InstalasiKabelController::class, 'create'])->name('create');
-        Route::post('/', [InstalasiKabelController::class, 'store'])->name('store');
-        Route::get('/{id}', [InstalasiKabelController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [InstalasiKabelController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [InstalasiKabelController::class, 'update'])->name('update');
-        Route::delete('/{id}', [InstalasiKabelController::class, 'destroy'])->name('destroy');
-        Route::get('/{id}/pdf', [InstalasiKabelController::class, 'pdf'])->name('pdf');
+
+    // Tindak Lanjut Routes
+    Route::resource('tindak-lanjut', TindakLanjutController::class);
+    Route::get('tindak-lanjut/{tindakLanjut}/pdf', [TindakLanjutController::class, 'generatePdf'])
+        ->name('tindak-lanjut.pdf');
+
+    // AC Maintenance Routes (Grouped under 'ac' prefix)
+    Route::prefix('ac')->name('ac.')->group(function () {
+        Route::get('/', [AcMaintenanceConrtoller::class, 'index'])->name('index');
+        Route::get('/create', [AcMaintenanceConrtoller::class, 'create'])->name('create');
+        Route::post('/', [AcMaintenanceConrtoller::class, 'store'])->name('store');
+        Route::get('/{id}', [AcMaintenanceConrtoller::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [AcMaintenanceConrtoller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [AcMaintenanceConrtoller::class, 'update'])->name('update');
+        Route::delete('/{id}', [AcMaintenanceConrtoller::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/print', [AcMaintenanceConrtoller::class, 'print'])->name('print');
+    });
+
+    // === CABLE PANEL ROUTES (BARU) ===
+    Route::prefix('cable-panel')->name('cable-panel.')->group(function () {
+        Route::get('/', [CablePanelMaintenanceController::class, 'index'])->name('index');
+        Route::get('/create', [CablePanelMaintenanceController::class, 'create'])->name('create');
+        Route::post('/', [CablePanelMaintenanceController::class, 'store'])->name('store');
+        Route::get('/{id}', [CablePanelMaintenanceController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [CablePanelMaintenanceController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [CablePanelMaintenanceController::class, 'update'])->name('update');
+        Route::delete('/{id}', [CablePanelMaintenanceController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [CablePanelMaintenanceController::class, 'pdf'])->name('pdf');
     });
 });
 

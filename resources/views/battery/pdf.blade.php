@@ -122,81 +122,56 @@
     </style>
 </head>
 <body>
+    <div class="content-wrapper">
+        <!-- PAGE 1: Data Voltage -->
+        <div class="header">
+            <table>
+                <tr>
+                    <td class="left-section">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="width: 35%; border-bottom: 1px solid #000; padding: 4px;">No. Dok.</td>
+                                <td style="width: 5%; border-bottom: 1px solid #000; padding: 4px;">:</td>
+                                <td style="width: 60%; border-bottom: 1px solid #000; padding: 4px;">FM-LAP- D2-SOP-003-013</td>
+                            </tr>
+                            <tr>
+                                <td style="border-bottom: 1px solid #000; padding: 4px;">Versi</td>
+                                <td style="border-bottom: 1px solid #000; padding: 4px;">:</td>
+                                <td style="border-bottom: 1px solid #000; padding: 4px;">1.0</td>
+                            </tr>
+                            <tr>
+                                <td style="border-bottom: 1px solid #000; padding: 4px;">Hal</td>
+                                <td style="border-bottom: 1px solid #000; padding: 4px;">:</td>
+                                <td style="border-bottom: 1px solid #000; padding: 4px;">1 dari 1</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px;">Label</td>
+                                <td style="padding: 4px;">:</td>
+                                <td style="padding: 4px;">Internal</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="center-section">
+                        <div style="font-size: 16px;">Formulir</div>
+                        <div style="font-size: 14px;">Preventive Maintenance</div>
+                        <div style="font-size: 14px;">Battery</div>
+                    </td>
+                    <td class="right-section">
+                        {{-- <div class="logo">
+                            @php
+                            $logoPath = public_path('images/Lintasarta_Logo_Logogram.png');
+                            @endphp
 
-@php
-    use Carbon\Carbon;
-    $date = Carbon::parse($schedule->bulan);
-    $daysInMonth = $date->daysInMonth;
-    $monthYear = $date->locale('id')->isoFormat('MMMM YYYY');
-    
-    // Konfigurasi Kertas untuk 31 hari (sudah di set di Controller: landscape)
-@endphp
-
-{{-- ================================================================= --}}
-    {{-- HEADER DOKUMEN --}}
-    {{-- ================================================================= --}}
-    <div class="doc-header" style="margin-bottom: 3px;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 7pt; table-layout: fixed;">
-            <tr>
-                {{-- Kiri: Detail Dokumen (No. Dok, Versi, Hal, Label) --}}
-                {{-- Lebar Kolom 35% --}}
-                <td style="width: 35%; border: 1px solid #000; padding: 0;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 6.5pt; table-layout: fixed;">
-                        
-                        {{-- Baris 1: No. Dok. --}}
-                        <tr>
-                            {{-- Padding dikurangi, Garis Vertikal dan Horizontal --}}
-                            <td style="width: 30%; text-align: left; border: none; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 1px 2px;">No. Dok.</td>
-                            <td style="width: 70%; text-align: left; border: none; border-bottom: 1px solid #000; padding: 1px 2px;">
-                                {{ $schedule->doc_number ?? 'FM-LAP-D2-SOP-003-007-X' }} 
-                            </td>
-                        </tr>
-                        
-                        {{-- Baris 2: Versi --}}
-                        <tr>
-                            <td style="width: 30%; text-align: left; border: none; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 1px 2px;">Versi</td>
-                            <td style="width: 70%; text-align: left; border: none; border-bottom: 1px solid #000; padding: 1px 2px;">1.0</td>
-                        </tr>
-                        
-                        {{-- Baris 3: Hal --}}
-                        <tr>
-                            <td style="width: 30%; text-align: left; border: none; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 1px 2px;">Hal</td>
-                            <td style="width: 70%; text-align: left; border: none; border-bottom: 1px solid #000; padding: 1px 2px;">1 dari 1</td>
-                        </tr>
-                        
-                        {{-- Baris 4: Label --}}
-                        <tr>
-                            <td style="width: 30%; text-align: left; border: none; border-right: 1px solid #000; padding: 1px 2px;">Label</td>
-                            <td style="width: 70%; text-align: left; border: none; padding: 1px 2px;">Internal</td>
-                        </tr>
-                    </table>
-                </td>
-
-                {{-- Tengah: Judul Formulir --}}
-                <td style="width: 45%; border: 1px solid #000; border-left: none; text-align: center; vertical-align: middle; padding: 2px;">
-                    <span style="font-weight: bold; font-size: 10pt;">Formulir</span>
-                    <br>
-                    <span style="font-weight: bold; font-size: 8pt;">Jadwal Preventive Maintenance Sentral</span>
-                </td>
-
-                {{-- Kanan: Logo --}}
-                {{-- Kunci: Menggunakan vertical-align: middle dan padding 2px. Tinggi total baris ini akan menyesuaikan tinggi kolom kiri. --}}
-                <td style="width: 20%; border: 1px solid #000; border-left: none; text-align: center; vertical-align: middle; padding: 2px;">
-                    @if ($logoBase64)
-                        {{-- Tinggi logo disesuaikan lebih kecil --}}
-                        <img src="{{ $logoBase64 }}" alt="Logo Perusahaan" style="max-width: 90%; max-height: 30px;">
-                    @else
-                        <div style="width: 35px; height: 35px; background-color: #ccc; margin: 0 auto; line-height: 35px; font-size: 6pt;">NO LOGO</div>
-                    @endif
-                </td>
-            </tr>
-        </table>
-        
-        {{-- Bulan (Diletakkan di bawah tabel header) --}}
-        <div style="text-align: center; margin-top: 1px;">
-            <span style="font-size: 8pt;">Bulan : {{ Carbon\Carbon::parse($schedule->bulan)->locale('id')->isoFormat('MMMM YYYY') }}</span>
+                            @if(file_exists($logoPath))
+                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($logoPath)) }}" alt="Company Logo" style="width: 80px; height: 80px; object-fit: contain;">
+                            @else
+                            <div style="font-size:8px; color:red;">Logo not found</div>
+                            @endif --}}
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
-    </div>
 
 {{-- ================================================================= --}}
 {{-- INFORMASI BULAN --}}
