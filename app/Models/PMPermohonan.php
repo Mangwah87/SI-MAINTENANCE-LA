@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class FollowUpRequest extends Model
+class PMPermohonan extends Model
 {
     use HasFactory;
 
+    protected $table = 'pm_permohonan';
+
     protected $fillable = [
         'user_id',
+        'nama',
         'tanggal',
         'jam',
         'lokasi',
@@ -24,6 +27,7 @@ class FollowUpRequest extends Model
         'ditujukan_sub_department',
         'diinformasikan_melalui',
         'catatan',
+        'status',
     ];
 
     protected $casts = [
@@ -31,7 +35,7 @@ class FollowUpRequest extends Model
     ];
 
     /**
-     * Get the user that owns the follow up request.
+     * Get the user that owns the PM permohonan.
      */
     public function user(): BelongsTo
     {
