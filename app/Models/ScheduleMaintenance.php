@@ -17,17 +17,17 @@ class ScheduleMaintenance extends Model
     protected $fillable = [
         'user_id',       // Kunci asing ke User (yang membuat jadwal)
         'doc_number',    // Nomor dokumen
-        'bulan',         // Bulan jadwal (misalnya, '2025-10-01')
+        'tanggal_pembuatan', // Ganti dari 'bulan'
         'dibuat_oleh',   // Nama yang membuat dokumen
         'mengetahui',    // Nama yang mengetahui dokumen
     ];
 
     /**
      * Kolom yang harus di-cast menjadi tipe data tertentu.
-     * 'bulan' di-cast menjadi Carbon instance agar mudah dimanipulasi.
+     * 'tanggal_pembuatan' di-cast menjadi Carbon instance agar mudah dimanipulasi.
      */
     protected $casts = [
-        'bulan' => 'date',
+        'tanggal_pembuatan' => 'date', // Ganti dari 'bulan'
     ];
 
     /**

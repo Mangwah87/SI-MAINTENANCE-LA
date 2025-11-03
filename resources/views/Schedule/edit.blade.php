@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <h2 class="font-semibold text-lg sm:text-xl text-gray-800 leading-tight">
-                {{ __('Formulir Jadwal PM Sentral') }}
-            </h2>
+<h2 class="font-semibold text-lg sm:text-xl text-gray-800 leading-tight">
+    {{ __('Edit Jadwal PM Sentral') }}: {{ \Carbon\Carbon::parse($schedule->tanggal_pembuatan)->isoFormat('D MMMM Y') }}
+</h2>
             <a href="{{ route('schedule.index') }}"
                 class="inline-flex items-center px-3 sm:px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm sm:text-base font-semibold rounded-lg transition-colors duration-200 w-full sm:w-auto justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -26,70 +26,95 @@
                 <x-alert type="warning" :errors="$errors" />
             @endif
 
-            <form action="{{ route('schedule.store') }}" method="POST" id="scheduleForm" class="bg-white p-6 sm:p-8 shadow-xl sm:rounded-lg">
+            <form action="{{ route('schedule.update', $schedule->id) }}" method="POST" id="scheduleForm" class="bg-white p-6 sm:p-8 shadow-xl sm:rounded-lg">
                 @csrf
+                @method('PUT')
                 
+                @php
+                    $extractNameAndNik = function($combinedString) {
+                        $name = $combinedString;
+                        $nik = '';
+                        if (preg_match('/\s\((.*?)\)$/', $combinedString, $matches)) {
+                            $nik = $matches[1];
+                            $name = trim(str_replace($matches[0], '', $combinedString));
+                        }
+                        return ['name' => $name, 'nik' => $nik];
+                    };
+
+                    $dibuatOleh = $extractNameAndNik($schedule->dibuat_oleh);
+                    $mengetahui = $extractNameAndNik($schedule->mengetahui);
+                @endphp
+
                 <h3 class="text-xl font-bold mb-4 border-b pb-2 text-blue-600">Data Utama Jadwal</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"> 
                     
                     {{-- BARIS 1 --}}
                     
-                    {{-- Kolom 1: Tanggal Pembuatan (Dipindahkan dari Baris 2) --}}
+                    {{-- Kolom 1 di baris 2: Tanggal Pembuatan --}}
                     <div>
                         <x-input-label for="tanggal_pembuatan" :value="__('Tanggal Pembuatan')" />
-                        <x-text-input id="tanggal_pembuatan" name="tanggal_pembuatan" type="date" class="mt-1 block w-full" :value="old('tanggal_pembuatan', \Carbon\Carbon::now()->format('Y-m-d'))" required autofocus />
+                        <x-text-input id="tanggal_pembuatan" name="tanggal_pembuatan" type="date" class="mt-1 block w-full" :value="old('tanggal_pembuatan', $schedule->tanggal_pembuatan ? \Carbon\Carbon::parse($schedule->tanggal_pembuatan)->format('Y-m-d') : \Carbon\Carbon::now()->format('Y-m-d'))" required />
                         <x-input-error class="mt-2" :messages="$errors->get('tanggal_pembuatan')" />
+                        <div class="text-xs text-gray-500 mt-1">Nomor: {{ $schedule->doc_number }}</div>
                     </div>
 
                     {{-- Kolom 2: Dibuat Oleh (Nama Petugas) --}}
                     <div>
                         <x-input-label for="dibuat_oleh_nama" :value="__('Dibuat Oleh (Nama Petugas)')" />
-                        <x-text-input id="dibuat_oleh_nama" name="dibuat_oleh_nama" type="text" class="mt-1 block w-full" :value="old('dibuat_oleh_nama', Auth::user()->name ?? '')" required />
+                        <x-text-input id="dibuat_oleh_nama" name="dibuat_oleh_nama" type="text" class="mt-1 block w-full" :value="old('dibuat_oleh_nama', $dibuatOleh['name'])" required />
                         <x-input-error class="mt-2" :messages="$errors->get('dibuat_oleh_nama')" />
                     </div>
 
                     {{-- Kolom 3: Mengetahui (Nama Manajer) --}}
                     <div>
                         <x-input-label for="mengetahui_nama" :value="__('Mengetahui (Nama Manajer)')" />
-                        <x-text-input id="mengetahui_nama" name="mengetahui_nama" type="text" class="mt-1 block w-full" :value="old('mengetahui_nama')" placeholder="Nama Manajer" required />
+                        <x-text-input id="mengetahui_nama" name="mengetahui_nama" type="text" class="mt-1 block w-full" :value="old('mengetahui_nama', $mengetahui['name'])" placeholder="Nama Manajer" required />
                         <x-input-error class="mt-2" :messages="$errors->get('mengetahui_nama')" />
                     </div>
                     
                     {{-- BARIS 2 --}}
                     
-                    {{-- Kolom 1 di baris 2: NIK Petugas (Dipindahkan ke posisi awal di baris ini) --}}
+                    {{-- Kolom 2 di baris 2: NIK Dibuat Oleh --}}
                     <div class="md:col-span-1">
                         <x-input-label for="dibuat_oleh_nik" :value="__('NIK Petugas')" />
-                        <x-text-input id="dibuat_oleh_nik" name="dibuat_oleh_nik" type="text" class="mt-1 block w-full" :value="old('dibuat_oleh_nik')" placeholder="NIK Petugas" required />
+                        <x-text-input id="dibuat_oleh_nik" name="dibuat_oleh_nik" type="text" class="mt-1 block w-full" :value="old('dibuat_oleh_nik', $dibuatOleh['nik'])" placeholder="NIK Petugas" />
                         <x-input-error class="mt-2" :messages="$errors->get('dibuat_oleh_nik')" />
                     </div>
 
-                    {{-- Kolom 2 di baris 2: NIK Manajer --}}
+                    {{-- Kolom 3 di baris 2: NIK Mengetahui --}}
                     <div class="md:col-span-1">
                         <x-input-label for="mengetahui_nik" :value="__('NIK Manajer')" />
-                        <x-text-input id="mengetahui_nik" name="mengetahui_nik" type="text" class="mt-1 block w-full" :value="old('mengetahui_nik')" placeholder="NIK Manajer" required />
+                        <x-text-input id="mengetahui_nik" name="mengetahui_nik" type="text" class="mt-1 block w-full" :value="old('mengetahui_nik', $mengetahui['nik'])" placeholder="NIK Manajer" />
                         <x-input-error class="mt-2" :messages="$errors->get('mengetahui_nik')" />
                     </div>
                     
-                    {{-- Kolom 3 di baris 2: Dikosongkan (optional) atau ditambahkan field lain jika ada --}}
-                    <div></div> 
-                    
                 </div>
-
+                
                 <h3 class="text-xl font-bold mb-4 border-b pb-2 text-blue-600">Detail Lokasi PM</h3>
                 <div id="locations-container" class="space-y-4 mb-6">
                     
                     @php
-                        $locations_data = old('locations', [[]]); 
+                        $locations_data = old('locations', $schedule->locations->toArray()); 
                     @endphp
 
                     @foreach ($locations_data as $index => $location)
                         @php
+                            $location_id = $location['id'] ?? null;
+                            
+                            $petugasData = $extractNameAndNik($location['petugas'] ?? '');
+                            $petugas_nama_value = old("locations.$index.petugas_nama", $location['petugas_nama'] ?? $petugasData['name']);
+
                             $nama_value = old("locations.$index.nama", $location['nama'] ?? '');
-                            $petugas_value = old("locations.$index.petugas", $location['petugas'] ?? '');
                             $rencana_old = old("locations.$index.rencana", $location['rencana'] ?? []);
                             $realisasi_old = old("locations.$index.realisasi", $location['realisasi'] ?? []);
 
+                            if (!is_array($rencana_old) && is_string($rencana_old) && $rencana_old) {
+                                $rencana_old = json_decode($rencana_old, true) ?: [];
+                            }
+                            if (!is_array($realisasi_old) && is_string($realisasi_old) && $realisasi_old) {
+                                $realisasi_old = json_decode($realisasi_old, true) ?: [];
+                            }
+                            
                             $is_permanent = $index == 0;
                             $rencana_name = "locations[$index][rencana]";
                             $realisasi_name = "locations[$index][realisasi]";
@@ -98,6 +123,10 @@
                         <div class="location-item border p-4 rounded-lg shadow-sm bg-gray-50 grid grid-cols-1 gap-4" data-index="{{ $index }}" data-permanent="{{ $is_permanent ? 'true' : 'false' }}">
                             <div class="col-span-1 flex justify-between items-center mb-2">
                                 <h4 class="location-title font-semibold text-gray-700">Lokasi #{{ $index + 1 }}</h4>
+                                
+                                @if($location_id)
+                                    <input type="hidden" name="locations[{{ $index }}][id]" value="{{ $location_id }}">
+                                @endif
                                 
                                 @if(!$is_permanent)
                                 <button type="button" class="remove-location-btn text-red-500 hover:text-red-700 transition-colors duration-200" data-index="{{ $index }}">
@@ -125,7 +154,7 @@
                                                 <input id="{{ $rencana_name }}_all" type="checkbox" 
                                                     class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-indigo-300 rounded" 
                                                     onclick="handleAllToggle(this, '{{ $rencana_name }}')"
-                                                    {{ count($rencana_old) == 31 ? 'checked' : '' }}>
+                                                    {{ count(array_filter($rencana_old, 'is_numeric')) == 31 ? 'checked' : '' }}>
                                                 <label for="{{ $rencana_name }}_all" class="text-xs font-semibold text-indigo-700 ml-1 select-none">PILIH SEMUA</label>
                                             </div>
                                             
@@ -147,7 +176,7 @@
                                 <div class="md:col-span-1 flex flex-col gap-4">
                                     <div>
                                         <x-input-label for="locations[{{ $index }}][petugas_nama]" :value="__('Petugas Pelaksana')" /> 
-                                        <x-text-input id="locations[{{ $index }}][petugas_nama]" name="locations[{{ $index }}][petugas_nama]" type="text" class="mt-1 block w-full" value="{{ $petugas_value }}" required />
+                                        <x-text-input id="locations[{{ $index }}][petugas_nama]" name="locations[{{ $index }}][petugas_nama]" type="text" class="mt-1 block w-full" value="{{ $petugas_nama_value }}" required />
                                         <x-input-error class="mt-2" :messages="$errors->get('locations.' . $index . '.petugas_nama')" /> 
                                     </div>
 
@@ -158,7 +187,7 @@
                                                 <input id="{{ $realisasi_name }}_all" type="checkbox" 
                                                     class="focus:ring-green-500 h-4 w-4 text-green-600 border-green-300 rounded" 
                                                     onclick="handleAllToggle(this, '{{ $realisasi_name }}')"
-                                                    {{ count($realisasi_old) == 31 ? 'checked' : '' }}>
+                                                    {{ count(array_filter($realisasi_old, 'is_numeric')) == 31 ? 'checked' : '' }}>
                                                 <label for="{{ $realisasi_name }}_all" class="text-xs font-semibold text-green-700 ml-1 select-none">PILIH SEMUA</label>
                                             </div>
 
@@ -178,7 +207,7 @@
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                    @endforeach {{-- <--- PENUTUP YANG HILANG DITAMBAHKAN DI SINI --}}
                 </div>
 
                 <div class="flex justify-start mb-8">
@@ -191,8 +220,8 @@
                 </div>
 
                 <div class="flex items-center justify-end">
-                    <x-primary-button class="ml-4">
-                        {{ __('Simpan Jadwal') }}
+                    <x-primary-button class="ml-4 bg-yellow-600 hover:bg-yellow-700">
+                        {{ __('Perbarui Jadwal') }}
                     </x-primary-button>
                 </div>
             </form>
@@ -296,6 +325,7 @@
                 <div class="location-item border p-4 rounded-lg shadow-sm bg-gray-50 grid grid-cols-1 gap-4" data-index="${index}" data-permanent="${isPermanent}">
                     <div class="col-span-1 flex justify-between items-center mb-2">
                         <h4 class="location-title font-semibold text-gray-700">Lokasi #${displayNum}</h4>
+                        <input type="hidden" name="locations[${index}][id]" value="">
                         ${isPermanent ? 
                             `<span></span>` : 
                             `<button type="button" class="remove-location-btn text-red-500 hover:text-red-700 transition-colors duration-200" data-index="${index}">
@@ -369,40 +399,25 @@
             const button = e.target.closest('.remove-location-btn');
             if (button) {
                 const item = button.closest('.location-item');
-                if (item && item.getAttribute('data-permanent') !== 'true') {
-                    item.remove();
-                    reindexLocations();
+                if (item) {
+                    if (item.getAttribute('data-permanent') !== 'true' || locationsContainer.querySelectorAll('.location-item').length > 1) {
+                        item.remove();
+                        reindexLocations();
+                    } else {
+                         alert('Minimal harus ada satu Lokasi PM. Silakan edit isinya.');
+                         const inputs = item.querySelectorAll('input[type="text"]');
+                         inputs.forEach(input => input.value = '');
+                         const checkboxes = item.querySelectorAll('input[type="checkbox"]');
+                         checkboxes.forEach(cb => cb.checked = false);
+                    }
                 }
             }
         });
-
-        // Panggil reindexLocations saat form dimuat untuk memastikan semua checkbox punya handler yang benar
-        reindexLocations();
-
-        // Tambahkan fungsi untuk inisialisasi status "PILIH SEMUA" pada load
-        document.addEventListener('DOMContentLoaded', () => {
-            locationsContainer.querySelectorAll('.location-item').forEach(item => {
-                const index = item.getAttribute('data-index');
-                if (index !== null) {
-                    const rencanaName = `locations[${index}][rencana]`;
-                    const realisasiName = `locations[${index}][realisasi]`;
-                    
-                    const rencanaCheckboxes = item.querySelectorAll(`input[name="${rencanaName}[]"]`);
-                    const realisasiCheckboxes = item.querySelectorAll(`input[name="${realisasiName}[]"]`);
-
-                    const rencanaAll = item.querySelector(`input[id="${rencanaName}_all"]`);
-                    const realisasiAll = item.querySelector(`input[id="${realisasiName}_all"]`);
-
-                    if (rencanaAll && rencanaCheckboxes.length > 0) {
-                        const checkedRencana = Array.from(rencanaCheckboxes).filter(cb => cb.checked).length;
-                        rencanaAll.checked = checkedRencana === rencanaCheckboxes.length;
-                    }
-                    if (realisasiAll && realisasiCheckboxes.length > 0) {
-                        const checkedRealisasi = Array.from(realisasiCheckboxes).filter(cb => cb.checked).length;
-                        realisasiAll.checked = checkedRealisasi === realisasiCheckboxes.length;
-                    }
-                }
-            });
+        
+        document.querySelectorAll('.location-item').forEach(item => {
+            const index = item.getAttribute('data-index');
+            handleCheckboxClick(item.querySelector(`input[name="locations[${index}][rencana][]"]`));
+            handleCheckboxClick(item.querySelector(`input[name="locations[${index}][realisasi][]"]`));
         });
     </script>
     
@@ -414,13 +429,7 @@
         .grid-cols-6 > div:not(.col-span-6) {
             display: flex;
             align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 2rem;
-            padding: 0.25rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.125rem;
-            transition: background-color 0.15s;
-        }
+            justify-content: center
+}
     </style>
 </x-app-layout>

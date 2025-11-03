@@ -18,12 +18,7 @@ class ScheduleLocation extends Model
         'rencana', 
         'realisasi'
     ]; 
-
-    /**
-     * ✅ PERBAIKAN KRUSIAL: Kolom yang akan di-cast menjadi tipe data native.
-     * Ini memastikan 'rencana' dan 'realisasi' diakses sebagai PHP Array,
-     * yang dibutuhkan oleh fungsi in_array() di Blade.
-     */
+    
     protected $casts = [
         'rencana' => 'array',    
         'realisasi' => 'array',  

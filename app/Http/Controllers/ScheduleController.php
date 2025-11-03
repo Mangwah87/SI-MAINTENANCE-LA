@@ -12,29 +12,43 @@ use Carbon\Carbon;
 
 class ScheduleController extends Controller
 {
-    /**
-     * Menampilkan daftar semua jadwal.
-     */
-    public function index()
+
+    public function index(Request $request)
     {
-        $schedules = ScheduleMaintenance::with('locations')
-            ->orderBy('bulan', 'desc')
-            ->paginate(10);
+        // Query dasar dengan relasi
+        $query = ScheduleMaintenance::with('locations')
+            ->withCount('locations');
+
+        // === FITUR PENCARIAN ===
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            
+            $query->where(function($q) use ($searchTerm) {
+                // Cari berdasarkan tanggal pembuatan
+                $q->where('tanggal_pembuatan', 'like', '%' . $searchTerm . '%')
+                  // Cari berdasarkan dibuat oleh
+                  ->orWhere('dibuat_oleh', 'like', '%' . $searchTerm . '%')
+                  // Cari berdasarkan nama lokasi
+                  ->orWhereHas('locations', function($locationQuery) use ($searchTerm) {
+                      $locationQuery->where('nama', 'like', '%' . $searchTerm . '%');
+                  });
+            });
+        }
+
+        // Default: Urutkan berdasarkan tanggal pembuatan terbaru
+        $query->orderBy('tanggal_pembuatan', 'desc');
+
+        // Pagination dengan 10 item per halaman
+        $schedules = $query->paginate(10);
 
         return view('schedule.index', compact('schedules'));
     }
 
-    /**
-     * Menampilkan formulir untuk membuat jadwal baru.
-     */
     public function create()
     {
         return view('schedule.create');
     }
 
-    /**
-     * Menyimpan data jadwal baru ke database.
-     */
     public function store(Request $request)
     {
         try {
@@ -42,7 +56,7 @@ class ScheduleController extends Controller
 
             // 1. Validasi Data Utama dan Lokasi
             $validated = $request->validate([
-                'bulan' => 'required|date_format:Y-m',
+                'tanggal_pembuatan' => 'required|date_format:Y-m-d',
                 'dibuat_oleh_nama' => 'required|string|max:255',
                 'dibuat_oleh_nik' => 'nullable|string|max:255', 
                 'mengetahui_nama' => 'required|string|max:255',
@@ -57,19 +71,15 @@ class ScheduleController extends Controller
                 'locations.*.realisasi' => 'nullable|array',
             ]);
 
-            // --- PERUBAHAN UTAMA: LOGIKA PEMBENTUKAN NOMOR DOKUMEN BARU ---
-            // Format Baru: FM-LAP-D2-SOP-003-007-X (Nomor urut global, tidak terikat bulan)
+            // --- LOGIKA PEMBENTUKAN NOMOR DOKUMEN ---
             $newPrefix = 'FM-LAP-D2-SOP-003-007-';
             
-            // 1. Cari nomor dokumen terakhir dengan prefix yang sama
             $lastSchedule = ScheduleMaintenance::where('doc_number', 'like', $newPrefix . '%')
                                                ->orderBy('doc_number', 'desc')
                                                ->first();
             
-            // 2. Hitung nomor urut baru
             $newSequence = 1;
             if ($lastSchedule) {
-                // Ambil bagian angka di akhir string (setelah prefix)
                 $lastSequenceString = substr($lastSchedule->doc_number, strlen($newPrefix));
                 
                 if (is_numeric($lastSequenceString)) {
@@ -78,12 +88,8 @@ class ScheduleController extends Controller
                 }
             }
             
-            // 3. Gabungkan nomor dokumen baru
             $docNumber = $newPrefix . $newSequence;
-            // --- AKHIR LOGIKA NOMOR DOKUMEN ---
             
-            $monthYear = Carbon::parse($validated['bulan']); // Tetap butuh untuk kolom 'bulan'
-
             // 2. Siapkan Data Utama: GABUNGKAN NAMA dan NIK
             $dibuatOleh = $validated['dibuat_oleh_nama'];
             if (!empty($validated['dibuat_oleh_nik'])) {
@@ -98,15 +104,14 @@ class ScheduleController extends Controller
             // 3. Simpan Data Utama
             $schedule = ScheduleMaintenance::create([
                 'user_id' => Auth::id(), 
-                'doc_number' => $docNumber, // Menggunakan nomor dokumen baru
-                'bulan' => $monthYear->startOfMonth(),
+                'doc_number' => $docNumber,
+                'tanggal_pembuatan' => $validated['tanggal_pembuatan'],
                 'dibuat_oleh' => $dibuatOleh,
                 'mengetahui' => $mengetahui,
             ]);
 
             // 4. Simpan Detail Lokasi
             foreach ($validated['locations'] as $locationData) {
-                // GABUNGKAN NAMA dan NIK Petugas
                 $petugas = $locationData['petugas_nama'];
                 if (!empty($locationData['petugas_nik'])) {
                     $petugas .= ' (' . $locationData['petugas_nik'] . ')';
@@ -114,9 +119,9 @@ class ScheduleController extends Controller
                 
                 $schedule->locations()->create([
                     'nama' => $locationData['nama'],
-                    'petugas' => $petugas, // Menggunakan gabungan Nama dan NIK
-                    'rencana' => json_encode($locationData['rencana'] ?? []), // Konversi eksplisit ke JSON
-                    'realisasi' => json_encode($locationData['realisasi'] ?? []), // Konversi eksplisit ke JSON
+                    'petugas' => $petugas,
+                    'rencana' => $locationData['rencana'] ?? [],
+                    'realisasi' => $locationData['realisasi'] ?? [],
                 ]);
             }
 
@@ -136,27 +141,18 @@ class ScheduleController extends Controller
         }
     }
 
-    /**
-     * Menampilkan detail jadwal.
-     */
     public function show(string $id)
     {
         $schedule = ScheduleMaintenance::with('locations')->findOrFail($id);
         return view('schedule.show', compact('schedule'));
     }
 
-    /**
-     * Menampilkan formulir untuk mengedit jadwal.
-     */
     public function edit(string $id)
     {
         $schedule = ScheduleMaintenance::with('locations')->findOrFail($id);
         return view('schedule.edit', compact('schedule'));
     }
 
-    /**
-     * Memperbarui data jadwal di database.
-     */
     public function update(Request $request, string $id)
     {
         try {
@@ -164,7 +160,7 @@ class ScheduleController extends Controller
 
             // 1. Validasi Data Utama dan Lokasi
             $validated = $request->validate([
-                'bulan' => 'required|date_format:Y-m',
+                'tanggal_pembuatan' => 'required|date_format:Y-m-d',
                 'dibuat_oleh_nama' => 'required|string|max:255',
                 'dibuat_oleh_nik' => 'nullable|string|max:255', 
                 'mengetahui_nama' => 'required|string|max:255',
@@ -184,7 +180,7 @@ class ScheduleController extends Controller
 
             $schedule = ScheduleMaintenance::findOrFail($id);
             
-            // 2. Siapkan Data Utama untuk Update: GABUNGKAN NAMA dan NIK
+            // 2. Siapkan Data Utama untuk Update
             $dibuatOleh = $validated['dibuat_oleh_nama'];
             if (!empty($validated['dibuat_oleh_nik'])) {
                 $dibuatOleh .= ' (' . $validated['dibuat_oleh_nik'] . ')';
@@ -196,9 +192,8 @@ class ScheduleController extends Controller
             }
             
             // 3. Update Data Utama
-            // Nomor dokumen TIDAK diubah saat update.
             $schedule->update([
-                'bulan' => $validated['bulan'] . '-01',
+                'tanggal_pembuatan' => $validated['tanggal_pembuatan'],
                 'dibuat_oleh' => $dibuatOleh, 
                 'mengetahui' => $mengetahui, 
             ]);
@@ -208,8 +203,6 @@ class ScheduleController extends Controller
             $updatedLocationIds = [];
             
             foreach ($validated['locations'] as $locationData) {
-                
-                // GABUNGKAN NAMA dan NIK Petugas untuk update
                 $petugas = $locationData['petugas_nama'];
                 if (!empty($locationData['petugas_nik'])) {
                     $petugas .= ' (' . $locationData['petugas_nik'] . ')';
@@ -217,20 +210,20 @@ class ScheduleController extends Controller
                 
                 $locationUpdateData = [
                     'nama' => $locationData['nama'],
-                    'petugas' => $petugas, // Menggunakan gabungan Nama dan NIK
+                    'petugas' => $petugas,
                 ];
                 
                 // Penanganan rencana dan realisasi
                 if (isset($locationData['rencana'])) {
-                    $locationUpdateData['rencana'] = json_encode($locationData['rencana']);
+                    $locationUpdateData['rencana'] = $locationData['rencana'];
                 } else {
-                    $locationUpdateData['rencana'] = '[]'; 
+                    $locationUpdateData['rencana'] = []; 
                 }
-                
+
                 if (isset($locationData['realisasi'])) {
-                    $locationUpdateData['realisasi'] = json_encode($locationData['realisasi']);
+                    $locationUpdateData['realisasi'] = $locationData['realisasi'];
                 } else {
-                    $locationUpdateData['realisasi'] = '[]'; 
+                    $locationUpdateData['realisasi'] = [];
                 }
                 
                 if (isset($locationData['id']) && in_array($locationData['id'], $existingLocationIds)) {
@@ -250,7 +243,6 @@ class ScheduleController extends Controller
                 ScheduleLocation::whereIn('id', $deletedIds)->delete();
             }
 
-
             DB::commit();
 
             return redirect()->route('schedule.index')
@@ -266,15 +258,12 @@ class ScheduleController extends Controller
         }
     }
 
-    /**
-     * Menghapus data jadwal.
-     */
     public function destroy(string $id)
     {
         try {
             $schedule = ScheduleMaintenance::findOrFail($id);
 
-            // Hapus detail lokasi (ScheduleLocation) terlebih dahulu
+            // Hapus detail lokasi terlebih dahulu
             $schedule->locations()->delete();
             
             // Hapus data utama
@@ -288,16 +277,30 @@ class ScheduleController extends Controller
         }
     }
 
-    /**
-     * Membuat file PDF untuk jadwal.
-     */
     public function pdf(string $id)
     {
         $schedule = ScheduleMaintenance::with('locations')->findOrFail($id);
 
+        // Pisahkan Nama dan NIK dari string gabungan
+        if (preg_match('/^(.+?)\s*\(([^)]+)\)$/', $schedule->dibuat_oleh, $matches)) {
+            $schedule->dibuat_oleh_nama = trim($matches[1]);
+            $schedule->dibuat_oleh_nik = trim($matches[2]);
+        } else {
+            $schedule->dibuat_oleh_nama = $schedule->dibuat_oleh;
+            $schedule->dibuat_oleh_nik = '-';
+        }
+        
+        if (preg_match('/^(.+?)\s*\(([^)]+)\)$/', $schedule->mengetahui, $matches)) {
+            $schedule->mengetahui_nama = trim($matches[1]);
+            $schedule->mengetahui_nik = trim($matches[2]);
+        } else {
+            $schedule->mengetahui_nama = $schedule->mengetahui;
+            $schedule->mengetahui_nik = '-';
+        }
+
         $pdf = Pdf::loadView('schedule.pdf', compact('schedule'))
             ->setPaper('letter', 'landscape'); 
 
-        return $pdf->stream('Jadwal PM Sentral - ' . Carbon::parse($schedule->bulan)->format('M Y') . '.pdf');
+        return $pdf->stream('Jadwal PM Sentral - ' . Carbon::parse($schedule->tanggal_pembuatan)->isoFormat('D MMMM Y') . '.pdf');
     }
 }
