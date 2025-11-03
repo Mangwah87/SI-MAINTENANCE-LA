@@ -148,10 +148,10 @@
         <table class="header-table">
             <tr>
                 <td width="15%" style="vertical-align: top;">
-                    <div style="font-weight: bold; font-size: 9pt;">No. Dok.</div>
+                    <div style="font-size: 9pt;">No. Dok.</div>
                 </td>
                 <td width="30%" style="vertical-align: top;">
-                    <div style="font-weight: bold; font-size: 9pt;">FM-LAP-D2-SOP-003-003</div>
+                    <div style="font-size: 9pt;">FM-LAP-D2-SOP-003-003</div>
                 </td>
                 <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
                     <div style="font-weight: bold; font-size: 13pt;">Formulir</div>
@@ -293,12 +293,12 @@
             @php
                 // Define all AC standards
                 $acStandards = [
-                    1 => ['label' => '¾-1 PK', 'standard' => '<span class="symbol">&frac34;</span>-1 PK <span class="symbol">&le;</span> 4 A'],
-                    2 => ['label' => '2 PK', 'standard' => '2 PK <span class="symbol">&le;</span> 10 A'],
-                    3 => ['label' => '2.5 PK', 'standard' => '2.5 PK <span class="symbol">&le;</span> 13.5 A'],
-                    4 => ['label' => '5-7 PK', 'standard' => '5-7 PK <span class="symbol">&le;</span> 8 A / Phase'],
-                    5 => ['label' => '10 PK', 'standard' => '10 PK <span class="symbol">&le;</span> 15 A / Phase'],
-                    6 => ['label' => '15 PK', 'standard' => '15 PK <span class="symbol">&le;</span> 25 A / Phase'],
+                    1 => ['label' => '', 'standard' => '<span class="symbol">&frac34;</span>-1 PK <span class="symbol">&le;</span> 4 A'],
+                    2 => ['label' => '', 'standard' => '2 PK <span class="symbol">&le;</span> 10 A'],
+                    3 => ['label' => '', 'standard' => '2.5 PK <span class="symbol">&le;</span> 13.5 A'],
+                    4 => ['label' => '', 'standard' => '5-7 PK <span class="symbol">&le;</span> 8 A / Phase'],
+                    5 => ['label' => '', 'standard' => '10 PK <span class="symbol">&le;</span> 15 A / Phase'],
+                    6 => ['label' => '', 'standard' => '15 PK <span class="symbol">&le;</span> 25 A / Phase'],
                     7 => ['label' => '', 'standard' => '']
                 ];
             @endphp

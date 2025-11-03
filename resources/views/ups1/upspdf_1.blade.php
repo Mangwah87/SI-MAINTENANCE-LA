@@ -124,10 +124,10 @@
         <table class="header-table">
             <tr>
                 <td width="15%" style="vertical-align: top;">
-                    <div style="font-weight: bold; font-size: 9pt;">No. Dok.</div>
+                    <div style="font-size: 9pt;">No. Dok.</div>
                 </td>
                 <td width="30%" style="vertical-align: top;">
-                    <div style="font-weight: bold; font-size: 9pt;">FM-LAP-D2-SOP-003-001</div>
+                    <div style="font-size: 9pt;">FM-LAP-D2-SOP-003-001</div>
                 </td>
                 <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
                     <div style="font-weight: bold; font-size: 12pt;">Formulir</div>

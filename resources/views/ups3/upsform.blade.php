@@ -136,7 +136,7 @@
                                     @error('location') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
-                                <div> ?0
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
                                         Tanggal <span class="text-red-500">*</span>
                                     </label>
