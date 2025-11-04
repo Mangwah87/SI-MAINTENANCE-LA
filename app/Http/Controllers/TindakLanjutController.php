@@ -11,6 +11,7 @@ class TindakLanjutController extends Controller
     public function index()
     {
         $tindakLanjuts = TindakLanjut::with('user')
+            ->where('user_id', auth()->id())
             ->orderBy('tanggal', 'desc')
             ->paginate(10);
 
@@ -24,7 +25,9 @@ class TindakLanjutController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        // Base validation rules
+        $rules = [
+            'berdasarkan' => 'required|in:permohonan_tindak_lanjut,pelaksanaan_pm',
             'tanggal' => 'required|date',
             'jam' => 'required',
             'lokasi' => 'required|string|max:255',
@@ -32,62 +35,107 @@ class TindakLanjutController extends Controller
             'permasalahan' => 'required|string',
             'tindakan_penyelesaian' => 'required|string',
             'hasil_perbaikan' => 'required|string',
-            'selesai_tanggal' => 'nullable|date',
-            'selesai_jam' => 'nullable',
-            'tidak_lanjut' => 'nullable|string',
-            'pelaksana_nama' => 'required|string|max:255',
-            'pelaksana_department' => 'required|string|max:255',
-            'pelaksana_sub_department' => 'nullable|string|max:255',
+            'status_penyelesaian' => 'required|in:selesai,tidak_selesai',
+            'pelaksana' => 'required|array|min:1',
+            'pelaksana.*.nama' => 'required|string|max:255',
+            'pelaksana.*.department' => 'required|string|max:255',
+            'pelaksana.*.sub_department' => 'nullable|string|max:255',
             'mengetahui_nama' => 'required|string|max:255',
             'mengetahui_nik' => 'required|string|max:255',
-        ]);
+        ];
 
-        TindakLanjut::create([
-            'user_id' => auth()->id(),
-            'tanggal' => $validated['tanggal'],
-            'jam' => $validated['jam'],
-            'lokasi' => $validated['lokasi'],
-            'ruang' => $validated['ruang'],
-            'permasalahan' => $validated['permasalahan'],
-            'tindakan_penyelesaian' => $validated['tindakan_penyelesaian'],
-            'hasil_perbaikan' => $validated['hasil_perbaikan'],
-            'department' => $validated['pelaksana_department'],
-            'sub_department' => $validated['pelaksana_sub_department'] ?? null,
-            'permohonan_tindak_lanjut' => $request->has('permohonan_tindak_lanjut'),
-            'pelaksanaan_pm' => $request->has('pelaksanaan_pm'),
-            'selesai' => $request->has('selesai'),
-            'selesai_tanggal' => $validated['selesai_tanggal'] ?? null,
-            'selesai_jam' => $validated['selesai_jam'] ?? null,
-            'tidak_selesai' => $request->has('tidak_selesai'),
-            'tidak_lanjut' => $validated['tidak_lanjut'] ?? null,
-            'pelaksana' => [
-                'nama' => $validated['pelaksana_nama'],
-                'department' => $validated['pelaksana_department'],
-                'sub_department' => $validated['pelaksana_sub_department'] ?? null,
-            ],
-            'mengetahui' => [
-                'nama' => $validated['mengetahui_nama'],
-                'nik' => $validated['mengetahui_nik'],
-            ],
-        ]);
+        // Conditional validation based on status_penyelesaian
+        if ($request->status_penyelesaian === 'selesai') {
+            $rules['selesai_tanggal'] = 'required|date';
+            $rules['selesai_jam'] = 'required';
+        } else {
+            $rules['tidak_lanjut'] = 'required|string';
+        }
 
-        return redirect()->route('tindak-lanjut.index')
+        $validated = $request->validate($rules);
+
+        // Set user_id
+        $validated['user_id'] = auth()->id();
+
+        // Process pelaksana (can be multiple)
+        $pelaksana = [];
+        if ($request->has('pelaksana')) {
+            foreach ($request->pelaksana as $p) {
+                if (!empty($p['nama'])) {
+                    $pelaksana[] = [
+                        'nama' => $p['nama'],
+                        'department' => $p['department'],
+                        'sub_department' => $p['sub_department'] ?? null,
+                    ];
+                }
+            }
+        }
+        $validated['pelaksana'] = $pelaksana;
+
+        // Set department from first pelaksana for filtering
+        $firstPelaksana = $pelaksana[0] ?? null;
+        $validated['department'] = $firstPelaksana['department'] ?? null;
+        $validated['sub_department'] = $firstPelaksana['sub_department'] ?? null;
+
+        // Process mengetahui
+        $validated['mengetahui'] = [
+            'nama' => $validated['mengetahui_nama'],
+            'nik' => $validated['mengetahui_nik'],
+        ];
+
+        // Set boolean based on radio button choice
+        $validated['permohonan_tindak_lanjut'] = $validated['berdasarkan'] === 'permohonan_tindak_lanjut';
+        $validated['pelaksanaan_pm'] = $validated['berdasarkan'] === 'pelaksanaan_pm';
+
+        $validated['selesai'] = $validated['status_penyelesaian'] === 'selesai';
+        $validated['selesai_tanggal'] = $validated['status_penyelesaian'] === 'selesai' ? $validated['selesai_tanggal'] : null;
+        $validated['selesai_jam'] = $validated['status_penyelesaian'] === 'selesai' ? $validated['selesai_jam'] : null;
+
+        $validated['tidak_selesai'] = $validated['status_penyelesaian'] === 'tidak_selesai';
+        $validated['tidak_lanjut'] = $validated['status_penyelesaian'] === 'tidak_selesai' ? ($validated['tidak_lanjut'] ?? null) : null;
+
+        // Remove temporary fields
+        unset($validated['berdasarkan']);
+        unset($validated['status_penyelesaian']);
+        unset($validated['mengetahui_nama']);
+        unset($validated['mengetahui_nik']);
+
+        $tindakLanjut = TindakLanjut::create($validated);
+
+        return redirect()->route('tindak-lanjut.show', $tindakLanjut->id)
             ->with('success', 'Tindak Lanjut berhasil ditambahkan');
     }
 
     public function show(TindakLanjut $tindakLanjut)
     {
+        // Authorization check - user hanya bisa lihat data miliknya
+        if ($tindakLanjut->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('tindak-lanjut.show', compact('tindakLanjut'));
     }
 
     public function edit(TindakLanjut $tindakLanjut)
     {
+        // Authorization check - user hanya bisa edit data miliknya
+        if ($tindakLanjut->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('tindak-lanjut.edit', compact('tindakLanjut'));
     }
 
     public function update(Request $request, TindakLanjut $tindakLanjut)
     {
-        $validated = $request->validate([
+        // Authorization check - user hanya bisa update data miliknya
+        if ($tindakLanjut->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Base validation rules
+        $rules = [
+            'berdasarkan' => 'required|in:permohonan_tindak_lanjut,pelaksanaan_pm',
             'tanggal' => 'required|date',
             'jam' => 'required',
             'lokasi' => 'required|string|max:255',
@@ -95,57 +143,81 @@ class TindakLanjutController extends Controller
             'permasalahan' => 'required|string',
             'tindakan_penyelesaian' => 'required|string',
             'hasil_perbaikan' => 'required|string',
-            'selesai_tanggal' => 'nullable|date',
-            'selesai_jam' => 'nullable',
-            'tidak_lanjut' => 'nullable|string',
-            'pelaksana_nama' => 'required|string|max:255',
-            'pelaksana_department' => 'required|string|max:255',
-            'pelaksana_sub_department' => 'nullable|string|max:255',
+            'status_penyelesaian' => 'required|in:selesai,tidak_selesai',
+            'pelaksana' => 'required|array|min:1',
+            'pelaksana.*.nama' => 'required|string|max:255',
+            'pelaksana.*.department' => 'required|string|max:255',
+            'pelaksana.*.sub_department' => 'nullable|string|max:255',
             'mengetahui_nama' => 'required|string|max:255',
             'mengetahui_nik' => 'required|string|max:255',
-        ]);
-
-        $tindakLanjut->tanggal = $validated['tanggal'];
-        $tindakLanjut->jam = $validated['jam'];
-        $tindakLanjut->lokasi = $validated['lokasi'];
-        $tindakLanjut->ruang = $validated['ruang'];
-        $tindakLanjut->permasalahan = $validated['permasalahan'];
-        $tindakLanjut->tindakan_penyelesaian = $validated['tindakan_penyelesaian'];
-        $tindakLanjut->hasil_perbaikan = $validated['hasil_perbaikan'];
-
-        // Set department dari pelaksana
-        $tindakLanjut->department = $validated['pelaksana_department'];
-        $tindakLanjut->sub_department = $validated['pelaksana_sub_department'] ?? null;
-
-        // Checkbox fields
-        $tindakLanjut->permohonan_tindak_lanjut = $request->has('permohonan_tindak_lanjut');
-        $tindakLanjut->pelaksanaan_pm = $request->has('pelaksanaan_pm');
-        $tindakLanjut->selesai = $request->has('selesai');
-        $tindakLanjut->selesai_tanggal = $validated['selesai_tanggal'] ?? null;
-        $tindakLanjut->selesai_jam = $validated['selesai_jam'] ?? null;
-        $tindakLanjut->tidak_selesai = $request->has('tidak_selesai');
-        $tindakLanjut->tidak_lanjut = $validated['tidak_lanjut'] ?? null;
-
-        // JSON fields
-        $tindakLanjut->pelaksana = [
-            'nama' => $validated['pelaksana_nama'],
-            'department' => $validated['pelaksana_department'],
-            'sub_department' => $validated['pelaksana_sub_department'] ?? null,
         ];
 
-        $tindakLanjut->mengetahui = [
+        // Conditional validation
+        if ($request->status_penyelesaian === 'selesai') {
+            $rules['selesai_tanggal'] = 'required|date';
+            $rules['selesai_jam'] = 'required';
+        } else {
+            $rules['tidak_lanjut'] = 'required|string';
+        }
+
+        $validated = $request->validate($rules);
+
+        // Process pelaksana
+        $pelaksana = [];
+        if ($request->has('pelaksana')) {
+            foreach ($request->pelaksana as $p) {
+                if (!empty($p['nama'])) {
+                    $pelaksana[] = [
+                        'nama' => $p['nama'],
+                        'department' => $p['department'],
+                        'sub_department' => $p['sub_department'] ?? null,
+                    ];
+                }
+            }
+        }
+        $validated['pelaksana'] = $pelaksana;
+
+        // Set department from first pelaksana
+        $firstPelaksana = $pelaksana[0] ?? null;
+        $validated['department'] = $firstPelaksana['department'] ?? null;
+        $validated['sub_department'] = $firstPelaksana['sub_department'] ?? null;
+
+        // Process mengetahui
+        $validated['mengetahui'] = [
             'nama' => $validated['mengetahui_nama'],
             'nik' => $validated['mengetahui_nik'],
         ];
 
-        $tindakLanjut->save();
+        // Set boolean based on radio button choice
+        $validated['permohonan_tindak_lanjut'] = $validated['berdasarkan'] === 'permohonan_tindak_lanjut';
+        $validated['pelaksanaan_pm'] = $validated['berdasarkan'] === 'pelaksanaan_pm';
 
-        return redirect()->route('tindak-lanjut.index')
+        $validated['selesai'] = $validated['status_penyelesaian'] === 'selesai';
+        $validated['selesai_tanggal'] = $validated['status_penyelesaian'] === 'selesai' ? $validated['selesai_tanggal'] : null;
+        $validated['selesai_jam'] = $validated['status_penyelesaian'] === 'selesai' ? $validated['selesai_jam'] : null;
+
+        $validated['tidak_selesai'] = $validated['status_penyelesaian'] === 'tidak_selesai';
+        $validated['tidak_lanjut'] = $validated['status_penyelesaian'] === 'tidak_selesai' ? ($validated['tidak_lanjut'] ?? null) : null;
+
+        // Remove temporary fields
+        unset($validated['berdasarkan']);
+        unset($validated['status_penyelesaian']);
+        unset($validated['mengetahui_nama']);
+        unset($validated['mengetahui_nik']);
+
+        $tindakLanjut->update($validated);
+
+        return redirect()->route('tindak-lanjut.show', $tindakLanjut->id)
             ->with('success', 'Tindak Lanjut berhasil diupdate');
     }
 
     public function destroy(TindakLanjut $tindakLanjut)
     {
+        // Authorization check - user hanya bisa delete data miliknya
+        if ($tindakLanjut->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $tindakLanjut->delete();
 
         return redirect()->route('tindak-lanjut.index')
@@ -154,9 +226,16 @@ class TindakLanjutController extends Controller
 
     public function generatePdf(TindakLanjut $tindakLanjut)
     {
+        // Authorization check - user hanya bisa download PDF data miliknya
+        if ($tindakLanjut->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $pdf = Pdf::loadView('tindak-lanjut.pdf', compact('tindakLanjut'))
             ->setPaper('a4', 'portrait');
 
-        return $pdf->stream('Tindak-Lanjut-' . $tindakLanjut->id . '.pdf');
+        $fileName = 'Tindak-Lanjut-FM-LAP-D2-SOP-003-005-' . $tindakLanjut->id . '.pdf';
+
+        return $pdf->stream($fileName);
     }
 }

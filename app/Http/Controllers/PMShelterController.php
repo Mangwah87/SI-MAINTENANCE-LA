@@ -6,15 +6,40 @@ use App\Models\PmShelter;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class PmShelterController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pmShelters = PmShelter::with('user')
-            ->where('user_id', auth()->id())
-            ->latest()
-            ->paginate(10);
+        $query = PmShelter::with('user')->where('user_id', auth()->id());
+
+        // Search - mencari di location dan executors
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('location', 'like', "%{$search}%")
+                    ->orWhereRaw("JSON_SEARCH(LOWER(executors), 'one', LOWER(?)) IS NOT NULL", ["%{$search}%"]);
+            });
+        }
+
+        // Sorting by date (desc = terbaru, asc = terlama)
+        $sortDirection = $request->get('sort', 'desc');
+        if (in_array($sortDirection, ['asc', 'desc'])) {
+            $query->orderBy('date', $sortDirection)->orderBy('time', $sortDirection);
+        } else {
+            $query->orderBy('date', 'desc')->orderBy('time', 'desc');
+        }
+
+        $pmShelters = $query->paginate(10)->withQueryString();
+
+        // For AJAX requests (realtime search)
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('pm-shelter.partials.table', compact('pmShelters'))->render(),
+                'count' => $pmShelters->total()
+            ]);
+        }
 
         return view('pm-shelter.index', compact('pmShelters'));
     }
@@ -67,7 +92,6 @@ class PmShelterController extends Controller
 
         $validated['user_id'] = auth()->id();
 
-        // Simpan pelaksana
         $executors = [];
         if ($request->has('executors')) {
             foreach ($request->executors as $executor) {
@@ -78,7 +102,6 @@ class PmShelterController extends Controller
         }
         $validated['executors'] = $executors;
 
-        // Simpan approvers
         $approvers = [];
         if ($request->has('approvers')) {
             foreach ($request->approvers as $approver) {
@@ -89,11 +112,9 @@ class PmShelterController extends Controller
         }
         $validated['approvers'] = $approvers;
 
-        // Proses semua foto ke dalam 1 array
         $validated['photos'] = $this->processAllPhotos($request);
 
         $pmShelter = PmShelter::create($validated);
-
 
         return redirect()->route('pm-shelter.show', $pmShelter->id)
             ->with('success', 'Data PM Shelter berhasil ditambahkan');
@@ -156,7 +177,6 @@ class PmShelterController extends Controller
             'approvers.*.nik' => 'nullable|string|max:255',
         ]);
 
-        // Update pelaksana
         $executors = [];
         if ($request->has('executors')) {
             foreach ($request->executors as $executor) {
@@ -167,7 +187,6 @@ class PmShelterController extends Controller
         }
         $validated['executors'] = $executors;
 
-        // Update approvers
         $approvers = [];
         if ($request->has('approvers')) {
             foreach ($request->approvers as $approver) {
@@ -178,7 +197,6 @@ class PmShelterController extends Controller
         }
         $validated['approvers'] = $approvers;
 
-        // Hapus foto yang dihapus user
         $existingPhotos = $pmShelter->photos ?? [];
         $removedPaths = $this->getRemovedPhotoPaths($request);
 
@@ -186,12 +204,10 @@ class PmShelterController extends Controller
             Storage::disk('public')->delete($path);
         }
 
-        // Filter foto lama yang tidak dihapus
         $existingPhotos = array_filter($existingPhotos, function ($photo) use ($removedPaths) {
             return !in_array($photo['path'], $removedPaths);
         });
 
-        // Gabungkan foto lama dengan foto baru
         $newPhotos = $this->processAllPhotos($request);
         $validated['photos'] = array_values(array_merge($existingPhotos, $newPhotos));
 
@@ -203,7 +219,6 @@ class PmShelterController extends Controller
 
     public function destroy(PmShelter $pmShelter)
     {
-        // Hapus semua foto terkait
         if ($pmShelter->photos) {
             foreach ($pmShelter->photos as $photo) {
                 Storage::disk('public')->delete($photo['path']);
@@ -226,9 +241,6 @@ class PmShelterController extends Controller
         return $pdf->stream($fileName);
     }
 
-    /**
-     * Proses semua foto ke dalam 1 array dengan field identifier
-     */
     private function processAllPhotos(Request $request): array
     {
         $allPhotos = [];
@@ -250,10 +262,8 @@ class PmShelterController extends Controller
                 $metadataArray = $request->input($metadataKey, []);
 
                 foreach ($files as $index => $file) {
-                    // Simpan file
                     $path = $file->store('pm-shelter-photos', 'public');
 
-                    // Parse metadata
                     $metadata = [];
                     if (isset($metadataArray[$index])) {
                         $metadata = json_decode($metadataArray[$index], true) ?? [];
@@ -274,9 +284,6 @@ class PmShelterController extends Controller
         return $allPhotos;
     }
 
-    /**
-     * Ambil semua path foto yang dihapus
-     */
     private function getRemovedPhotoPaths(Request $request): array
     {
         $removedPaths = [];

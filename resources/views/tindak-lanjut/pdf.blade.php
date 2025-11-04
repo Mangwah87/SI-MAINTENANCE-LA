@@ -101,7 +101,18 @@
         .signature-box { height: 50px; margin: 5px 0; }
 
         /* ===== FOOTER ===== */
-        .footer { margin-top: 25px; padding-top: 8px; border-top: 1px solid gray; font-size: 8px; color: gray; text-align: center; }
+        .footer {
+            position: absolute;
+            bottom: 0cm;
+            left: 0;
+            right: 0;
+            padding-top: 8px;
+            border-top: 1px solid gray;
+            font-size: 8px;
+            color: gray;
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
@@ -208,13 +219,13 @@
 <div class="notes-box">{{ $tindakLanjut->tidak_lanjut }}</div>
 
 <!-- BAGIAN PELAKSANA & MENGETAHUI (versi proporsional dan terpisah) -->
-<table style="width:100%; border-collapse:collapse; margin-top:15px;">
+<table style="width:100%;  margin-top:15px;">
     <tr>
         <!-- Kolom kiri: PELAKSANA -->
         <td style="width:72%; vertical-align:top;">
-            <table style="width:100%; border-collapse:collapse; font-size:11px;">
+            <table style="width:100%;  font-size:11px;">
                 <tr>
-                    <th colspan="4" style="text-align:left; border:1px solid #000; padding:4px;">Pelaksana</th>
+                    <th colspan="4" style="text-align:left;  padding:4px;">Pelaksana</th>
                 </tr>
                 <tr>
                     <th style="width:6%; border:1px solid #000; text-align:center;">No</th>
@@ -222,12 +233,16 @@
                     <th style="width:25%; border:1px solid #000; text-align:center;">Departement</th>
                     <th style="width:25%; border:1px solid #000; text-align:center;">Sub Departement</th>
                 </tr>
-                @for ($i = 1; $i <= 4; $i++)
+                @php
+                    $pelaksanaCount = is_array($tindakLanjut->pelaksana) ? count($tindakLanjut->pelaksana) : 0;
+                    $maxRows = max(4, $pelaksanaCount);
+                @endphp
+                @for ($i = 0; $i < $maxRows; $i++)
                 <tr>
-                    <td style="border:1px solid #000; text-align:center;">{{ $i }}.</td>
-                    <td style="border:1px solid #000;">{{ $tindakLanjut->pelaksana[$i-1]['nama'] ?? '' }}</td>
-                    <td style="border:1px solid #000;">{{ $tindakLanjut->pelaksana[$i-1]['department'] ?? '' }}</td>
-                    <td style="border:1px solid #000;">{{ $tindakLanjut->pelaksana[$i-1]['sub_department'] ?? '' }}</td>
+                    <td style="border:1px solid #000; text-align:center;">{{ $i + 1 }}.</td>
+                    <td style="border:1px solid #000;">{{ isset($tindakLanjut->pelaksana[$i]['nama']) ? $tindakLanjut->pelaksana[$i]['nama'] : '' }}</td>
+                    <td style="border:1px solid #000;">{{ isset($tindakLanjut->pelaksana[$i]['department']) ? $tindakLanjut->pelaksana[$i]['department'] : '' }}</td>
+                    <td style="border:1px solid #000;">{{ isset($tindakLanjut->pelaksana[$i]['sub_department']) ? $tindakLanjut->pelaksana[$i]['sub_department'] : '' }}</td>
                 </tr>
                 @endfor
             </table>
@@ -237,12 +252,12 @@
         <td style="width:25%; vertical-align:top;">
             <table style="width:100%; border-collapse:collapse; font-size:11px;">
                 <tr>
-                    <th style="border:1px solid #000; padding:4px; text-align:center;">Mengetahui</th>
+                    <th style=" padding:4px; text-align:center;">Mengetahui</th>
                 </tr>
                 <tr>
                     <td style="border:1px solid #000; text-align:center; height:91px; vertical-align:bottom;">
-                        <div style="text-decoration: underline">( {{ $tindakLanjut->mengetahui['nama']  }} )</div>
-                        <div>({{ $tindakLanjut->mengetahui['nik'] }})</div>
+                        <div style="text-decoration: underline">{{ $tindakLanjut->mengetahui['nama'] ?? '' }}</div>
+                        <div>{{ $tindakLanjut->mengetahui['nik'] ?? '' }}</div>
                     </td>
                 </tr>
             </table>
