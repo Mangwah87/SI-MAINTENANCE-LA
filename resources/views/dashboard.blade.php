@@ -88,7 +88,7 @@
                 </a>
 
                 <!-- Jadwal PM Sentral -->
-                <a href="#" class="block h-full">
+                <a href="{{ route('schedule.index') }}" class="block h-full">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                             <i data-lucide="calendar-check" class="w-12 h-12 text-white"></i>
