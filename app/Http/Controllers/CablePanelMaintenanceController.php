@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GroundingMaintenance; // Use the correct model
+use App\Models\CablePanelMaintenance; // Menggunakan model yang baru
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -10,15 +10,15 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 
-class GroundingController extends Controller
+class CablePanelMaintenanceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $maintenances = GroundingMaintenance::latest()->paginate(10);
-        return view('grounding.index', compact('maintenances')); // View path: grounding.index
+        $maintenances = CablePanelMaintenance::latest()->paginate(10);
+        return view('cable-panel.index', compact('maintenances')); // Path view baru
     }
 
     /**
@@ -26,7 +26,7 @@ class GroundingController extends Controller
      */
     public function create()
     {
-        return view('grounding.create'); // View path: grounding.create
+        return view('cable-panel.create'); // Path view baru
     }
 
     /**
@@ -37,7 +37,7 @@ class GroundingController extends Controller
         try {
             $validatedData = $this->validateRequest($request);
 
-            // Image processing logic (same as Genset)
+            // Logika proses gambar (sama seperti grounding)
             $imagesData = $request->input('images', []);
             $savedImages = [];
             if (!empty($imagesData) && is_array($imagesData)) {
@@ -50,27 +50,27 @@ class GroundingController extends Controller
                                 $savedImages[] = Arr::only($imgInfo, ['category', 'timestamp', 'latitude', 'longitude', 'locationName']) + ['path' => $saved];
                             }
                         }
-                    } catch (\Exception $e) { Log::error('Error processing grounding image: ' . $e->getMessage()); continue; }
+                    } catch (\Exception $e) { Log::error('Error processing cable-panel image: ' . $e->getMessage()); continue; }
                 }
             }
             $validatedData['images'] = !empty($savedImages) ? $savedImages : null;
 
-            // Generate Doc Number (Adapt logic if needed)
+            // Generate Doc Number (Sesuai PDF Kabel & Panel)
             $date = Carbon::parse($validatedData['maintenance_date']);
             $locationCode = strtoupper(substr(str_replace(' ', '', $validatedData['location']), 0, 5));
-            $count = GroundingMaintenance::whereYear('maintenance_date', $date->year)->count() + 1;
-            // Use correct Doc Number from PDF 
-            $validatedData['doc_number'] = sprintf('FM-LAP/%s/%s/%03d/%s', 'D2-SOP-003-011', $locationCode, $count, $date->format('Y'));
+            $count = CablePanelMaintenance::whereYear('maintenance_date', $date->year)->count() + 1;
+            // Menggunakan Doc Number dari PDF Kabel Panel (FM-LAP-D2-SOP-003-012)
+            $validatedData['doc_number'] = sprintf('FM-LAP/%s/%s/%03d/%s', 'D2-SOP-003-012', $locationCode, $count, $date->format('Y'));
 
 
-            $maintenance = GroundingMaintenance::create($validatedData);
-            Log::info('Grounding Maintenance Created:', ['id' => $maintenance->id, 'images_count' => count($savedImages)]);
-            return redirect()->route('grounding.index')->with('success', 'Data Petir dan Grounding berhasil ditambahkan.');
+            $maintenance = CablePanelMaintenance::create($validatedData);
+            Log::info('Cable Panel Maintenance Created:', ['id' => $maintenance->id, 'images_count' => count($savedImages)]);
+            return redirect()->route('cable-panel.index')->with('success', 'Data Kabel dan Panel berhasil ditambahkan.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput()->with('error', 'Validasi gagal.');
         } catch (\Exception $e) {
-            Log::error('Error storing grounding maintenance: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('Error storing cable-panel maintenance: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -78,28 +78,28 @@ class GroundingController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id) // Use $id directly
+    public function show($id)
     {
-        $maintenance = GroundingMaintenance::findOrFail($id);
-        return view('grounding.show', compact('maintenance')); // View path: grounding.show
+        $maintenance = CablePanelMaintenance::findOrFail($id);
+        return view('cable-panel.show', compact('maintenance')); // Path view baru
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id) // Use $id directly
+    public function edit($id)
     {
-        $maintenance = GroundingMaintenance::findOrFail($id);
-        return view('grounding.edit', compact('maintenance')); // View path: grounding.edit
+        $maintenance = CablePanelMaintenance::findOrFail($id);
+        return view('cable-panel.edit', compact('maintenance')); // Path view baru
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id) // Use $id directly
+    public function update(Request $request, $id)
     {
        try {
-            $maintenance = GroundingMaintenance::findOrFail($id);
+            $maintenance = CablePanelMaintenance::findOrFail($id);
             $validatedData = $this->validateRequest($request); // Reuse validation
 
             $existingImages = $maintenance->images ?? [];
@@ -110,7 +110,7 @@ class GroundingController extends Controller
                 $existingImages = array_filter($existingImages, function($img) use ($imagesToDelete) {
                     if (isset($img['path']) && in_array($img['path'], $imagesToDelete)) {
                         Storage::disk('public')->delete($img['path']);
-                        Log::info("Deleted grounding image: " . $img['path']);
+                        Log::info("Deleted cable-panel image: " . $img['path']);
                         return false;
                     }
                     return true;
@@ -130,7 +130,7 @@ class GroundingController extends Controller
                             foreach ($existingImages as $index => $existingImg) {
                                 if (isset($existingImg['category']) && $existingImg['category'] === $category) {
                                     Storage::disk('public')->delete($existingImg['path']);
-                                    Log::info("Replaced grounding image: " . $existingImg['path']);
+                                    Log::info("Replaced cable-panel image: " . $existingImg['path']);
                                     unset($existingImages[$index]);
                                 }
                             }
@@ -144,12 +144,12 @@ class GroundingController extends Controller
             if (empty($validatedData['images'])) $validatedData['images'] = null;
 
             $maintenance->update($validatedData);
-            return redirect()->route('grounding.index')->with('success', 'Data Petir dan Grounding berhasil diperbarui.');
+            return redirect()->route('cable-panel.index')->with('success', 'Data Kabel dan Panel berhasil diperbarui.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput()->with('error', 'Validasi gagal.');
         } catch (\Exception $e) {
-            Log::error('Error updating grounding maintenance: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('Error updating cable-panel maintenance: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan update: ' . $e->getMessage());
         }
     }
@@ -157,33 +157,33 @@ class GroundingController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) // Use $id directly
+    public function destroy($id)
     {
        try {
-            $maintenance = GroundingMaintenance::findOrFail($id);
+            $maintenance = CablePanelMaintenance::findOrFail($id);
             if ($maintenance->images && is_array($maintenance->images)) {
                 foreach ($maintenance->images as $img) {
                     if (isset($img['path'])) Storage::disk('public')->delete($img['path']);
                 }
             }
             $maintenance->delete();
-            return redirect()->route('grounding.index')->with('success', 'Data Petir dan Grounding berhasil dihapus.');
+            return redirect()->route('cable-panel.index')->with('success', 'Data Kabel dan Panel berhasil dihapus.');
         } catch (\Exception $e) {
-            Log::error('Error deleting grounding maintenance: ' . $e->getMessage());
-            return redirect()->route('grounding.index')->with('error', 'Gagal menghapus data.');
+            Log::error('Error deleting cable-panel maintenance: ' . $e->getMessage());
+            return redirect()->route('cable-panel.index')->with('error', 'Gagal menghapus data.');
         }
     }
 
     /**
      * Generate PDF for the specified resource.
      */
-    public function pdf($id) // Use $id directly
+    public function pdf($id)
     {
-        $maintenance = GroundingMaintenance::findOrFail($id);
-        $pdf = PDF::loadView('grounding.pdf_template', compact('maintenance')); // View path: grounding.pdf_template
+        $maintenance = CablePanelMaintenance::findOrFail($id);
+        $pdf = PDF::loadView('cable-panel.pdf_template', compact('maintenance')); // Path view baru
         $pdf->setPaper('a4', 'portrait');
         $safeDocNumber = str_replace(['/', '\\'], '-', $maintenance->doc_number); // Sanitize filename
-        $fileName = 'grounding-maintenance-' . $safeDocNumber . '.pdf';
+        $fileName = 'cable-panel-maintenance-' . $safeDocNumber . '.pdf';
         return $pdf->stream($fileName);
     }
 
@@ -191,7 +191,7 @@ class GroundingController extends Controller
 
     private function validateRequest(Request $request)
     {
-        // Define validation rules based on the migration/form fields
+        // Aturan validasi dasar
         $rules = [
             'location' => 'required|string|max:255',
             'maintenance_date' => 'required|date',
@@ -212,15 +212,24 @@ class GroundingController extends Controller
             'delete_images.*' => 'nullable|string',
         ];
 
-        // Add dynamic rules for result and status fields
+        // Aturan dinamis untuk field form (berdasarkan migrasi/PDF Kabel Panel)
         $checkFields = [
-            'visual_air_terminal', 'visual_down_conductor', 'visual_ground_rod', 'visual_bonding_bar',
-            'visual_arrester_condition', 'visual_maksure_equipment', 'visual_maksure_connection', 'visual_ob_light',
-            'perf_ground_resistance', 'perf_arrester_cutoff_power', 'perf_arrester_cutoff_data', 'perf_tighten_nut'
+            // Visual Check
+            'visual_indicator_lamp', 'visual_voltmeter_ampere_meter', 'visual_arrester',
+            'visual_mcb_input_ups', 'visual_mcb_output_ups', 'visual_mcb_bypass',
+            // Performance Measurement (Temp MCB)
+            'perf_temp_mcb_input_ups', 'perf_temp_mcb_output_ups', 'perf_temp_mcb_bypass_ups',
+            'perf_temp_mcb_load_rack', 'perf_temp_mcb_cooling_unit',
+            // Performance Measurement (Temp Cable)
+            'perf_temp_cable_input_ups', 'perf_temp_cable_output_ups', 'perf_temp_cable_bypass_ups',
+            'perf_temp_cable_load_rack', 'perf_temp_cable_cooling_unit',
+            // Performance Check
+            'perf_check_cable_connection', 'perf_check_spare_mcb', 'perf_check_single_line_diagram',
         ];
+
         foreach ($checkFields as $field) {
             $rules[$field . '_result'] = 'nullable|string|max:255';
-            $rules[$field . '_status'] = 'required|in:OK,NOK'; // Status is required
+            $rules[$field . '_status'] = 'required|in:OK,NOK'; // Status wajib diisi
         }
 
         return $request->validate($rules);
@@ -228,7 +237,7 @@ class GroundingController extends Controller
 
     private function saveBase64Image($imageData)
     {
-        // Same function as in GensetController, but saves to 'grounding_images'
+        // Fungsi sama, hanya ganti nama folder
         if (empty($imageData)) return null;
         if (!preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) { Log::error('Invalid image format'); return null; }
         $imageData = substr($imageData, strpos($imageData, ',') + 1);
@@ -236,11 +245,11 @@ class GroundingController extends Controller
         if (!in_array($type, ['jpg', 'jpeg', 'png'])) $type = 'jpg';
         $decodedImage = base64_decode($imageData);
         if ($decodedImage === false) { Log::error('Failed to decode base64'); return null; }
-        $directory = 'grounding_images/' . date('Y/m/d'); // Change folder name
-        $filename = uniqid('grounding_', true) . '.' . $type;
+        $directory = 'cable_panel_images/' . date('Y/m/d'); // Ganti nama folder
+        $filename = uniqid('cable_panel_', true) . '.' . $type; // Ganti prefix
         $path = $directory . '/' . $filename;
         if (!Storage::disk('public')->exists($directory)) { Storage::disk('public')->makeDirectory($directory, 0755, true); }
-        if (Storage::disk('public')->put($path, $decodedImage)) { Log::info('Grounding image saved: ' . $path); return $path; }
-        Log::error('Failed to save grounding image'); return null;
+        if (Storage::disk('public')->put($path, $decodedImage)) { Log::info('Cable panel image saved: ' . $path); return $path; }
+        Log::error('Failed to save cable panel image'); return null;
     }
 }

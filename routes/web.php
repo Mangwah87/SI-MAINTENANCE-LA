@@ -9,10 +9,11 @@ use App\Http\Controllers\PMPermohonanController;
 use App\Http\Controllers\TindakLanjutController;
 use App\Http\Controllers\AcMaintenanceConrtoller;
 use App\Http\Controllers\GroundingController;
-use Illuminate\Support\Facades\Route; 
+use App\Http\Controllers\CablePanelMaintenanceController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -136,6 +137,18 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}', [AcMaintenanceConrtoller::class, 'update'])->name('update');
         Route::delete('/{id}', [AcMaintenanceConrtoller::class, 'destroy'])->name('destroy');
         Route::get('/{id}/print', [AcMaintenanceConrtoller::class, 'print'])->name('print');
+    });
+
+    // === CABLE PANEL ROUTES (BARU) ===
+    Route::prefix('cable-panel')->name('cable-panel.')->group(function () {
+        Route::get('/', [CablePanelMaintenanceController::class, 'index'])->name('index');
+        Route::get('/create', [CablePanelMaintenanceController::class, 'create'])->name('create');
+        Route::post('/', [CablePanelMaintenanceController::class, 'store'])->name('store');
+        Route::get('/{id}', [CablePanelMaintenanceController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [CablePanelMaintenanceController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [CablePanelMaintenanceController::class, 'update'])->name('update');
+        Route::delete('/{id}', [CablePanelMaintenanceController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [CablePanelMaintenanceController::class, 'pdf'])->name('pdf');
     });
 });
 

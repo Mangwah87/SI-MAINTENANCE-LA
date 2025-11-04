@@ -3,9 +3,11 @@
         {{-- Header dari PM-Shelter --}}
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Preventive Maintenance Genset') }}
+                {{-- [UBAH] Judul --}}
+                {{ __('Preventive Maintenance Kabel & Panel') }}
             </h2>
-            <a href="{{ route('genset.create') }}"
+            {{-- [UBAH] Route --}}
+            <a href="{{ route('cable-panel.create') }}"
                class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white 
                       px-4 py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto justify-center sm:justify-start">
                 <i data-lucide="plus" class="w-4 h-4 mr-1"></i>
@@ -19,7 +21,6 @@
             
             {{-- Search Bar (Dipertahankan) --}}
             <div class="mb-6 relative">
-                {{-- [UBAH] Placeholder disesuaikan dengan kolom baru --}}
                 <input type="text" id="searchInput" placeholder="Cari berdasarkan Lokasi, Tanggal, atau Pelaksana..."
                        class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition shadow-sm">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -31,12 +32,14 @@
                 <div class="p-4 sm:p-6">
                     
                     <div class="block lg:hidden space-y-4" id="cardContainer">
+                        {{-- [UBAH] Variabel --}}
                         @forelse($maintenances as $maintenance)
                             <div class="border rounded-lg p-4 bg-gray-50 shadow-sm data-row">
                                 <div class="flex justify-between items-start mb-3">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2 mb-1">
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                {{-- [UBAH] Variabel --}}
                                                 #{{ $maintenances->firstItem() + $loop->index }}
                                             </span>
                                         </div>
@@ -46,6 +49,7 @@
                                         </h3>
                                         <p class="text-sm text-gray-600 flex items-center">
                                             <i data-lucide="calendar" class="w-4 h-4 inline text-gray-400 mr-1"></i> {{-- --}}
+                                            {{-- [UBAH] Variabel --}}
                                             {{ $maintenance->maintenance_date->format('d/m/Y • H:i') }} WITA
                                         </p>
                                     </div>
@@ -53,7 +57,7 @@
 
                                 <div class="mb-3 pb-3 border-b">
                                     <p class="text-xs font-medium text-gray-500 mb-1">Pelaksana:</p>
-                                    {{-- Adaptasi untuk data teknisi Genset --}}
+                                    {{-- Adaptasi untuk data teknisi Kabel Panel --}}
                                     @php
                                         $technicians = collect([
                                             ['name' => $maintenance->technician_1_name],
@@ -77,15 +81,16 @@
                                 </div>
 
                                 <div class="grid grid-cols-4 gap-2">
-                                    <a href="{{ route('genset.show', $maintenance->id) }}" 
+                                    {{-- [UBAH] Routes --}}
+                                    <a href="{{ route('cable-panel.show', $maintenance->id) }}" 
                                        class="flex flex-col items-center justify-center px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition">
                                         <i data-lucide="eye" class="w-4 h-4 mb-1"></i><span class="text-xs">Detail</span>
                                     </a>
-                                    <a href="{{ route('genset.edit', $maintenance->id) }}" 
+                                    <a href="{{ route('cable-panel.edit', $maintenance->id) }}" 
                                        class="flex flex-col items-center justify-center px-3 py-2 bg-yellow-50 text-yellow-600 rounded-lg hover:bg-yellow-100 transition">
                                         <i data-lucide="edit" class="w-4 h-4 mb-1"></i><span class="text-xs">Edit</span>
                                     </a>
-                                    <a href="{{ route('genset.pdf', $maintenance->id) }}" target="_blank"
+                                    <a href="{{ route('cable-panel.pdf', $maintenance->id) }}" target="_blank"
                                        class="flex flex-col items-center justify-center px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition">
                                         <i data-lucide="file-down" class="w-4 h-4 mb-1"></i><span class="text-xs">PDF</span>
                                     </a>
@@ -100,7 +105,7 @@
                             <div id="cardNoDataRow" class="text-center py-12"> {{-- --}}
                                 <i data-lucide="folder-open" class="w-16 h-16 mx-auto text-gray-300 mb-4"></i>
                                 <p class="text-gray-500">Tidak ada data</p>
-                                <a href="{{ route('genset.create') }}" 
+                                <a href="{{ route('cable-panel.create') }}" 
                                    class="inline-flex items-center mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
                                     <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
                                     Tambah Data Pertama
@@ -125,6 +130,7 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200" id="tableBody">
+                                {{-- [UBAH] Variabel --}}
                                 @forelse($maintenances as $maintenance)
                                     <tr class="hover:bg-gray-50 transition data-row">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -140,6 +146,7 @@
                                             <div class="flex items-center">
                                                 <i data-lucide="calendar" class="w-4 h-4 mr-2 text-gray-400 flex-shrink-0"></i> {{-- --}}
                                                 <div>
+                                                    {{-- [UBAH] Variabel --}}
                                                     <div>{{ $maintenance->maintenance_date->format('d/m/Y') }}</div>
                                                     <div class="text-xs text-gray-500 mt-0.5">
                                                         {{ $maintenance->maintenance_date->format('H:i') }} WITA
@@ -172,17 +179,18 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex items-center justify-center gap-2"> {{-- --}}
-                                                <a href="{{ route('genset.show', $maintenance->id) }}" 
+                                                {{-- [UBAH] Routes --}}
+                                                <a href="{{ route('cable-panel.show', $maintenance->id) }}" 
                                                    class="inline-flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 rounded-lg transition"
                                                    title="Lihat Detail">
                                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                                 </a>
-                                                <a href="{{ route('genset.edit', $maintenance->id) }}" 
+                                                <a href="{{ route('cable-panel.edit', $maintenance->id) }}" 
                                                    class="inline-flex items-center justify-center w-8 h-8 text-yellow-600 hover:bg-yellow-50 rounded-lg transition"
                                                    title="Edit">
                                                     <i data-lucide="edit" class="w-4 h-4"></i>
                                                 </a>
-                                                <a href="{{ route('genset.pdf', $maintenance->id) }}" target="_blank"
+                                                <a href="{{ route('cable-panel.pdf', $maintenance->id) }}" target="_blank"
                                                    class="inline-flex items-center justify-center w-8 h-8 text-green-600 hover:bg-green-50 rounded-lg transition"
                                                    title="Download PDF">
                                                     <i data-lucide="file-down" class="w-4 h-4"></i>
@@ -197,11 +205,10 @@
                                     </tr>
                                 @empty
                                     <tr id="noDataRow">
-                                        {{-- [UBAH] Colspan disesuaikan (5 kolom) --}}
                                         <td colspan="5" class="px-6 py-12 text-center"> {{-- --}}
                                             <i data-lucide="folder-open" class="w-16 h-16 mx-auto text-gray-300 mb-4"></i>
                                             <p class="text-gray-500 mb-4">Tidak ada data</p>
-                                            <a href="{{ route('genset.create') }}" 
+                                            <a href="{{ route('cable-panel.create') }}" 
                                                class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
                                                 <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
                                                 Tambah Data Pertama
@@ -216,6 +223,7 @@
                         </table>
                     </div>
 
+                    {{-- [UBAH] Variabel --}}
                     @if($maintenances->hasPages())
                         <div class="mt-6 border-t pt-4"> {{-- --}}
                             {{ $maintenances->links() }}
@@ -261,7 +269,8 @@
 
             window.deleteRecord = function(id) {
                 if (deleteForm) {
-                    deleteForm.action = `/genset/${id}`;
+                    {{-- [UBAH] Route --}}
+                    deleteForm.action = `/cable-panel/${id}`;
                 }
                 if (deleteModal) {
                     deleteModal.classList.remove('hidden');
