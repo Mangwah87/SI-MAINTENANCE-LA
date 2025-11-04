@@ -8,12 +8,37 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class TindakLanjutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tindakLanjuts = TindakLanjut::with('user')
-            ->where('user_id', auth()->id())
-            ->orderBy('tanggal', 'desc')
-            ->paginate(10);
+        $query = TindakLanjut::with('user')->where('user_id', auth()->id());
+
+        // Search - mencari di lokasi, ruang, dan pelaksana
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('lokasi', 'like', "%{$search}%")
+                    ->orWhere('ruang', 'like', "%{$search}%")
+                    ->orWhereRaw("JSON_SEARCH(LOWER(pelaksana), 'one', LOWER(?)) IS NOT NULL", ["%{$search}%"]);
+            });
+        }
+
+        // Sorting by date (desc = terbaru, asc = terlama)
+        $sortDirection = $request->get('sort', 'desc');
+        if (in_array($sortDirection, ['asc', 'desc'])) {
+            $query->orderBy('tanggal', $sortDirection)->orderBy('jam', $sortDirection);
+        } else {
+            $query->orderBy('tanggal', 'desc')->orderBy('jam', 'desc');
+        }
+
+        $tindakLanjuts = $query->paginate(10)->withQueryString();
+
+        // For AJAX requests (realtime search)
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('tindak-lanjut.partials.table', compact('tindakLanjuts'))->render(),
+                'count' => $tindakLanjuts->total()
+            ]);
+        }
 
         return view('tindak-lanjut.index', compact('tindakLanjuts'));
     }

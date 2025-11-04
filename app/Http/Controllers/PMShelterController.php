@@ -236,7 +236,7 @@ class PmShelterController extends Controller
         $pdf = Pdf::loadView('pm-shelter.pdf', compact('pmShelter'))
             ->setPaper('a4', 'portrait');
         $pdf->getDomPDF()->set_option('enable_php', true);
-        $fileName = 'PM Shelter-FM-LAP-D2-SOP-003-009-' . $pmShelter->id . '.pdf';
+        $fileName = 'PM Shelter-FM-LAP-D2-SOP-003-009-' . $pmShelter->date->format('d-m-Y') . '.pdf';
 
         return $pdf->stream($fileName);
     }

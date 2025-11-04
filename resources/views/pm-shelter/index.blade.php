@@ -46,7 +46,8 @@
                                         id="sortSelect"
                                         class=" text-left x-6 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white text-sm text-gray-700 hover:bg-gray-50 transition">
                                     <option value="desc" {{ request('sort', 'desc') == 'desc' ? 'selected' : '' }}>
-                                        📅 terbaru
+                                       <i data-lucide="calendar-days"></i>
+                                        📅 Terbaru
                                     </option>
                                     <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>
                                         📅 Terlama
