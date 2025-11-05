@@ -1,0 +1,1147 @@
+<!DOCTYPE html><!DOCTYPE html>
+
+<html lang="id"><html lang="id">
+
+<head><head>
+
+    <meta charset="UTF-8">    <meta charset="UTF-8">
+
+    <title>Formulir Preventive Maintenance 1 Phase UPS</title>    <title>Formulir Preventive Maintenance 1 Phase UPS</title>
+
+    <style>    <style>
+
+        @page {        @page {
+
+            size: A4;            size: A4;
+
+            margin: 20mm 20mm 30mm 20mm;            margin: 20mm 20mm 30mm 20mm;
+
+        }        }
+
+
+
+        body {        body {
+
+            font-family: 'DejaVu Sans', Arial, sans-serif;            font-family: Arial, sans-serif;
+
+            font-size: 8.2pt;            font-size: 8.2pt;
+
+            color: #000;            color: #000;
+
+            margin: 0;            margin: 0;
+
+            padding: 0;            padding: 0;
+
+            line-height: 1.25;            line-height: 1.25;
+
+        }            position: relative;
+
+            min-height: 100vh;
+
+        table {        }
+
+            border-collapse: collapse;
+
+            width: 100%;        table {
+
+        }            border-collapse: collapse;
+
+        }
+
+        th, td {
+
+            border: 1px solid #000;        th, td {
+
+            padding: 1.5px 4px;            border: 1px solid #000;
+
+        }            padding: 1.5px 4px;
+
+        }
+
+        .no-border td {
+
+            border: none;        .header-table {
+
+        }            margin-bottom: 2px;
+
+            width: 100%;
+
+        .center {        }
+
+            text-align: center;
+
+        }        .info-table {
+
+            margin-bottom: 3px;
+
+        .bold {            width: 100%;
+
+            font-weight: bold;        }
+
+        }
+
+        .info-table td {
+
+        .small-text {            border: none;
+
+            font-size: 6.5pt;            padding: 1.5px 4px;
+
+            line-height: 1.15;        }
+
+        }
+
+        .main-table {
+
+        .notes-box {            width: 100%;
+
+            border: 1px solid #000;        }
+
+            min-height: 20px;
+
+            padding: 2px 4px;        .main-table th, .main-table td {
+
+            margin-bottom: 3px;            padding: 1.5px 4px;
+
+        }            font-size: 8.2pt;
+
+        }
+
+        .page-footer {
+
+            position: fixed;        .center {
+
+            bottom: 10mm;            text-align: center;
+
+            left: 20mm;        }
+
+            right: 20mm;
+
+            padding-top: 2px;        .bold {
+
+            border-top: 1px solid #000;            font-weight: bold;
+
+            font-size: 7.5px;        }
+
+            text-align: left;
+
+        }        .small-text {
+
+            font-size: 6.5pt;
+
+        .content-wrapper {            line-height: 1.15;
+
+            padding-bottom: 20mm;        }
+
+        }
+
+        /* Ensure special symbols (≤, ≥, etc.) render correctly in PDF */
+
+        .page-break {        .unicode-symbol {
+
+            page-break-after: always;            font-family: 'DejaVu Sans', Arial, sans-serif;
+
+        }        }
+
+
+
+        .signature-section {        .notes-box {
+
+            margin-top: 3px;            border: 1px solid #000;
+
+        }            min-height: 20px;
+
+            padding: 2px 4px;
+
+        .signature-left {            margin-bottom: 3px;
+
+            width: 65%;        }
+
+            float: left;
+
+        }        /* Footer fixed at bottom */
+
+        .page-footer {
+
+        .signature-right {            position: fixed;
+
+            width: 33%;            bottom: 10mm;
+
+            float: right;            left: 1mm;
+
+        }            right: 1mm;
+
+            padding-top: 2px;
+
+        .clearfix {            border-top: 1px solid #000;
+
+            clear: both;            font-size: 7.5px;
+
+        }            text-align: left;
+
+    </style>        }
+
+</head>
+
+<body>        /* Content wrapper with padding for footer */
+
+    @php        .content-wrapper {
+
+        $images = [];            padding-bottom: 20mm;
+
+        if (isset($maintenance->images)) {        }
+
+            if (is_string($maintenance->images)) {
+
+                $images = json_decode($maintenance->images, true) ?? [];        /* Page break control */
+
+            } elseif (is_array($maintenance->images)) {        .page-break {
+
+                $images = $maintenance->images;            page-break-after: always;
+
+            }            clear: both;
+
+        }        }
+
+        $imagesPerPage = 9;
+
+        $totalImagePages = !empty($images) ? ceil(count($images) / $imagesPerPage) : 0;        .avoid-break {
+
+        $totalPages = 1 + $totalImagePages;            page-break-inside: avoid;
+
+    @endphp        }
+
+    </style>
+
+    {{-- PAGE 1: Main Content --}}</head>
+
+    <div class="content-wrapper"><body>
+
+        {{-- Header Table --}}    @php
+
+        <table style="margin-bottom: 2px;">        // Calculate total pages
+
+            <tr>        $images = null;
+
+                <td style="width: 15%; vertical-align: top;">        try {
+
+                    <div style="font-size: 9pt;">No. Dok.</div>            if (isset($maintenance->images)) {
+
+                </td>                if (is_string($maintenance->images)) {
+
+                <td style="width: 30%; vertical-align: top;">                    $images = json_decode($maintenance->images, true);
+
+                    <div style="font-size: 9pt;">FM-LAP-D2-SOP-003-001</div>                } elseif (is_array($maintenance->images)) {
+
+                </td>                    $images = $maintenance->images;
+
+                <td rowspan="4" style="width: 40%; text-align: center; vertical-align: middle;">                }
+
+                    <div style="font-weight: bold; font-size: 12pt;">Formulir</div>            }
+
+                    <div style="font-weight: bold; font-size: 12pt;">Preventive Maintenance</div>            $images = is_array($images) ? $images : [];
+
+                    <div style="font-weight: bold; font-size: 12pt;">1 Phase UPS</div>        } catch (\Exception $e) {
+
+                </td>            $images = [];
+
+                <td rowspan="4" style="width: 15%; text-align: center; vertical-align: middle;">        }
+
+                    <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo" style="width:60px; height:auto;">
+
+                </td>        $imagesPerPage = 9;
+
+            </tr>        $totalImagePages = !empty($images) ? ceil(count($images) / $imagesPerPage) : 0;
+
+            <tr>        $totalPages = 1 + $totalImagePages;
+
+                <td style="vertical-align: top;">    @endphp
+
+                    <div style="font-size: 9pt;">Versi</div>
+
+                </td>    {{-- PAGE 1: Main Content --}}
+
+                <td style="vertical-align: top;">    <div class="content-wrapper">
+
+                    <div style="font-size: 9pt;">1.0</div>        {{-- Header --}}
+
+                </td>        <table class="header-table">
+
+            </tr>            <tr>
+
+            <tr>                <td width="15%" style="vertical-align: top;">
+
+                <td style="vertical-align: top;">                    <div style="font-size: 9pt;">No. Dok.</div>
+
+                    <div style="font-size: 9pt;">Hal</div>                </td>
+
+                </td>                <td width="30%" style="vertical-align: top;">
+
+                <td style="vertical-align: top;">                    <div style="font-size: 9pt;">FM-LAP-D2-SOP-003-001</div>
+
+                    <div style="font-size: 9pt;">1 dari {{ $totalPages }}</div>                </td>
+
+                </td>                <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
+
+            </tr>                    <div style="font-weight: bold; font-size: 12pt;">Formulir</div>
+
+            <tr>                    <div style="font-weight: bold; font-size: 12pt;">Preventive Maintenance</div>
+
+                <td style="vertical-align: top;">                    <div style="font-weight: bold; font-size: 12pt;">1 Phase UPS</div>
+
+                    <div style="font-size: 9pt;">Label</div>                </td>
+
+                </td>                <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
+
+                <td style="vertical-align: top;">                    <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo" style="width:60px; height:auto;">
+
+                    <div style="font-size: 9pt;">Internal</div>                </td>
+
+                </td>            </tr>
+
+            </tr>            <tr>
+
+        </table>                <td style="vertical-align: top;">
+
+                    <div style="font-size: 9pt;">Versi</div>
+
+        {{-- Info Table --}}                </td>
+
+        <table class="no-border" style="margin-top: 2px; margin-bottom: 3px;">                <td style="vertical-align: top;">
+
+            <tr>                    <div style="font-size: 9pt;">1.0</div>
+
+                <td style="width: 18%;">Location</td>                </td>
+
+                <td style="width: 32%;">: {{ $maintenance->location }}</td>            </tr>
+
+                <td style="width: 18%;">Reg. Number</td>            <tr>
+
+                <td style="width: 32%;">: {{ $maintenance->reg_number ?? '-' }}</td>                <td style="vertical-align: top;">
+
+            </tr>                    <div style="font-size: 9pt;">Hal</div>
+
+            <tr>                </td>
+
+                <td>Date / Time</td>                <td style="vertical-align: top;">
+
+                <td>: {{ \Carbon\Carbon::parse($maintenance->date_time)->format('d/m/Y H:i') }}</td>                    <div style="font-size: 9pt;">1 dari {{ $totalPages }}</div>
+
+                <td>S/N</td>                </td>
+
+                <td>: {{ $maintenance->sn ?? '-' }}</td>            </tr>
+
+            </tr>            <tr>
+
+            <tr>                <td style="vertical-align: top;">
+
+                <td>Brand / Type</td>                    <div style="font-size: 9pt;">Label</div>
+
+                <td>: {{ $maintenance->brand_type }}</td>                </td>
+
+                <td>Kapasitas</td>                <td style="vertical-align: top;">
+
+                <td>: {{ $maintenance->capacity }}</td>                    <div style="font-size: 9pt;">Internal</div>
+
+            </tr>                </td>
+
+        </table>            </tr>
+
+        </table>
+
+        {{-- Main Table --}}            <tr>
+
+        <table style="margin-bottom: 2px;">                <td width="15%" style="vertical-align: top;">
+
+            <tr>                    <div style="font-size: 9pt;">No. Dok.</div>
+
+                <th style="width: 16px;">No.</th>                </td>
+
+                <th style="width: 132px;">Descriptions</th>                <td width="30%" style="vertical-align: top;">
+
+                <th style="width: 72px;">Result</th>                    <div style="font-size: 9pt;">FM-LAP-D2-SOP-003-001</div>
+
+                <th style="width: 98px;">Operational Standard</th>                </td>
+
+                <th style="width: 42px;">Status<br>(OK/NOK)</th>                <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
+
+            </tr>                    <div style="font-weight: bold; font-size: 12pt;">Formulir</div>
+
+                    <div style="font-weight: bold; font-size: 12pt;">Preventive Maintenance</div>
+
+            {{-- Visual Check --}}                    <div style="font-weight: bold; font-size: 12pt;">1 Phase UPS</div>
+
+            <tr>                </td>
+
+                <td class="center bold">1.</td>                <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
+
+                <td class="bold" colspan="4">Visual Check</td>                    <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo" style="width:60px; height:auto;">
+
+            </tr>                </td>
+
+            <tr>            </tr>
+
+                <td></td>            <tr>
+
+                <td>a. Environment Condition</td>                <td style="vertical-align: top;">
+
+                <td>{{ $maintenance->env_condition }}</td>                    <div style="font-size: 9pt;">Versi</div>
+
+                <td>Clean, No dust</td>                </td>
+
+                <td class="center">{{ $maintenance->status_env_condition ?? 'OK' }}</td>                <td style="vertical-align: top;">
+
+            </tr>                    <div style="font-size: 9pt;">1.0</div>
+
+            <tr>                </td>
+
+                <td></td>            </tr>
+
+                <td>b. LED / display *)</td>            <tr>
+
+                <td>{{ $maintenance->led_display }}</td>                <td style="vertical-align: top;">
+
+                <td>Normal</td>                    <div style="font-size: 9pt;">Hal</div>
+
+                <td class="center">{{ $maintenance->status_led_display ?? 'OK' }}</td>                </td>
+
+            </tr>                <td style="vertical-align: top;">
+
+            <tr>                    <div style="font-size: 9pt;">1 dari {{ $totalPages }}</div>
+
+                <td></td>                </td>
+
+                <td>c. Battery Connection</td>            </tr>
+
+                <td>{{ $maintenance->battery_connection }}</td>            <tr>
+
+                <td>Tighten, No Corrosion</td>                <td style="vertical-align: top;">
+
+                <td class="center">{{ $maintenance->status_battery_connection ?? 'OK' }}</td>                    <div style="font-size: 9pt;">Label</div>
+
+            </tr>                </td>
+
+                <td style="vertical-align: top;">
+
+            {{-- Performance and Capacity Check --}}                    <div style="font-size: 9pt;">Internal</div>
+
+            <tr>                </td>
+
+                <td class="center bold">2.</td>            </tr>
+
+                <td class="bold" colspan="4">Performance and Capacity Check</td>        </table>
+
+            </tr>
+
+            <tr>        {{-- Info Table --}}
+
+                <td></td>        <table class="info-table" style="margin-top: 2px;">
+
+                <td>a. AC input voltage</td>            <tr>
+
+                <td>{{ $maintenance->ac_input_voltage }} V</td>                <td width="18%">Location</td>
+
+                <td>180-240 VAC</td>                <td width="32%">: {{ $maintenance->location }}</td>
+
+                <td class="center">{{ $maintenance->status_ac_input_voltage ?? 'OK' }}</td>                <td width="18%">Reg. Number</td>
+
+            </tr>                <td width="32%">: {{ $maintenance->reg_number ?? '-' }}</td>
+
+            <tr>            </tr>
+
+                <td></td>            <tr>
+
+                <td>b. AC output voltage</td>                <td>Date / Time</td>
+
+                <td>{{ $maintenance->ac_output_voltage }} V</td>                <td>: {{ \Carbon\Carbon::parse($maintenance->date_time)->format('d/m/Y H:i') }}</td>
+
+                <td>210-240 VAC</td>                <td>S/N</td>
+
+                <td class="center">{{ $maintenance->status_ac_output_voltage ?? 'OK' }}</td>                <td>: {{ $maintenance->sn ?? '-' }}</td>
+
+            </tr>            </tr>
+
+            <tr>            <tr>
+
+                <td></td>                <td>Brand / Type</td>
+
+                <td>c. Neutral – Ground Output Voltage</td>                <td>: {{ $maintenance->brand_type }}</td>
+
+                <td>{{ $maintenance->neutral_ground_voltage }} V</td>                <td>Kapasitas</td>
+
+                <td>&lt; 1 VAC</td>                <td>: {{ $maintenance->capacity }}</td>
+
+                <td class="center">{{ $maintenance->status_neutral_ground_voltage ?? 'OK' }}</td>            </tr>
+
+            </tr>        </table>
+
+            <tr>
+
+                <td></td>        {{-- Main Table --}}
+
+                <td>d. AC current input *)</td>        <table class="main-table" style="margin-bottom: 2px;">
+
+                <td>{{ $maintenance->ac_current_input }} A</td>            <tr>
+
+                <td class="small-text">                <th width="16">No.</th>
+
+                    ≤ 14 A (UPS 3 KVA)<br>                <th width="132">Descriptions</th>
+
+                    ≤ 23 A (UPS 5 KVA)<br>                <th width="72">Result</th>
+
+                    ≤ 27 A (UPS 6 KVA)<br>                <th width="98">Operational Standard</th>
+
+                    ≤ 37 A (UPS 8 KVA)                <th width="42">Status<br>(OK/NOK)</th>
+
+                </td>            </tr>
+
+                <td class="center">{{ $maintenance->status_ac_current_input ?? 'OK' }}</td>
+
+            </tr>            {{-- Visual Check --}}
+
+            <tr>            <tr>
+
+                <td></td>                <td class="center bold">1.</td>
+
+                <td>e. AC current output *)</td>                <td class="bold" colspan="4">Visual Check</td>
+
+                <td>{{ $maintenance->ac_current_output }} A</td>            </tr>
+
+                <td class="small-text">            <tr>
+
+                    ≤ 18 A (UPS 3 KVA)<br>                <td></td>
+
+                    ≤ 22 A (UPS 5 KVA)<br>                <td>a. Environment Condition</td>
+
+                    ≤ 27 A (UPS 6 KVA)<br>                <td>{{ $maintenance->env_condition }}</td>
+
+                    ≤ 22 A (UPS 8 KVA)                <td>Clean, No dust</td>
+
+                </td>                <td class="center">{{ $maintenance->status_env_condition ?? 'OK' }}</td>
+
+                <td class="center">{{ $maintenance->status_ac_current_output ?? 'OK' }}</td>            </tr>
+
+            </tr>            <tr>
+
+            <tr>                <td></td>
+
+                <td></td>                <td>b. LED / display *)</td>
+
+                <td>f. UPS temperature</td>                <td>{{ $maintenance->led_display }}</td>
+
+                <td>{{ $maintenance->ups_temperature }} °C</td>                <td>Normal</td>
+
+                <td>0-40 °C</td>                <td class="center">{{ $maintenance->status_led_display ?? 'OK' }}</td>
+
+                <td class="center">{{ $maintenance->status_ups_temperature ?? 'OK' }}</td>            </tr>
+
+            </tr>            <tr>
+
+            <tr>                <td></td>
+
+                <td></td>                <td>c. Battery Connection</td>
+
+                <td>g. Output frequency</td>                <td>{{ $maintenance->battery_connection }}</td>
+
+                <td>{{ $maintenance->output_frequency }} Hz</td>                <td>Tighten, No Corrosion</td>
+
+                <td>49.75-50.25 Hz</td>                <td class="center">{{ $maintenance->status_battery_connection ?? 'OK' }}</td>
+
+                <td class="center">{{ $maintenance->status_output_frequency ?? 'OK' }}</td>            </tr>
+
+            </tr>
+
+            <tr>            {{-- Performance and Capacity Check --}}
+
+                <td></td>            <tr>
+
+                <td>h. Charging voltage</td>                <td class="center bold">2.</td>
+
+                <td>{{ $maintenance->charging_voltage }} V</td>                <td class="bold" colspan="4">Performance and Capacity Check</td>
+
+                <td>See Battery Performance table</td>            </tr>
+
+                <td class="center">{{ $maintenance->status_charging_voltage ?? 'OK' }}</td>            <tr>
+
+            </tr>                <td></td>
+
+            <tr>                <td>a. AC input voltage</td>
+
+                <td></td>                <td>{{ $maintenance->ac_input_voltage }} V</td>
+
+                <td>i. Charging current</td>                <td>180-240 VAC</td>
+
+                <td>{{ $maintenance->charging_current }} A</td>                <td class="center">{{ $maintenance->status_ac_input_voltage ?? 'OK' }}</td>
+
+                <td>0 Ampere, on-line mode</td>            </tr>
+
+                <td class="center">{{ $maintenance->status_charging_current ?? 'OK' }}</td>            <tr>
+
+            </tr>                <td></td>
+
+            <tr>                <td>b. AC output voltage</td>
+
+                <td></td>                <td>{{ $maintenance->ac_output_voltage }} V</td>
+
+                <td>j. FAN</td>                <td>210-240 VAC</td>
+
+                <td>{{ $maintenance->fan }}</td>                <td class="center">{{ $maintenance->status_ac_output_voltage ?? 'OK' }}</td>
+
+                <td>Berputar</td>            </tr>
+
+                <td class="center">{{ $maintenance->status_fan ?? 'OK' }}</td>            <tr>
+
+            </tr>                <td></td>
+
+                <td>c. Neutral – Ground Output Voltage</td>
+
+            {{-- Backup Tests --}}                <td>{{ $maintenance->neutral_ground_voltage }} V</td>
+
+            <tr>                <td><span class="unicode-symbol">&lt;</span> 1 VAC</td>
+
+                <td class="center bold">3.</td>                <td class="center">{{ $maintenance->status_neutral_ground_voltage ?? 'OK' }}</td>
+
+                <td class="bold" colspan="4">Backup Tests</td>            </tr>
+
+            </tr>            <tr>
+
+            <tr>                <td></td>
+
+                <td></td>                <td>d. AC current input *)</td>
+
+                <td>a. UPS Switching test, from the main source (PLN) to back up mode, by turning off UPS input MCB</td>                <td>{{ $maintenance->ac_current_input }} A</td>
+
+                <td>{{ $maintenance->ups_switching_test }}</td>                <td class="small-text">
+
+                <td>UPS Normal Operations</td>                    <span class="unicode-symbol">≤</span> 14 A (UPS 3 KVA)<br>
+
+                <td class="center">{{ $maintenance->status_ups_switching_test ?? 'OK' }}</td>                    <span class="unicode-symbol">≤</span> 23 A (UPS 5 KVA)<br>
+
+            </tr>                    <span class="unicode-symbol">≤</span> 27 A (UPS 6 KVA)<br>
+
+            <tr>                    <span class="unicode-symbol">≤</span> 37 A (UPS 8 KVA)
+
+                <td></td>                </td>
+
+                <td>b. Battery Voltage (on Backup Mode)</td>                <td class="center">{{ $maintenance->status_ac_current_input ?? 'OK' }}</td>
+
+                <td></td>            </tr>
+
+                <td></td>            <tr>
+
+                <td></td>                <td></td>
+
+            </tr>                <td>e. AC current output *)</td>
+
+            <tr>                <td>{{ $maintenance->ac_current_output }} A</td>
+
+                <td></td>                <td class="small-text">
+
+                <td style="padding-left: 15px;">- Measurement I (at the beginning)</td>                    <span class="unicode-symbol">≤</span> 18 A (UPS 3 KVA)<br>
+
+                <td>{{ $maintenance->battery_voltage_measurement_1 }} V</td>                    <span class="unicode-symbol">≤</span> 22 A (UPS 5 KVA)<br>
+
+                <td>See Battery Performance table</td>                    <span class="unicode-symbol">≤</span> 27 A (UPS 6 KVA)<br>
+
+                <td class="center">{{ $maintenance->status_battery_voltage_measurement_1 ?? 'OK' }}</td>                    <span class="unicode-symbol">≤</span> 22 A (UPS 8 KVA)
+
+            </tr>                </td>
+
+            <tr>                <td class="center">{{ $maintenance->status_ac_current_output ?? 'OK' }}</td>
+
+                <td></td>            </tr>
+
+                <td style="padding-left: 15px;">- Measurement II (+/- 15 minutes)</td>            <tr>
+
+                <td>{{ $maintenance->battery_voltage_measurement_2 }} V</td>                <td></td>
+
+                <td>See Battery Performance table</td>                <td>f. UPS temperature</td>
+
+                <td class="center">{{ $maintenance->status_battery_voltage_measurement_2 ?? 'OK' }}</td>                <td>{{ $maintenance->ups_temperature }} °C</td>
+
+            </tr>                <td>0-40 °C</td>
+
+                <td class="center">{{ $maintenance->status_ups_temperature ?? 'OK' }}</td>
+
+            {{-- Power Alarm Monitoring Test --}}            </tr>
+
+            <tr>            <tr>
+
+                <td class="center bold">4.</td>                <td></td>
+
+                <td class="bold" colspan="4">Power Alarm Monitoring Test</td>                <td>g. Output frequency</td>
+
+            </tr>                <td>{{ $maintenance->output_frequency }} Hz</td>
+
+            <tr>                <td>49.75-50.25 Hz</td>
+
+                <td></td>                <td class="center">{{ $maintenance->status_output_frequency ?? 'OK' }}</td>
+
+                <td>Makesure the Simonica alarm monitor, by turn off UPS power input MCB during UPS backup test operation</td>            </tr>
+
+                <td>{{ $maintenance->simonica_alarm_test }}</td>            <tr>
+
+                <td>Simonica Alarm</td>                <td></td>
+
+                <td class="center">{{ $maintenance->status_simonica_alarm_test ?? 'OK' }}</td>                <td>h. Charging voltage</td>
+
+            </tr>                <td>{{ $maintenance->charging_voltage }} V</td>
+
+        </table>                <td>See Battery Performance table</td>
+
+                <td class="center">{{ $maintenance->status_charging_voltage ?? 'OK' }}</td>
+
+        <div style="font-size:7.5px; margin-bottom:2px;">*) Choose the appropriate</div>            </tr>
+
+            <tr>
+
+        {{-- Notes --}}                <td></td>
+
+        <div class="notes-box">                <td>i. Charging current</td>
+
+            <span class="bold">Notes / additional informations :</span><br>                <td>{{ $maintenance->charging_current }} A</td>
+
+            <span>{{ $maintenance->notes ?? '' }}</span>                <td>0 Ampere, on-line mode</td>
+
+        </div>                <td class="center">{{ $maintenance->status_charging_current ?? 'OK' }}</td>
+
+            </tr>
+
+        {{-- Signature Section - Using Float Layout --}}            <tr>
+
+        <div class="signature-section">                <td></td>
+
+            {{-- Left Side: Pelaksana --}}                <td>j. FAN</td>
+
+            <div class="signature-left">                <td>{{ $maintenance->fan }}</td>
+
+                <div class="bold" style="margin-bottom: 2px;">Pelaksana</div>                <td>Berputar</td>
+
+                <table>                <td class="center">{{ $maintenance->status_fan ?? 'OK' }}</td>
+
+                    <tr>            </tr>
+
+                        <th style="width: 10%; background: #eee;">No</th>
+
+                        <th style="width: 35%; background: #eee;">Nama</th>            {{-- Backup Tests --}}
+
+                        <th style="width: 28%; background: #eee;">Departement</th>            <tr>
+
+                        <th style="width: 27%; background: #eee;">Sub Departement</th>                <td class="center bold">3.</td>
+
+                    </tr>                <td class="bold" colspan="4">Backup Tests</td>
+
+                    <tr>            </tr>
+
+                        <td class="center">1</td>            <tr>
+
+                        <td>{{ $maintenance->executor_1 }}</td>                <td></td>
+
+                        <td class="center">                <td>a. UPS Switching test, from the main source (PLN) to back up mode, by turning off UPS input MCB</td>
+
+                            @if(!empty($maintenance->executor_1) && $maintenance->executor_1 !== '-')                <td>{{ $maintenance->ups_switching_test }}</td>
+
+                                {{ $maintenance->department ?? '-' }}                <td>UPS Normal Operations</td>
+
+                            @else                <td class="center">{{ $maintenance->status_ups_switching_test ?? 'OK' }}</td>
+
+                                -            </tr>
+
+                            @endif            <tr>
+
+                        </td>                <td></td>
+
+                        <td class="center">                <td>b. Battery Voltage (on Backup Mode)</td>
+
+                            @if(!empty($maintenance->executor_1) && $maintenance->executor_1 !== '-')                <td></td>
+
+                                {{ $maintenance->sub_department ?? '-' }}                <td></td>
+
+                            @else                <td></td>
+
+                                -            </tr>
+
+                            @endif            <tr>
+
+                        </td>                <td></td>
+
+                    </tr>                <td style="padding-left: 15px;">- Measurement I (at the beginning)</td>
+
+                    <tr>                <td>{{ $maintenance->battery_voltage_measurement_1 }} V</td>
+
+                        <td class="center">2</td>                <td>See Battery Performance table</td>
+
+                        <td>{{ $maintenance->executor_2 ?? '-' }}</td>                <td class="center">{{ $maintenance->status_battery_voltage_measurement_1 ?? 'OK' }}</td>
+
+                        <td class="center">            </tr>
+
+                            @if(!empty($maintenance->executor_2) && $maintenance->executor_2 !== '-')            <tr>
+
+                                {{ $maintenance->department ?? '-' }}                <td></td>
+
+                            @else                <td style="padding-left: 15px;">- Measurement II (+/- 15 minutes)</td>
+
+                                -                <td>{{ $maintenance->battery_voltage_measurement_2 }} V</td>
+
+                            @endif                <td>See Battery Performance table</td>
+
+                        </td>                <td class="center">{{ $maintenance->status_battery_voltage_measurement_2 ?? 'OK' }}</td>
+
+                        <td class="center">            </tr>
+
+                            @if(!empty($maintenance->executor_2) && $maintenance->executor_2 !== '-')
+
+                                {{ $maintenance->sub_department ?? '-' }}            {{-- Power Alarm Monitoring Test --}}
+
+                            @else            <tr>
+
+                                -                <td class="center bold">4.</td>
+
+                            @endif                <td class="bold" colspan="4">Power Alarm Monitoring Test</td>
+
+                        </td>            </tr>
+
+                    </tr>            <tr>
+
+                    <tr>                <td></td>
+
+                        <td class="center">3</td>                <td>Makesure the Simonica alarm monitor, by turn off UPS power input MCB during UPS backup test operation</td>
+
+                        <td></td>                <td>{{ $maintenance->simonica_alarm_test }}</td>
+
+                        <td></td>                <td>Simonica Alarm</td>
+
+                        <td></td>                <td class="center">{{ $maintenance->status_simonica_alarm_test ?? 'OK' }}</td>
+
+                    </tr>            </tr>
+
+                </table>        </table>
+
+            </div>
+
+        <div style="font-size:7.5px; margin-bottom:2px;">*) Choose the appropriate</div>
+
+            {{-- Right Side: Mengetahui --}}
+
+            <div class="signature-right">        {{-- Notes --}}
+
+                <div class="bold" style="margin-bottom: 2px;">Mengetahui</div>        <div class="notes-box avoid-break">
+
+                <table>            <span class="bold">Notes / additional informations :</span><br>
+
+                    <tr>            <span>{{ $maintenance->notes ?? '' }}</span>
+
+                        <td style="height: 87px; vertical-align: bottom; text-align: center; padding: 3px;">        </div>
+
+                            <div>{{ $maintenance->supervisor }}</div>
+
+                            <div style="border-top: 1px solid #000; width: 60%; margin: 0 auto 2px auto;"></div>        {{-- Signature Table - Simplified Structure --}}
+
+                            <div style="font-size: 7pt; color: #444;">{{ $maintenance->supervisor_id_number ?? '' }}</div>        <div style="margin-top: 3px;">
+
+                        </td>            <div class="bold" style="margin-bottom: 2px;">Pelaksana</div>
+
+                    </tr>            <table style="border-collapse: collapse; width: 65%; display: inline-block; vertical-align: top; margin-right: 10px;">
+
+                </table>                <tr>
+
+            </div>                    <th style="border: 1px solid #000; background: #eee; text-align: center; padding: 1.5px; width: 8%;">No</th>
+
+                    <th style="border: 1px solid #000; background: #eee; text-align: center; padding: 1.5px; width: 35%;">Nama</th>
+
+            <div class="clearfix"></div>                    <th style="border: 1px solid #000; background: #eee; text-align: center; padding: 1.5px; width: 28%;">Departement</th>
+
+        </div>                    <th style="border: 1px solid #000; background: #eee; text-align: center; padding: 1.5px; width: 29%;">Sub Departement</th>
+
+    </div>                </tr>
+
+                <tr>
+
+    {{-- Fixed Footer --}}                    <td style="border: 1px solid #000; text-align: center; padding: 1.5px;">1</td>
+
+    <div class="page-footer">                    <td style="border: 1px solid #000; padding: 1.5px 3px;">{{ $maintenance->executor_1 }}</td>
+
+        ©HakCipta PT. APLIKANUSA LINTASARTA, Indonesia<br>                    <td style="border: 1px solid #000; text-align: center; padding: 1.5px 3px;">{{ !empty($maintenance->executor_1) && $maintenance->executor_1 !== '-' ? ($maintenance->department ?? '-') : '-' }}</td>
+
+        FM-LAP-D2-SOP-003-001 Formulir Preventive Maintenance 1 Phase UPS                    <td style="border: 1px solid #000; text-align: center; padding: 1.5px 3px;">{{ !empty($maintenance->executor_1) && $maintenance->executor_1 !== '-' ? ($maintenance->sub_department ?? '-') : '-' }}</td>
+
+    </div>                </tr>
+
+                <tr>
+
+    {{-- IMAGE PAGES --}}                    <td style="border: 1px solid #000; text-align: center; padding: 1.5px;">2</td>
+
+    @if(!empty($images) && count($images) > 0)                    <td style="border: 1px solid #000; padding: 1.5px 3px;">{{ $maintenance->executor_2 ?? '-' }}</td>
+
+        @php                    <td style="border: 1px solid #000; text-align: center; padding: 1.5px 3px;">{{ !empty($maintenance->executor_2) && $maintenance->executor_2 !== '-' ? ($maintenance->department ?? '-') : '-' }}</td>
+
+            $imageChunks = array_chunk($images, $imagesPerPage);                    <td style="border: 1px solid #000; text-align: center; padding: 1.5px 3px;">{{ !empty($maintenance->executor_2) && $maintenance->executor_2 !== '-' ? ($maintenance->sub_department ?? '-') : '-' }}</td>
+
+            $currentPage = 2;                </tr>
+
+        @endphp                <tr>
+
+                    <td style="border: 1px solid #000; text-align: center; padding: 1.5px;">3</td>
+
+        @foreach($imageChunks as $chunkIndex => $imageChunk)                    <td style="border: 1px solid #000; padding: 1.5px 3px;"></td>
+
+            <div class="page-break"></div>                    <td style="border: 1px solid #000; padding: 1.5px 3px;"></td>
+
+                    <td style="border: 1px solid #000; padding: 1.5px 3px;"></td>
+
+            <div class="content-wrapper">                </tr>
+
+                {{-- Header for image page --}}            </table>
+
+                <table style="margin-bottom: 2px;">
+
+                    <tr>            <div style="display: inline-block; width: 33%; vertical-align: top;">
+
+                        <td style="width: 15%; vertical-align: top;">                <div class="bold" style="margin-bottom: 2px;">Mengetahui</div>
+
+                            <div style="font-size: 9pt;">No. Dok.</div>                <table style="border-collapse: collapse; width: 100%;">
+
+                        </td>                    <tr>
+
+                        <td style="width: 30%; vertical-align: top;">                        <td style="border: 1px solid #000; height: 87px; vertical-align: bottom; text-align: center; padding: 3px;">
+
+                            <div style="font-size: 9pt;">FM-LAP-D2-SOP-003-001</div>                            <div>{{ $maintenance->supervisor }}</div>
+
+                        </td>                            <div style="border-top: 1px solid #000; width: 60%; margin: 0 auto 2px auto;"></div>
+
+                        <td rowspan="4" style="width: 40%; text-align: center; vertical-align: middle;">                            <div style="font-size: 7pt; color: #444;">{{ $maintenance->supervisor_id_number ?? '' }}</div>
+
+                            <div style="font-weight: bold; font-size: 12pt;">Formulir</div>                        </td>
+
+                            <div style="font-weight: bold; font-size: 12pt;">Preventive Maintenance</div>                    </tr>
+
+                            <div style="font-weight: bold; font-size: 12pt;">1 Phase UPS</div>                </table>
+
+                        </td>            </div>
+
+                        <td rowspan="4" style="width: 15%; text-align: center; vertical-align: middle;">        </div>
+
+                            <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo" style="width:60px; height:auto;">    </div>
+
+                        </td>
+
+                    </tr>    {{-- Fixed Footer --}}
+
+                    <tr>    <div class="page-footer">
+
+                        <td style="vertical-align: top;">        ©HakCipta PT. APLIKANUSA LINTASARTA, Indonesia<br>
+
+                            <div style="font-size: 9pt;">Versi</div>        FM-LAP-D2-SOP-003-001 Formulir Preventive Maintenance 1 Phase UPS
+
+                        </td>    </div>
+
+                        <td style="vertical-align: top;">
+
+                            <div style="font-size: 9pt;">1.0</div>    {{-- IMAGE PAGES --}}
+
+                        </td>    @if(!empty($images) && count($images) > 0)
+
+                    </tr>        @php
+
+                    <tr>            $imageChunks = array_chunk($images, $imagesPerPage);
+
+                        <td style="vertical-align: top;">            $currentPage = 2;
+
+                            <div style="font-size: 9pt;">Hal</div>        @endphp
+
+                        </td>
+
+                        <td style="vertical-align: top;">        @foreach($imageChunks as $chunkIndex => $imageChunk)
+
+                            <div style="font-size: 9pt;">{{ $currentPage }} dari {{ $totalPages }}</div>            <div class="page-break"></div>
+
+                        </td>
+
+                    </tr>            <div class="content-wrapper">
+
+                    <tr>                {{-- Header for image page --}}
+
+                        <td style="vertical-align: top;">                <table class="header-table">
+
+                            <div style="font-size: 9pt;">Label</div>                    <tr>
+
+                        </td>                        <td width="15%" style="vertical-align: top;">
+
+                        <td style="vertical-align: top;">                            <div style="font-weight: bold; font-size: 9pt;">No. Dok.</div>
+
+                            <div style="font-size: 9pt;">Internal</div>                        </td>
+
+                        </td>                        <td width="30%" style="vertical-align: top;">
+
+                    </tr>                            <div style="font-weight: bold; font-size: 9pt;">FM-LAP-D2-SOP-003-001</div>
+
+                </table>                        </td>
+
+                        <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
+
+                {{-- Documentation Images --}}                            <div style="font-weight: bold; font-size: 12pt;">Formulir</div>
+
+                <div style="margin-top: 5px;">                            <div style="font-weight: bold; font-size: 12pt;">Preventive Maintenance</div>
+
+                    <div class="bold" style="margin-bottom: 3px;">                            <div style="font-weight: bold; font-size: 12pt;">1 Phase UPS</div>
+
+                        Documentation Images                         </td>
+
+                        @if($totalImagePages > 1)                        <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
+
+                            (Page {{ $currentPage - 1 }} of {{ $totalImagePages }})                            <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo" style="width:60px; height:auto;">
+
+                        @endif                        </td>
+
+                    </div>                    </tr>
+
+                    <tr>
+
+                    <table>                        <td style="vertical-align: top;">
+
+                        @foreach(array_chunk($imageChunk, 3) as $rowIndex => $rowImages)                            <div style="font-size: 9pt;">Versi</div>
+
+                            <tr>                        </td>
+
+                                @foreach($rowImages as $colIndex => $imagePath)                        <td style="vertical-align: top;">
+
+                                    @php                            <div style="font-size: 9pt;">1.0</div>
+
+                                        $globalIndex = ($chunkIndex * $imagesPerPage) + ($rowIndex * 3) + $colIndex;                        </td>
+
+                                        $imgPath = is_array($imagePath) && isset($imagePath['path']) ? $imagePath['path'] : $imagePath;                    </tr>
+
+                                        $imgCategory = is_array($imagePath) && isset($imagePath['category']) ? $imagePath['category'] : null;                    <tr>
+
+                                        $fullPath = public_path('storage/' . $imgPath);                        <td style="vertical-align: top;">
+
+                                    @endphp                            <div style="font-size: 9pt;">Hal</div>
+
+                        </td>
+
+                                    <td style="width: 33.33%; padding: 3px; text-align: center; border: 1px solid #ddd; vertical-align: top;">                        <td style="vertical-align: top;">
+
+                                        @if(file_exists($fullPath))                            <div style="font-size: 9pt;">{{ $currentPage }} dari {{ $totalPages }}</div>
+
+                                            <img src="{{ $fullPath }}"                        </td>
+
+                                                 alt="Documentation Image {{ $globalIndex + 1 }}"                    </tr>
+
+                                                 style="width: 100%; max-height: 200px; object-fit: contain;">                    <tr>
+
+                                            <div style="font-size: 7pt; color: #666; margin-top: 2px;">                        <td style="vertical-align: top;">
+
+                                                @if($imgCategory)                            <div style="font-size: 9pt;">Label</div>
+
+                                                    {{ ucwords(str_replace('_', ' ', $imgCategory)) }}                        </td>
+
+                                                @else                        <td style="vertical-align: top;">
+
+                                                    Image {{ $globalIndex + 1 }}                            <div style="font-size: 9pt;">Internal</div>
+
+                                                @endif                        </td>
+
+                                            </div>                    </tr>
+
+                                        @else                </table>
+
+                                            <div style="width: 100%; height: 200px; background-color: #f0f0f0; text-align: center; line-height: 200px; color: #999; font-size: 8pt;">
+
+                                                Image not found                {{-- Documentation Images --}}
+
+                                            </div>                <div style="margin-top: 5px;">
+
+                                        @endif                    <div class="bold" style="margin-bottom: 3px;">Documentation Images @if($totalImagePages > 1)(Page {{ $currentPage - 1 }} of {{ $totalImagePages }})@endif:</div>
+
+                                    </td>
+
+                                @endforeach                    <table style="border-collapse: collapse;">
+
+                        @foreach(array_chunk($imageChunk, 3) as $rowIndex => $rowImages)
+
+                                {{-- Fill remaining cells --}}                            <tr>
+
+                                @for($i = count($rowImages); $i < 3; $i++)                                @foreach($rowImages as $colIndex => $imagePath)
+
+                                    <td style="width: 33.33%; padding: 3px; border: none;"></td>                                    @php
+
+                                @endfor                                        $globalIndex = ($chunkIndex * $imagesPerPage) + ($rowIndex * 3) + $colIndex;
+
+                            </tr>                                    @endphp
+
+                        @endforeach
+
+                    </table>                                    @if(is_string($imagePath))
+
+                </div>                                        <td style="width: 33.33%; padding: 3px; text-align: center; border: 1px solid #ddd; vertical-align: top;">
+
+            </div>                                            @php
+
+                                                $fullPath = public_path('storage/' . $imagePath);
+
+            {{-- Fixed Footer --}}                                            @endphp
+
+            <div class="page-footer">                                            @if(file_exists($fullPath))
+
+                ©HakCipta PT. APLIKANUSA LINTASARTA, Indonesia<br>                                                <img src="{{ $fullPath }}"
+
+                FM-LAP-D2-SOP-003-001 Formulir Preventive Maintenance 1 Phase UPS                                                     alt="Documentation Image {{ $globalIndex + 1 }}"
+
+            </div>                                                     style="width: 100%; max-height: 200px; object-fit: contain;">
+
+                                                <div style="font-size: 7pt; color: #666; margin-top: 2px;">Image {{ $globalIndex + 1 }}</div>
+
+            @php $currentPage++; @endphp                                            @else
+
+        @endforeach                                                <div style="width: 100%; height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt;">
+
+    @endif                                                    Image not found
+
+</body>                                                </div>
+
+</html>                                            @endif
+
+                                        </td>
+                                    @elseif(is_array($imagePath) && isset($imagePath['path']))
+                                        <td style="width: 33.33%; padding: 3px; text-align: center; border: 1px solid #ddd; vertical-align: top;">
+                                            @php
+                                                $fullPath = public_path('storage/' . $imagePath['path']);
+                                            @endphp
+                                            @if(file_exists($fullPath))
+                                                <img src="{{ $fullPath }}"
+                                                     alt="{{ $imagePath['category'] ?? 'Documentation' }}"
+                                                     style="width: 100%; max-height: 200px; object-fit: contain;">
+                                                @if(isset($imagePath['category']))
+                                                    <div style="font-size: 7pt; color: #666; margin-top: 2px;">{{ ucwords(str_replace('_', ' ', $imagePath['category'])) }}</div>
+                                                @else
+                                                    <div style="font-size: 7pt; color: #666; margin-top: 2px;">Image {{ $globalIndex + 1 }}</div>
+                                                @endif
+                                            @else
+                                                <div style="width: 100%; height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt;">
+                                                    Image not found
+                                                </div>
+                                            @endif
+                                        </td>
+                                    @endif
+                                @endforeach
+
+                                {{-- Fill remaining cells --}}
+                                @for($i = count($rowImages); $i < 3; $i++)
+                                    <td style="width: 33.33%; padding: 3px; border: none;"></td>
+                                @endfor
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
+            </div>
+
+            {{-- Fixed Footer --}}
+            <div class="page-footer">
+                ©HakCipta PT. APLIKANUSA LINTASARTA, Indonesia<br>
+                FM-LAP-D2-SOP-003-001 Formulir Preventive Maintenance 1 Phase UPS
+            </div>
+
+            @php $currentPage++; @endphp
+        @endforeach
+    @endif
+</body>
+</html>

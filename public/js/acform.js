@@ -481,15 +481,18 @@
     function usePhoto() {
       const imageData = capturedImg.src;
       if (currentSection && currentCategory) {
-        if (currentReplaceTarget !== null) {
-          console.log('Replace mode: position =', currentReplacePosition);
-          replaceImageWithData(currentReplaceTarget, imageData, currentCategory, currentReplacePosition);
+        // Check if image with same category already exists
+        const previewContainer = currentSection.querySelector('.preview-container');
+        const existingImageDiv = Array.from(previewContainer.children).find(div => {
+          return div.dataset.category === currentCategory;
+        });
 
-          currentReplaceTarget.style.border = '';
-          currentReplaceTarget.style.boxShadow = '';
-          currentReplaceTarget = null;
-          currentReplacePosition = null;
+        if (existingImageDiv) {
+          // Replace existing image
+          console.log('Auto-replace mode: replacing existing image for category:', currentCategory);
+          replaceImageWithData(existingImageDiv, imageData, currentCategory, null);
         } else {
+          // Add new image
           console.log('Add mode: menambah gambar baru');
           addImageToPreview(imageData, currentSection, currentCategory);
         }
@@ -501,22 +504,25 @@
     // FILE UPLOAD HANDLING
     // ========================================================================
     function handleLocalFiles(files, section, category) {
-      if (currentReplaceTarget !== null) {
+      // Check if image with same category already exists
+      const previewContainer = section.querySelector('.preview-container');
+      const existingImageDiv = Array.from(previewContainer.children).find(div => {
+        return div.dataset.category === category;
+      });
+
+      if (existingImageDiv && files.length === 1) {
+        // Replace existing image
         const file = files[0];
         if (file && file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = e => {
-            console.log('Replace from upload: position =', currentReplacePosition);
-            replaceImageWithData(currentReplaceTarget, e.target.result, category, currentReplacePosition);
-
-            currentReplaceTarget.style.border = '';
-            currentReplaceTarget.style.boxShadow = '';
-            currentReplaceTarget = null;
-            currentReplacePosition = null;
+            console.log('Auto-replace from upload: category =', category);
+            replaceImageWithData(existingImageDiv, e.target.result, category, null);
           };
           reader.readAsDataURL(file);
         }
       } else {
+        // Add new images
         console.log('Add from upload: menambah gambar baru');
         Array.from(files).forEach(file => {
           if (!file.type.startsWith('image/')) return;
@@ -546,9 +552,7 @@
     function replaceImageWithData(imageDiv, newImageData, category, position) {
       console.log('replaceImageWithData called with position:', position);
 
-      const img = imageDiv.querySelector('img');
-      if (img) img.src = newImageData;
-
+      // Mark old image for deletion if it's an existing image
       if (imageDiv.classList.contains('existing-image')) {
         const imagePath = imageDiv.dataset.path;
 
@@ -557,34 +561,15 @@
         deleteInput.name = 'delete_images[]';
         deleteInput.value = imagePath;
         document.getElementById('mainForm').appendChild(deleteInput);
-
-        imageDiv.classList.remove('existing-image');
-        imageDiv.removeAttribute('data-path');
       }
 
-      // Remove old hidden input if exists
-      imageDiv.querySelectorAll('input[type="hidden"]').forEach(input => input.remove());
+      // Remove the old image div from preview
+      imageDiv.remove();
 
-      const mainForm = document.getElementById('mainForm');
+      // Add the new image to preview
+      addImageToPreview(newImageData, currentSection, category);
 
-      const hiddenInput = document.createElement('input');
-      hiddenInput.type = 'hidden';
-      hiddenInput.name = 'images[]';
-
-      const imageDataObj = {
-        data: newImageData,
-        category,
-        timestamp: new Date().toISOString()
-      };
-
-      if (position !== null && position !== undefined) {
-        imageDataObj.position = position;
-      }
-
-      hiddenInput.value = JSON.stringify(imageDataObj);
-      mainForm.appendChild(hiddenInput);
-
-      console.log('Hidden input created for category:', category, 'position:', position);
+      console.log('Image replaced - old removed, new added for category:', category, 'position:', position);
       showNotification('✓ Gambar berhasil diganti!');
     }
 
@@ -596,6 +581,7 @@
 
       const imageDiv = document.createElement('div');
       imageDiv.className = 'relative group new-image';
+      imageDiv.dataset.category = category; // Store category for easy lookup
 
       const img = document.createElement('img');
       img.src = imageData;
@@ -611,42 +597,7 @@
         console.log('Image preview removed');
       });
 
-      const editBtn = document.createElement('button');
-      editBtn.type = 'button';
-      editBtn.innerHTML = '✎';
-      editBtn.className =
-        'absolute top-1 left-1 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition';
-      editBtn.title = 'Ganti gambar';
-      editBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-
-        currentReplaceTarget = imageDiv;
-        currentCategory = category;
-        currentSection = section;
-
-        // Get position of this image in preview container
-        const allImages = Array.from(previewContainer.children);
-        currentReplacePosition = allImages.indexOf(imageDiv);
-
-        console.log('Edit button clicked - setting replace mode, position:', currentReplacePosition);
-
-        imageDiv.style.border = '3px solid #3b82f6';
-        imageDiv.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.5)';
-
-        section.querySelectorAll('.preview-container > div').forEach(div => {
-          if (div !== imageDiv) {
-            div.style.border = '';
-            div.style.boxShadow = '';
-          }
-        });
-
-        section.querySelector('.camera-btn, .upload-local-btn')?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-
-        showNotification('Klik "Ambil Foto" atau "Upload Gambar" untuk mengganti');
-      });
+      // NO EDIT BUTTON - images auto-replace when adding new one
 
       const mainForm = document.getElementById('mainForm');
       const hiddenInput = document.createElement('input');
@@ -658,7 +609,7 @@
         timestamp: new Date().toISOString()
       });
 
-      imageDiv.append(img, deleteBtn, editBtn);
+      imageDiv.append(img, deleteBtn);
       mainForm.appendChild(hiddenInput);
       previewContainer.appendChild(imageDiv);
 
@@ -666,46 +617,11 @@
     }
 
     function addEditButtonToExisting(imageDiv, section, category, index) {
-      console.log('addEditButtonToExisting - category:', category, 'index:', index);
-
-      if (imageDiv.querySelector('.edit-existing-btn')) return;
-
-      const editBtn = document.createElement('button');
-      editBtn.type = 'button';
-      editBtn.innerHTML = '✎';
-      editBtn.className =
-        'edit-existing-btn absolute top-1 left-1 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition';
-      editBtn.title = 'Ganti gambar';
-
-      editBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-
-        currentReplaceTarget = imageDiv;
-        currentCategory = category;
-        currentSection = section;
-        currentReplacePosition = index;
-
-        console.log('Edit existing button clicked - position set to:', currentReplacePosition);
-
-        imageDiv.style.border = '3px solid #3b82f6';
-        imageDiv.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.5)';
-
-        section.querySelectorAll('.preview-container > div').forEach(div => {
-          if (div !== imageDiv) {
-            div.style.border = '';
-            div.style.boxShadow = '';
-          }
-        });
-
-        section.querySelector('.camera-btn, .upload-local-btn')?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-
-        showNotification('Klik "Ambil Foto" atau "Upload Gambar" untuk mengganti');
-      });
-
-      imageDiv.appendChild(editBtn);
+      // NO LONGER NEEDED - Auto-replace functionality
+      console.log('addEditButtonToExisting - skipped (auto-replace enabled)');
+      
+      // Add category to existing image div for auto-replace detection
+      imageDiv.dataset.category = category;
     }
   }
 

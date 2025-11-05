@@ -46,10 +46,7 @@
                         <p class="text-sm text-gray-600">Ruang</p>
                         <p class="font-semibold">{{ $permohonan->ruang }}</p>
                     </div>
-                    {{-- <div class="border-l-4 border-blue-500 pl-3 rounded-md">
-                        <p class="text-sm text-gray-600">Dibuat</p>
-                        <p class="font-semibold">{{ $permohonan->created_at->format('d/m/Y H:i') }} WITA</p>
-                    </div> --}}
+                   
                 </div>
             </div>
 

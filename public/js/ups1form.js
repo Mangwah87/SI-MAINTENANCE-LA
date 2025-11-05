@@ -1,7 +1,7 @@
 // ============================================================================
-// UPS1 FORM CAMERA HANDLER - WITA VERSION
+// UPS1 FORM CAMERA HANDLER - WITA VERSION (FIXED)
 // File: public/js/ups1form.js
-// MODIFIED: Menggunakan zona waktu WITA (UTC+8) untuk timestamp
+// FIXED: Form submission issue resolved
 // ============================================================================
 (() => {
   'use strict';
@@ -155,7 +155,7 @@
     console.log('UPS1 Form Handler initialized successfully');
 
     // ========================================================================
-    // DATE TIME HANDLER
+    // DATE TIME HANDLER - FIXED VERSION
     // ========================================================================
     function initDateTimeHandler() {
       console.log('Initializing DateTime Handler...');
@@ -170,34 +170,39 @@
         return;
       }
 
+      // Function to update hidden date_time field
       function updateDateTime() {
         const date = dateInput.value;
         const time = timeInput.value;
 
         if (date && time) {
           dateTimeHidden.value = date + ' ' + time + ':00';
-          console.log('DateTime updated:', dateTimeHidden.value);
+          console.log('✅ DateTime updated:', dateTimeHidden.value);
         } else {
           dateTimeHidden.value = '';
+          console.log('⚠️ DateTime cleared');
         }
       }
 
+      // Add event listeners to date and time inputs
       dateInput.addEventListener('change', updateDateTime);
       timeInput.addEventListener('change', updateDateTime);
       dateInput.addEventListener('blur', updateDateTime);
       timeInput.addEventListener('blur', updateDateTime);
 
-      // Handle form submission - ONLY ONE LISTENER
+      // Handle form submission - CRITICAL FIX
       form.addEventListener('submit', function(e) {
-        console.log('Form submit event triggered');
+        console.log('📤 Form submit event triggered');
 
-        // Force update date_time
+        // Force update date_time before validation
         updateDateTime();
 
         // Validate date_time
         if (!dateTimeHidden.value) {
           e.preventDefault();
           e.stopPropagation();
+
+          console.error('❌ Validation failed: date_time is empty');
           alert('Mohon isi tanggal dan waktu dengan lengkap');
 
           if (!dateInput.value) {
@@ -209,6 +214,9 @@
           return false;
         }
 
+        console.log('✅ Form validation passed');
+        console.log('📋 Submitting with date_time:', dateTimeHidden.value);
+
         // Disable submit button to prevent double submission
         const submitBtn = form.querySelector('button[type="submit"]');
         if (submitBtn && !submitBtn.disabled) {
@@ -216,19 +224,20 @@
           const originalText = submitBtn.textContent;
           submitBtn.textContent = 'Menyimpan...';
 
-          // Re-enable after delay (safety)
+          // Safety timeout - re-enable after 10 seconds
           setTimeout(() => {
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
-          }, 5000);
+          }, 10000);
         }
 
-        console.log('Form validation passed, submitting...');
-      }, { once: false });
+        // Allow form to submit naturally - DO NOT preventDefault here
+        return true;
+      });
 
       // Set initial value
       updateDateTime();
-      console.log('DateTime Handler initialized');
+      console.log('✅ DateTime Handler initialized');
     }
 
     // ========================================================================
@@ -331,12 +340,6 @@
 
         const lat = position.coords.latitude.toFixed(6);
         const lon = position.coords.longitude.toFixed(6);
-        const accuracy = Math.round(position.coords.accuracy);
-
-        console.log('📍 Geolocation Info:');
-        console.log('  Latitude:', lat);
-        console.log('  Longitude:', lon);
-        console.log('  Accuracy:', accuracy, 'meters');
 
         document.getElementById('lat').textContent = lat;
         document.getElementById('lon').textContent = lon;
@@ -372,9 +375,7 @@
 
         const response = await fetch(url, {
           signal: controller.signal,
-          headers: {
-            'Accept': 'application/json'
-          }
+          headers: { 'Accept': 'application/json' }
         });
 
         clearTimeout(timeoutId);
@@ -386,7 +387,6 @@
         let locationParts = [];
         if (data.address) {
           const addr = data.address;
-
           if (addr.road) locationParts.push(addr.road);
           if (addr.village || addr.suburb || addr.neighbourhood || addr.hamlet) {
             locationParts.push(addr.village || addr.suburb || addr.neighbourhood || addr.hamlet);
@@ -477,7 +477,6 @@
       ctx.fillText(formattedDate, startX, dateY);
 
       const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-
       const now = new Date();
       const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
       const witaDate = new Date(utcTime + (8 * 3600000));
@@ -490,11 +489,8 @@
       const startY = dateY + (dateFontSize * 2) + 30;
 
       ctx.font = `bold ${timeFontSize}px Arial, sans-serif`;
-
-      ctx.strokeStyle = '#000000';
       ctx.lineWidth = 14;
       ctx.strokeText(timeShort, startX, startY);
-
       ctx.fillStyle = '#FFFFFF';
       ctx.fillText(timeShort, startX, startY);
 
@@ -533,25 +529,18 @@
     function usePhoto() {
       const imageData = capturedImg.src;
       if (currentSection && currentCategory) {
-        if (currentReplaceTarget !== null) {
-          replaceImageWithData(currentReplaceTarget, imageData, currentCategory, currentReplacePosition);
-          currentReplaceTarget.style.border = '';
-          currentReplaceTarget.style.boxShadow = '';
-          currentReplaceTarget = null;
-          currentReplacePosition = null;
-        } else {
-          const previewContainer = currentSection.querySelector('.preview-container');
-          const existingImageWithSameCategory = previewContainer.querySelector('.existing-image');
+        // Check if image with same category already exists
+        const previewContainer = currentSection.querySelector('.preview-container');
+        const existingImageDiv = Array.from(previewContainer.children).find(div => {
+          return div.dataset.category === currentCategory;
+        });
 
-          if (existingImageWithSameCategory) {
-            const existingImages = Array.from(previewContainer.querySelectorAll('.existing-image'));
-            const indexOfImage = existingImages.indexOf(existingImageWithSameCategory);
-            replaceImageWithData(existingImageWithSameCategory, imageData, currentCategory, indexOfImage);
-            existingImageWithSameCategory.style.border = '';
-            existingImageWithSameCategory.style.boxShadow = '';
-          } else {
-            addImageToPreview(imageData, currentSection, currentCategory);
-          }
+        if (existingImageDiv) {
+          // Replace existing image
+          replaceImageWithData(existingImageDiv, imageData, currentCategory, null);
+        } else {
+          // Add new image
+          addImageToPreview(imageData, currentSection, currentCategory);
         }
       }
       closeCamera();
@@ -561,44 +550,30 @@
     // FILE UPLOAD HANDLING
     // ========================================================================
     function handleLocalFiles(files, section, category) {
-      if (currentReplaceTarget !== null) {
+      // Check if image with same category already exists
+      const previewContainer = section.querySelector('.preview-container');
+      const existingImageDiv = Array.from(previewContainer.children).find(div => {
+        return div.dataset.category === category;
+      });
+
+      if (existingImageDiv && files.length === 1) {
+        // Replace existing image
         const file = files[0];
         if (file && file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = e => {
-            replaceImageWithData(currentReplaceTarget, e.target.result, category, currentReplacePosition);
-            currentReplaceTarget.style.border = '';
-            currentReplaceTarget.style.boxShadow = '';
-            currentReplaceTarget = null;
-            currentReplacePosition = null;
+            replaceImageWithData(existingImageDiv, e.target.result, category, null);
           };
           reader.readAsDataURL(file);
         }
       } else {
-        const previewContainer = section.querySelector('.preview-container');
-        const existingImageWithSameCategory = previewContainer.querySelector('.existing-image');
-
-        if (existingImageWithSameCategory && files.length === 1) {
-          const file = files[0];
-          if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = e => {
-              const existingImages = Array.from(previewContainer.querySelectorAll('.existing-image'));
-              const indexOfImage = existingImages.indexOf(existingImageWithSameCategory);
-              replaceImageWithData(existingImageWithSameCategory, e.target.result, category, indexOfImage);
-              existingImageWithSameCategory.style.border = '';
-              existingImageWithSameCategory.style.boxShadow = '';
-            };
-            reader.readAsDataURL(file);
-          }
-        } else {
-          Array.from(files).forEach(file => {
-            if (!file.type.startsWith('image/')) return;
-            const reader = new FileReader();
-            reader.onload = e => addImageToPreview(e.target.result, section, category);
-            reader.readAsDataURL(file);
-          });
-        }
+        // Add new images
+        Array.from(files).forEach(file => {
+          if (!file.type.startsWith('image/')) return;
+          const reader = new FileReader();
+          reader.onload = e => addImageToPreview(e.target.result, section, category);
+          reader.readAsDataURL(file);
+        });
       }
     }
 
@@ -618,9 +593,7 @@
     }
 
     function replaceImageWithData(imageDiv, newImageData, category, position) {
-      const img = imageDiv.querySelector('img');
-      if (img) img.src = newImageData;
-
+      // Mark old image for deletion if it's an existing image
       if (imageDiv.classList.contains('existing-image')) {
         const imagePath = imageDiv.dataset.path;
         const deleteInput = document.createElement('input');
@@ -628,30 +601,15 @@
         deleteInput.name = 'delete_images[]';
         deleteInput.value = imagePath;
         document.getElementById('mainForm').appendChild(deleteInput);
-
-        imageDiv.classList.remove('existing-image');
-        imageDiv.removeAttribute('data-path');
       }
 
-      const mainForm = document.getElementById('mainForm');
-      const hiddenInput = document.createElement('input');
-      hiddenInput.type = 'hidden';
-      hiddenInput.name = 'images[]';
+      // Remove the old image div from preview
+      imageDiv.remove();
 
-      const imageDataObj = {
-        data: newImageData,
-        category,
-        timestamp: new Date().toISOString()
-      };
+      // Add the new image to preview
+      addImageToPreview(newImageData, currentSection, category);
 
-      if (position !== null) {
-        imageDataObj.position = position;
-      }
-
-      hiddenInput.value = JSON.stringify(imageDataObj);
-      mainForm.appendChild(hiddenInput);
-
-      showNotification('✓ Gambar berhasil diganti!');
+      showNotification('✔ Gambar berhasil diganti!');
     }
 
     function addImageToPreview(imageData, section, category) {
@@ -660,6 +618,7 @@
 
       const imageDiv = document.createElement('div');
       imageDiv.className = 'relative group';
+      imageDiv.dataset.category = category; // Store category for easy lookup
 
       const img = document.createElement('img');
       img.src = imageData;
@@ -672,36 +631,7 @@
         'absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition';
       deleteBtn.addEventListener('click', () => imageDiv.remove());
 
-      const editBtn = document.createElement('button');
-      editBtn.type = 'button';
-      editBtn.innerHTML = '✎';
-      editBtn.className =
-        'absolute top-1 left-1 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition';
-      editBtn.title = 'Ganti gambar';
-      editBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        currentReplaceTarget = imageDiv;
-        currentCategory = category;
-        currentSection = section;
-        currentReplacePosition = null;
-
-        imageDiv.style.border = '3px solid #3b82f6';
-        imageDiv.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.5)';
-
-        section.querySelectorAll('.preview-container > div').forEach(div => {
-          if (div !== imageDiv) {
-            div.style.border = '';
-            div.style.boxShadow = '';
-          }
-        });
-
-        section.querySelector('.camera-btn, .upload-local-btn')?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-
-        showNotification('Klik "Ambil Foto" atau "Upload Gambar" untuk mengganti');
-      });
+      // NO EDIT BUTTON - images auto-replace when adding new one
 
       const mainForm = document.getElementById('mainForm');
       const hiddenInput = document.createElement('input');
@@ -713,47 +643,15 @@
         timestamp: new Date().toISOString()
       });
 
-      imageDiv.append(img, deleteBtn, editBtn);
+      imageDiv.append(img, deleteBtn);
       mainForm.appendChild(hiddenInput);
       previewContainer.appendChild(imageDiv);
     }
 
     function addEditButtonToExisting(imageDiv, section, category, index) {
-      if (imageDiv.querySelector('.edit-existing-btn')) return;
-
-      const editBtn = document.createElement('button');
-      editBtn.type = 'button';
-      editBtn.innerHTML = '✎';
-      editBtn.className =
-        'edit-existing-btn absolute top-1 left-1 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition';
-      editBtn.title = 'Ganti gambar';
-
-      editBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        currentReplaceTarget = imageDiv;
-        currentCategory = category;
-        currentSection = section;
-        currentReplacePosition = index;
-
-        imageDiv.style.border = '3px solid #3b82f6';
-        imageDiv.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.5)';
-
-        section.querySelectorAll('.preview-container > div').forEach(div => {
-          if (div !== imageDiv) {
-            div.style.border = '';
-            div.style.boxShadow = '';
-          }
-        });
-
-        section.querySelector('.camera-btn, .upload-local-btn')?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-
-        showNotification('Klik "Ambil Foto" atau "Upload Gambar" untuk mengganti');
-      });
-
-      imageDiv.appendChild(editBtn);
+      // NO LONGER NEEDED - Auto-replace functionality
+      // Add category to existing image div for auto-replace detection
+      imageDiv.dataset.category = category;
     }
   }
 })();
