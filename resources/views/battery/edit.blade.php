@@ -200,50 +200,112 @@
                                 <input type="hidden" name="readings[{{ $index }}][battery_brand]" class="reading-battery-brand">
 
                                 <!-- Camera Section -->
+                                <!-- Camera Section dengan tampilan foto yang lebih jelas -->
                                 <div class="mt-4 border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 bg-white">
                                     <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-3">Dokumentasi Foto Battery</label>
 
                                     @if($reading->photo_path && Storage::disk('public')->exists($reading->photo_path))
-                                    <div class="existing-photo-container mb-3" data-index="{{ $index }}">
-                                        <img src="{{ Storage::url($reading->photo_path) }}"
-                                            class="existing-photo w-full h-auto max-h-64 sm:max-h-96 rounded-lg border-2 border-green-400 object-contain"
-                                            alt="Existing photo"
-                                            onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27200%27 height=%27200%27%3E%3Crect fill=%27%23ddd%27 width=%27200%27 height=%27200%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 fill=%27%23999%27 font-size=%2716%27%3EGambar tidak ditemukan%3C/text%3E%3C/svg%3E';"
-                                            data-index="{{ $index }}">
+                                    <!-- Container untuk foto yang sudah ada -->
+                                    <div class="existing-photo-container mb-4" data-index="{{ $index }}">
+                                        <div class="relative">
+                                            <!-- Badge status foto -->
+                                            <div class="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
+                                                ✓ Foto Tersedia
+                                            </div>
+
+                                            <!-- Gambar yang sudah ada -->
+                                            <img src="{{ Storage::url($reading->photo_path) }}"
+                                                class="existing-photo w-full h-auto max-h-80 sm:max-h-96 rounded-lg border-4 border-green-400 object-contain shadow-lg"
+                                                alt="Battery Photo #{{ $index + 1 }}"
+                                                onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'bg-red-50 border-2 border-red-300 rounded-lg p-4 text-center\'><p class=\'text-red-600 font-semibold\'>⚠️ Gambar tidak dapat dimuat</p><p class=\'text-sm text-gray-600 mt-2\'>Path: {{ $reading->photo_path }}</p></div>';"
+                                                data-index="{{ $index }}">
+                                        </div>
+
+                                        <!-- Info foto yang sudah ada -->
+                                        <div class="mt-3 bg-green-50 border-l-4 border-green-500 p-3 rounded">
+                                            <p class="text-sm text-green-700 font-semibold mb-1">
+                                                <svg class="inline-block w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                </svg>
+                                                Foto sudah tersimpan untuk battery ini
+                                            </p>
+                                            <p class="text-xs text-gray-600 mt-1">
+                                                Klik tombol "Ganti Foto" di bawah jika ingin menggantinya dengan foto baru.
+                                            </p>
+                                            @if($reading->photo_latitude && $reading->photo_longitude)
+                                            <p class="text-xs text-gray-600 mt-2">
+                                                📍 Lokasi: {{ number_format($reading->photo_latitude, 6) }}, {{ number_format($reading->photo_longitude, 6) }}
+                                            </p>
+                                            @endif
+                                            @if($reading->photo_timestamp)
+                                            <p class="text-xs text-gray-600 mt-1">
+                                                🕐 Waktu: {{ \Carbon\Carbon::parse($reading->photo_timestamp)->format('d M Y, H:i:s') }}
+                                            </p>
+                                            @endif
+                                        </div>
+
                                         <input type="hidden" name="readings[{{ $index }}][keep_photo]" value="1" class="keep-photo-input" data-index="{{ $index }}">
-                                        <p class="text-xs text-green-600 mt-2 font-semibold">✓ Foto tersimpan. Klik "Ganti Foto" jika ingin menggantinya.</p>
                                     </div>
                                     @else
-                                    <div class="existing-photo-container mb-3 hidden" data-index="{{ $index }}">
-                                        <p class="text-xs text-gray-500">Belum ada foto</p>
+                                    <!-- Container kosong jika belum ada foto -->
+                                    <div class="existing-photo-container mb-4" data-index="{{ $index }}">
+                                        <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                            <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            <p class="text-sm text-gray-600 font-semibold">Belum ada foto untuk battery ini</p>
+                                            <p class="text-xs text-gray-500 mt-1">Klik "Buka Kamera" untuk mengambil foto</p>
+                                        </div>
                                     </div>
                                     @endif
 
-                                    <video class="camera-preview w-full h-48 sm:h-64 bg-black rounded-lg mb-3 hidden" data-index="{{ $index }}" autoplay playsinline></video>
-                                    <img class="captured-image w-full h-auto max-h-64 sm:max-h-96 rounded-lg mb-3 hidden" data-index="{{ $index }}" alt="Captured">
+                                    <!-- Video preview untuk kamera -->
+                                    <video class="camera-preview w-full h-48 sm:h-64 bg-black rounded-lg mb-3 hidden shadow-lg" data-index="{{ $index }}" autoplay playsinline></video>
+
+                                    <!-- Gambar hasil capture -->
+                                    <img class="captured-image w-full h-auto max-h-64 sm:max-h-96 rounded-lg mb-3 border-4 border-blue-400 shadow-lg hidden" data-index="{{ $index }}" alt="Captured">
+
+                                    <!-- Canvas tersembunyi -->
                                     <canvas class="hidden" data-index="{{ $index }}"></canvas>
 
+                                    <!-- Tombol kontrol kamera -->
                                     <div class="flex flex-wrap gap-2 justify-center mb-3">
-                                        <button type="button" class="start-camera px-3 sm:px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="{{ $index }}">
+                                        <button type="button" class="start-camera px-3 sm:px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105" data-index="{{ $index }}">
+                                            <svg class="inline-block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
                                             @if($reading->photo_path && Storage::disk('public')->exists($reading->photo_path))
                                             Ganti Foto
                                             @else
                                             Buka Kamera
                                             @endif
                                         </button>
-                                        <button type="button" class="capture-photo hidden px-3 sm:px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="{{ $index }}">
+                                        <button type="button" class="capture-photo hidden px-3 sm:px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105" data-index="{{ $index }}">
+                                            <svg class="inline-block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
                                             Ambil Foto
                                         </button>
-                                        <button type="button" class="retake-photo hidden px-3 sm:px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="{{ $index }}">
+                                        <button type="button" class="retake-photo hidden px-3 sm:px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105" data-index="{{ $index }}">
+                                            <svg class="inline-block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
                                             Foto Ulang
                                         </button>
-                                        <button type="button" class="cancel-photo hidden px-3 sm:px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="{{ $index }}">
+                                        <button type="button" class="cancel-photo hidden px-3 sm:px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105" data-index="{{ $index }}">
+                                            <svg class="inline-block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
                                             Batalkan
                                         </button>
                                     </div>
 
+                                    <!-- Info foto -->
                                     <div class="photo-info text-xs text-gray-600 text-center bg-gray-50 p-2 rounded" data-index="{{ $index }}"></div>
 
+                                    <!-- Hidden inputs -->
                                     <input type="hidden" name="readings[{{ $index }}][photo_data]" data-photo="{{ $index }}">
                                     <input type="hidden" name="readings[{{ $index }}][photo_latitude]" data-lat="{{ $index }}">
                                     <input type="hidden" name="readings[{{ $index }}][photo_longitude]" data-lng="{{ $index }}">
