@@ -15,11 +15,15 @@ class AcMaintenanceConrtoller extends Controller
      */
     public function index()
     {
-        $maintenances = AcMaintenance::orderBy('date_time', 'desc')->paginate(10);
+        $maintenances = AcMaintenance::with('user')
+            ->where('user_id', auth()->id())
+            ->latest('date_time')
+            ->paginate(10);
 
         // Calculate statistics
         $stats = [
-            'this_month' => AcMaintenance::whereMonth('date_time', now()->month)
+            'this_month' => AcMaintenance::where('user_id', auth()->id())
+                ->whereMonth('date_time', now()->month)
                 ->whereYear('date_time', now()->year)
                 ->count(),
         ];
@@ -78,6 +82,9 @@ class AcMaintenanceConrtoller extends Controller
             if (isset($validated['notes']) && is_array($validated['notes'])) {
                 $validated['notes'] = implode("\n", $validated['notes']);
             }
+
+            // Add user_id
+            $validated['user_id'] = auth()->id();
 
             Log::info('AC Maintenance Store - Creating record with data:', $validated);
 

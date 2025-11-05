@@ -132,8 +132,31 @@
                                     <input type="text" name="location"
                                         value="{{ old('location', safeGetValue($maintenance ?? null, 'location')) }}"
                                         placeholder="DPSTKU (LA Teuku Umar)"
-                                        class="input-field" required>
-                                    @error('location') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                    @error('location') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        Tanggal <span class="text-red-500">*</span>
+                                    </label>
+                                    @php
+                                    $dateValue = old('date');
+                                    if (!$dateValue && isset($maintenance->date_time)) {
+                                    try {
+                                    $dateValue = \Carbon\Carbon::parse($maintenance->date_time)->format('Y-m-d');
+                                    } catch (\Exception $e) {
+                                    $dateValue = date('Y-m-d');
+                                    }
+                                    }
+                                    if (!$dateValue) {
+                                    $dateValue = date('Y-m-d');
+                                    }
+                                    @endphp
+                                    <input type="date" id="ups3_date_input" name="date"
+                                        value="{{ $dateValue }}"
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                    @error('date') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
                                 <div>

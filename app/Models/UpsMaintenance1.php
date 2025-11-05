@@ -12,6 +12,8 @@ class UpsMaintenance1 extends Model
     protected $table = 'ups_maintenances1';
 
     protected $fillable = [
+        'user_id',
+
         // Images
         'images', // Field JSON untuk menyimpan semua gambar
 
@@ -181,5 +183,13 @@ class UpsMaintenance1 extends Model
                 ->orWhere('status_battery_voltage_measurement_2', 'NOK')
                 ->orWhere('status_simonica_alarm_test', 'NOK');
         });
+    }
+
+    /**
+     * Get the user that owns the maintenance record.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

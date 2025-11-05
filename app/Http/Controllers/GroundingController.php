@@ -65,7 +65,7 @@ class GroundingController extends Controller
 
             $maintenance = GroundingMaintenance::create($validatedData);
             Log::info('Grounding Maintenance Created:', ['id' => $maintenance->id, 'images_count' => count($savedImages)]);
-            return redirect()->route('grounding.index')->with('success', 'Data Petir & Grounding berhasil ditambahkan.');
+            return redirect()->route('grounding.index')->with('success', 'Data Petir dan Grounding berhasil ditambahkan.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput()->with('error', 'Validasi gagal.');
@@ -144,7 +144,7 @@ class GroundingController extends Controller
             if (empty($validatedData['images'])) $validatedData['images'] = null;
 
             $maintenance->update($validatedData);
-            return redirect()->route('grounding.index')->with('success', 'Data Petir & Grounding berhasil diperbarui.');
+            return redirect()->route('grounding.index')->with('success', 'Data Petir dan Grounding berhasil diperbarui.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput()->with('error', 'Validasi gagal.');
@@ -167,7 +167,7 @@ class GroundingController extends Controller
                 }
             }
             $maintenance->delete();
-            return redirect()->route('grounding.index')->with('success', 'Data Petir & Grounding berhasil dihapus.');
+            return redirect()->route('grounding.index')->with('success', 'Data Petir dan Grounding berhasil dihapus.');
         } catch (\Exception $e) {
             Log::error('Error deleting grounding maintenance: ' . $e->getMessage());
             return redirect()->route('grounding.index')->with('error', 'Gagal menghapus data.');

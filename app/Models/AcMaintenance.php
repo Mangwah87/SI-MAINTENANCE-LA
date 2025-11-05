@@ -16,6 +16,8 @@ class AcMaintenance extends Model
      * FIXED: Updated field names to match database
      */
     protected $fillable = [
+        'user_id',
+
         // Informasi Lokasi dan Perangkat
         'location',
         'date_time',
@@ -99,4 +101,12 @@ class AcMaintenance extends Model
         'created_at',
         'updated_at',
     ];
+
+    /**
+     * Get the user that owns the maintenance record.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
