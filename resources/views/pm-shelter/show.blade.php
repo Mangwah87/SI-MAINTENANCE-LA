@@ -7,27 +7,69 @@
 
     <div class="container mx-auto p-6 max-w-6xl">
         <div class="bg-white rounded-lg shadow-lg p-6">
-            <div class="flex justify-end items-center mb-6 pb-4 border-b-2">
-                <div class="flex gap-2">
-                    <a href="{{ route('pm-shelter.edit', $pmShelter) }}" 
-                       class="inline-block px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
-                        <i data-lucide="edit" class="w-4 h-4 inline mr-1"></i> Edit
-                    </a>
+            <!-- Header with Responsive Buttons -->
+            <div class="mb-6 pb-4 border-b-2">
+                <!-- Desktop Layout -->
+                <div class="hidden sm:flex justify-between items-center">
+                    <!-- Back Button -->
                     <a href="{{ route('pm-shelter.index') }}" 
-                       class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                        <i data-lucide="arrow-left" class="w-4 h-4 inline mr-1"></i> Kembali
+                       class="inline-flex items-center bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                        <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> 
+                        Kembali
                     </a>
-                    <a href="{{ route('pm-shelter.export-pdf', $pmShelter) }}" target="_blank"
-                       class="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-                        <i data-lucide="download" class="w-4 h-4 inline mr-1"></i> Cetak PDF
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2">
+                        <!-- Edit Button -->
+                        <a href="{{ route('pm-shelter.edit', $pmShelter) }}" 
+                           class="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">
+                            <i data-lucide="edit" class="w-4 h-4 mr-2"></i> 
+                            Edit
+                        </a>
+                        
+                        <!-- Print PDF Button -->
+                        <a href="{{ route('pm-shelter.export-pdf', $pmShelter) }}" target="_blank"
+                           class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            <i data-lucide="download" class="w-4 h-4 mr-2"></i> 
+                            Cetak PDF
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mobile Layout -->
+                <div class="flex sm:hidden justify-between items-center gap-2">
+                    <!-- Back Button - Icon Only -->
+                    <a href="{{ route('pm-shelter.index') }}" 
+                       class="inline-flex items-center justify-center w-10 h-10 bg-gray-500 text-white rounded-lg hover:bg-gray-700 transition"
+                       title="Kembali">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
                     </a>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2 flex-1">
+                        <!-- Edit Button -->
+                        <a href="{{ route('pm-shelter.edit', $pmShelter) }}" 
+                           class="inline-flex items-center justify-center flex-1 px-3 py-2.5 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition text-sm font-medium"
+                           title="Edit">
+                            <i data-lucide="edit" class="w-4 h-4 mr-1.5"></i> 
+                            Edit
+                        </a>
+                        
+                        <!-- Print PDF Button -->
+                        <a href="{{ route('pm-shelter.export-pdf', $pmShelter) }}" target="_blank"
+                           class="inline-flex items-center justify-center flex-1 px-3 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
+                           title="Cetak PDF">
+                            <i data-lucide="download" class="w-4 h-4 mr-1.5"></i> 
+                            PDF
+                        </a>
+                    </div>
                 </div>
             </div>
 
             {{-- Informasi Lokasi dan Perangkat --}}
             <div class="mb-6">
                 <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Informasi Lokasi dan Perangkat</h3>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Lokasi</p>
                         <p class="font-semibold">{{ $pmShelter->location ?? '-' }}</p>
@@ -56,7 +98,7 @@
             </div>
 
             {{-- Visual Check --}}
-            <div class="mb-6 over">
+            <div class="mb-6">
                 <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">1. Visual Check</h3>
                 <div class="overflow-auto">
                 <table class="w-full border">
@@ -84,7 +126,7 @@
                             <td class="border p-2 text-center">
                                 @if($pmShelter->kondisi_ruangan_photos && count($pmShelter->kondisi_ruangan_photos) > 0)
                                 <button onclick="showPhotos('kondisi_ruangan')" 
-                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5  shadow-sm hover:bg-blue-200 transition">
+                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
                                     <i data-lucide="image" class="w-3 h-3"></i> Lihat ({{ count($pmShelter->kondisi_ruangan_photos) }})
                                 </button>
                                 @else
@@ -107,7 +149,7 @@
                             <td class="border p-2 text-center">
                                 @if($pmShelter->kondisi_kunci_photos && count($pmShelter->kondisi_kunci_photos) > 0)
                                 <button onclick="showPhotos('kondisi_kunci')" 
-                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5  shadow-sm hover:bg-blue-200 transition">
+                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
                                     <i data-lucide="image" class="w-3 h-3"></i> Lihat ({{ count($pmShelter->kondisi_kunci_photos) }})
                                 </button>
                                 @else
@@ -172,7 +214,7 @@
                             <td class="border p-2 text-center">
                                 @if($pmShelter->kontrol_keamanan_photos && count($pmShelter->kontrol_keamanan_photos) > 0)
                                 <button onclick="showPhotos('kontrol_keamanan')" 
-                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5  shadow-sm hover:bg-blue-200 transition">
+                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
                                     <i data-lucide="image" class="w-3 h-3"></i> Lihat ({{ count($pmShelter->kontrol_keamanan_photos) }})
                                 </button>
                                 @else
@@ -195,7 +237,7 @@
                             <td class="border p-2 text-center">
                                 @if($pmShelter->aksesibilitas_photos && count($pmShelter->aksesibilitas_photos) > 0)
                                 <button onclick="showPhotos('aksesibilitas')" 
-                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5  shadow-sm hover:bg-blue-200 transition">
+                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
                                     <i data-lucide="image" class="w-3 h-3"></i> Lihat ({{ count($pmShelter->aksesibilitas_photos) }})
                                 </button>
                                 @else
@@ -218,7 +260,7 @@
                             <td class="border p-2 text-center">
                                 @if($pmShelter->aspek_teknis_photos && count($pmShelter->aspek_teknis_photos) > 0)
                                 <button onclick="showPhotos('aspek_teknis')" 
-                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5  shadow-sm hover:bg-blue-200 transition">
+                                    class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
                                     <i data-lucide="image" class="w-3 h-3"></i> Lihat ({{ count($pmShelter->aspek_teknis_photos) }})
                                 </button>
                                 @else
@@ -265,11 +307,11 @@
                     <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Mengetahui</h3>
                     <div class="border p-3 rounded">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                            <div class=" font-semibold">
-                                 {{ $pmShelter->approvers[0]['name'] ?? '-' }}
+                            <div class="font-semibold">
+                                {{ $pmShelter->approvers[0]['name'] ?? '-' }}
                             </div>
-                            <div class=" font-semibold">
-                               NIK : {{ $pmShelter->approvers[0]['nik']?? '-' }}
+                            <div class="font-semibold">
+                                NIK : {{ $pmShelter->approvers[0]['nik'] ?? '-' }}
                             </div>
                         </div>
                     </div>

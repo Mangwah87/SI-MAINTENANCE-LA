@@ -419,8 +419,8 @@
                 <tr>
                     <td class="center" style="border:1px solid #000;">{{ $i + 1 }}</td>
                     <td style="border:1px solid #000;">{{ $ex['name'] ?? '' }}</td>
-                    <td style="border:1px solid #000;">{{ $ex['department'] ?? '' }}</td>
-                    <td style="border:1px solid #000;">{{ $ex['sub_department'] ?? '' }}</td>
+                    <td style="text-align: center; border:1px solid #000;">{{ $ex['department'] ?? '' }}</td>
+                    <td style="text-align: center; border:1px solid #000;">{{ $ex['sub_department'] ?? '' }}</td>
                 </tr>
                 @endforeach
             </table>
