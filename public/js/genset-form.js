@@ -139,46 +139,70 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- [PERUBAHAN] Fungsi Watermark (Ukuran Font Tetap) ---
+    // --- [PERUBAHAN] Fungsi Watermark (Ukuran Font Tetap + GPS) ---
     function drawWatermark(context, canvas) {
         const timestamp = getFormattedTimestamp();
 
-        // Ukuran font sekarang tetap, tidak peduli ukuran gambar
-        const basePadding = 30;
-        const largeFontSize = 55;
-        const mediumFontSize = 25;
-        const smallFontSize = 20;
+        // [BARU] Buat string untuk GPS
+        const watermarkGps = `Latitude: ${currentGeo.latitude}, Longitude: ${currentGeo.longitude}`;
+
+        // Ukuran font tetap (dari perubahan sebelumnya)
+        const basePadding = 15;
+        const largeFontSize = 64;
+        const mediumFontSize = 24;
+        const smallFontSize = 18;
         const font = "sans-serif";
 
+        // [PERUBAHAN] Hitung ulang Posisi Y untuk memberi ruang bagi GPS
         const yPosTime = canvas.height - basePadding;
         const yPosDay = yPosTime - largeFontSize;
         const yPosDate = yPosDay - mediumFontSize;
         const yPosLocation = yPosDate - mediumFontSize;
+        const yPosGps = yPosLocation - mediumFontSize; // <-- Baris baru untuk GPS di atas Lokasi
 
+        // [PERUBAHAN] Hitung ulang Lebar Maksimum (termasuk GPS)
         context.font = `bold ${largeFontSize}px ${font}`; const timeWidth = context.measureText(timestamp.time).width;
         context.font = `bold ${smallFontSize}px ${font}`; const witaWidth = context.measureText(timestamp.tz).width;
         context.font = `bold ${mediumFontSize}px ${font}`; const dateWidth = context.measureText(timestamp.date).width;
         context.font = `bold ${mediumFontSize}px ${font}`; const dayWidth = context.measureText(timestamp.day).width;
         context.font = `bold ${mediumFontSize}px ${font}`; const locationWidth = context.measureText(currentGeo.locationName).width;
+        context.font = `bold ${smallFontSize}px ${font}`; const gpsWidth = context.measureText(watermarkGps).width; // <-- Lebar baru GPS
 
-        const maxWidth = Math.max(dateWidth, dayWidth, locationWidth, (timeWidth + witaWidth + (basePadding * 0.5)));
+        const maxWidth = Math.max(dateWidth, dayWidth, locationWidth, gpsWidth, (timeWidth + witaWidth + (basePadding * 0.5))); // <-- Tambahkan gpsWidth
         const bgWidth = maxWidth + (basePadding * 2);
-        const bgHeight = (yPosTime + basePadding) - (yPosLocation - mediumFontSize - (basePadding * 0.5));
-        const bgYPos = yPosLocation - mediumFontSize - (basePadding * 0.5);
+        
+        // [PERUBAHAN] Hitung ulang Latar Belakang berdasarkan yPosGps
+        const bgHeight = (yPosTime + basePadding) - (yPosGps - smallFontSize - (basePadding * 0.5));
+        const bgYPos = yPosGps - smallFontSize - (basePadding * 0.5);
 
         context.fillStyle = 'rgba(0, 0, 0, 0.6)';
         context.fillRect(0, bgYPos, bgWidth, bgHeight);
 
+        // [PERUBAHAN] Gambar semua teks, dimulai dari GPS
         context.fillStyle = 'white';
         context.textBaseline = 'bottom'; context.textAlign = 'left';
+
+        // Baris 1: GPS (BARU)
+        context.font = `bold ${smallFontSize}px ${font}`; // Gunakan font kecil untuk GPS
+        context.fillText(watermarkGps, basePadding, yPosGps);
+
+        // Baris 2: Lokasi
         context.font = `bold ${mediumFontSize}px ${font}`;
         context.fillText(currentGeo.locationName, basePadding, yPosLocation);
+
+        // Baris 3: Tanggal
         context.font = `bold ${mediumFontSize}px ${font}`;
         context.fillText(timestamp.date, basePadding, yPosDate);
+
+        // Baris 4: Hari
         context.font = `bold ${mediumFontSize}px ${font}`;
         context.fillText(timestamp.day, basePadding, yPosDay);
+        
+        // Baris 5: Waktu (Besar)
         context.font = `bold ${largeFontSize}px ${font}`;
         context.fillText(timestamp.time, basePadding, yPosTime);
+
+        // Baris 5: WITA (Kecil)
         context.font = `bold ${smallFontSize}px ${font}`;
         const yPosWita = yPosTime - (largeFontSize - smallFontSize) - (largeFontSize * 0.1);
         context.fillText(timestamp.tz, basePadding + timeWidth + (basePadding * 0.5), yPosWita);
