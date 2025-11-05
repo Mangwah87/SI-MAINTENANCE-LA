@@ -15,11 +15,15 @@ class UpsMaintenance1Controller extends Controller
      */
     public function index()
     {
-        $maintenances = UpsMaintenance1::orderBy('date_time', 'desc')->paginate(10);
+        $maintenances = UpsMaintenance1::with('user')
+            ->where('user_id', auth()->id())
+            ->latest('date_time')
+            ->paginate(10);
 
         // Calculate statistics
         $stats = [
-            'this_month' => UpsMaintenance1::whereMonth('date_time', now()->month)
+            'this_month' => UpsMaintenance1::where('user_id', auth()->id())
+                ->whereMonth('date_time', now()->month)
                 ->whereYear('date_time', now()->year)
                 ->count(),
         ];
@@ -74,6 +78,9 @@ class UpsMaintenance1Controller extends Controller
             if (isset($validated['notes']) && is_array($validated['notes'])) {
                 $validated['notes'] = implode("\n", $validated['notes']);
             }
+
+            // Add user_id
+            $validated['user_id'] = auth()->id();
 
             $maintenance = UpsMaintenance1::create($validated);
 
@@ -444,8 +451,37 @@ class UpsMaintenance1Controller extends Controller
      */
     public function print(UpsMaintenance1 $upsMaintenance1)
     {
-        $maintenance = $upsMaintenance1;
-        $pdf = PDF::loadView('ups1.upspdf_1', compact('maintenance'));
-        return $pdf->stream('preventive_maintenance_ups1phase_'.$maintenance->id.'.pdf');
+        try {
+            $maintenance = $upsMaintenance1;
+
+            // Load view and generate PDF
+            $pdf = PDF::loadView('ups1.upspdf_1', compact('maintenance'));
+
+            // Set PDF options for better rendering
+            $pdf->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'Arial',
+                'enable_css_float' => true,
+                'enable_html5_parser' => true,
+                'debugCss' => false,
+                'debugLayout' => false,
+                'debugLayoutLines' => false,
+                'debugLayoutBlocks' => false,
+                'debugLayoutInline' => false,
+                'debugLayoutPaddingBox' => false,
+            ]);
+
+            // Set paper size
+            $pdf->setPaper('A4', 'portrait');
+
+            return $pdf->stream('preventive_maintenance_ups1phase_'.$maintenance->id.'.pdf');
+        } catch (\Exception $e) {
+            Log::error('UPS1 PDF Generation Error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
+            return redirect()->back()
+                ->with('error', 'Gagal membuat PDF: ' . $e->getMessage());
+        }
     }
 }

@@ -22,8 +22,8 @@
         }
 
         /* Special class for symbols only */
-        .symbol {
-            font-family: DejaVu Sans, sans-serif;
+        .unicode-symbol {
+            font-family: 'DejaVu Sans', sans-serif;
         }
 
         table {
@@ -38,6 +38,13 @@
 
         .header-table {
             margin-bottom: 3px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .header-table td {
+            border: 1px solid #000;
+            padding: 2px 4px;
         }
 
         .info-table {
@@ -74,21 +81,22 @@
             margin-bottom: 3px;
         }
 
-        /* Footer fixed at bottom */
-        .page-footer {
+        /* Fixed Header - appears on all pages */
+        .page-header {
             position: fixed;
-            bottom: 10mm;
-            left: 1mm;
-            right: 1mm;
+            top: -10mm;
+            left: 0;
+            right: 0;
+            height: auto;
+        }
+
+        /* Footer */
+        .page-footer {
+            margin-top: 10px;
             padding-top: 3px;
             border-top: 1px solid #000;
             font-size: 8.5px;
             text-align: left;
-        }
-
-        /* Content wrapper with padding for footer */
-        .content-wrapper {
-            padding-bottom: 25mm;
         }
 
         /* Ensure signature stays together */
@@ -118,6 +126,31 @@
         .no-bottom-border {
             border-bottom: none !important;
         }
+
+        /* Image styling for aspect ratio preservation */
+        .image-cell {
+            width: 33.33%;
+            height: 240px;
+            padding: 3px;
+            text-align: center;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        .image-container {
+            height: 210px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 205px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body>
@@ -137,58 +170,68 @@
             $images = [];
         }
 
+        // Calculate total pages: 1 main page + image pages (9 images per page)
         $imagesPerPage = 9;
         $totalImagePages = !empty($images) ? ceil(count($images) / $imagesPerPage) : 0;
         $totalPages = 1 + $totalImagePages;
+
+        // Base64 encode logo
+        $logoPath = public_path('assets/images/logo2.png');
+        $logoBase64 = '';
+        if (file_exists($logoPath)) {
+            $logoContent = file_get_contents($logoPath);
+            $logoBase64 = 'data:image/png;base64,' . base64_encode($logoContent);
+        }
     @endphp
 
     {{-- PAGE 1: Main Content --}}
-    <div class="content-wrapper">
-        {{-- Header --}}
-        <table class="header-table">
-            <tr>
-                <td width="15%" style="vertical-align: top;">
-                    <div style="font-size: 9pt;">No. Dok.</div>
-                </td>
-                <td width="30%" style="vertical-align: top;">
-                    <div style="font-size: 9pt;">FM-LAP-D2-SOP-003-003</div>
-                </td>
-                <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
-                    <div style="font-weight: bold; font-size: 13pt;">Formulir</div>
-                    <div style="font-weight: bold; font-size: 13pt;">Preventive Maintenance</div>
-                    <div style="font-weight: bold; font-size: 13pt;">AC</div>
-                </td>
-                <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
-                    <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo" style="width:65px; height:auto;">
-                </td>
-            </tr>
-            <tr>
-                <td style="vertical-align: top;">
-                    <div style="font-size: 9pt;">Versi</div>
-                </td>
-                <td style="vertical-align: top;">
-                    <div style="font-size: 9pt;">1.0</div>
-                </td>
-            </tr>
-            <tr>
-                <td style="vertical-align: top;">
-                    <div style="font-size: 9pt;">Hal</div>
-                </td>
-                <td style="vertical-align: top;">
-                    <div style="font-size: 9pt;">1 dari {{ $totalPages }}</div>
-                </td>
-            </tr>
-            <tr>
-                <td style="vertical-align: top;">
-                    <div style="font-size: 9pt;">Label</div>
-                </td>
-                <td style="vertical-align: top;">
-                    <div style="font-size: 9pt;">Internal</div>
-                </td>
-            </tr>
-        </table>
+    {{-- Header for Page 1 --}}
+    <table class="header-table">
+        <tr>
+            <td width="15%" style="vertical-align: top;">
+                <div style="font-size: 9pt;">No. Dok.</div>
+            </td>
+            <td width="30%" style="vertical-align: top;">
+                <div style="font-size: 9pt;">FM-LAP-D2-SOP-003-003</div>
+            </td>
+            <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
+                <div style="font-weight: bold; font-size: 13pt;">Formulir</div>
+                <div style="font-weight: bold; font-size: 13pt;">Preventive Maintenance</div>
+                <div style="font-weight: bold; font-size: 13pt;">AC</div>
+            </td>
+            <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
+                @if($logoBase64)
+                    <img src="{{ $logoBase64 }}" alt="Logo" style="width:65px; height:auto;">
+                @endif
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top;">
+                <div style="font-size: 9pt;">Versi</div>
+            </td>
+            <td style="vertical-align: top;">
+                <div style="font-size: 9pt;">1.0</div>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top;">
+                <div style="font-size: 9pt;">Hal</div>
+            </td>
+            <td style="vertical-align: top;">
+                <div style="font-size: 9pt;">1 dari {{ $totalPages }}</div>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top;">
+                <div style="font-size: 9pt;">Label</div>
+            </td>
+            <td style="vertical-align: top;">
+                <div style="font-size: 9pt;">Internal</div>
+            </td>
+        </tr>
+    </table>
 
-        {{-- Info Table --}}
+    {{-- Info Table --}}
         <table class="info-table" style="margin-top: 3px;">
             <tr>
                 <td width="18%" style="font-size: 9pt;">Location</td>
@@ -273,14 +316,14 @@
                 <td></td>
                 <td>Shelter/Ruangan (ODC)</td>
                 <td>{{ $maintenance->temp_shelter ?? '-' }} °C</td>
-                <td><span class="symbol">&le;</span>22 °C Shelter/Ruangan</td>
+                <td><span class="unicode-symbol">&le;</span>22 °C Shelter/Ruangan</td>
                 <td class="center">{{ $maintenance->status_temp_shelter ?? 'OK' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>Outdoor Cabinet (ODC)</td>
                 <td>{{ $maintenance->temp_outdoor_cabinet ?? '-' }} °C</td>
-                <td><span class="symbol">&le;</span> 28 °C Outdoor Cabinet (ODC)</td>
+                <td><span class="unicode-symbol">&le;</span> 28 °C Outdoor Cabinet (ODC)</td>
                 <td class="center">{{ $maintenance->status_temp_outdoor_cabinet ?? 'OK' }}</td>
             </tr>
 
@@ -293,12 +336,12 @@
             @php
                 // Define all AC standards
                 $acStandards = [
-                    1 => ['label' => '', 'standard' => '<span class="symbol">&frac34;</span>-1 PK <span class="symbol">&le;</span> 4 A'],
-                    2 => ['label' => '', 'standard' => '2 PK <span class="symbol">&le;</span> 10 A'],
-                    3 => ['label' => '', 'standard' => '2.5 PK <span class="symbol">&le;</span> 13.5 A'],
-                    4 => ['label' => '', 'standard' => '5-7 PK <span class="symbol">&le;</span> 8 A / Phase'],
-                    5 => ['label' => '', 'standard' => '10 PK <span class="symbol">&le;</span> 15 A / Phase'],
-                    6 => ['label' => '', 'standard' => '15 PK <span class="symbol">&le;</span> 25 A / Phase'],
+                    1 => ['label' => '', 'standard' => '<span class="unicode-symbol">&frac34;</span>-1 PK <span class="unicode-symbol">&le;</span> 4 A'],
+                    2 => ['label' => '', 'standard' => '2 PK <span class="unicode-symbol">&le;</span> 10 A'],
+                    3 => ['label' => '', 'standard' => '2.5 PK <span class="unicode-symbol">&le;</span> 13.5 A'],
+                    4 => ['label' => '', 'standard' => '5-7 PK <span class="unicode-symbol">&le;</span> 8 A / Phase'],
+                    5 => ['label' => '', 'standard' => '10 PK <span class="unicode-symbol">&le;</span> 15 A / Phase'],
+                    6 => ['label' => '', 'standard' => '15 PK <span class="unicode-symbol">&le;</span> 25 A / Phase'],
                     7 => ['label' => '', 'standard' => '']
                 ];
             @endphp
@@ -360,20 +403,20 @@
                             <tr>
                                 <td style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8.5pt;">1</td>
                                 <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ $maintenance->executor_1 ?? '-' }}</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ $maintenance->department ?? '-' }}</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ $maintenance->sub_department ?? '-' }}</td>
+                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ !empty($maintenance->executor_1) && $maintenance->executor_1 !== '-' ? ($maintenance->department ?? '-') : '-' }}</td>
+                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ !empty($maintenance->executor_1) && $maintenance->executor_1 !== '-' ? ($maintenance->sub_department ?? '-') : '-' }}</td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8.5pt;">2</td>
                                 <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ $maintenance->executor_2 ?? '-' }}</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ $maintenance->department ?? '-' }}</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ $maintenance->sub_department ?? '-' }}</td>
+                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ !empty($maintenance->executor_2) && $maintenance->executor_2 !== '-' ? ($maintenance->department ?? '-') : '-' }}</td>
+                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ !empty($maintenance->executor_2) && $maintenance->executor_2 !== '-' ? ($maintenance->sub_department ?? '-') : '-' }}</td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8.5pt;">3</td>
                                 <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ $maintenance->executor_3 ?? '-' }}</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ $maintenance->department ?? '-' }}</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ $maintenance->sub_department ?? '-' }}</td>
+                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ !empty($maintenance->executor_3) && $maintenance->executor_3 !== '-' ? ($maintenance->department ?? '-') : '-' }}</td>
+                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ !empty($maintenance->executor_3) && $maintenance->executor_3 !== '-' ? ($maintenance->sub_department ?? '-') : '-' }}</td>
                             </tr>
                         </table>
                     </td>
@@ -382,8 +425,8 @@
                         <table style="border-collapse: collapse;">
                             <tr>
                                 <td style="border: 1px solid #000; height: 78px; vertical-align: bottom; text-align: center; padding: 4px;">
-                                    <div style="border-top: 1px solid #000; width: 60%; margin: 0 auto 2px auto;"></div>
                                     <div style="font-size: 8.5pt;">{{ $maintenance->supervisor ?? '-' }}</div>
+                                    <div style="border-top: 1px solid #000; width: 60%; margin: 0 auto 2px auto;"></div>
                                     <div style="font-size: 7.5pt; color: #444;">{{ $maintenance->supervisor_id_number ?? '' }}</div>
                                 </td>
                             </tr>
@@ -394,135 +437,131 @@
         </div>
     </div>
 
-    {{-- Fixed Footer --}}
+    {{-- Footer for Page 1 --}}
     <div class="page-footer">
         ©HakCipta PT. APLIKANUSA LINTASARTA, Indonesia<br>
         FM-LAP-D2-SOP-003-003 Formulir Preventive Maintenance AC
     </div>
 
-    {{-- IMAGE PAGES --}}
+    {{-- IMAGE PAGES - With manual headers for each page --}}
     @if(!empty($images) && count($images) > 0)
         @php
-            $imageChunks = array_chunk($images, $imagesPerPage);
-            $currentPage = 2;
+            $imageChunks = array_chunk($images, $imagesPerPage); // 9 images per page
+            $currentPageNum = 2; // Start from page 2 (page 1 is main content)
         @endphp
 
-        @foreach($imageChunks as $chunkIndex => $imageChunk)
+        @foreach($imageChunks as $pageImages)
             <div class="page-break"></div>
 
-            <div class="content-wrapper">
-                {{-- Header for image page --}}
-                <table class="header-table">
-                    <tr>
-                        <td width="15%" style="vertical-align: top;">
-                            <div style="font-weight: bold; font-size: 9pt;">No. Dok.</div>
-                        </td>
-                        <td width="30%" style="vertical-align: top;">
-                            <div style="font-weight: bold; font-size: 9pt;">FM-LAP-D2-SOP-003-003</div>
-                        </td>
-                        <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
-                            <div style="font-weight: bold; font-size: 12pt;">Formulir</div>
-                            <div style="font-weight: bold; font-size: 12pt;">Preventive Maintenance</div>
-                            <div style="font-weight: bold; font-size: 12pt;">AC</div>
-                        </td>
-                        <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
-                            <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo" style="width:60px; height:auto;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="vertical-align: top;">
-                            <div style="font-size: 9pt;">Versi</div>
-                        </td>
-                        <td style="vertical-align: top;">
-                            <div style="font-size: 9pt;">1.0</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="vertical-align: top;">
-                            <div style="font-size: 9pt;">Hal</div>
-                        </td>
-                        <td style="vertical-align: top;">
-                            <div style="font-size: 9pt;">{{ $currentPage }} dari {{ $totalPages }}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="vertical-align: top;">
-                            <div style="font-size: 9pt;">Label</div>
-                        </td>
-                        <td style="vertical-align: top;">
-                            <div style="font-size: 9pt;">Internal</div>
-                        </td>
-                    </tr>
-                </table>
+            {{-- Header for this image page --}}
+            <table class="header-table">
+                <tr>
+                    <td width="15%" style="vertical-align: top;">
+                        <div style="font-size: 9pt;">No. Dok.</div>
+                    </td>
+                    <td width="30%" style="vertical-align: top;">
+                        <div style="font-size: 9pt;">FM-LAP-D2-SOP-003-003</div>
+                    </td>
+                    <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
+                        <div style="font-weight: bold; font-size: 13pt;">Formulir</div>
+                        <div style="font-weight: bold; font-size: 13pt;">Preventive Maintenance</div>
+                        <div style="font-weight: bold; font-size: 13pt;">AC</div>
+                    </td>
+                    <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
+                        @if($logoBase64)
+                            <img src="{{ $logoBase64 }}" alt="Logo" style="width:65px; height:auto;">
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;">
+                        <div style="font-size: 9pt;">Versi</div>
+                    </td>
+                    <td style="vertical-align: top;">
+                        <div style="font-size: 9pt;">1.0</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;">
+                        <div style="font-size: 9pt;">Hal</div>
+                    </td>
+                    <td style="vertical-align: top;">
+                        <div style="font-size: 9pt;">{{ $currentPageNum }} dari {{ $totalPages }}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;">
+                        <div style="font-size: 9pt;">Label</div>
+                    </td>
+                    <td style="vertical-align: top;">
+                        <div style="font-size: 9pt;">Internal</div>
+                    </td>
+                </tr>
+            </table>
 
-                {{-- Documentation Images --}}
-                <div style="margin-top: 5px;">
-                    <div class="bold" style="margin-bottom: 3px;">Documentation Images @if($totalImagePages > 1)(Page {{ $currentPage - 1 }} of {{ $totalImagePages }})@endif:</div>
+            <div style="margin-top: 5px; margin-bottom: 5px;">
+                <div class="bold" style="margin-bottom: 3px;">Documentation Images:</div>
 
-                    <table style="border-collapse: collapse;">
-                        @foreach(array_chunk($imageChunk, 3) as $rowIndex => $rowImages)
-                            <tr>
-                                @foreach($rowImages as $colIndex => $imagePath)
-                                    @php
-                                        $globalIndex = ($chunkIndex * $imagesPerPage) + ($rowIndex * 3) + $colIndex;
-                                    @endphp
+                <table style="width: 100%; border-collapse: collapse;">
+                    @foreach(array_chunk($pageImages, 3) as $rowIndex => $rowImages)
+                        <tr>
+                            @foreach($rowImages as $colIndex => $imageData)
+                                @php
+                                    $imagePath = is_array($imageData) ? ($imageData['path'] ?? $imageData) : $imageData;
+                                    $imageCategory = is_array($imageData) ? ($imageData['category'] ?? null) : null;
+                                    $fullPath = storage_path('app/public/' . $imagePath);
 
-                                    @if(is_string($imagePath))
-                                        <td style="width: 33.33%; padding: 3px; text-align: center; border: 1px solid #ddd; vertical-align: top;">
-                                            @php
-                                                $fullPath = public_path('storage/' . $imagePath);
-                                            @endphp
-                                            @if(file_exists($fullPath))
-                                                <img src="{{ $fullPath }}"
-                                                     alt="Documentation Image {{ $globalIndex + 1 }}"
-                                                     style="width: 100%; max-height: 200px; object-fit: contain;">
-                                                <div style="font-size: 7pt; color: #666; margin-top: 2px;">Image {{ $globalIndex + 1 }}</div>
+                                    // Calculate global image index
+                                    $globalIndex = (($currentPageNum - 2) * $imagesPerPage) + ($rowIndex * 3) + $colIndex;
+
+                                    // Base64 encode image
+                                    $imageBase64Img = null;
+                                    if ($fullPath && file_exists($fullPath)) {
+                                        $imageContent = file_get_contents($fullPath);
+                                        $imageType = pathinfo($fullPath, PATHINFO_EXTENSION);
+                                        $mimeType = 'image/' . ($imageType === 'jpg' ? 'jpeg' : $imageType);
+                                        $imageBase64Img = 'data:' . $mimeType . ';base64,' . base64_encode($imageContent);
+                                    }
+                                @endphp
+
+                                <td class="image-cell">
+                                    @if($imageBase64Img)
+                                        <div class="image-container">
+                                            <img src="{{ $imageBase64Img }}" alt="Documentation Image">
+                                        </div>
+                                        <div style="font-size: 7pt; color: #666; margin-top: 2px;">
+                                            @if($imageCategory)
+                                                {{ ucwords(str_replace('_', ' ', $imageCategory)) }}
                                             @else
-                                                <div style="width: 100%; height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt;">
-                                                    Image not found
-                                                </div>
+                                                Image {{ $globalIndex + 1 }}
                                             @endif
-                                        </td>
-                                    @elseif(is_array($imagePath) && isset($imagePath['path']))
-                                        <td style="width: 33.33%; padding: 3px; text-align: center; border: 1px solid #ddd; vertical-align: top;">
-                                            @php
-                                                $fullPath = public_path('storage/' . $imagePath['path']);
-                                            @endphp
-                                            @if(file_exists($fullPath))
-                                                <img src="{{ $fullPath }}"
-                                                     alt="{{ $imagePath['category'] ?? 'Documentation' }}"
-                                                     style="width: 100%; max-height: 200px; object-fit: contain;">
-                                                @if(isset($imagePath['category']))
-                                                    <div style="font-size: 7pt; color: #666; margin-top: 2px;">{{ ucwords(str_replace('_', ' ', $imagePath['category'])) }}</div>
-                                                @else
-                                                    <div style="font-size: 7pt; color: #666; margin-top: 2px;">Image {{ $globalIndex + 1 }}</div>
-                                                @endif
-                                            @else
-                                                <div style="width: 100%; height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt;">
-                                                    Image not found
-                                                </div>
-                                            @endif
-                                        </td>
+                                        </div>
+                                    @else
+                                        <div class="image-container">
+                                            <div style="color: #999; font-size: 8pt;">Image not found</div>
+                                        </div>
                                     @endif
-                                @endforeach
+                                </td>
+                            @endforeach
 
-                                {{-- Fill remaining cells --}}
-                                @for($i = count($rowImages); $i < 3; $i++)
-                                    <td style="width: 33.33%; padding: 3px; border: none;"></td>
-                                @endfor
-                            </tr>
-                        @endforeach
-                    </table>
-                </div>
+                            {{-- Fill remaining cells --}}
+                            @for($i = count($rowImages); $i < 3; $i++)
+                                <td style="width: 33.33%; padding: 3px; border: none;"></td>
+                            @endfor
+                        </tr>
+                    @endforeach
+                </table>
             </div>
 
-            {{-- Fixed Footer --}}
+            {{-- Footer for image page --}}
             <div class="page-footer">
                 ©HakCipta PT. APLIKANUSA LINTASARTA, Indonesia<br>
                 FM-LAP-D2-SOP-003-003 Formulir Preventive Maintenance AC
             </div>
 
-            @php $currentPage++; @endphp
+            @php
+                $currentPageNum++; // Increment page number for next image page
+            @endphp
         @endforeach
     @endif
 </body>

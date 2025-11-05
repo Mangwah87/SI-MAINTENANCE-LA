@@ -15,8 +15,11 @@ class UpsMaintenanceController extends Controller
      */
     public function index()
     {
-        $maintenances = UpsMaintenance::orderBy('date_time', 'desc')->paginate(10);
-        return view('ups', compact('maintenances'));
+        $maintenances = UpsMaintenance::with('user')
+            ->where('user_id', auth()->id())
+            ->latest('date_time')
+            ->paginate(10);
+        return view('ups3.ups', compact('maintenances'));
     }
 
     /**
@@ -24,7 +27,7 @@ class UpsMaintenanceController extends Controller
      */
     public function create()
     {
-        return view('upsform');
+        return view('ups3.upsform');
     }
 
     /**
@@ -121,11 +124,14 @@ class UpsMaintenanceController extends Controller
         $validated['images'] = !empty($savedImages) ? $savedImages : null;
         Log::info('Final saved images:', $savedImages);
 
+        // Add user_id
+        $validated['user_id'] = auth()->id();
+
         $maintenance = UpsMaintenance::create($validated);
 
         Log::info('Maintenance Created:', ['id' => $maintenance->id, 'images' => $maintenance->images]);
 
-        return redirect()->route('ups')
+        return redirect()->route('ups3.show', $maintenance->id)
             ->with('success', 'Data berhasil disimpan!');
     }
 
@@ -134,7 +140,7 @@ class UpsMaintenanceController extends Controller
      */
     public function show(UpsMaintenance $upsMaintenance)
     {
-        return view('upsdetail', ['maintenance' => $upsMaintenance]);
+        return view('ups3.upsdetail', ['maintenance' => $upsMaintenance]);
     }
 
     /**
@@ -142,7 +148,7 @@ class UpsMaintenanceController extends Controller
      */
     public function edit(UpsMaintenance $upsMaintenance)
     {
-        return view('upsform', ['maintenance' => $upsMaintenance]);
+        return view('ups3.upsform', ['maintenance' => $upsMaintenance]);
     }
 
     /**
@@ -209,26 +215,56 @@ class UpsMaintenanceController extends Controller
             'sub_department' => 'nullable|string|max:255',
         ]);
 
-        // Handle upload images
+        // Handle upload images - Preserve existing images
         $imagesData = $request->input('images', []);
-        $savedImages = [];
+        $deleteImages = $request->input('delete_images', []);
+        $existingImages = [];
 
-        if (!empty($imagesData) && is_array($imagesData)) {
-            // Hapus gambar lama jika ada
-            if ($upsMaintenance->images) {
-                $this->deleteOldImages($upsMaintenance->images);
+        // Keep existing images from database, excluding those marked for deletion
+        if ($upsMaintenance->images && is_array($upsMaintenance->images)) {
+            foreach ($upsMaintenance->images as $img) {
+                // Get the path whether it's a string or array
+                $imagePath = is_array($img) && isset($img['path']) ? $img['path'] : (is_string($img) ? $img : null);
+
+                // Keep image if it's not in delete list
+                if ($imagePath && !in_array($imagePath, $deleteImages)) {
+                    $existingImages[] = $img;
+                } else if ($imagePath && in_array($imagePath, $deleteImages)) {
+                    // Delete the file from storage
+                    if (Storage::disk('public')->exists($imagePath)) {
+                        Storage::disk('public')->delete($imagePath);
+                        Log::info("Deleted image during edit: $imagePath");
+                    }
+                }
             }
+        }
 
+        // Process new images from form
+        if (!empty($imagesData) && is_array($imagesData)) {
             foreach ($imagesData as $imgJson) {
                 try {
                     $imgInfo = json_decode($imgJson, true);
                     if ($imgInfo && isset($imgInfo['data'])) {
+                        // This is a new image (base64)
                         $saved = $this->saveBase64Image($imgInfo['data']);
                         if ($saved) {
-                            $savedImages[] = [
+                            $newImage = [
                                 'path' => $saved,
                                 'category' => $imgInfo['category'] ?? 'unknown'
                             ];
+
+                            // If position is specified, insert at that position
+                            if (isset($imgInfo['position']) && is_numeric($imgInfo['position'])) {
+                                $position = (int) $imgInfo['position'];
+                                // Make sure position is valid
+                                if ($position >= 0 && $position <= count($existingImages)) {
+                                    array_splice($existingImages, $position, 0, [$newImage]);
+                                } else {
+                                    $existingImages[] = $newImage;
+                                }
+                            } else {
+                                $existingImages[] = $newImage;
+                            }
                         }
                     }
                 } catch (\Exception $e) {
@@ -236,12 +272,14 @@ class UpsMaintenanceController extends Controller
                     continue;
                 }
             }
-            $validated['images'] = !empty($savedImages) ? $savedImages : null;
         }
+
+        // Update images field with combined old and new images
+        $validated['images'] = !empty($existingImages) ? $existingImages : null;
 
         $upsMaintenance->update($validated);
 
-        return redirect()->route('ups')
+        return redirect()->route('ups3.show', $upsMaintenance)
             ->with('success', 'Data berhasil diupdate!');
     }
 
@@ -257,7 +295,7 @@ class UpsMaintenanceController extends Controller
 
         $upsMaintenance->delete();
 
-        return redirect()->route('ups')
+        return redirect()->route('ups3.index')
             ->with('success', 'Data berhasil dihapus!');
     }
 
@@ -320,7 +358,7 @@ class UpsMaintenanceController extends Controller
     public function print(UpsMaintenance $upsMaintenance)
     {
         $maintenance = $upsMaintenance;
-        $pdf = PDF::loadView('upsdetail_pdf', compact('maintenance'));
+        $pdf = PDF::loadView('ups3.upsdetail_pdf', compact('maintenance'));
         return $pdf->stream('preventive_maintenance_ups_'.$maintenance->id.'.pdf');
     }
 }
