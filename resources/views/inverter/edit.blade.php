@@ -930,11 +930,19 @@ function cropToSquare(sourceCanvas) {
     return squareCanvas;
 }
 
-// ==================== WATERMARK WITH GEOLOCATION (HANYA UNTUK KAMERA) ====================
+/// ==================== WATERMARK WITH GEOLOCATION (EXTRA LARGE) ====================
 async function addWatermarkToCanvas(canvas) {
     const ctx = canvas.getContext('2d');
     const timestamp = new Date();
-    const formattedTime = timestamp.toLocaleString('id-ID');
+    
+    // Format waktu tanpa detik
+    const formattedTime = timestamp.toLocaleString('id-ID', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
     const hari = timestamp.toLocaleDateString('id-ID', { weekday: 'long' });
 
     let latitude = null;
@@ -950,7 +958,35 @@ async function addWatermarkToCanvas(canvas) {
                 try {
                     const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
                     const data = await response.json();
-                    lokasiText = data.display_name || 'Lokasi tidak diketahui';
+                    
+                    // Extract lokasi ringkas: nama jalan, kabupaten, provinsi
+                    const address = data.address || {};
+                    const parts = [];
+                    
+                    // Nama jalan/lokasi
+                    if (address.road) parts.push(address.road);
+                    else if (address.neighbourhood) parts.push(address.neighbourhood);
+                    else if (address.suburb) parts.push(address.suburb);
+                    
+                    // Nomor rumah jika ada
+                    if (address.house_number) {
+                        parts[parts.length - 1] = `${parts[parts.length - 1]} No.${address.house_number}`;
+                    }
+                    
+                    // Kabupaten/Kota
+                    if (address.city) parts.push(address.city);
+                    else if (address.county) parts.push(address.county);
+                    else if (address.state_district) parts.push(address.state_district);
+                    
+                    // Provinsi
+                    if (address.state) parts.push(address.state);
+                    
+                    lokasiText = parts.length > 0 ? parts.join(', ') : 'Lokasi tidak diketahui';
+                    
+                    // Batasi panjang teks max 60 karakter
+                    if (lokasiText.length > 60) {
+                        lokasiText = lokasiText.substring(0, 57) + '...';
+                    }
                 } catch {
                     lokasiText = "Gagal mengambil nama lokasi";
                 }
@@ -964,17 +1000,35 @@ async function addWatermarkToCanvas(canvas) {
         lokasiText = "Geolokasi tidak didukung";
     }
 
-    // Draw watermark
-    const padding = 12;
-    const fontSize = Math.max(14, canvas.width / 50);
+    // Draw watermark - REDUCED SIZE VERSION
+    const padding = 15;  // ← SIZING #1: Ubah dari 20 menjadi 15 (lebih kecil)
+    const fontSize = Math.max(32, canvas.width / 25);  // ← SIZING #2: Ubah dari 48 & /15 menjadi 32 & /25 (LEBIH KECIL)
+    const lineHeight = fontSize * 1.4;  // ← SIZING #3: Ubah dari 1.6 menjadi 1.4 (lebih rapat)
+    
     ctx.font = `bold ${fontSize}px Arial`;
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.fillRect(0, canvas.height - fontSize * 5.5, canvas.width, fontSize * 5.5);
-    ctx.fillStyle = "white";
-
-    ctx.fillText(`📍 ${lokasiText}`, padding, canvas.height - fontSize * 4);
-    ctx.fillText(`🕓 ${hari}, ${formattedTime}`, padding, canvas.height - fontSize * 2.5);
-    ctx.fillText(`🌐 Lat: ${latitude?.toFixed(5) || '-'}, Lng: ${longitude?.toFixed(5) || '-'}`, padding, canvas.height - fontSize);
+    ctx.textBaseline = 'bottom';
+    
+    // Teks dengan outline untuk keterbacaan
+    const texts = [
+        `📍 ${lokasiText}`,
+        `🕓 ${hari}, ${formattedTime}`,
+        `🌐 ${latitude?.toFixed(5) || '-'}, ${longitude?.toFixed(5) || '-'}`
+    ];
+    
+    let yPosition = canvas.height - padding;
+    
+    texts.reverse().forEach(text => {
+        // Outline hitam lebih tebal untuk keterbacaan
+        ctx.strokeStyle = 'rgba(0,0,0,0.9)';
+        ctx.lineWidth = 4;  // ← SIZING #4: Ubah dari 6 menjadi 4 (lebih tipis)
+        ctx.strokeText(text, padding, yPosition);
+        
+        // Teks putih di atas
+        ctx.fillStyle = 'white';
+        ctx.fillText(text, padding, yPosition);
+        
+        yPosition -= lineHeight;
+    });
 
     return {
         latitude,
