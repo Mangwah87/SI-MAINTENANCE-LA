@@ -120,6 +120,10 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}', [RectifierMaintenanceController::class, 'update'])->name('update');
         Route::delete('/{id}', [RectifierMaintenanceController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/export-pdf', [RectifierMaintenanceController::class, 'exportPdf'])->name('export-pdf');
+
+        Route::get('/rectifier/{id}/debug-images', [RectifierMaintenanceController::class, 'debugImages'])
+            ->name('rectifier.debug-images')
+            ->middleware('auth');
     });
     // PMPermohonan Routes
     Route::prefix('pm-permohonan')->name('pm-permohonan.')->group(function () {

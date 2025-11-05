@@ -35,6 +35,13 @@
                         <input type="hidden" name="camera_photos_rectifier_test" id="camera_photos_rectifier_test" value="[]">
                         <input type="hidden" name="camera_photos_battery_voltage" id="camera_photos_battery_voltage" value="[]">
 
+                        <!-- NEW: Hidden inputs untuk kategori baru -->
+                        <input type="hidden" name="camera_photos_env_condition" id="camera_photos_env_condition" value="[]">
+                        <input type="hidden" name="camera_photos_led_display" id="camera_photos_led_display" value="[]">
+                        <input type="hidden" name="camera_photos_battery_connection" id="camera_photos_battery_connection" value="[]">
+                        <input type="hidden" name="camera_photos_battery_voltage_m1" id="camera_photos_battery_voltage_m1" value="[]">
+                        <input type="hidden" name="camera_photos_battery_voltage_m2" id="camera_photos_battery_voltage_m2" value="[]">
+
                         <!-- Header Information -->
                         <div class="mb-8">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Informasi Dasar</h3>
@@ -91,80 +98,162 @@
                         <div class="mb-8">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">1. Visual Check</h3>
 
-                            <div class="space-y-4">
+                            <div class="space-y-6">
                                 <!-- Environment Condition -->
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">a. Environment Condition</label>
-                                        <input type="text" name="env_condition" value="{{ old('env_condition', $maintenance->env_condition ?? '') }}"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            placeholder="Clean, No dust">
+                                <div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">a. Environment Condition</label>
+                                            <input type="text" name="env_condition" value="{{ old('env_condition', $maintenance->env_condition ?? '') }}"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="Clean, No dust">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                            <select name="status_env_condition" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <option value="OK" {{ old('status_env_condition', $maintenance->status_env_condition ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
+                                                <option value="NOK" {{ old('status_env_condition', $maintenance->status_env_condition ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                                        <select name="status_env_condition" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="OK" {{ old('status_env_condition', $maintenance->status_env_condition ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
-                                            <option value="NOK" {{ old('status_env_condition', $maintenance->status_env_condition ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
-                                        </select>
+
+                                    <!-- Camera & Upload for Environment Condition -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                                <span class="inline-flex items-center gap-2">
+                                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    </svg>
+                                                    Foto Environment Condition
+                                                </span>
+                                            </label>
+                                            <div id="camera-container-env-condition" class="space-y-3 mb-3"></div>
+                                            <button type="button" onclick="addCameraSlot('env_condition')"
+                                                class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                                + Tambah Foto
+                                            </button>
+                                        </div>
+
+                                        <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                                <span class="inline-flex items-center gap-2">
+                                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                    </svg>
+                                                    Upload Gambar (Optional)
+                                                </span>
+                                            </label>
+                                            <input type="file" name="images_env_condition[]" multiple accept="image/*"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                            <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- LED Display -->
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">b. LED/display</label>
-                                        <input type="text" name="led_display" value="{{ old('led_display', $maintenance->led_display ?? '') }}"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            placeholder="Normal">
+                                <div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">b. LED/display</label>
+                                            <input type="text" name="led_display" value="{{ old('led_display', $maintenance->led_display ?? '') }}"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="Normal">
+                                        </div>
+                                        <div>
+                                            <select name="status_led_display" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <option value="OK" {{ old('status_led_display', $maintenance->status_led_display ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
+                                                <option value="NOK" {{ old('status_led_display', $maintenance->status_led_display ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <select name="status_led_display" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="OK" {{ old('status_led_display', $maintenance->status_led_display ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
-                                            <option value="NOK" {{ old('status_led_display', $maintenance->status_led_display ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
-                                        </select>
+
+                                    <!-- Camera & Upload for LED Display -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                                <span class="inline-flex items-center gap-2">
+                                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    </svg>
+                                                    Foto LED/Display
+                                                </span>
+                                            </label>
+                                            <div id="camera-container-led-display" class="space-y-3 mb-3"></div>
+                                            <button type="button" onclick="addCameraSlot('led_display')"
+                                                class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                                + Tambah Foto
+                                            </button>
+                                        </div>
+
+                                        <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                                <span class="inline-flex items-center gap-2">
+                                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                    </svg>
+                                                    Upload Gambar (Optional)
+                                                </span>
+                                            </label>
+                                            <input type="file" name="images_led_display[]" multiple accept="image/*"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                            <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Battery Connection -->
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">c. Battery Connection</label>
-                                        <input type="text" name="battery_connection" value="{{ old('battery_connection', $maintenance->battery_connection ?? '') }}"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            placeholder="Tighten, No Corrosion">
-                                    </div>
-                                    <div>
-                                        <select name="status_battery_connection" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="OK" {{ old('status_battery_connection', $maintenance->status_battery_connection ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
-                                            <option value="NOK" {{ old('status_battery_connection', $maintenance->status_battery_connection ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- Images for Visual Check -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Images (Visual Check)</label>
-                                    <input type="file" name="images_visual_check[]" multiple accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <p class="text-xs text-gray-500 mt-1">Upload multiple images if needed</p>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">c. Battery Connection</label>
+                                            <input type="text" name="battery_connection" value="{{ old('battery_connection', $maintenance->battery_connection ?? '') }}"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="Tighten, No Corrosion">
+                                        </div>
+                                        <div>
+                                            <select name="status_battery_connection" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <option value="OK" {{ old('status_battery_connection', $maintenance->status_battery_connection ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
+                                                <option value="NOK" {{ old('status_battery_connection', $maintenance->status_battery_connection ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
-                                    @if(isset($maintenance) && $maintenance->images)
-                                    <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3" id="existing-images-visual">
-                                        @foreach($maintenance->images as $image)
-                                        @if($image['category'] == 'visual_check')
-                                        <div class="relative group" data-image-path="{{ $image['path'] }}">
-                                            <img src="{{ Storage::url($image['path']) }}" class="w-full h-32 object-cover rounded">
-                                            <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
-                                                class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                </svg>
+                                    <!-- Camera & Upload for Battery Connection -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                                <span class="inline-flex items-center gap-2">
+                                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    </svg>
+                                                    Foto Battery Connection
+                                                </span>
+                                            </label>
+                                            <div id="camera-container-battery-connection" class="space-y-3 mb-3"></div>
+                                            <button type="button" onclick="addCameraSlot('battery_connection')"
+                                                class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                                + Tambah Foto
                                             </button>
                                         </div>
-                                        @endif
-                                        @endforeach
+
+                                        <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                                <span class="inline-flex items-center gap-2">
+                                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                    </svg>
+                                                    Upload Gambar (Optional)
+                                                </span>
+                                            </label>
+                                            <input type="file" name="images_battery_connection[]" multiple accept="image/*"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                            <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                        </div>
                                     </div>
-                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -190,111 +279,154 @@
                                     </div>
                                 </div>
 
-                                <!-- Camera for AC Input Voltage -->
-                                <div class="border-2 border-dashed border-purple-300 rounded-lg p-4 bg-purple-50">
-                                    <label class="block text-sm font-medium text-gray-700 mb-3">📷 Foto AC Input Voltage</label>
-                                    <div id="camera-container-ac-voltage" class="space-y-3"></div>
-                                    <button type="button" onclick="addCameraSlot('ac_voltage')" class="mt-3 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition text-sm">
-                                        + Tambah Foto
-                                    </button>
-                                </div>
-
-                                <!-- Upload Images for AC Input Voltage -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Images (AC Input Voltage)</label>
-                                    <input type="file" name="images_ac_voltage[]" multiple accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <p class="text-xs text-gray-500 mt-1">Optional: Upload gambar dari galeri</p>
-                                </div>
-
-                                <!-- AC Current Input (dynamic based on power module) -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">b. AC Current Input</label>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div id="ac_single" style="display: none;">
-                                            <label class="block text-xs text-gray-600 mb-1">Single (≤ 5.5 A)</label>
-                                            <input type="number" step="0.01" name="ac_current_input_single" value="{{ old('ac_current_input_single', $maintenance->ac_current_input_single ?? '') }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        </div>
-                                        <div id="ac_dual" style="display: none;">
-                                            <label class="block text-xs text-gray-600 mb-1">Dual (≤ 11 A)</label>
-                                            <input type="number" step="0.01" name="ac_current_input_dual" value="{{ old('ac_current_input_dual', $maintenance->ac_current_input_dual ?? '') }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        </div>
-                                        <div id="ac_three" style="display: none;">
-                                            <label class="block text-xs text-gray-600 mb-1">Three (≤ 16.5 A)</label>
-                                            <input type="number" step="0.01" name="ac_current_input_three" value="{{ old('ac_current_input_three', $maintenance->ac_current_input_three ?? '') }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        </div>
+                                <!-- Camera & Upload for AC Input Voltage -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                    <!-- Camera Section -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                                Foto AC Input Voltage
+                                            </span>
+                                        </label>
+                                        <div id="camera-container-ac-voltage" class="space-y-3 mb-3"></div>
+                                        <button type="button" onclick="addCameraSlot('ac_voltage')"
+                                            class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                            + Tambah Foto
+                                        </button>
                                     </div>
-                                    <div class="mt-2">
-                                        <select name="status_ac_current_input" class="w-full md:w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                                    <!-- Upload Section -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                </svg>
+                                                Upload Gambar (Optional)
+                                            </span>
+                                        </label>
+                                        <input type="file" name="images_ac_voltage[]" multiple accept="image/*"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Max: 5MB/file</p>
+                                    </div>
+                                </div>
+
+                                <!-- AC Current Input - SINGLE FIELD -->
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">b. AC Current Input (A)</label>
+                                        <input type="number" step="0.01" name="ac_current_input"
+                                            value="{{ old('ac_current_input', $maintenance->ac_current_input ?? '') }}"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Enter AC Current">
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            Standard: ≤ 5.5 A (Single) | ≤ 11 A (Dual) | ≤ 16.5 A (Three)
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                        <select name="status_ac_current_input" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             <option value="OK" {{ old('status_ac_current_input', $maintenance->status_ac_current_input ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
                                             <option value="NOK" {{ old('status_ac_current_input', $maintenance->status_ac_current_input ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
                                         </select>
                                     </div>
                                 </div>
 
-                                <!-- Camera for AC Current Input -->
-                                <div class="border-2 border-dashed border-indigo-300 rounded-lg p-4 bg-indigo-50">
-                                    <label class="block text-sm font-medium text-gray-700 mb-3">📷 Foto AC Current Input</label>
-                                    <div id="camera-container-ac-current" class="space-y-3"></div>
-                                    <button type="button" onclick="addCameraSlot('ac_current')" class="mt-3 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition text-sm">
-                                        + Tambah Foto
-                                    </button>
-                                </div>
-
-                                <!-- Upload Images for AC Current Input -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Images (AC Current Input)</label>
-                                    <input type="file" name="images_ac_current[]" multiple accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <p class="text-xs text-gray-500 mt-1">Optional: Upload gambar dari galeri</p>
-                                </div>
-
-                                <!-- DC Current Output (dynamic based on power module) -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">c. DC Current Output</label>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div id="dc_single" style="display: none;">
-                                            <label class="block text-xs text-gray-600 mb-1">Single (≤ 25 A)</label>
-                                            <input type="number" step="0.01" name="dc_current_output_single" value="{{ old('dc_current_output_single', $maintenance->dc_current_output_single ?? '') }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        </div>
-                                        <div id="dc_dual" style="display: none;">
-                                            <label class="block text-xs text-gray-600 mb-1">Dual (≤ 50 A)</label>
-                                            <input type="number" step="0.01" name="dc_current_output_dual" value="{{ old('dc_current_output_dual', $maintenance->dc_current_output_dual ?? '') }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        </div>
-                                        <div id="dc_three" style="display: none;">
-                                            <label class="block text-xs text-gray-600 mb-1">Three (≤ 75 A)</label>
-                                            <input type="number" step="0.01" name="dc_current_output_three" value="{{ old('dc_current_output_three', $maintenance->dc_current_output_three ?? '') }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        </div>
+                                <!-- Camera & Upload Images for AC Current Input - SIDE BY SIDE -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Camera for AC Current Input -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                                Foto AC Current Input
+                                            </span>
+                                        </label>
+                                        <div id="camera-container-ac-current" class="space-y-3 mb-3"></div>
+                                        <button type="button" onclick="addCameraSlot('ac_current')"
+                                            class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                            + Tambah Foto
+                                        </button>
                                     </div>
-                                    <div class="mt-2">
-                                        <select name="status_dc_current_output" class="w-full md:w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                                    <!-- Upload Images for AC Current Input -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                </svg>
+                                                Upload Gambar (Optional)
+                                            </span>
+                                        </label>
+                                        <input type="file" name="images_ac_current[]" multiple accept="image/*"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                    </div>
+                                </div>
+
+                                <!-- DC Current Output - SINGLE FIELD -->
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">c. DC Current Output (A)</label>
+                                        <input type="number" step="0.01" name="dc_current_output"
+                                            value="{{ old('dc_current_output', $maintenance->dc_current_output ?? '') }}"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Enter DC Current">
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            Standard: ≤ 25 A (Single) | ≤ 50 A (Dual) | ≤ 75 A (Three)
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                        <select name="status_dc_current_output" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             <option value="OK" {{ old('status_dc_current_output', $maintenance->status_dc_current_output ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
                                             <option value="NOK" {{ old('status_dc_current_output', $maintenance->status_dc_current_output ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
                                         </select>
                                     </div>
                                 </div>
 
-                                <!-- Camera for DC Current Output -->
-                                <div class="border-2 border-dashed border-teal-300 rounded-lg p-4 bg-teal-50">
-                                    <label class="block text-sm font-medium text-gray-700 mb-3">📷 Foto DC Current Output</label>
-                                    <div id="camera-container-dc-current" class="space-y-3"></div>
-                                    <button type="button" onclick="addCameraSlot('dc_current')" class="mt-3 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition text-sm">
-                                        + Tambah Foto
-                                    </button>
-                                </div>
+                                <!-- Camera & Upload Images for DC Current Output - SIDE BY SIDE -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Camera for DC Current Output -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                                Foto DC Current Output
+                                            </span>
+                                        </label>
+                                        <div id="camera-container-dc-current" class="space-y-3 mb-3"></div>
+                                        <button type="button" onclick="addCameraSlot('dc_current')"
+                                            class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                            + Tambah Foto
+                                        </button>
+                                    </div>
 
-                                <!-- Upload Images for DC Current Output -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Images (DC Current Output)</label>
-                                    <input type="file" name="images_dc_current[]" multiple accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <p class="text-xs text-gray-500 mt-1">Optional: Upload gambar dari galeri</p>
+                                    <!-- Upload Images for DC Current Output -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                </svg>
+                                                Upload Gambar (Optional)
+                                            </span>
+                                        </label>
+                                        <input type="file" name="images_dc_current[]" multiple accept="image/*"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                    </div>
                                 </div>
 
                                 <!-- Battery Temperature -->
@@ -313,21 +445,40 @@
                                     </div>
                                 </div>
 
-                                <!-- Camera for Battery Temperature -->
-                                <div class="border-2 border-dashed border-orange-300 rounded-lg p-4 bg-orange-50">
-                                    <label class="block text-sm font-medium text-gray-700 mb-3">📷 Foto Battery Temperature</label>
-                                    <div id="camera-container-battery-temp" class="space-y-3"></div>
-                                    <button type="button" onclick="addCameraSlot('battery_temp')" class="mt-3 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition text-sm">
-                                        + Tambah Foto
-                                    </button>
-                                </div>
+                                <!-- Camera & Upload Images for Battery Temperature - SIDE BY SIDE -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Camera for Battery Temperature -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                                Foto Battery Temperature
+                                            </span>
+                                        </label>
+                                        <div id="camera-container-battery-temp" class="space-y-3 mb-3"></div>
+                                        <button type="button" onclick="addCameraSlot('battery_temp')"
+                                            class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                            + Tambah Foto
+                                        </button>
+                                    </div>
 
-                                <!-- Upload Images for Battery Temperature -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Images (Battery Temperature)</label>
-                                    <input type="file" name="images_battery_temp[]" multiple accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <p class="text-xs text-gray-500 mt-1">Optional: Upload gambar dari galeri</p>
+                                    <!-- Upload Images for Battery Temperature -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                </svg>
+                                                Upload Gambar (Optional)
+                                            </span>
+                                        </label>
+                                        <input type="file" name="images_battery_temp[]" multiple accept="image/*"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                    </div>
                                 </div>
 
                                 <!-- Charging Voltage DC -->
@@ -346,21 +497,40 @@
                                     </div>
                                 </div>
 
-                                <!-- Camera for Charging Voltage DC -->
-                                <div class="border-2 border-dashed border-pink-300 rounded-lg p-4 bg-pink-50">
-                                    <label class="block text-sm font-medium text-gray-700 mb-3">📷 Foto Charging Voltage DC</label>
-                                    <div id="camera-container-charging-voltage" class="space-y-3"></div>
-                                    <button type="button" onclick="addCameraSlot('charging_voltage')" class="mt-3 px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 transition text-sm">
-                                        + Tambah Foto
-                                    </button>
-                                </div>
+                                <!-- Camera & Upload Images for Charging Voltage DC - SIDE BY SIDE -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Camera for Charging Voltage DC -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                                Foto Charging Voltage DC
+                                            </span>
+                                        </label>
+                                        <div id="camera-container-charging-voltage" class="space-y-3 mb-3"></div>
+                                        <button type="button" onclick="addCameraSlot('charging_voltage')"
+                                            class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                            + Tambah Foto
+                                        </button>
+                                    </div>
 
-                                <!-- Upload Images for Charging Voltage DC -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Images (Charging Voltage DC)</label>
-                                    <input type="file" name="images_charging_voltage[]" multiple accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <p class="text-xs text-gray-500 mt-1">Optional: Upload gambar dari galeri</p>
+                                    <!-- Upload Images for Charging Voltage DC -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                </svg>
+                                                Upload Gambar (Optional)
+                                            </span>
+                                        </label>
+                                        <input type="file" name="images_charging_voltage[]" multiple accept="image/*"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                    </div>
                                 </div>
 
                                 <!-- Charging Current DC -->
@@ -379,27 +549,46 @@
                                     </div>
                                 </div>
 
-                                <!-- Camera for Charging Current DC -->
-                                <div class="border-2 border-dashed border-cyan-300 rounded-lg p-4 bg-cyan-50">
-                                    <label class="block text-sm font-medium text-gray-700 mb-3">📷 Foto Charging Current DC</label>
-                                    <div id="camera-container-charging-current" class="space-y-3"></div>
-                                    <button type="button" onclick="addCameraSlot('charging_current')" class="mt-3 px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 transition text-sm">
-                                        + Tambah Foto
-                                    </button>
-                                </div>
+                                <!-- Camera & Upload Images for Charging Current DC - SIDE BY SIDE -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Camera for Charging Current DC -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                                Foto Charging Current DC
+                                            </span>
+                                        </label>
+                                        <div id="camera-container-charging-current" class="space-y-3 mb-3"></div>
+                                        <button type="button" onclick="addCameraSlot('charging_current')"
+                                            class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                            + Tambah Foto
+                                        </button>
+                                    </div>
 
-                                <!-- Upload Images for Charging Current DC -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Images (Charging Current DC)</label>
-                                    <input type="file" name="images_charging_current[]" multiple accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <p class="text-xs text-gray-500 mt-1">Optional: Upload gambar dari galeri</p>
+                                    <!-- Upload Images for Charging Current DC -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                </svg>
+                                                Upload Gambar (Optional)
+                                            </span>
+                                        </label>
+                                        <input type="file" name="images_charging_current[]" multiple accept="image/*"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- 3. Backup Tests -->
-                        <div class="mb-8">
+                        <div class="mb-8 ">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">3. Backup Tests</h3>
 
                             <div class="space-y-4">
@@ -419,61 +608,154 @@
                                     </div>
                                 </div>
 
-                                <!-- Camera for Rectifier Switching Test -->
-                                <div class="border-2 border-dashed border-amber-300 rounded-lg p-4 bg-amber-50">
-                                    <label class="block text-sm font-medium text-gray-700 mb-3">📷 Foto Rectifier Switching Test</label>
-                                    <div id="camera-container-rectifier-test" class="space-y-3"></div>
-                                    <button type="button" onclick="addCameraSlot('rectifier_test')" class="mt-3 px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition text-sm">
-                                        + Tambah Foto
-                                    </button>
-                                </div>
+                                <!-- Camera & Upload Images for Rectifier Switching Test - SIDE BY SIDE -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Camera for Rectifier Switching Test -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                                Foto Rectifier Switching Test
+                                            </span>
+                                        </label>
+                                        <div id="camera-container-rectifier-test" class="space-y-3 mb-3"></div>
+                                        <button type="button" onclick="addCameraSlot('rectifier_test')"
+                                            class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                            + Tambah Foto
+                                        </button>
+                                    </div>
 
-                                <!-- Upload Images for Rectifier Test -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Images (Rectifier Test)</label>
-                                    <input type="file" name="images_rectifier_test[]" multiple accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <p class="text-xs text-gray-500 mt-1">Optional: Upload gambar dari galeri</p>
+                                    <!-- Upload Images for Rectifier Test -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                </svg>
+                                                Upload Gambar (Optional)
+                                            </span>
+                                        </label>
+                                        <input type="file" name="images_rectifier_test[]" multiple accept="image/*"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                    </div>
                                 </div>
 
                                 <!-- Battery Voltage Measurements -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">b. Battery Voltage (on Backup Mode)</label>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div>
-                                            <label class="block text-xs text-gray-600 mb-1">Measurement I (Min 48 VDC)</label>
-                                            <input type="number" step="0.01" name="backup_test_voltage_measurement1" value="{{ old('backup_test_voltage_measurement1', $maintenance->backup_test_voltage_measurement1 ?? '') }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <label class="block text-sm font-medium text-gray-700 mb-4 text-lg">b. Battery Voltage (on Backup Mode)</label>
+
+                                    <!-- Measurement I -->
+                                    <div class="mb-6 p-4  rounded-lg ">
+                                        <h4 class="font-semibold text-gray-800 mb-3">Measurement I</h4>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+                                            <div class="md:col-span-2">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Voltage Reading (Min 48 VDC)</label>
+                                                <input type="number" step="0.01" name="backup_test_voltage_measurement1"
+                                                    value="{{ old('backup_test_voltage_measurement1', $maintenance->backup_test_voltage_measurement1 ?? '') }}"
+                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    placeholder="48.00">
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label class="block text-xs text-gray-600 mb-1">Measurement II (15 minutes later, Min 42 VDC)</label>
-                                            <input type="number" step="0.01" name="backup_test_voltage_measurement2" value="{{ old('backup_test_voltage_measurement2', $maintenance->backup_test_voltage_measurement2 ?? '') }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        </div>
-                                        <div class="flex items-end">
-                                            <select name="status_backup_test_voltage" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                                <option value="OK" {{ old('status_backup_test_voltage', $maintenance->status_backup_test_voltage ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
-                                                <option value="NOK" {{ old('status_backup_test_voltage', $maintenance->status_backup_test_voltage ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
-                                            </select>
+
+                                        <!-- Camera & Upload for Measurement I -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <!-- Camera Section -->
+                                            <div class="border  rounded-lg p-4 bg-white">
+                                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                                    <span class="inline-flex items-center gap-2">
+                                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                        </svg>
+                                                        Foto Measurement I
+                                                    </span>
+                                                </label>
+                                                <div id="camera-container-battery-voltage-m1" class="space-y-3 mb-3"></div>
+                                                <button type="button" onclick="addCameraSlot('battery_voltage_m1')"
+                                                    class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                                    + Tambah Foto
+                                                </button>
+                                            </div>
+
+                                            <!-- Upload Section -->
+                                            <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                                    <span class="inline-flex items-center gap-2">
+                                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                        </svg>
+                                                        Upload Gambar (Optional)
+                                                    </span>
+                                                </label>
+                                                <input type="file" name="images_battery_voltage_m1[]" multiple accept="image/*"
+                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                                <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Max: 5MB/file</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Camera for Battery Voltage Measurement -->
-                                <div class="border-2 border-dashed border-lime-300 rounded-lg p-4 bg-lime-50">
-                                    <label class="block text-sm font-medium text-gray-700 mb-3">📷 Foto Battery Voltage (Backup Mode)</label>
-                                    <div id="camera-container-battery-voltage" class="space-y-3"></div>
-                                    <button type="button" onclick="addCameraSlot('battery_voltage')" class="mt-3 px-4 py-2 bg-lime-600 text-white rounded-md hover:bg-lime-700 transition text-sm">
-                                        + Tambah Foto
-                                    </button>
-                                </div>
+                                    <!-- Measurement II -->
+                                    <div class="mb-4 p-4  rounded-lg ">
+                                        <h4 class="font-semibold text-gray-800 mb-3">Measurement II (15 minutes later)</h4>
 
-                                <!-- Upload Images for Battery Voltage -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Images (Battery Voltage)</label>
-                                    <input type="file" name="images_battery_voltage[]" multiple accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <p class="text-xs text-gray-500 mt-1">Optional: Upload gambar dari galeri</p>
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+                                            <div class="md:col-span-2">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Voltage Reading (Min 42 VDC)</label>
+                                                <input type="number" step="0.01" name="backup_test_voltage_measurement2"
+                                                    value="{{ old('backup_test_voltage_measurement2', $maintenance->backup_test_voltage_measurement2 ?? '') }}"
+                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    placeholder="42.00">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                                <select name="status_backup_test_voltage" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                    <option value="OK" {{ old('status_backup_test_voltage', $maintenance->status_backup_test_voltage ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
+                                                    <option value="NOK" {{ old('status_backup_test_voltage', $maintenance->status_backup_test_voltage ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Camera & Upload for Measurement II -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <!-- Camera Section -->
+                                            <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                                    <span class="inline-flex items-center gap-2">
+                                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                        </svg>
+                                                        Foto Measurement II
+                                                    </span>
+                                                </label>
+                                                <div id="camera-container-battery-voltage-m2" class="space-y-3 mb-3"></div>
+                                                <button type="button" onclick="addCameraSlot('battery_voltage_m2')"
+                                                    class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                                    + Tambah Foto
+                                                </button>
+                                            </div>
+
+                                            <!-- Upload Section -->
+                                            <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                                    <span class="inline-flex items-center gap-2">
+                                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                        </svg>
+                                                        Upload Gambar (Optional)
+                                                    </span>
+                                                </label>
+                                                <input type="file" name="images_battery_voltage_m2[]" multiple accept="image/*"
+                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                                <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Max: 5MB/file</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -491,6 +773,7 @@
                                             placeholder="Simulated Alarm Monitor fault conditions (Red Sign)">
                                     </div>
                                     <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                                         <select name="status_power_alarm_test" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             <option value="OK" {{ old('status_power_alarm_test', $maintenance->status_power_alarm_test ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
                                             <option value="NOK" {{ old('status_power_alarm_test', $maintenance->status_power_alarm_test ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
@@ -498,29 +781,58 @@
                                     </div>
                                 </div>
 
-                                <!-- Images for Power Alarm -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Images (Power Alarm Test)</label>
-                                    <input type="file" name="images_alarm[]" multiple accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-                                    @if(isset($maintenance) && $maintenance->images)
-                                    <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
-                                        @foreach($maintenance->images as $image)
-                                        @if($image['category'] == 'alarm')
-                                        <div class="relative group" data-image-path="{{ $image['path'] }}">
-                                            <img src="{{ Storage::url($image['path']) }}" class="w-full h-32 object-cover rounded">
-                                            <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
-                                                class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                <!-- Camera & Upload Images for Power Alarm Test - SIDE BY SIDE -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Camera for Power Alarm Test -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                                 </svg>
-                                            </button>
+                                                Foto Power Alarm Test
+                                            </span>
+                                        </label>
+                                        <div id="camera-container-alarm" class="space-y-3 mb-3"></div>
+                                        <button type="button" onclick="addCameraSlot('alarm')"
+                                            class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                                            + Tambah Foto
+                                        </button>
+                                    </div>
+
+                                    <!-- Upload Images for Power Alarm Test -->
+                                    <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                            <span class="inline-flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                                </svg>
+                                                Upload Gambar (Optional)
+                                            </span>
+                                        </label>
+                                        <input type="file" name="images_alarm[]" multiple accept="image/*"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+
+                                        @if(isset($maintenance) && $maintenance->images)
+                                        <div class="mt-3 grid grid-cols-2 gap-2">
+                                            @foreach($maintenance->images as $image)
+                                            @if($image['category'] == 'alarm')
+                                            <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            @endif
+                                            @endforeach
                                         </div>
                                         @endif
-                                        @endforeach
                                     </div>
-                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -657,8 +969,15 @@
             charging_voltage: 0,
             charging_current: 0,
             rectifier_test: 0,
-            battery_voltage: 0
+            battery_voltage: 0,
+            // TAMBAHKAN KATEGORI BARU
+            env_condition: 0,
+            led_display: 0,
+            battery_connection: 0,
+            battery_voltage_m1: 0,
+            battery_voltage_m2: 0
         };
+
         let cameraPhotos = {
             visual_check: [],
             performance: [],
@@ -671,7 +990,13 @@
             charging_voltage: [],
             charging_current: [],
             rectifier_test: [],
-            battery_voltage: []
+            battery_voltage: [],
+            // TAMBAHKAN KATEGORI BARU
+            env_condition: [],
+            led_display: [],
+            battery_connection: [],
+            battery_voltage_m1: [],
+            battery_voltage_m2: []
         };
 
         // Get address from coordinates using reverse geocoding

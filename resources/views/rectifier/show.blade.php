@@ -12,7 +12,7 @@
                 <div>
                     <h2 class="text-xl md:text-2xl font-bold text-gray-800">Detail Preventive Maintenance Rectifier</h2>
                     <div class="text-xs md:text-sm text-gray-600 mt-2">
-                        <p>No. Dok: FM-LAP-D2-SOP-003-001 | Versi: 1.0 | Hal: 1 dari 1 | Label: Internal</p>
+                        <p>No. Dok: FM-LAP-D2-SOP-003-010 | Versi: 1.0 | Hal: 1 dari 1 | Label: Internal</p>
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-2 w-full md:w-auto">
@@ -126,24 +126,28 @@
                         </tbody>
                     </table>
                 </div>
-                @if($maintenance->images && count(array_filter($maintenance->images, fn($img) => $img['category'] == 'visual_check')) > 0)
+                @if(collect($maintenance->images ?? [])->where('category', 'visual_check')->isNotEmpty())
                 <div class="mt-4">
                     <p class="text-sm font-medium text-gray-700 mb-2">Documentation Images:</p>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        @foreach($maintenance->images as $image)
-                        @if($image['category'] == 'visual_check')
+                        @foreach(collect($maintenance->images ?? [])->where('category', 'visual_check') as $image)
                         <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
-                            <img src="{{ Storage::url($image['path']) }}"
+                            @if(isset($image['path']) && file_exists(storage_path('app/public/' . $image['path'])))
+                            <img src="{{ asset('storage/' . $image['path']) }}"
                                 alt="Visual Check"
-                                class="w-full h-32 md:h-40 object-cover"
-                                onerror="this.parentElement.innerHTML='<div class=\'w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs\'>Image not found</div>'">
+                                class="w-full h-32 md:h-40 object-cover cursor-pointer"
+                                onclick="window.open('{{ asset('storage/' . $image['path']) }}', '_blank')">
+                            @else
+                            <div class="w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+                                Image not found
+                            </div>
+                            @endif
                             <div class="p-2 bg-gray-50">
-                                <a href="{{ Storage::url($image['path']) }}"
+                                <a href="{{ asset('storage/' . ($image['path'] ?? '')) }}"
                                     target="_blank"
                                     class="text-xs text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
                             </div>
                         </div>
-                        @endif
                         @endforeach
                     </div>
                 </div>
@@ -175,24 +179,12 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">b. AC Current Input</td>
-                                <td class="border p-2 font-semibold">
-                                    @if($maintenance->power_module == 'Single')
-                                    {{ $maintenance->ac_current_input_single ?? '-' }} A
-                                    @elseif($maintenance->power_module == 'Dual')
-                                    {{ $maintenance->ac_current_input_dual ?? '-' }} A
-                                    @else
-                                    {{ $maintenance->ac_current_input_three ?? '-' }} A
-                                    @endif
-                                </td>
+                                <td class="border p-2">b. AC Current Input *)</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->ac_current_input ?? '-' }} A</td>
                                 <td class="border p-2 text-xs md:text-sm text-gray-600">
-                                    @if($maintenance->power_module == 'Single')
-                                    ≤ 5.5 A (Single)
-                                    @elseif($maintenance->power_module == 'Dual')
-                                    ≤ 11 A (Dual)
-                                    @else
-                                    ≤ 16.5 A (Three)
-                                    @endif
+                                    <div>≤ 5.5 A ( Single Power Module )</div>
+                                    <div>≤ 11 A ( Dual Power Module )</div>
+                                    <div>≤ 16.5 A ( Three Power Module )</div>
                                 </td>
                                 <td class="border p-2 text-center">
                                     <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_ac_current_input == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -201,24 +193,12 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">c. DC Current Output</td>
-                                <td class="border p-2 font-semibold">
-                                    @if($maintenance->power_module == 'Single')
-                                    {{ $maintenance->dc_current_output_single ?? '-' }} A
-                                    @elseif($maintenance->power_module == 'Dual')
-                                    {{ $maintenance->dc_current_output_dual ?? '-' }} A
-                                    @else
-                                    {{ $maintenance->dc_current_output_three ?? '-' }} A
-                                    @endif
-                                </td>
+                                <td class="border p-2">c. DC Current Output *)</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->dc_current_output ?? '-' }} A</td>
                                 <td class="border p-2 text-xs md:text-sm text-gray-600">
-                                    @if($maintenance->power_module == 'Single')
-                                    ≤ 25 A (Single)
-                                    @elseif($maintenance->power_module == 'Dual')
-                                    ≤ 50 A (Dual)
-                                    @else
-                                    ≤ 75 A (Three)
-                                    @endif
+                                    <div>≤ 25 A ( Single Power Module )</div>
+                                    <div>≤ 50 A ( Dual Power Module )</div>
+                                    <div>≤ 75 A ( Three Power Module )</div>
                                 </td>
                                 <td class="border p-2 text-center">
                                     <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_dc_current_output == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -259,24 +239,35 @@
                         </tbody>
                     </table>
                 </div>
-                @if($maintenance->images && count(array_filter($maintenance->images, fn($img) => $img['category'] == 'performance')) > 0)
+
+                @php
+                $performanceCategories = ['performance', 'ac_voltage', 'ac_current', 'dc_current', 'battery_temp', 'charging_voltage', 'charging_current'];
+                $performanceImages = collect($maintenance->images ?? [])->whereIn('category', $performanceCategories);
+                @endphp
+
+                @if($performanceImages->isNotEmpty())
                 <div class="mt-4">
                     <p class="text-sm font-medium text-gray-700 mb-2">Documentation Images:</p>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        @foreach($maintenance->images as $image)
-                        @if($image['category'] == 'performance')
+                        @foreach($performanceImages as $image)
                         <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
-                            <img src="{{ Storage::url($image['path']) }}"
-                                alt="Performance Check"
-                                class="w-full h-32 md:h-40 object-cover"
-                                onerror="this.parentElement.innerHTML='<div class=\'w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs\'>Image not found</div>'">
+                            @if(isset($image['path']) && file_exists(storage_path('app/public/' . $image['path'])))
+                            <img src="{{ asset('storage/' . $image['path']) }}"
+                                alt="{{ ucwords(str_replace('_', ' ', $image['category'] ?? '')) }}"
+                                class="w-full h-32 md:h-40 object-cover cursor-pointer"
+                                onclick="window.open('{{ asset('storage/' . $image['path']) }}', '_blank')">
+                            @else
+                            <div class="w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+                                Image not found
+                            </div>
+                            @endif
                             <div class="p-2 bg-gray-50">
-                                <a href="{{ Storage::url($image['path']) }}"
+                                <p class="text-xs text-gray-600 mb-1">{{ ucwords(str_replace('_', ' ', $image['category'] ?? '')) }}</p>
+                                <a href="{{ asset('storage/' . ($image['path'] ?? '')) }}"
                                     target="_blank"
                                     class="text-xs text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
                             </div>
                         </div>
-                        @endif
                         @endforeach
                     </div>
                 </div>
@@ -300,7 +291,7 @@
                             <tr>
                                 <td class="border p-2">a. Rectifier (turnoff test)</td>
                                 <td class="border p-2 font-semibold">{{ $maintenance->backup_test_rectifier ?? '-' }}</td>
-                                <td class="border p-2 text-xs md:text-sm text-gray-600">Normal operation</td>
+                                <td class="border p-2 text-xs md:text-sm text-gray-600">Rectifier Normal Operations</td>
                                 <td class="border p-2 text-center">
                                     <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_backup_test_rectifier == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                         {{ $maintenance->status_backup_test_rectifier }}
@@ -308,10 +299,18 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">b. Battery Voltage (Backup Mode)</td>
+                                <td class="border p-2">b. Battery Voltage (Backup Mode)
+                                    <div class="text-xs text-gray-600 mt-1">
+                                        - Measurement I ( at the beginning ) Min 48 VDC
+                                    </div>
+                                    <div class="text-xs text-gray-600">
+                                        - Measurement II ( 15th minutes )
+                                    </div>
+                                </td>
+
                                 <td class="border p-2 font-semibold">
-                                    <div>Measurement I: {{ $maintenance->backup_test_voltage_measurement1 ?? '-' }} VDC</div>
-                                    <div class="mt-1">Measurement II: {{ $maintenance->backup_test_voltage_measurement2 ?? '-' }} VDC</div>
+                                    <div> {{ $maintenance->backup_test_voltage_measurement1 ?? '-' }} VDC</div>
+                                    <div class="mt-1"> {{ $maintenance->backup_test_voltage_measurement2 ?? '-' }} VDC</div>
                                 </td>
                                 <td class="border p-2 text-xs md:text-sm text-gray-600">
                                     <div>Min 48 VDC</div>
@@ -326,24 +325,29 @@
                         </tbody>
                     </table>
                 </div>
-                @if($maintenance->images && count(array_filter($maintenance->images, fn($img) => $img['category'] == 'backup')) > 0)
+                @if(collect($maintenance->images ?? [])->whereIn('category', ['backup', 'rectifier_test', 'battery_voltage'])->isNotEmpty())
                 <div class="mt-4">
                     <p class="text-sm font-medium text-gray-700 mb-2">Documentation Images:</p>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        @foreach($maintenance->images as $image)
-                        @if($image['category'] == 'backup')
+                        @foreach(collect($maintenance->images ?? [])->whereIn('category', ['backup', 'rectifier_test', 'battery_voltage']) as $image)
                         <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
-                            <img src="{{ Storage::url($image['path']) }}"
-                                alt="Backup Test"
-                                class="w-full h-32 md:h-40 object-cover"
-                                onerror="this.parentElement.innerHTML='<div class=\'w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs\'>Image not found</div>'">
+                            @if(isset($image['path']) && file_exists(storage_path('app/public/' . $image['path'])))
+                            <img src="{{ asset('storage/' . $image['path']) }}"
+                                alt="{{ ucwords(str_replace('_', ' ', $image['category'] ?? '')) }}"
+                                class="w-full h-32 md:h-40 object-cover cursor-pointer"
+                                onclick="window.open('{{ asset('storage/' . $image['path']) }}', '_blank')">
+                            @else
+                            <div class="w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+                                Image not found
+                            </div>
+                            @endif
                             <div class="p-2 bg-gray-50">
-                                <a href="{{ Storage::url($image['path']) }}"
+                                <p class="text-xs text-gray-600 mb-1">{{ ucwords(str_replace('_', ' ', $image['category'] ?? '')) }}</p>
+                                <a href="{{ asset('storage/' . ($image['path'] ?? '')) }}"
                                     target="_blank"
                                     class="text-xs text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
                             </div>
                         </div>
-                        @endif
                         @endforeach
                     </div>
                 </div>
@@ -365,9 +369,13 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="border p-2">Measure on-contact alarm monitor</td>
+                                <td class="border p-2">
+                                    <div class="text-xs md:text-sm leading-relaxed">
+                                        Measure on-contact alarm monitor (turn off UPS power input MCB during backup test)
+                                    </div>
+                                </td>
                                 <td class="border p-2 font-semibold">{{ $maintenance->power_alarm_test ?? '-' }}</td>
-                                <td class="border p-2 text-xs md:text-sm text-gray-600">Alarm triggered properly</td>
+                                <td class="border p-2 text-xs md:text-sm text-gray-600">Simonica Alarm Monitor fault conditions ( Red Sign )</td>
                                 <td class="border p-2 text-center">
                                     <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_power_alarm_test == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                         {{ $maintenance->status_power_alarm_test }}
@@ -377,24 +385,28 @@
                         </tbody>
                     </table>
                 </div>
-                @if($maintenance->images && count(array_filter($maintenance->images, fn($img) => $img['category'] == 'alarm')) > 0)
+                @if(collect($maintenance->images ?? [])->where('category', 'alarm')->isNotEmpty())
                 <div class="mt-4">
                     <p class="text-sm font-medium text-gray-700 mb-2">Documentation Images:</p>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        @foreach($maintenance->images as $image)
-                        @if($image['category'] == 'alarm')
+                        @foreach(collect($maintenance->images ?? [])->where('category', 'alarm') as $image)
                         <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
-                            <img src="{{ Storage::url($image['path']) }}"
+                            @if(isset($image['path']) && file_exists(storage_path('app/public/' . $image['path'])))
+                            <img src="{{ asset('storage/' . $image['path']) }}"
                                 alt="Alarm Test"
-                                class="w-full h-32 md:h-40 object-cover"
-                                onerror="this.parentElement.innerHTML='<div class=\'w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs\'>Image not found</div>'">
+                                class="w-full h-32 md:h-40 object-cover cursor-pointer"
+                                onclick="window.open('{{ asset('storage/' . $image['path']) }}', '_blank')">
+                            @else
+                            <div class="w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+                                Image not found
+                            </div>
+                            @endif
                             <div class="p-2 bg-gray-50">
-                                <a href="{{ Storage::url($image['path']) }}"
+                                <a href="{{ asset('storage/' . ($image['path'] ?? '')) }}"
                                     target="_blank"
                                     class="text-xs text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
                             </div>
                         </div>
-                        @endif
                         @endforeach
                     </div>
                 </div>
@@ -419,7 +431,7 @@
                         <p class="text-xs md:text-sm text-gray-600">Pelaksana 1</p>
                         <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->executor_1 }}</p>
                         <p class="text-xs text-gray-500 mt-2">
-                            Departemen: {{ $maintenance->department ?? '-' }} | Sub Dept: {{ $maintenance->sub_department ?? '-' }}
+                            Departemen: {{ $maintenance->department ?? '-' }}
                         </p>
                     </div>
                     @if($maintenance->executor_2)
@@ -427,7 +439,7 @@
                         <p class="text-xs md:text-sm text-gray-600">Pelaksana 2</p>
                         <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->executor_2 }}</p>
                         <p class="text-xs text-gray-500 mt-2">
-                            Departemen: {{ $maintenance->department ?? '-' }} | Sub Dept: {{ $maintenance->sub_department ?? '-' }}
+                            Sub Dept: {{ $maintenance->sub_department ?? '-' }}
                         </p>
                     </div>
                     @endif
@@ -435,9 +447,6 @@
                     <div class="border p-3 rounded bg-gray-50">
                         <p class="text-xs md:text-sm text-gray-600">Pelaksana 3</p>
                         <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->executor_3 }}</p>
-                        <p class="text-xs text-gray-500 mt-2">
-                            Departemen: {{ $maintenance->department ?? '-' }} | Sub Dept: {{ $maintenance->sub_department ?? '-' }}
-                        </p>
                     </div>
                     @endif
                     <div class="border p-3 rounded bg-gray-50">
@@ -447,8 +456,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Footer -->
         </div>
     </div>
 </x-app-layout>

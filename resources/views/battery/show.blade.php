@@ -12,7 +12,7 @@
                 <div>
                     <h2 class="text-xl md:text-2xl font-bold text-gray-800">Detail Battery Maintenance</h2>
                     <div class="text-xs md:text-sm text-gray-600 mt-2">
-                        <p>No. Dok: {{ $maintenance->doc_number }} | Versi: 1.0 | Hal: 1 dari 1 | Label: Internal</p>
+                        <p>No. Dok: FM-LAP-D2-SOP-003-013 | Versi: 1.0 | Hal: 1 dari 1 | Label: Internal</p>
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-2 w-full md:w-auto">

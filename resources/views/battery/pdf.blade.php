@@ -1,391 +1,303 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
-    <title>Formulir Preventive Maintenance Battery</title>
+    <title>Preventive Maintenance Battery</title>
     <style>
         @page {
-            margin: 15mm 15mm 25mm 15mm;
+            size: A4;
+            margin: 15mm;
         }
 
         body {
             font-family: Arial, sans-serif;
-            font-size: 10px;
-            line-height: 1.3;
-            position: relative;
-            min-height: 100vh;
+            font-size: 8pt;
+            color: #000;
+            margin: 0;
+            padding: 0;
         }
 
-        .header {
-            border: 1px solid #000;
-            margin-bottom: 10px;
-        }
-
-        .header table {
-            width: 100%;
+        table {
             border-collapse: collapse;
+            width: 100%;
         }
 
-        .header td {
-            padding: 6px;
+        th,
+        td {
             border: 1px solid #000;
-            vertical-align: middle;
+            padding: 3px 5px;
         }
 
-        .header .left-section {
-            width: 50%;
+        .header-table th,
+        .header-table td {
+            border: 1px solid #000;
+            padding: 2px 4px;
         }
 
-        .header .center-section {
-            width: 50%;
+        .header-table {
+            margin-bottom: 5px;
+            width: 100%;
+        }
+
+        .info-table td {
+            border: none;
+            padding: 2px 4px;
+        }
+
+        .info-table {
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        .center {
             text-align: center;
+        }
+
+        .bold {
             font-weight: bold;
         }
 
-        .header .right-section {
-            width: 20%;
-            text-align: center;
-        }
-
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .logo svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        .info-section {
-            margin-bottom: 10px;
-            font-size: 10px;
-        }
-
-        .info-section table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .info-section td {
-            padding: 2px 5px;
+        .section-title {
+            background: #e0e0e0;
+            font-weight: bold;
+            padding: 4px 6px;
+            margin-top: 5px;
+            margin-bottom: 4px;
         }
 
         .bank-container {
-            display: table;
-            width: 76%;
-            margin-bottom: 15px;
-        }
-
-        .bank-wrapper {
-            width: 100%;
-            margin-bottom: 15px;
-            page-break-inside: avoid;
+            margin: 10px 0;
         }
 
         .bank-table {
             width: 32%;
             float: left;
             margin-right: 1.5%;
+            margin-bottom: 10px;
             border-collapse: collapse;
-            margin-bottom: 8px;
         }
 
         .bank-table:nth-child(3n) {
             margin-right: 0;
         }
 
+        .bank-table-wide {
+            width: 65%;
+            float: left;
+            margin-right: 1.5%;
+            margin-bottom: 10px;
+            border-collapse: collapse;
+        }
+
         .bank-header {
             background: #e0e0e0;
             font-weight: bold;
             text-align: left;
-            padding: 3px 4px !important;
+            padding: 4px 6px;
             border: 1px solid #000;
-            font-size: 8px;
-            line-height: 1.2;
+            font-size: 8pt;
         }
 
         .bank-table th,
-        .bank-table td {
+        .bank-table td,
+        .bank-table-wide th,
+        .bank-table-wide td {
             border: 1px solid #000;
-            padding: 2px 3px;
+            padding: 3px 5px;
             text-align: center;
-            font-size: 8px;
+            font-size: 8pt;
         }
 
-        .bank-table th {
+        .bank-table th,
+        .bank-table-wide th {
             background: #e0e0e0;
             font-weight: bold;
-            padding: 3px 2px;
-        }
-
-        .no-col {
-            width: 25%;
-        }
-
-        .voltage-col {
-            width: 30%;
-        }
-
-        .bank-dual-column {
-            width: 100%;
-            margin-bottom: 15px;
-            page-break-inside: avoid;
-        }
-
-        .bank-dual-column .bank-table {
-            width: 48%;
-        }
-
-        .footer-note {
-            clear: both;
-            margin-top: 15px;
-            font-size: 9px;
-            padding-top: 10px;
-        }
-
-        .notes-section {
-            clear: both;
-            margin-top: 20px;
-            margin-bottom: 15px;
-        }
-
-        .notes-section h3 {
-            font-size: 11px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            text-decoration: underline;
         }
 
         .notes-box {
             border: 1px solid #000;
-            min-height: 80px;
-            padding: 8px;
-            background: white;
+            min-height: 50px;
+            padding: 4px;
+            margin: 8px 0;
         }
 
-        .pelaksana-section {
+        .signature-section {
+            margin-top: 10px;
             clear: both;
-            margin-top: 20px;
-            margin-bottom: 20px;
         }
 
-        .pelaksana-header {
-            display: table;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .pelaksana-left {
-            float: left;
-            width: 60%;
-        }
-
-        .pelaksana-right {
-            float: right;
-            width: 35%;
-            text-align: center;
-        }
-
-        .pelaksana-left h3 {
-            font-size: 11px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            text-decoration: underline;
-        }
-
-        .pelaksana-right h3 {
-            font-size: 11px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            text-decoration: none;
-        }
-
-        .signature-box {
+        .signature-table th,
+        .signature-table td {
             border: 1px solid #000;
-            height: 100px;
-            width: 100%;
-            margin-top: 5px;
-            background: white;
+            padding: 3px 5px;
         }
 
-        .pelaksana-table {
-            width: 100%;
-            border-collapse: collapse;
+        .page-break {
+            page-break-after: always;
+            clear: both;
         }
 
-        .pelaksana-table th,
-        .pelaksana-table td {
-            border: 1px solid #000;
-            padding: 6px;
-            text-align: center;
-            font-size: 9px;
-        }
-
-        .pelaksana-table th {
-            background: #e0e0e0;
-            font-weight: bold;
-        }
-
-        .company-info {
+        .page-footer {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            font-size: 9px;
-            color: #333;
-            padding: 8px 15mm;
-            border-top: 1px solid #000;
-            background: white;
+            font-size: 7pt;
             text-align: left;
-            z-index: 999;
-            line-height: 1.4;
+            border-top: 1px solid #000;
+            padding-top: 3px;
+            background: white;
         }
 
         .content-wrapper {
-            margin-bottom: 50px;
+            margin-bottom: 60px;
         }
 
-        .page-break {
-            page-break-before: always;
-        }
-
-        .photo-section {
-            margin-top: 20px;
-        }
-
-        .photo-section h2 {
-            font-size: 14px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .photo-grid {
-            display: table;
+        .image-container {
             width: 100%;
-            margin-bottom: 20px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f9f9f9;
+            border: none;
+            overflow: hidden;
         }
 
-        .photo-item {
-            width: 48%;
-            float: left;
-            margin-right: 2%;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .photo-item:nth-child(2n) {
-            margin-right: 0;
-        }
-
-        .photo-item img {
-            width: 100%;
-            height: auto;
-            max-height: 250px;
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .photo-info {
-            font-size: 8px;
-            color: #666;
-            text-align: center;
-            margin-top: 5px;
-        }
-
-        .photo-title {
-            font-weight: bold;
-            font-size: 10px;
-            margin-bottom: 8px;
-            text-align: center;
         }
 
         .clear {
             clear: both;
         }
+
+        .footer-note {
+            clear: both;
+            margin-top: 10px;
+            font-size: 8pt;
+            font-style: italic;
+        }
     </style>
 </head>
 
 <body>
+    @php
+    // Function to convert image to base64
+    function imageToBase64($imagePath) {
+    try {
+    $fullPath = storage_path('app/public/' . $imagePath);
+
+    if (!file_exists($fullPath)) {
+    return null;
+    }
+
+    $imageData = file_get_contents($fullPath);
+    if ($imageData === false) {
+    return null;
+    }
+
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mimeType = finfo_file($finfo, $fullPath);
+    finfo_close($finfo);
+
+    $base64 = base64_encode($imageData);
+    return "data:{$mimeType};base64,{$base64}";
+
+    } catch (\Exception $e) {
+    return null;
+    }
+    }
+
+    // Collect all photos
+    $photos = [];
+    foreach($maintenance->readings as $reading) {
+    if ($reading->photo_path && Storage::disk('public')->exists($reading->photo_path)) {
+    $photos[] = [
+    'path' => $reading->photo_path,
+    'bank' => $reading->bank_number,
+    'battery' => $reading->battery_number,
+    'voltage' => $reading->voltage,
+    'latitude' => $reading->photo_latitude,
+    'longitude' => $reading->photo_longitude,
+    'timestamp' => $reading->photo_timestamp
+    ];
+    }
+    }
+
+    // Calculate total pages
+    $imagesPerPage = 9;
+    $totalImagePages = !empty($photos) ? ceil(count($photos) / $imagesPerPage) : 0;
+    $totalPages = 1 + $totalImagePages;
+    @endphp
+
+    {{-- PAGE 1: Main Content --}}
     <div class="content-wrapper">
-        <!-- PAGE 1: Data Voltage -->
-        <div class="header">
-            <table>
-                <tr>
-                    <td class="left-section">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr>
-                                <td style="width: 35%; border-bottom: 1px solid #000; padding: 4px;">No. Dok.</td>
-                                <td style="width: 5%; border-bottom: 1px solid #000; padding: 4px;">:</td>
-                                <td style="width: 60%; border-bottom: 1px solid #000; padding: 4px;">FM-LAP- D2-SOP-003-013</td>
-                            </tr>
-                            <tr>
-                                <td style="border-bottom: 1px solid #000; padding: 4px;">Versi</td>
-                                <td style="border-bottom: 1px solid #000; padding: 4px;">:</td>
-                                <td style="border-bottom: 1px solid #000; padding: 4px;">1.0</td>
-                            </tr>
-                            <tr>
-                                <td style="border-bottom: 1px solid #000; padding: 4px;">Hal</td>
-                                <td style="border-bottom: 1px solid #000; padding: 4px;">:</td>
-                                <td style="border-bottom: 1px solid #000; padding: 4px;">1 dari 1</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 4px;">Label</td>
-                                <td style="padding: 4px;">:</td>
-                                <td style="padding: 4px;">Internal</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td class="center-section">
-                        <div style="font-size: 16px;">Formulir</div>
-                        <div style="font-size: 14px;">Preventive Maintenance</div>
-                        <div style="font-size: 14px;">Battery</div>
-                    </td>
-                    <td class="right-section">
-                        {{-- <div class="logo">
-                            @php
-                            $logoPath = public_path('images/Lintasarta_Logo_Logogram.png');
-                            @endphp
+        {{-- Header --}}
+        <table class="header-table">
+            <tr>
+                <td width="15%" style="vertical-align: top;">
+                    <div style="font-weight: bold; font-size: 7.5pt;">No. Dok.</div>
+                </td>
+                <td width="30%" style="vertical-align: top;">
+                    <div style="font-weight: bold; font-size: 7.5pt;">FM-LAP-D2-SOP-003-013</div>
+                </td>
+                <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
+                    <div style="font-weight: bold; font-size: 10pt;">Formulir</div>
+                    <div style="font-weight: bold; font-size: 10pt;">Preventive Maintenance</div>
+                    <div style="font-weight: bold; font-size: 10pt;">Battery</div>
+                </td>
+                <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
+                    <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo" style="width:50px; height:auto;">
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">
+                    <div style="font-size: 7.5pt;">Versi</div>
+                </td>
+                <td style="vertical-align: top;">
+                    <div style="font-size: 7.5pt;">1.0</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">
+                    <div style="font-size: 7.5pt;">Hal</div>
+                </td>
+                <td style="vertical-align: top;">
+                    <div style="font-size: 7.5pt;">1 dari {{ $totalPages }}</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">
+                    <div style="font-size: 7.5pt;">Label</div>
+                </td>
+                <td style="vertical-align: top;">
+                    <div style="font-size: 7.5pt;">Internal</div>
+                </td>
+            </tr>
+        </table>
 
-                            @if(file_exists($logoPath))
-                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($logoPath)) }}" alt="Company Logo" style="width: 80px; height: 80px; object-fit: contain;">
-                            @else
-                            <div style="font-size:8px; color:red;">Logo not found</div>
-                            @endif --}}
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        {{-- Info Table --}}
+        <table class="info-table" style="margin-top: 5px;">
+            <tr>
+                <td width="20%"><strong>Location</strong></td>
+                <td width="80%">: {{ $maintenance->location }}</td>
+            </tr>
+            <tr>
+                <td><strong>Date / Time</strong></td>
+                <td>: {{ $maintenance->maintenance_date->format('d/m/Y H:i') }}</td>
+            </tr>
+            <tr>
+                <td><strong>Batt. Temperature</strong></td>
+                <td>: {{ $maintenance->battery_temperature ? $maintenance->battery_temperature . ' °C' : '-' }}</td>
+            </tr>
+        </table>
 
-        <div class="info-section">
-            <table>
-                <tr>
-                    <td style="width: 20%;">Location</td>
-                    <td style="width: 2%;">:</td>
-                    <td style="width: 78%;">{{ $maintenance->location }}</td>
-                </tr>
-                <tr>
-                    <td>Date / time</td>
-                    <td>:</td>
-                    <td>{{ $maintenance->maintenance_date->format('d-m-Y H:i') }}</td>
-                </tr>
-                <tr>
-                    <td>Batt. Temperature</td>
-                    <td>:</td>
-                    <td>{{ $maintenance->battery_temperature ? $maintenance->battery_temperature . ' °C' : '-' }}</td>
-                </tr>
-            </table>
-        </div>
+        {{-- Battery Voltage Data --}}
+        <div class="section-title">Battery Voltage Readings</div>
 
         @php
         $readingsByBank = $maintenance->readings->groupBy('bank_number')->sortKeys();
@@ -401,25 +313,25 @@
             @endphp
 
             @if($needsDualColumn)
-            {{-- Dual Column dalam 1 Tabel (4 kolom: No | Voltage | No | Voltage) --}}
-            <table class="bank-table" style="width: 65%; margin-right: 1.5%;">
+            {{-- Dual Column Layout --}}
+            <table class="bank-table-wide">
                 <thead>
                     <tr>
                         <th colspan="4" class="bank-header">
-                            Bank : {{ $bankNumber }}<br>Batt. Brand : {{ $readings->first()->battery_brand }}
+                            Bank: {{ $bankNumber }} | Batt. Brand: {{ $readings->first()->battery_brand }}
                         </th>
                     </tr>
                     <tr>
-                        <th class="no-col">No</th>
-                        <th class="voltage-col">Voltage</th>
-                        <th class="no-col">No</th>
-                        <th class="voltage-col">Voltage</th>
+                        <th width="25%">No</th>
+                        <th width="25%">Voltage</th>
+                        <th width="25%">No</th>
+                        <th width="25%">Voltage</th>
                     </tr>
                 </thead>
                 <tbody>
                     @for($i = 0; $i < $maxSingleColumn; $i++)
                         <tr>
-                        {{-- Kolom Kiri (1-16) --}}
+                        {{-- Left Column --}}
                         @if(isset($sortedReadings[$i]))
                         <td>{{ $sortedReadings[$i]->battery_number }}</td>
                         <td>{{ number_format($sortedReadings[$i]->voltage, 1) }}</td>
@@ -428,7 +340,7 @@
                         <td>&nbsp;</td>
                         @endif
 
-                        {{-- Kolom Kanan (17-32) --}}
+                        {{-- Right Column --}}
                         @php $rightIndex = $i + $maxSingleColumn; @endphp
                         @if(isset($sortedReadings[$rightIndex]))
                         <td>{{ $sortedReadings[$rightIndex]->battery_number }}</td>
@@ -442,17 +354,17 @@
                 </tbody>
             </table>
             @else
-            {{-- Single Column Layout (2 kolom: No | Voltage) --}}
+            {{-- Single Column Layout --}}
             <table class="bank-table">
                 <thead>
                     <tr>
                         <th colspan="2" class="bank-header">
-                            Bank : {{ $bankNumber }}<br>Batt. Brand : {{ $readings->first()->battery_brand }}
+                            Bank: {{ $bankNumber }}<br>Batt. Brand: {{ $readings->first()->battery_brand }}
                         </th>
                     </tr>
                     <tr>
-                        <th class="no-col">No</th>
-                        <th class="voltage-col">Voltage</th>
+                        <th width="40%">No</th>
+                        <th width="60%">Voltage</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -474,194 +386,167 @@
             * Standard min 10 VDC
         </div>
 
-        <!-- Notes Section -->
-        <div class="notes-section">
-            <h3>Notes / additional informations :</h3>
-            <div class="notes-box">
-                {{ $maintenance->notes ?? '' }}
-            </div>
+        {{-- Notes --}}
+        @if($maintenance->notes)
+        <div class="section-title">Notes / Additional Informations</div>
+        <div class="notes-box">
+            {{ $maintenance->notes }}
         </div>
+        @endif
 
-        <!-- Pelaksana Section -->
-        <div class="pelaksana-section">
-            <div class="pelaksana-header">
-                <div class="pelaksana-left">
-                    <h3>Pelaksana :</h3>
-                    <table class="pelaksana-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 10%;">No</th>
-                                <th style="width: 45%;">Name</th>
-                                <th style="width: 25%;">Perusahaan</th>
-                                <th style="width: 20%;">Tanda Tangan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {{-- Pelaksana 1 (Required) --}}
-                            <tr>
-                                <td>1.</td>
-                                <td>{{ $maintenance->technician_1_name ?? '' }}</td>
-                                <td>{{ $maintenance->technician_1_company ?? $maintenance->company ?? 'PT. Aplikarusa Lintasarta' }}</td>
-                                <td></td>
-                            </tr>
-
-                            {{-- Pelaksana 2 (Optional) --}}
-                            @if(!empty($maintenance->technician_2_name))
-                            <tr>
-                                <td>2.</td>
-                                <td>{{ $maintenance->technician_2_name }}</td>
-                                <td>{{ $maintenance->technician_2_company ?? '' }}</td>
-                                <td></td>
-                            </tr>
-                            @else
-                            <tr>
-                                <td>2.</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            @endif
-
-                            {{-- Pelaksana 3 (Optional) --}}
-                            @if(!empty($maintenance->technician_3_name))
-                            <tr>
-                                <td>3.</td>
-                                <td>{{ $maintenance->technician_3_name }}</td>
-                                <td>{{ $maintenance->technician_3_company ?? '' }}</td>
-                                <td></td>
-                            </tr>
-                            @else
-                            <tr>
-                                <td>3.</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            @endif
-                        </tbody>
-                    </table>
-                </div>
-                <div class="pelaksana-right">
-                    <h3>Mengetahui,</h3>
-                    <div class="signature-box">
-                        <div style="margin-top: 80px; font-size: 9px;">
-                            ( ____________________________)
-                        </div>
-                    </div>
-
+        {{-- Signature Section --}}
+        <div class="signature-section">
+            <div style="width: 65%; float: left;">
+                <div class="bold" style="margin-bottom: 3px;">Pelaksana:</div>
+                <table class="signature-table">
+                    <tr>
+                        <th width="10%">No</th>
+                        <th width="40%">Name</th>
+                        <th width="30%">Perusahaan</th>
+                        <th width="20%">Signature</th>
+                    </tr>
+                    <tr>
+                        <td class="center">1</td>
+                        <td>{{ $maintenance->technician_1_name ?? '' }}</td>
+                        <td>{{ $maintenance->technician_1_company ?? 'PT. Aplikarusa Lintasarta' }}</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    @if($maintenance->technician_2_name)
+                    <tr>
+                        <td class="center">2</td>
+                        <td>{{ $maintenance->technician_2_name }}</td>
+                        <td>{{ $maintenance->technician_2_company ?? '-' }}</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    @endif
+                    @if($maintenance->technician_3_name)
+                    <tr>
+                        <td class="center">3</td>
+                        <td>{{ $maintenance->technician_3_name }}</td>
+                        <td>{{ $maintenance->technician_3_company ?? '-' }}</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    @endif
+                </table>
+            </div>
+            <div style="width: 33%; float: right;">
+                <div class="bold" style="margin-bottom: 3px;">Mengetahui (Supervisor):</div>
+                <div style="border: 1px solid #000; height: 80px; text-align: center; padding: 5px;">
+                    <div style="height: 40px;"></div>
+                    <div>{{ $maintenance->supervisor ?? '____________________' }}</div>
                 </div>
             </div>
+            <div style="clear: both;"></div>
         </div>
     </div>
 
-    <!-- Fixed Footer - Halaman 1 -->
-    <div class="company-info">
-        <strong>©HakCipta PT. APLIKARUSA LINTASARTA, Indonesia</strong><br>
-        FM-LAP- D2-SOP-003-013 Formulir Preventive Maintenance Battery
+    <div class="page-footer">
+        ©HakCipta PT. APLIKARUSA LINTASARTA, Indonesia<br>
+        FM-LAP-D2-SOP-003-013 Formulir Preventive Maintenance Battery
     </div>
 
-    <!-- PAGE 2: Photos -->
+    {{-- IMAGE PAGES --}}
+    @if(!empty($photos))
     @php
-    $hasPhotos = $maintenance->readings->filter(function($reading) {
-    return $reading->photo_path && Storage::disk('public')->exists($reading->photo_path);
-    })->count() > 0;
+    $photoChunks = array_chunk($photos, $imagesPerPage);
+    $currentPage = 2;
     @endphp
 
-    @if($hasPhotos)
+    @foreach($photoChunks as $chunkIndex => $photoChunk)
     <div class="page-break"></div>
 
     <div class="content-wrapper">
-        <div class="header">
-            <table>
-                <tr>
-                    <td class="left-section">
-                        <table style="width: 100%; border: none;">
-                            <tr>
-                                <td style="width: 35%; border: none; padding: 2px;">No. Dok</td>
-                                <td style="width: 5%; border: none; padding: 2px;">:</td>
-                                <td style="width: 60%; border: none; padding: 2px;">FM-LAP-D2-SOP-003-013</td>
-                            </tr>
-                            <tr>
-                                <td style="border: none; padding: 2px;">Versi</td>
-                                <td style="border: none; padding: 2px;">:</td>
-                                <td style="border: none; padding: 2px;">1.0</td>
-                            </tr>
-                            <tr>
-                                <td style="border: none; padding: 2px;">Hal</td>
-                                <td style="border: none; padding: 2px;">:</td>
-                                <td style="border: none; padding: 2px;">1 dari 1</td>
-                            </tr>
-                            <tr>
-                                <td style="border: none; padding: 2px;">Label</td>
-                                <td style="border: none; padding: 2px;">:</td>
-                                <td style="border: none; padding: 2px;">Internal</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td class="center-section">
-                        <div style="font-size: 16px;">Dokumentasi Foto</div>
-                        <div style="font-size: 14px;">Preventive Maintenance</div>
-                        <div style="font-size: 14px;">Battery</div>
-                    </td>
-                    <td class="right-section">
-                        <div class="logo">
-                            @php
-                            $logoPath = public_path('images/Lintasarta_Logo_Logogram.png');
-                            @endphp
+        {{-- Header for image page --}}
+        <table class="header-table">
+            <tr>
+                <td width="15%" style="vertical-align: top;">
+                    <div style="font-weight: bold; font-size: 7.5pt;">No. Dok.</div>
+                </td>
+                <td width="30%" style="vertical-align: top;">
+                    <div style="font-weight: bold; font-size: 7.5pt;">FM-LAP-D2-SOP-003-013</div>
+                </td>
+                <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
+                    <div style="font-weight: bold; font-size: 10pt;">Dokumentasi Foto</div>
+                    <div style="font-weight: bold; font-size: 10pt;">Preventive Maintenance</div>
+                    <div style="font-weight: bold; font-size: 10pt;">Battery</div>
+                </td>
+                <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
+                    <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo" style="width:50px; height:auto;">
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">
+                    <div style="font-size: 7.5pt;">Versi</div>
+                </td>
+                <td style="vertical-align: top;">
+                    <div style="font-size: 7.5pt;">1.0</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">
+                    <div style="font-size: 7.5pt;">Hal</div>
+                </td>
+                <td style="vertical-align: top;">
+                    <div style="font-size: 7.5pt;">{{ $currentPage }} dari {{ $totalPages }}</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">
+                    <div style="font-size: 7.5pt;">Label</div>
+                </td>
+                <td style="vertical-align: top;">
+                    <div style="font-size: 7.5pt;">Internal</div>
+                </td>
+            </tr>
+        </table>
 
-                            @if(file_exists($logoPath))
-                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($logoPath)) }}" alt="Company Logo" style="width: 80px; height: 80px; object-fit: contain;">
-                            @else
-                            <div style="font-size:8px; color:red;">Logo not found</div>
-                            @endif
+        <div style="margin-top: 5px; margin-bottom: 5px;">
+            <div class="bold" style="margin-bottom: 3px;">Documentation Images @if($totalImagePages > 1)(Page {{ $currentPage - 1 }} of {{ $totalImagePages }})@endif:</div>
+
+            <table style="width: 100%; border-collapse: collapse;">
+                @foreach(array_chunk($photoChunk, 3) as $rowImages)
+                <tr>
+                    @foreach($rowImages as $photo)
+                    @php
+                    $imageBase64 = imageToBase64($photo['path']);
+                    @endphp
+                    <td style="width: 33.33%; padding: 5px; text-align: center; border: none; vertical-align: top;">
+                        @if($imageBase64)
+                        <div style="border: 1px solid #000; overflow: hidden;">
+                            <div class="image-container">
+                                <img src="{{ $imageBase64 }}" alt="Bank {{ $photo['bank'] }} - Battery {{ $photo['battery'] }}">
+                            </div>
+                            <div style="font-size: 8pt; color: #000; padding: 3px 4px; background: #fff; border-top: 1px solid #000; line-height: 1.3;">
+                                Bank {{ $photo['bank'] }} - No. {{ $photo['battery'] }}<br>
+                                Voltage: {{ number_format($photo['voltage'], 1) }} VDC
+                            </div>
                         </div>
+                        @else
+                        <div style="border: 1px solid #000; width: 100%; height: 230px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt;">
+                            Image not found
+                        </div>
+                        @endif
                     </td>
+                    @endforeach
+
+                    {{-- Fill remaining cells --}}
+                    @for($i = count($rowImages); $i < 3; $i++)
+                        <td style="width: 33.33%; padding: 5px; border: none;">
+                        </td>
+                        @endfor
                 </tr>
+                @endforeach
             </table>
         </div>
-
-        <div class="photo-section">
-            <div class="photo-grid">
-                @foreach($readingsByBank as $bankNumber => $readings)
-                @foreach($readings->sortBy('battery_number') as $reading)
-                @if($reading->photo_path && Storage::disk('public')->exists($reading->photo_path))
-                <div class="photo-item">
-                    <div class="photo-title">
-                        Bank {{ $bankNumber }} - No. {{ $reading->battery_number }} | Voltage: {{ number_format($reading->voltage, 1) }} VDC
-                    </div>
-                    @php
-                    $imagePath = storage_path('app/public/' . $reading->photo_path);
-                    if (file_exists($imagePath)) {
-                    $imageData = base64_encode(file_get_contents($imagePath));
-                    $src = 'data:image/jpeg;base64,' . $imageData;
-                    } else {
-                    $src = '';
-                    }
-                    @endphp
-                    @if($src)
-                    <img src="{{ $src }}" alt="Battery {{ $reading->battery_number }}">
-                    @endif
-                    @if($reading->photo_latitude && $reading->photo_longitude)
-                    <div class="photo-info">
-                        📍 {{ number_format($reading->photo_latitude, 6) }}, {{ number_format($reading->photo_longitude, 6) }}
-                        @if($reading->photo_timestamp)
-                        <br>🕐 {{ \Carbon\Carbon::parse($reading->photo_timestamp)->format('d/m/Y H:i:s') }}
-                        @endif
-                    </div>
-                    @endif
-                </div>
-                @endif
-                @endforeach
-                @endforeach
-            </div>
-        </div>
     </div>
 
-    <!-- Fixed Footer - Halaman 2 -->
-    <div class="company-info">
-        <strong>©HakCipta PT. APLIKARUSA LINTASARTA, Indonesia</strong><br>
-        FM-LAP- D2-SOP-003-013 Formulir Preventive Maintenance Battery - Dokumentasi Foto
+    <div class="page-footer">
+        ©HakCipta PT. APLIKARUSA LINTASARTA, Indonesia<br>
+        FM-LAP-D2-SOP-003-013 Formulir Preventive Maintenance Battery - Dokumentasi Foto
     </div>
+
+    @php $currentPage++; @endphp
+    @endforeach
     @endif
 </body>
 

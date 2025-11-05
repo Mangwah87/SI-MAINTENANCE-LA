@@ -29,14 +29,15 @@ class RectifierMaintenance extends Model
         // Performance and Capacity Check
         'ac_input_voltage',
         'status_ac_input_voltage',
-        'ac_current_input_single',
-        'ac_current_input_dual',
-        'ac_current_input_three',
+
+        // FIELD BARU - Single field untuk AC Current Input
+        'ac_current_input',
         'status_ac_current_input',
-        'dc_current_output_single',
-        'dc_current_output_dual',
-        'dc_current_output_three',
+
+        // FIELD BARU - Single field untuk DC Current Output
+        'dc_current_output',
         'status_dc_current_output',
+
         'battery_temperature',
         'status_battery_temperature',
         'charging_voltage_dc',
@@ -73,16 +74,67 @@ class RectifierMaintenance extends Model
         'date_time' => 'datetime',
         'images' => 'array',
         'ac_input_voltage' => 'decimal:2',
-        'ac_current_input_single' => 'decimal:2',
-        'ac_current_input_dual' => 'decimal:2',
-        'ac_current_input_three' => 'decimal:2',
-        'dc_current_output_single' => 'decimal:2',
-        'dc_current_output_dual' => 'decimal:2',
-        'dc_current_output_three' => 'decimal:2',
+        'ac_current_input' => 'decimal:2',  // BARU
+        'dc_current_output' => 'decimal:2',  // BARU
         'battery_temperature' => 'decimal:2',
         'charging_voltage_dc' => 'decimal:2',
         'charging_current_dc' => 'decimal:2',
         'backup_test_voltage_measurement1' => 'decimal:2',
         'backup_test_voltage_measurement2' => 'decimal:2',
     ];
+
+    /**
+     * Accessor - Return Collection untuk kemudahan manipulasi
+     */
+    public function getImagesAttribute($value)
+    {
+        if (is_null($value)) {
+            return collect([]);
+        }
+
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            return collect($decoded ?? []);
+        }
+
+        if (is_array($value)) {
+            return collect($value);
+        }
+
+        return collect([]);
+    }
+
+    /**
+     * Mutator - Ensure images disimpan sebagai array
+     */
+    public function setImagesAttribute($value)
+    {
+        if ($value instanceof \Illuminate\Support\Collection) {
+            $this->attributes['images'] = json_encode($value->toArray());
+        } elseif (is_array($value)) {
+            $this->attributes['images'] = json_encode($value);
+        } elseif (is_string($value)) {
+            $this->attributes['images'] = $value;
+        } else {
+            $this->attributes['images'] = json_encode([]);
+        }
+    }
+
+    /**
+     * Helper method untuk get images by category
+     */
+    public function getImagesByCategory($category)
+    {
+        return $this->images->filter(function ($img) use ($category) {
+            return isset($img['category']) && $img['category'] == $category;
+        });
+    }
+
+    /**
+     * Helper method untuk get images as array (for backward compatibility)
+     */
+    public function getImagesArray()
+    {
+        return $this->images->toArray();
+    }
 }
