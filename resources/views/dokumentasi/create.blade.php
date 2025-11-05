@@ -32,11 +32,15 @@
                             </div>
 
                             <div>
-                                <label for="tanggal_dokumentasi" class="block text-sm font-medium text-gray-700">Tanggal Dokumentasi</label>
-                                <input type="datetime-local" name="tanggal_dokumentasi" id="tanggal_dokumentasi"
-                                       value="{{ old('tanggal_dokumentasi') }}"
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
-                            </div>
+    <label for="tanggal_input" class="block text-sm font-medium text-gray-700">Tanggal Dokumentasi</label>
+    <input type="date" name="tanggal_input" id="tanggal_input"
+            value="{{ old('tanggal_input') }}"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+</div>
+
+<input type="hidden" name="waktu_auto" id="waktu_auto" value="">
+
+<input type="hidden" name="tanggal_dokumentasi" id="tanggal_dokumentasi_gabungan" value="">
 
                             <div>
                                 <label for="perusahaan" class="block text-sm font-medium text-gray-700">Perusahaan</label>
@@ -307,18 +311,25 @@ function cropToSquare(sourceCanvas) {
     return squareCanvas;
 }
 
-// Fungsi watermark HANYA untuk kamera
+/// ==================== WATERMARK WITH GEOLOCATION (EXTRA LARGE) ====================
 async function addWatermarkToCanvas(canvas) {
     const ctx = canvas.getContext('2d');
     const timestamp = new Date();
-    const formattedTime = timestamp.toLocaleString('id-ID');
+    
+    // Format waktu tanpa detik
+    const formattedTime = timestamp.toLocaleString('id-ID', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
     const hari = timestamp.toLocaleDateString('id-ID', { weekday: 'long' });
 
     let latitude = null;
     let longitude = null;
     let lokasiText = "Mengambil lokasi...";
 
-    // Coba dapatkan lokasi dari GPS browser
     if (navigator.geolocation) {
         await new Promise((resolve) => {
             navigator.geolocation.getCurrentPosition(async pos => {
@@ -328,7 +339,35 @@ async function addWatermarkToCanvas(canvas) {
                 try {
                     const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
                     const data = await response.json();
-                    lokasiText = data.display_name || 'Lokasi tidak diketahui';
+                    
+                    // Extract lokasi ringkas: nama jalan, kabupaten, provinsi
+                    const address = data.address || {};
+                    const parts = [];
+                    
+                    // Nama jalan/lokasi
+                    if (address.road) parts.push(address.road);
+                    else if (address.neighbourhood) parts.push(address.neighbourhood);
+                    else if (address.suburb) parts.push(address.suburb);
+                    
+                    // Nomor rumah jika ada
+                    if (address.house_number) {
+                        parts[parts.length - 1] = `${parts[parts.length - 1]} No.${address.house_number}`;
+                    }
+                    
+                    // Kabupaten/Kota
+                    if (address.city) parts.push(address.city);
+                    else if (address.county) parts.push(address.county);
+                    else if (address.state_district) parts.push(address.state_district);
+                    
+                    // Provinsi
+                    if (address.state) parts.push(address.state);
+                    
+                    lokasiText = parts.length > 0 ? parts.join(', ') : 'Lokasi tidak diketahui';
+                    
+                    // Batasi panjang teks max 60 karakter
+                    if (lokasiText.length > 60) {
+                        lokasiText = lokasiText.substring(0, 57) + '...';
+                    }
                 } catch {
                     lokasiText = "Gagal mengambil nama lokasi";
                 }
@@ -342,17 +381,35 @@ async function addWatermarkToCanvas(canvas) {
         lokasiText = "Geolokasi tidak didukung";
     }
 
-    // Draw watermark
-    const padding = 12;
-    const fontSize = Math.max(14, canvas.width / 50);
+    // Draw watermark - REDUCED SIZE VERSION
+    const padding = 15;  // ← SIZING #1: Ubah dari 20 menjadi 15 (lebih kecil)
+    const fontSize = Math.max(32, canvas.width / 25);  // ← SIZING #2: Ubah dari 48 & /15 menjadi 32 & /25 (LEBIH KECIL)
+    const lineHeight = fontSize * 1.4;  // ← SIZING #3: Ubah dari 1.6 menjadi 1.4 (lebih rapat)
+    
     ctx.font = `bold ${fontSize}px Arial`;
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.fillRect(0, canvas.height - fontSize * 5.5, canvas.width, fontSize * 5.5);
-    ctx.fillStyle = "white";
-
-    ctx.fillText(`📍 ${lokasiText}`, padding, canvas.height - fontSize * 4);
-    ctx.fillText(`🕓 ${hari}, ${formattedTime}`, padding, canvas.height - fontSize * 2.5);
-    ctx.fillText(`🌐 Lat: ${latitude?.toFixed(5) || '-'}, Lng: ${longitude?.toFixed(5) || '-'}`, padding, canvas.height - fontSize);
+    ctx.textBaseline = 'bottom';
+    
+    // Teks dengan outline untuk keterbacaan
+    const texts = [
+        `📍 ${lokasiText}`,
+        `🕓 ${hari}, ${formattedTime}`,
+        `🌐 ${latitude?.toFixed(5) || '-'}, ${longitude?.toFixed(5) || '-'}`
+    ];
+    
+    let yPosition = canvas.height - padding;
+    
+    texts.reverse().forEach(text => {
+        // Outline hitam lebih tebal untuk keterbacaan
+        ctx.strokeStyle = 'rgba(0,0,0,0.9)';
+        ctx.lineWidth = 4;  // ← SIZING #4: Ubah dari 6 menjadi 4 (lebih tipis)
+        ctx.strokeText(text, padding, yPosition);
+        
+        // Teks putih di atas
+        ctx.fillStyle = 'white';
+        ctx.fillText(text, padding, yPosition);
+        
+        yPosition -= lineHeight;
+    });
 
     return {
         latitude,
@@ -898,6 +955,56 @@ document.addEventListener("DOMContentLoaded", () => {
             if (e.target.classList.contains('nama-sarana')) updateKodeSarana();
         });
     }
+});
+// Function untuk mendapatkan waktu saat ini dalam format HH:mm:ss
+function getCurrentTime() {
+    const now = new Date();
+    // Gunakan toLocaleTimeString untuk format waktu lokal yang benar
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+}
+
+// Function untuk menggabungkan tanggal dan waktu
+function updateCombinedDateTime() {
+    const tanggalInput = document.getElementById('tanggal_input');
+    const waktuAutoInput = document.getElementById('waktu_auto');
+    const gabunganInput = document.getElementById('tanggal_dokumentasi_gabungan');
+
+    // 1. Set waktu otomatis ke input tersembunyi
+    waktuAutoInput.value = getCurrentTime();
+
+    // 2. Gabungkan tanggal dari user dengan waktu otomatis
+    const tanggalUser = tanggalInput.value;
+    const waktuOtomatis = waktuAutoInput.value;
+
+    if (tanggalUser) {
+        // Format gabungan: YYYY-MM-DD HH:mm:ss (cocok untuk database)
+        gabunganInput.value = `${tanggalUser} ${waktuOtomatis}`;
+    } else {
+        gabunganInput.value = '';
+    }
+}
+
+// Panggil saat halaman dimuat (untuk inisiasi)
+document.addEventListener('DOMContentLoaded', () => {
+    updateCombinedDateTime();
+
+    // Panggil lagi setiap kali user mengubah tanggal
+    const tanggalInput = document.getElementById('tanggal_input');
+    if (tanggalInput) {
+        tanggalInput.addEventListener('change', updateCombinedDateTime);
+    }
+    
+    // Opsional: Perbarui waktu setiap 1 menit (jika perlu akurasi yang lebih baru)
+    // setInterval(updateCombinedDateTime, 60000); 
+});
+
+// Tambahkan listener pada form submit untuk memastikan waktu terbaru terkirim
+document.querySelector('form').addEventListener('submit', () => {
+    // Pastikan waktu diupdate tepat sebelum form disubmit
+    updateCombinedDateTime(); 
 });
 </script>
 

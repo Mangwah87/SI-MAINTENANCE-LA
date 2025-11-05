@@ -9,7 +9,7 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'DejaVu Sans', sans-serif;
             font-size: 10px;
             line-height: 1.3;
         }
@@ -395,7 +395,7 @@
                     @if($dcCurrentType == '500')
                         &le; 9 A ( 500 VA )<br><span class="strikethrough">&le; 18 A ( 1000 VA )</span>
                     @else
-                        <span class="strikethrough">&le; 9 A ( 500 VA )</span><br>&le; 18 A ( 1000 VA )
+                        <span class="strikethrough">&le;; 9 A ( 500 VA )</span><br>&le; 18 A ( 1000 VA )
                     @endif
                 </td>
                 <td>{{ $dcCurrentData['status'] ?? '' }}</td>
@@ -478,7 +478,7 @@
     <table class="mengetahui-box-table" style="height:120px; width:100%;">
         <tr>
             <td>
-                <div style="height:58px;"></div>
+                <div style="height:66px;"></div>
                 (<span style="display:inline-block; width:140px; border-bottom:1px solid #000; text-align:center; font-weight:bold;">{{ $inverter->boss ?? '________________' }}</span>)
             </td>
         </tr>
@@ -494,146 +494,176 @@
         FM-LAP-D2-SOP-003-008 Formulir Preventive Maintenance Inverter -48VDC/220VAC
     </div>
 
-    {{-- ========================================
-         HALAMAN 2+: FOTO DOKUMENTASI
-    ======================================== --}}
+{{-- ========================================
+     HALAMAN 2+: FOTO DOKUMENTASI
+======================================== --}}
+
+@php
+    // Kumpulkan semua foto dengan kode
+    $allPhotos = [];
     
-    @php
-        // Kumpulkan semua foto dengan kode
-        $allPhotos = [];
-        
-        // Definisi mapping nama field ke kode foto
-        $photoCodeMap = [
-            'Environment Condition' => '1.a',
-            'LED Display' => '1.b',
-            'DC Input Voltage' => '2.a',
-            'DC Current Input' => '2.b',
-            'AC Current Output' => '2.c',
-            'Neutral - Ground Output Voltage' => '2.d',
-            'Equipment Temperature' => '2.e',
-        ];
-        
-        // Loop through data_checklist
-        if (is_array($dataChecklist)) {
-            foreach($dataChecklist as $index => $item) {
-                $itemName = $item['nama'] ?? 'Unknown';
-                $baseCode = $photoCodeMap[$itemName] ?? (($index + 1) . '.x');
-                
-                // Cek apakah ada array photos
-                if (isset($item['photos']) && is_array($item['photos'])) {
-                    foreach($item['photos'] as $photoIndex => $photo) {
-                        // Cek photo_path
-                        if (isset($photo['photo_path']) && !empty($photo['photo_path'])) {
-                            // Konversi photo_path ke base64
-                            $photoFullPath = storage_path('app/public/' . $photo['photo_path']);
-                            
-                            if (file_exists($photoFullPath)) {
-                                $photoBase64 = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($photoFullPath));
-                                
-                                $allPhotos[] = [
-                                    'data' => $photoBase64,
-                                    'code' => $baseCode . '.' . ($photoIndex + 1),
-                                    'nama' => $itemName,
-                                ];
-                            }
+    // Definisi mapping nama field ke kode foto
+    $photoCodeMap = [
+        'Environment Condition' => '1.a',
+        'LED Display' => '1.b',
+        'DC Input Voltage' => '2.a',
+        'DC Current Input' => '2.b',
+        'AC Current Output' => '2.c',
+        'Neutral - Ground Output Voltage' => '2.d',
+        'Equipment Temperature' => '2.e',
+    ];
+    
+    // Loop through data_checklist
+    if (is_array($dataChecklist)) {
+        foreach($dataChecklist as $index => $item) {
+            $itemName = $item['nama'] ?? 'Unknown';
+            $baseCode = $photoCodeMap[$itemName] ?? (($index + 1) . '.x');
+            
+            // Cek apakah ada array photos
+            if (isset($item['photos']) && is_array($item['photos'])) {
+                foreach($item['photos'] as $photoIndex => $photo) {
+                    // Cek photo_path
+                    if (isset($photo['photo_path']) && !empty($photo['photo_path'])) {
+                        // Konversi photo_path ke full path
+                        $photoFullPath = storage_path('app/public/' . $photo['photo_path']);
+                        
+                        if (file_exists($photoFullPath)) {
+                            $allPhotos[] = [
+                                'path' => $photo['photo_path'],
+                                'full_path' => $photoFullPath,
+                                'code' => $baseCode . '.' . ($photoIndex + 1),
+                                'nama' => $itemName,
+                                'latitude' => $photo['photo_latitude'] ?? null,
+                                'longitude' => $photo['photo_longitude'] ?? null,
+                                'timestamp' => $photo['photo_timestamp'] ?? null,
+                            ];
                         }
                     }
                 }
             }
         }
+    }
+@endphp
+
+@if(count($allPhotos) > 0)
+    @php
+        // 9 foto per halaman (3 baris x 3 kolom)
+        $photosPerPage = 9;
+        $photoChunks = array_chunk($allPhotos, $photosPerPage);
     @endphp
-
-    @if(count($allPhotos) > 0)
-        @foreach(array_chunk($allPhotos, $photosPerPage) as $pageIndex => $pagePhotos)
-            <div class="page-break">
-                <!-- Header untuk halaman foto -->
-                <div class="page-header">
-                    <table class="header-table">
-                        <tr>
-                            <td width="15%" style="vertical-align: top;">
-                                <div style="font-weight: bold; font-size: 9pt;">No. Dok.</div>
-                            </td>
-                            <td width="30%" style="vertical-align: top;">
-                                <div style="font-weight: bold; font-size: 9pt;">FM-LAP-D2-SOP-003-008</div>
-                            </td>
-                            <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
-                                <div style="font-weight: bold; font-size: 12pt;">Formulir</div>
-                                <div style="font-weight: bold; font-size: 12pt;">Preventive Maintenance</div>
-                                <div style="font-weight: bold; font-size: 12pt;">Inverter -48VDC/220VAC</div>
-                            </td>
-                            <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
-                                @if(file_exists($logoPath))
-                                    <img src="{{ $logoPath }}" alt="Logo" style="width:60px; height:auto;">
-                                @else
-                                    <div style="font-size:8px;">Logo not found</div>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="vertical-align: top;">
-                                <div style="font-size: 9pt;">Versi</div>
-                            </td>
-                            <td style="vertical-align: top;">
-                                <div style="font-size: 9pt;">1.0</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="vertical-align: top;">
-                                <div style="font-size: 9pt;">Hal</div>
-                            </td>
-                            <td style="vertical-align: top;">
-                                <div style="font-size: 9pt;">{{ $pageIndex + 2 }} dari {{ $totalPages }}</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="vertical-align: top;">
-                                <div style="font-size: 9pt;">Label</div>
-                            </td>
-                            <td style="vertical-align: top;">
-                                <div style="font-size: 9pt;">Internal</div>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-                <!-- Grid Foto (2 kolom x 3 baris = 6 foto) -->
-                <div class="photo-grid">
-                    @foreach(array_chunk($pagePhotos, 2) as $rowPhotos)
-                        <div class="photo-row">
-                            @foreach($rowPhotos as $photo)
-                                <div class="photo-cell">
-                                    <div class="photo-container">
-                                        @if(!empty($photo['data']))
-                                            <img src="{{ $photo['data'] }}" alt="{{ $photo['nama'] }}">
-                                        @else
-                                            <div class="no-photo">Foto tidak tersedia</div>
-                                        @endif
-                                    </div>
-                                    <div class="photo-code">{{ $photo['code'] }}.{{ $photo['nama'] }}</div>
-                                </div>
-                            @endforeach
-                            
-                            {{-- Tambahkan cell kosong jika ganjil --}}
-                            @if(count($rowPhotos) == 1)
-                                <div class="photo-cell">
-                                    <div class="photo-container">
-                                        <div class="no-photo">-</div>
-                                    </div>
-                                    <div class="photo-code">-</div>
-                                </div>
+    
+    @foreach($photoChunks as $pageIndex => $pagePhotos)
+        <div style="page-break-before: always;">
+            <!-- Header untuk halaman foto -->
+            <div class="page-header">
+                <table class="header-table">
+                    <tr>
+                        <td width="15%" style="vertical-align: top;">
+                            <div style="font-weight: bold; font-size: 9pt;">No. Dok.</div>
+                        </td>
+                        <td width="30%" style="vertical-align: top;">
+                            <div style="font-weight: bold; font-size: 9pt;">FM-LAP-D2-SOP-003-008</div>
+                        </td>
+                        <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
+                            <div style="font-weight: bold; font-size: 12pt;">Formulir</div>
+                            <div style="font-weight: bold; font-size: 12pt;">Preventive Maintenance</div>
+                            <div style="font-weight: bold; font-size: 12pt;">Inverter -48VDC/220VAC</div>
+                        </td>
+                        <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
+                            @if(file_exists($logoPath))
+                                <img src="{{ $logoPath }}" alt="Logo" style="width:60px; height:auto;">
+                            @else
+                                <div style="font-size:8px;">Logo not found</div>
                             @endif
-                        </div>
-                    @endforeach
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;">
+                            <div style="font-size: 9pt;">Versi</div>
+                        </td>
+                        <td style="vertical-align: top;">
+                            <div style="font-size: 9pt;">1.0</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;">
+                            <div style="font-size: 9pt;">Hal</div>
+                        </td>
+                        <td style="vertical-align: top;">
+                            <div style="font-size: 9pt;">{{ $pageIndex + 2 }} dari {{ $totalPages }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;">
+                            <div style="font-size: 9pt;">Label</div>
+                        </td>
+                        <td style="vertical-align: top;">
+                            <div style="font-size: 9pt;">Internal</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Dokumentasi Foto Section -->
+            <div style="margin-top: 8px; margin-bottom: 5px; border: 1px solid #000; border-radius: 4px; padding: 6px;">
+                <div style="margin-bottom: 8px; text-align: center; background: #e0e0e0; padding: 5px; border-radius: 4px; font-weight: bold;">
+                    Dokumentasi Foto{{ $pageIndex > 0 ? ' (Lanjutan ' . ($pageIndex + 1) . ')' : '' }}
                 </div>
 
-                <!-- Footer untuk halaman foto -->
-                <div class="footer">
-                    ©HakCipta PT. APLIKANUSA LINTASARTA, Indonesia<br>
-                    FM-LAP-D2-SOP-003-008 Formulir Preventive Maintenance Inverter -48VDC/220VAC
-                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                    @foreach(array_chunk($pagePhotos, 3) as $rowIndex => $rowPhotos)
+                        <tr>
+                            @foreach($rowPhotos as $colIndex => $photo)
+                                <td style="width: 33.33%; padding: 4px; text-align: center; border: 1px solid #ddd; vertical-align: top;">
+                                    @if(file_exists($photo['full_path']))
+                                        <img src="{{ $photo['full_path'] }}"
+                                             alt="Foto {{ $photo['nama'] }}"
+                                             style="width: 100%; max-height: 180px; object-fit: contain; margin-bottom: 4px;">
+                                        
+                                        {{-- Kode dan Judul di bawah foto --}}
+                                        <div style="font-size: 8pt; font-weight: bold; color: #000; margin-bottom: 3px; padding: 2px; background: #f5f5f5; border-radius: 2px;">
+                                            {{ $photo['code'] }}. {{ $photo['nama'] }}
+                                        </div>
+
+                                        {{-- Info foto (opsional) --}}
+                                        @if($photo['timestamp'] || ($photo['latitude'] && $photo['longitude']))
+                                            <div style="font-size: 7pt; color: #666; text-align: left; padding: 2px;">
+                                                @if($photo['timestamp'])
+                                                    <div><strong>Waktu:</strong> {{ \Carbon\Carbon::parse($photo['timestamp'])->format('d/m/Y H:i') }}</div>
+                                                @endif
+                                                @if($photo['latitude'] && $photo['longitude'])
+                                                    <div><strong>Koordinat:</strong> {{ number_format($photo['latitude'], 6) }}, {{ number_format($photo['longitude'], 6) }}</div>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    @else
+                                        <div style="width: 100%; height: 180px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt;">
+                                            Foto tidak ditemukan
+                                        </div>
+                                        <div style="font-size: 8pt; font-weight: bold; color: #000; margin-top: 4px;">
+                                            {{ $photo['code'] }}. {{ $photo['nama'] }}
+                                        </div>
+                                    @endif
+                                </td>
+                            @endforeach
+
+                            {{-- Isi sel kosong jika foto tidak sampai 3 --}}
+                            @for($i = count($rowPhotos); $i < 3; $i++)
+                                <td style="width: 33.33%; padding: 4px; border: none;"></td>
+                            @endfor
+                        </tr>
+                    @endforeach
+                </table>
             </div>
-        @endforeach
-    @endif
+
+            <!-- Footer untuk halaman foto -->
+            <div class="footer">
+                ©HakCipta PT. APLIKANUSA LINTASARTA, Indonesia<br>
+                FM-LAP-D2-SOP-003-008 Formulir Preventive Maintenance Inverter -48VDC/220VAC
+            </div>
+        </div>
+    @endforeach
+@endif
 
 </body>
 </html>

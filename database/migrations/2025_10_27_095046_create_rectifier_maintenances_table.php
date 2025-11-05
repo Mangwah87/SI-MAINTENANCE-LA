@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('rectifier_maintenances', function (Blueprint $table) {
@@ -33,16 +36,12 @@ return new class extends Migration
             $table->decimal('ac_input_voltage', 8, 2)->nullable();
             $table->enum('status_ac_input_voltage', ['OK', 'NOK'])->default('OK');
 
-            // b. AC Current Input (depends on power module type)
-            $table->decimal('ac_current_input_single', 8, 2)->nullable();
-            $table->decimal('ac_current_input_dual', 8, 2)->nullable();
-            $table->decimal('ac_current_input_three', 8, 2)->nullable();
+            // b. AC Current Input (SUDAH DIGABUNG)
+            $table->decimal('ac_current_input', 8, 2)->nullable();
             $table->enum('status_ac_current_input', ['OK', 'NOK'])->default('OK');
 
-            // c. DC Current Output (depends on power module type)
-            $table->decimal('dc_current_output_single', 8, 2)->nullable();
-            $table->decimal('dc_current_output_dual', 8, 2)->nullable();
-            $table->decimal('dc_current_output_three', 8, 2)->nullable();
+            // c. DC Current Output (SUDAH DIGABUNG)
+            $table->decimal('dc_current_output', 8, 2)->nullable();
             $table->enum('status_dc_current_output', ['OK', 'NOK'])->default('OK');
 
             // d. Battery Temperature
@@ -88,6 +87,9 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('rectifier_maintenances');

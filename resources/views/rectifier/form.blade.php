@@ -96,10 +96,10 @@
 
                         <!-- 1. Visual Check -->
                         <div class="mb-8">
+
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">1. Visual Check</h3>
 
                             <div class="space-y-6">
-                                <!-- Environment Condition -->
                                 <div>
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
                                         <div class="md:col-span-2">
@@ -117,7 +117,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Camera & Upload for Environment Condition -->
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                                             <label class="block text-sm font-medium text-gray-700 mb-3">
@@ -148,11 +147,26 @@
                                             <input type="file" name="images_env_condition[]" multiple accept="image/*"
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                             <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+
+                                            @if(isset($maintenance))
+                                            <div class="mt-3 grid grid-cols-2 gap-2">
+                                                @foreach($maintenance->getImagesByCategory('env_condition') as $image)
+                                                <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                    <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                    <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                        class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- LED Display -->
                                 <div>
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
                                         <div class="md:col-span-2">
@@ -169,7 +183,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Camera & Upload for LED Display -->
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                                             <label class="block text-sm font-medium text-gray-700 mb-3">
@@ -200,11 +213,26 @@
                                             <input type="file" name="images_led_display[]" multiple accept="image/*"
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                             <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
-                                        </div>
+
+                                            @if(isset($maintenance))
+                                            <div class="mt-3 grid grid-cols-2 gap-2">
+                                                @foreach($maintenance->getImagesByCategory('led_display') as $image)
+                                                <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                    <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                    <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                        class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                            @endif
+                                            </div>
                                     </div>
                                 </div>
 
-                                <!-- Battery Connection -->
                                 <div>
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
                                         <div class="md:col-span-2">
@@ -221,7 +249,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Camera & Upload for Battery Connection -->
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                                             <label class="block text-sm font-medium text-gray-700 mb-3">
@@ -252,7 +279,23 @@
                                             <input type="file" name="images_battery_connection[]" multiple accept="image/*"
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                             <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
-                                        </div>
+
+                                            @if(isset($maintenance))
+                                            <div class="mt-3 grid grid-cols-2 gap-2">
+                                                @foreach($maintenance->getImagesByCategory('battery_connection') as $image)
+                                                <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                    <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                    <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                        class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                            @endif
+                                            </div>
                                     </div>
                                 </div>
                             </div>
@@ -263,7 +306,6 @@
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">2. Performance and Capacity Check</h3>
 
                             <div class="space-y-4">
-                                <!-- AC Input Voltage -->
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">a. AC Input Voltage (180-240 VAC)</label>
@@ -279,9 +321,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Camera & Upload for AC Input Voltage -->
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                    <!-- Camera Section -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -299,7 +339,6 @@
                                         </button>
                                     </div>
 
-                                    <!-- Upload Section -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-white">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -312,10 +351,25 @@
                                         <input type="file" name="images_ac_voltage[]" multiple accept="image/*"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Max: 5MB/file</p>
-                                    </div>
+                                        
+                                        @if(isset($maintenance))
+                                        <div class="mt-3 grid grid-cols-2 gap-2">
+                                            @foreach($maintenance->getImagesByCategory('ac_voltage') as $image)
+                                            <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        @endif
+                                        </div>
                                 </div>
 
-                                <!-- AC Current Input - SINGLE FIELD -->
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">b. AC Current Input (A)</label>
@@ -336,9 +390,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Camera & Upload Images for AC Current Input - SIDE BY SIDE -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- Camera for AC Current Input -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -356,7 +408,6 @@
                                         </button>
                                     </div>
 
-                                    <!-- Upload Images for AC Current Input -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-white">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -369,10 +420,25 @@
                                         <input type="file" name="images_ac_current[]" multiple accept="image/*"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
-                                    </div>
+                                        
+                                        @if(isset($maintenance))
+                                        <div class="mt-3 grid grid-cols-2 gap-2">
+                                            @foreach($maintenance->getImagesByCategory('ac_current') as $image)
+                                            <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        @endif
+                                        </div>
                                 </div>
 
-                                <!-- DC Current Output - SINGLE FIELD -->
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">c. DC Current Output (A)</label>
@@ -393,9 +459,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Camera & Upload Images for DC Current Output - SIDE BY SIDE -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- Camera for DC Current Output -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -413,7 +477,6 @@
                                         </button>
                                     </div>
 
-                                    <!-- Upload Images for DC Current Output -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-white">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -426,10 +489,25 @@
                                         <input type="file" name="images_dc_current[]" multiple accept="image/*"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
-                                    </div>
+
+                                        @if(isset($maintenance))
+                                        <div class="mt-3 grid grid-cols-2 gap-2">
+                                            @foreach($maintenance->getImagesByCategory('dc_current') as $image)
+                                            <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        @endif
+                                        </div>
                                 </div>
 
-                                <!-- Battery Temperature -->
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">d. Battery Temperature (0-30 °C)</label>
@@ -445,9 +523,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Camera & Upload Images for Battery Temperature - SIDE BY SIDE -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- Camera for Battery Temperature -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -465,7 +541,6 @@
                                         </button>
                                     </div>
 
-                                    <!-- Upload Images for Battery Temperature -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-white">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -478,10 +553,25 @@
                                         <input type="file" name="images_battery_temp[]" multiple accept="image/*"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
-                                    </div>
+
+                                        @if(isset($maintenance))
+                                        <div class="mt-3 grid grid-cols-2 gap-2">
+                                            @foreach($maintenance->getImagesByCategory('battery_temp') as $image)
+                                            <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        @endif
+                                        </div>
                                 </div>
 
-                                <!-- Charging Voltage DC -->
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">e. Charging Voltage DC (48 ~ 55.3 VDC)</label>
@@ -497,9 +587,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Camera & Upload Images for Charging Voltage DC - SIDE BY SIDE -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- Camera for Charging Voltage DC -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -517,7 +605,6 @@
                                         </button>
                                     </div>
 
-                                    <!-- Upload Images for Charging Voltage DC -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-white">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -530,10 +617,25 @@
                                         <input type="file" name="images_charging_voltage[]" multiple accept="image/*"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
-                                    </div>
+
+                                        @if(isset($maintenance))
+                                        <div class="mt-3 grid grid-cols-2 gap-2">
+                                            @foreach($maintenance->getImagesByCategory('charging_voltage') as $image)
+                                            <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        @endif
+                                        </div>
                                 </div>
 
-                                <!-- Charging Current DC -->
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">f. Charging Current DC (Max 10% Battery Capacity)</label>
@@ -549,9 +651,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Camera & Upload Images for Charging Current DC - SIDE BY SIDE -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- Camera for Charging Current DC -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -569,7 +669,6 @@
                                         </button>
                                     </div>
 
-                                    <!-- Upload Images for Charging Current DC -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-white">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -582,7 +681,23 @@
                                         <input type="file" name="images_charging_current[]" multiple accept="image/*"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
-                                    </div>
+
+                                        @if(isset($maintenance))
+                                        <div class="mt-3 grid grid-cols-2 gap-2">
+                                            @foreach($maintenance->getImagesByCategory('charging_current') as $image)
+                                            <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        @endif
+                                        </div>
                                 </div>
                             </div>
                         </div>
@@ -592,7 +707,6 @@
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">3. Backup Tests</h3>
 
                             <div class="space-y-4">
-                                <!-- Rectifier Backup Test -->
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">a. Rectifier (turnoff test from main source to backup mode)</label>
@@ -608,9 +722,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Camera & Upload Images for Rectifier Switching Test - SIDE BY SIDE -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- Camera for Rectifier Switching Test -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -628,7 +740,6 @@
                                         </button>
                                     </div>
 
-                                    <!-- Upload Images for Rectifier Test -->
                                     <div class="border border-gray-200 rounded-lg p-4 bg-white">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
@@ -641,14 +752,28 @@
                                         <input type="file" name="images_rectifier_test[]" multiple accept="image/*"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
-                                    </div>
+                                        
+                                        @if(isset($maintenance))
+                                        <div class="mt-3 grid grid-cols-2 gap-2">
+                                            @foreach($maintenance->getImagesByCategory('rectifier_test') as $image)
+                                            <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        @endif
+                                        </div>
                                 </div>
 
-                                <!-- Battery Voltage Measurements -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-4 text-lg">b. Battery Voltage (on Backup Mode)</label>
 
-                                    <!-- Measurement I -->
                                     <div class="mb-6 p-4  rounded-lg ">
                                         <h4 class="font-semibold text-gray-800 mb-3">Measurement I</h4>
 
@@ -662,9 +787,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- Camera & Upload for Measurement I -->
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <!-- Camera Section -->
                                             <div class="border  rounded-lg p-4 bg-white">
                                                 <label class="block text-sm font-medium text-gray-700 mb-3">
                                                     <span class="inline-flex items-center gap-2">
@@ -682,7 +805,6 @@
                                                 </button>
                                             </div>
 
-                                            <!-- Upload Section -->
                                             <div class="border border-gray-200 rounded-lg p-4 bg-white">
                                                 <label class="block text-sm font-medium text-gray-700 mb-3">
                                                     <span class="inline-flex items-center gap-2">
@@ -695,11 +817,26 @@
                                                 <input type="file" name="images_battery_voltage_m1[]" multiple accept="image/*"
                                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                                 <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Max: 5MB/file</p>
-                                            </div>
+                                                
+                                                @if(isset($maintenance))
+                                                <div class="mt-3 grid grid-cols-2 gap-2">
+                                                    @foreach($maintenance->getImagesByCategory('battery_voltage_m1') as $image)
+                                                    <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                        <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                        <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                            class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    @endforeach
+                                                </div>
+                                                @endif
+                                                </div>
                                         </div>
                                     </div>
 
-                                    <!-- Measurement II -->
                                     <div class="mb-4 p-4  rounded-lg ">
                                         <h4 class="font-semibold text-gray-800 mb-3">Measurement II (15 minutes later)</h4>
 
@@ -720,9 +857,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- Camera & Upload for Measurement II -->
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <!-- Camera Section -->
                                             <div class="border border-gray-200 rounded-lg p-4 bg-white">
                                                 <label class="block text-sm font-medium text-gray-700 mb-3">
                                                     <span class="inline-flex items-center gap-2">
@@ -740,7 +875,6 @@
                                                 </button>
                                             </div>
 
-                                            <!-- Upload Section -->
                                             <div class="border border-gray-200 rounded-lg p-4 bg-white">
                                                 <label class="block text-sm font-medium text-gray-700 mb-3">
                                                     <span class="inline-flex items-center gap-2">
@@ -753,7 +887,23 @@
                                                 <input type="file" name="images_battery_voltage_m2[]" multiple accept="image/*"
                                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                                 <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Max: 5MB/file</p>
-                                            </div>
+                                                
+                                                @if(isset($maintenance))
+                                                <div class="mt-3 grid grid-cols-2 gap-2">
+                                                    @foreach($maintenance->getImagesByCategory('battery_voltage_m2') as $image)
+                                                    <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                        <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                        <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                            class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    @endforeach
+                                                </div>
+                                                @endif
+                                                </div>
                                         </div>
                                     </div>
                                 </div>
@@ -815,22 +965,20 @@
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
 
-                                        @if(isset($maintenance) && $maintenance->images)
-                                        <div class="mt-3 grid grid-cols-2 gap-2">
-                                            @foreach($maintenance->images as $image)
-                                            @if($image['category'] == 'alarm')
-                                            <div class="relative group" data-image-path="{{ $image['path'] }}">
-                                                <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
-                                                <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
-                                                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                    </svg>
-                                                </button>
+                                        @if(isset($maintenance))
+                                            <div class="mt-3 grid grid-cols-2 gap-2">
+                                                @foreach($maintenance->getImagesByCategory('alarm') as $image)
+                                                    <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                                        <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
+                                                        <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                                            class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </div>                                              
+                                                @endforeach 
                                             </div>
-                                            @endif
-                                            @endforeach
-                                        </div>
                                         @endif
                                     </div>
                                 </div>

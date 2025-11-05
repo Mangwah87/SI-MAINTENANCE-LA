@@ -334,6 +334,116 @@ function cropToSquare(sourceCanvas) {
     return squareCanvas;
 }
 
+// ==================== WATERMARK WITH GEOLOCATION (REDUCED SIZE) ====================
+async function addWatermarkToCanvas(canvas) {
+    const ctx = canvas.getContext('2d');
+    const timestamp = new Date();
+    
+    // Format waktu tanpa detik
+    const formattedTime = timestamp.toLocaleString('id-ID', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    const hari = timestamp.toLocaleDateString('id-ID', { weekday: 'long' });
+
+    let latitude = null;
+    let longitude = null;
+    let lokasiText = "Mengambil lokasi...";
+
+    if (navigator.geolocation) {
+        await new Promise((resolve) => {
+            navigator.geolocation.getCurrentPosition(async pos => {
+                latitude = pos.coords.latitude;
+                longitude = pos.coords.longitude;
+
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
+                    const data = await response.json();
+                    
+                    // Extract lokasi ringkas: nama jalan, kabupaten, provinsi
+                    const address = data.address || {};
+                    const parts = [];
+                    
+                    // Nama jalan/lokasi
+                    if (address.road) parts.push(address.road);
+                    else if (address.neighbourhood) parts.push(address.neighbourhood);
+                    else if (address.suburb) parts.push(address.suburb);
+                    
+                    // Nomor rumah jika ada
+                    if (address.house_number) {
+                        parts[parts.length - 1] = `${parts[parts.length - 1]} No.${address.house_number}`;
+                    }
+                    
+                    // Kabupaten/Kota
+                    if (address.city) parts.push(address.city);
+                    else if (address.county) parts.push(address.county);
+                    else if (address.state_district) parts.push(address.state_district);
+                    
+                    // Provinsi
+                    if (address.state) parts.push(address.state);
+                    
+                    lokasiText = parts.length > 0 ? parts.join(', ') : 'Lokasi tidak diketahui';
+                    
+                    // Batasi panjang teks max 60 karakter
+                    if (lokasiText.length > 60) {
+                        lokasiText = lokasiText.substring(0, 57) + '...';
+                    }
+                } catch {
+                    lokasiText = "Gagal mengambil nama lokasi";
+                }
+                resolve();
+            }, () => {
+                lokasiText = "Lokasi tidak diizinkan";
+                resolve();
+            }, { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 });
+        });
+    } else {
+        lokasiText = "Geolokasi tidak didukung";
+    }
+
+    // Draw watermark - REDUCED SIZE VERSION (SAMA DENGAN CREATE)
+    const padding = 15;
+    const fontSize = Math.max(32, canvas.width / 25);
+    const lineHeight = fontSize * 1.4;
+    
+    ctx.font = `bold ${fontSize}px Arial`;
+    ctx.textBaseline = 'bottom';
+    
+    // Teks dengan outline untuk keterbacaan
+    const texts = [
+        `📍 ${lokasiText}`,
+        `🕓 ${hari}, ${formattedTime}`,
+        `🌐 ${latitude?.toFixed(5) || '-'}, ${longitude?.toFixed(5) || '-'}`
+    ];
+    
+    let yPosition = canvas.height - padding;
+    
+    texts.reverse().forEach(text => {
+        // Outline hitam lebih tebal untuk keterbacaan
+        ctx.strokeStyle = 'rgba(0,0,0,0.9)';
+        ctx.lineWidth = 4;
+        ctx.strokeText(text, padding, yPosition);
+        
+        // Teks putih di atas
+        ctx.fillStyle = 'white';
+        ctx.fillText(text, padding, yPosition);
+        
+        yPosition -= lineHeight;
+    });
+
+    return {
+        latitude,
+        longitude,
+        timestamp: timestamp.toISOString(),
+        locationText: lokasiText,
+        formattedTime,
+        hari
+    };
+}
+
 function setupCameraHandler(container, itemSelector) {
     if (!container) return;
 
@@ -389,29 +499,9 @@ function setupCameraHandler(container, itemSelector) {
             tempCtx.drawImage(video, 0, 0);
 
             const squareCanvas = cropToSquare(tempCanvas);
-            const ctx = squareCanvas.getContext('2d');
+            const metadata = await addWatermarkToCanvas(squareCanvas);
 
-            const timestamp = new Date();
-            const formattedTime = timestamp.toLocaleString('id-ID');
-            const hari = timestamp.toLocaleDateString('id-ID', { weekday: 'long' });
-
-            let latitude = null, longitude = null;
-            let lokasiText = "Mengambil lokasi...";
-
-            function drawTextToCanvas() {
-                const padding = 12;
-                ctx.font = "bold 16px Arial";
-                ctx.fillStyle = "rgba(0,0,0,0.55)";
-                ctx.fillRect(0, squareCanvas.height - 85, squareCanvas.width, 85);
-                ctx.fillStyle = "white";
-
-                ctx.fillText(`${lokasiText}`, padding, squareCanvas.height - 60);
-                ctx.fillText(`${hari}, ${formattedTime}`, padding, squareCanvas.height - 40);
-                ctx.fillText(`Lat: ${latitude?.toFixed(5) || '-'}, Lng: ${longitude?.toFixed(5) || '-'}`, padding, squareCanvas.height - 20);
-            }
-
-            function saveAndDisplayPhoto() {
-                drawTextToCanvas();
+            function displayFinalImage(metadata) {
                 const photoData = squareCanvas.toDataURL('image/jpeg', PHOTO_CONFIG.quality);
 
                 img.src = photoData;
@@ -421,41 +511,20 @@ function setupCameraHandler(container, itemSelector) {
                 retakeBtn.classList.remove('hidden');
 
                 if (photoDataInput) photoDataInput.value = photoData;
-                if (latInput) latInput.value = latitude || '';
-                if (lngInput) lngInput.value = longitude || '';
-                if (timeInput) timeInput.value = timestamp.toISOString();
+                if (latInput) latInput.value = metadata.latitude || '';
+                if (lngInput) lngInput.value = metadata.longitude || '';
+                if (timeInput) timeInput.value = metadata.timestamp;
 
                 photoInfo.innerHTML = `
-                    <strong>Lokasi:</strong> ${lokasiText}<br>
-                    <strong>Koordinat:</strong> ${latitude?.toFixed(5) || '-'}, ${longitude?.toFixed(5) || '-'}<br>
-                    <strong>Waktu:</strong> ${formattedTime}
+                    <strong>Lokasi:</strong> ${metadata.locationText}<br>
+                    <strong>Koordinat:</strong> ${metadata.latitude?.toFixed(5) || '-'}, ${metadata.longitude?.toFixed(5) || '-'}<br>
+                    <strong>Waktu:</strong> ${metadata.formattedTime}
                 `;
 
                 video.srcObject?.getTracks().forEach(track => track.stop());
             }
 
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async pos => {
-                    latitude = pos.coords.latitude;
-                    longitude = pos.coords.longitude;
-
-                    try {   
-                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
-                        const data = await response.json();
-                        lokasiText = data.display_name || 'Lokasi tidak diketahui';
-                    } catch {
-                        lokasiText = "Gagal mengambil nama lokasi";
-                    }
-
-                    saveAndDisplayPhoto();
-                }, err => {
-                    lokasiText = "Lokasi tidak diizinkan";
-                    saveAndDisplayPhoto();
-                });
-            } else {
-                lokasiText = "Geolokasi tidak didukung";
-                saveAndDisplayPhoto();
-            }
+            displayFinalImage(metadata);
         }
 
         if (e.target.classList.contains('retake-photo')) {

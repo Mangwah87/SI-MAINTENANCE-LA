@@ -22,10 +22,10 @@
                                class="flex-1 sm:flex-none px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow text-center">
                                 ✏️ Edit
                             </a>
-                            <button onclick="window.print()" 
-                                    class="flex-1 sm:flex-none px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg shadow">
+                            <a href="{{ route('inverter.pdf', $inverter->id) }}" 
+                               class="flex-1 sm:flex-none px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg shadow text-center">
                                 🖨️ Print
-                            </button>
+                            </a>
                         </div>
                     </div>
 
