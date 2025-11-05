@@ -188,138 +188,186 @@ class BatteryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'location' => 'required|string|max:255',
-            'maintenance_date' => 'required|date',
-            'battery_brand' => 'required|string|max:255',
-            'company' => 'nullable|string|max:255',
-            'battery_temperature' => 'nullable|numeric',
-            'notes' => 'nullable|string',
-            'technician_1_name' => 'required|string|max:255',
-            'technician_1_company' => 'required|string|max:255',
-            'technician_2_name' => 'nullable|string|max:255',
-            'technician_2_company' => 'nullable|string|max:255',
-            'technician_3_name' => 'nullable|string|max:255',
-            'technician_3_company' => 'nullable|string|max:255',
-            'readings' => 'required|array|min:1',
-            'readings.*.bank_number' => 'required|integer|min:1',
-            'readings.*.battery_number' => 'required|integer|min:1',
-            'readings.*.voltage' => 'required|numeric|min:0|max:20',
-            'readings.*.battery_brand' => 'required|string|max:255',
-        ]);
+        try {
+            $validated = $request->validate([
+                'location' => 'required|string|max:255',
+                'maintenance_date' => 'required|date',
+                'battery_temperature' => 'nullable|numeric',
+                'company' => 'nullable|string|max:255',
+                'battery_brand' => 'required|string|max:255',
+                'notes' => 'nullable|string',
 
-        $battery = Battery::findOrFail($id);
+                // Validasi Pelaksana
+                'technician_1_name' => 'required|string|max:255',
+                'technician_1_company' => 'required|string|max:255',
+                'technician_2_name' => 'nullable|string|max:255',
+                'technician_2_company' => 'nullable|string|max:255',
+                'technician_3_name' => 'nullable|string|max:255',
+                'technician_3_company' => 'nullable|string|max:255',
 
-        // Update main battery data
-        $battery->update([
-            'location' => $request->location,
-            'maintenance_date' => $request->maintenance_date,
-            'battery_brand' => $request->battery_brand,
-            'company' => $request->company,
-            'battery_temperature' => $request->battery_temperature,
-            'notes' => $request->notes,
-            'technician_1_name' => $request->technician_1_name,
-            'technician_1_company' => $request->technician_1_company,
-            'technician_2_name' => $request->technician_2_name,
-            'technician_2_company' => $request->technician_2_company,
-            'technician_3_name' => $request->technician_3_name,
-            'technician_3_company' => $request->technician_3_company,
-        ]);
+                // Validasi Readings
+                'readings' => 'required|array|min:1',
+                'readings.*.id' => 'nullable|integer|exists:battery_readings,id',
+                'readings.*.bank_number' => 'required|integer|min:1',
+                'readings.*.battery_number' => 'required|integer|min:1',
+                'readings.*.voltage' => 'required|numeric|min:0|max:20',
+                'readings.*.battery_brand' => 'required|string|max:255',
+                'readings.*.photo_data' => 'nullable|string',
+                'readings.*.photo_latitude' => 'nullable|numeric',
+                'readings.*.photo_longitude' => 'nullable|numeric',
+                'readings.*.photo_timestamp' => 'nullable|date',
+                'readings.*.keep_photo' => 'nullable|in:0,1',
+            ]);
 
-        // Track which reading IDs are being kept
-        $keptReadingIds = [];
+            DB::beginTransaction();
 
-        // Handle readings
-        foreach ($request->readings as $index => $readingData) {
-            if (isset($readingData['id']) && !empty($readingData['id'])) {
-                // Update existing reading
-                $reading = BatteryReading::find($readingData['id']);
+            $maintenance = BatteryMaintenance::findOrFail($id);
 
-                if ($reading && $reading->battery_id == $battery->id) {
-                    $keptReadingIds[] = $reading->id;
+            // Update main maintenance data
+            $maintenance->update([
+                'location' => $validated['location'],
+                'maintenance_date' => $validated['maintenance_date'],
+                'battery_temperature' => $validated['battery_temperature'] ?? null,
+                'company' => $validated['company'] ?? 'PT. Aplikarusa Lintasarta',
+                'notes' => $validated['notes'] ?? null,
+                'technician_1_name' => $validated['technician_1_name'],
+                'technician_1_company' => $validated['technician_1_company'],
+                'technician_2_name' => $validated['technician_2_name'] ?? null,
+                'technician_2_company' => $validated['technician_2_company'] ?? null,
+                'technician_3_name' => $validated['technician_3_name'] ?? null,
+                'technician_3_company' => $validated['technician_3_company'] ?? null,
+                'technician_name' => $validated['technician_1_name'], // Maintain compatibility
+            ]);
 
-                    // Check if we should keep the existing photo or replace it
-                    $shouldKeepPhoto = isset($readingData['keep_photo']) &&
-                        $readingData['keep_photo'] == '1' &&
-                        empty($readingData['photo_data']);
+            // Track which reading IDs are being kept
+            $keptReadingIds = [];
 
-                    if ($shouldKeepPhoto) {
-                        // Keep existing photo - only update battery data
-                        $reading->update([
+            // Handle readings
+            foreach ($validated['readings'] as $index => $readingData) {
+                if (isset($readingData['id']) && !empty($readingData['id'])) {
+                    // Update existing reading
+                    $reading = BatteryReading::find($readingData['id']);
+
+                    if ($reading && $reading->battery_maintenance_id == $maintenance->id) {
+                        $keptReadingIds[] = $reading->id;
+
+                        // Prepare update data
+                        $updateData = [
                             'bank_number' => $readingData['bank_number'],
                             'battery_number' => $readingData['battery_number'],
                             'voltage' => $readingData['voltage'],
                             'battery_brand' => $readingData['battery_brand'],
-                        ]);
-                    } else if (!empty($readingData['photo_data'])) {
-                        // Replace with new photo
-                        // Delete old photo if exists
-                        if ($reading->photo_path && Storage::exists('public/' . $reading->photo_path)) {
-                            Storage::delete('public/' . $reading->photo_path);
+                        ];
+
+                        // Check if we should keep the existing photo
+                        $shouldKeepPhoto = isset($readingData['keep_photo']) &&
+                            $readingData['keep_photo'] == '1' &&
+                            empty($readingData['photo_data']);
+
+                        if ($shouldKeepPhoto) {
+                            // Keep existing photo - no photo fields update
+                            $reading->update($updateData);
+                        } else if (!empty($readingData['photo_data'])) {
+                            // New photo uploaded - delete old and save new
+                            if ($reading->photo_path && Storage::disk('public')->exists($reading->photo_path)) {
+                                Storage::disk('public')->delete($reading->photo_path);
+                            }
+
+                            // Save new photo
+                            $photoData = $readingData['photo_data'];
+                            if (preg_match('/^data:image\/(\w+);base64,/', $photoData, $type)) {
+                                $photoData = substr($photoData, strpos($photoData, ',') + 1);
+                                $photoData = base64_decode($photoData);
+
+                                $filename = 'battery_' . $maintenance->id . '_' . $readingData['bank_number'] . '_' . $readingData['battery_number'] . '_' . time() . '.jpg';
+                                $path = 'battery_photos/' . $filename;
+
+                                Storage::disk('public')->put($path, $photoData);
+
+                                $updateData['photo_path'] = $path;
+                                $updateData['photo_latitude'] = $readingData['photo_latitude'] ?? null;
+                                $updateData['photo_longitude'] = $readingData['photo_longitude'] ?? null;
+                                $updateData['photo_timestamp'] = $readingData['photo_timestamp'] ?? null;
+                            }
+
+                            $reading->update($updateData);
+                        } else if (isset($readingData['keep_photo']) && $readingData['keep_photo'] == '0') {
+                            // Photo was deleted - remove photo fields
+                            if ($reading->photo_path && Storage::disk('public')->exists($reading->photo_path)) {
+                                Storage::disk('public')->delete($reading->photo_path);
+                            }
+
+                            $updateData['photo_path'] = null;
+                            $updateData['photo_latitude'] = null;
+                            $updateData['photo_longitude'] = null;
+                            $updateData['photo_timestamp'] = null;
+
+                            $reading->update($updateData);
+                        } else {
+                            // No changes to photo
+                            $reading->update($updateData);
                         }
-
-                        // Save new photo
-                        $photoPath = $this->saveBase64Image($readingData['photo_data']);
-
-                        $reading->update([
-                            'bank_number' => $readingData['bank_number'],
-                            'battery_number' => $readingData['battery_number'],
-                            'voltage' => $readingData['voltage'],
-                            'battery_brand' => $readingData['battery_brand'],
-                            'photo_path' => $photoPath,
-                            'photo_latitude' => $readingData['photo_latitude'] ?? null,
-                            'photo_longitude' => $readingData['photo_longitude'] ?? null,
-                            'photo_timestamp' => $readingData['photo_timestamp'] ?? null,
-                        ]);
-                    } else {
-                        // No photo data and not keeping photo - just update data
-                        $reading->update([
-                            'bank_number' => $readingData['bank_number'],
-                            'battery_number' => $readingData['battery_number'],
-                            'voltage' => $readingData['voltage'],
-                            'battery_brand' => $readingData['battery_brand'],
-                        ]);
                     }
+                } else {
+                    // Create new reading (for newly added batteries during edit)
+                    $newReadingData = [
+                        'battery_maintenance_id' => $maintenance->id,
+                        'bank_number' => $readingData['bank_number'],
+                        'battery_number' => $readingData['battery_number'],
+                        'voltage' => $readingData['voltage'],
+                        'battery_brand' => $readingData['battery_brand'],
+                    ];
+
+                    // Handle photo if exists
+                    if (!empty($readingData['photo_data'])) {
+                        $photoData = $readingData['photo_data'];
+
+                        if (preg_match('/^data:image\/(\w+);base64,/', $photoData, $type)) {
+                            $photoData = substr($photoData, strpos($photoData, ',') + 1);
+                            $photoData = base64_decode($photoData);
+
+                            $filename = 'battery_' . $maintenance->id . '_' . $readingData['bank_number'] . '_' . $readingData['battery_number'] . '_' . time() . '.jpg';
+                            $path = 'battery_photos/' . $filename;
+
+                            Storage::disk('public')->put($path, $photoData);
+
+                            $newReadingData['photo_path'] = $path;
+                            $newReadingData['photo_latitude'] = $readingData['photo_latitude'] ?? null;
+                            $newReadingData['photo_longitude'] = $readingData['photo_longitude'] ?? null;
+                            $newReadingData['photo_timestamp'] = $readingData['photo_timestamp'] ?? null;
+                        }
+                    }
+
+                    $newReading = BatteryReading::create($newReadingData);
+                    $keptReadingIds[] = $newReading->id;
                 }
-            } else {
-                // Create new reading (for newly added batteries during edit)
-                $newReadingData = [
-                    'battery_id' => $battery->id,
-                    'bank_number' => $readingData['bank_number'],
-                    'battery_number' => $readingData['battery_number'],
-                    'voltage' => $readingData['voltage'],
-                    'battery_brand' => $readingData['battery_brand'],
-                ];
+            }
 
-                // Handle photo if exists
-                if (!empty($readingData['photo_data'])) {
-                    $photoPath = $this->saveBase64Image($readingData['photo_data']);
-                    $newReadingData['photo_path'] = $photoPath;
-                    $newReadingData['photo_latitude'] = $readingData['photo_latitude'] ?? null;
-                    $newReadingData['photo_longitude'] = $readingData['photo_longitude'] ?? null;
-                    $newReadingData['photo_timestamp'] = $readingData['photo_timestamp'] ?? null;
+            // Delete readings that were removed (not in the kept list)
+            $deletedReadings = BatteryReading::where('battery_maintenance_id', $maintenance->id)
+                ->whereNotIn('id', $keptReadingIds)
+                ->get();
+
+            foreach ($deletedReadings as $deletedReading) {
+                // Delete photo if exists
+                if ($deletedReading->photo_path && Storage::disk('public')->exists($deletedReading->photo_path)) {
+                    Storage::disk('public')->delete($deletedReading->photo_path);
                 }
-
-                $newReading = BatteryReading::create($newReadingData);
-                $keptReadingIds[] = $newReading->id;
+                $deletedReading->delete();
             }
+
+            DB::commit();
+
+            return redirect()->route('battery.index')
+                ->with('success', 'Data Preventive Maintenance Battery berhasil diupdate!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating battery maintenance: ' . $e->getMessage());
+
+            return back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan saat mengupdate data: ' . $e->getMessage());
         }
-
-        // Delete readings that were removed (not in the kept list)
-        $deletedReadings = BatteryReading::where('battery_id', $battery->id)
-            ->whereNotIn('id', $keptReadingIds)
-            ->get();
-
-        foreach ($deletedReadings as $deletedReading) {
-            // Delete photo if exists
-            if ($deletedReading->photo_path && Storage::exists('public/' . $deletedReading->photo_path)) {
-                Storage::delete('public/' . $deletedReading->photo_path);
-            }
-            $deletedReading->delete();
-        }
-
-        return redirect()->route('battery.index')
-            ->with('success', 'Data battery maintenance berhasil diupdate!');
     }
 
     /**
