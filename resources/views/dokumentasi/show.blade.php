@@ -13,13 +13,20 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-6">
                     <h3 class="text-base sm:text-lg font-bold text-gray-800">Detail Dokumentasi</h3>
                     <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                        <a href="{{ route('dokumentasi.edit', $dokumentasi->id) }}"
+                           class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm sm:text-base rounded-lg shadow transition duration-150 text-center inline-flex items-center justify-center">
+                            <i data-lucide="edit" class="w-4 h-4 mr-2"></i>
+                            Edit
+                        </a>
                         <a href="{{ route('dokumentasi.pdf', $dokumentasi->id) }}" target="_blank"
-                           class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm sm:text-base rounded-lg shadow transition duration-150 text-center">
-                            📄 Download PDF
+                           class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm sm:text-base rounded-lg shadow transition duration-150 text-center inline-flex items-center justify-center">
+                            <i data-lucide="file-down" class="w-4 h-4 mr-2"></i>
+                            Download PDF
                         </a>
                         <a href="{{ route('dokumentasi.index') }}"
-                           class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm sm:text-base rounded-lg shadow transition duration-150 text-center">
-                            ← Kembali
+                           class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm sm:text-base rounded-lg shadow transition duration-150 text-center inline-flex items-center justify-center">
+                            <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+                            Kembali
                         </a>
                     </div>
                 </div>
@@ -211,7 +218,11 @@
         </div>
     </div>
 
+    @push('scripts')
     <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
         function openModal(src) {
             document.getElementById('imageModal').classList.remove('hidden');
             document.getElementById('modalImage').src = src;
@@ -236,4 +247,5 @@
             event.stopPropagation();
         });
     </script>
-</x-app-layout>
+    @endpush
+</x-app-layout>  

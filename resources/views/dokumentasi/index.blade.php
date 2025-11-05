@@ -37,7 +37,7 @@
                                     <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                                     <input type="text" 
                                         name="search" 
-                                        placeholder="Cari berdasarkan nomor dokumen, lokasi..." 
+                                        placeholder="Cari berdasarkan nama pelaksana, lokasi..." 
                                         value="{{ request('search') }}"
                                         class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                 </div>
@@ -69,20 +69,38 @@
                     <!-- Mobile View - Card Layout -->
                     <div class="block lg:hidden space-y-4">
                         @forelse($dokumentasi as $index => $item)
+                            @php
+                                $pelaksanaArray = is_string($item->pelaksana) ? json_decode($item->pelaksana, true) : $item->pelaksana;
+                                $pelaksanaArray = is_array($pelaksanaArray) ? $pelaksanaArray : [];
+                            @endphp
                             <div class="border rounded-lg p-4 bg-gray-50 shadow-sm">
                                 <!-- Header Card -->
                                 <div class="flex justify-between items-start mb-3">
                                     <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-1">
+                                        <div class="flex items-center gap-2 mb-2">
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                 #{{ $dokumentasi->firstItem() + $index }}
                                             </span>
                                         </div>
-                                        <h3 class="font-semibold text-blue-600 mb-1 text-base">
-                                            <i data-lucide="file-text" class="w-4 h-4 inline"></i>
-                                            {{ $item->nomor_dokumen }}
-                                        </h3>
-                                        <p class="text-sm text-gray-600 flex items-center">
+                                        
+                                        <!-- Data Pelaksana -->
+                                        <div class="mb-2">
+                                            <p class="text-xs font-medium text-gray-500 mb-1">Pelaksana:</p>
+                                            @if(count($pelaksanaArray) > 0)
+                                                <div class="space-y-1">
+                                                    @foreach($pelaksanaArray as $pelaksana)
+                                                        <div class="flex items-start text-sm">
+                                                            <i data-lucide="user" class="w-4 h-4 mr-1 mt-0.5 text-blue-500 flex-shrink-0"></i>
+                                                            <span class="font-semibold text-blue-600">{{ $pelaksana['nama'] ?? '-' }}</span>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <span class="text-sm text-gray-400 italic">Belum ada pelaksana</span>
+                                            @endif
+                                        </div>
+
+                                        <p class="text-sm text-gray-600 flex items-center mt-2">
                                             <i data-lucide="map-pin" class="w-4 h-4 inline text-red-500 mr-1"></i>
                                             {{ $item->lokasi }}
                                         </p>
@@ -171,7 +189,7 @@
                                         No
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Nomor Dokumen
+                                        Data Pelaksana
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Lokasi
@@ -189,15 +207,27 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse($dokumentasi as $index => $item)
+                                    @php
+                                        $pelaksanaArray = is_string($item->pelaksana) ? json_decode($item->pelaksana, true) : $item->pelaksana;
+                                        $pelaksanaArray = is_array($pelaksanaArray) ? $pelaksanaArray : [];
+                                    @endphp
                                     <tr class="hover:bg-gray-50 transition">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {{ $dokumentasi->firstItem() + $index }}
                                         </td>
-                                        <td class="px-6 py-4 text-sm font-semibold text-blue-600">
-                                            <div class="flex items-start">
-                                                <i data-lucide="file-text" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0"></i>
-                                                <span>{{ $item->nomor_dokumen }}</span>
-                                            </div>
+                                        <td class="px-6 py-4 text-sm">
+                                            @if(count($pelaksanaArray) > 0)
+                                                <div class="space-y-1">
+                                                    @foreach($pelaksanaArray as $pelaksana)
+                                                        <div class="flex items-center">
+                                                            <i data-lucide="user" class="w-4 h-4 mr-2 text-blue-500 flex-shrink-0"></i>
+                                                            <span class="font-semibold text-blue-600">{{ $pelaksana['nama'] ?? '-' }}</span>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <span class="text-gray-400 italic">Belum ada pelaksana</span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-900">
                                             <div class="flex items-start">

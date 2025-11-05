@@ -307,49 +307,39 @@ function cropToSquare(sourceCanvas) {
     return squareCanvas;
 }
 
-async function addWatermarkToCanvas(canvas, exifData = null) {
+// Fungsi watermark HANYA untuk kamera
+async function addWatermarkToCanvas(canvas) {
     const ctx = canvas.getContext('2d');
     const timestamp = new Date();
     const formattedTime = timestamp.toLocaleString('id-ID');
     const hari = timestamp.toLocaleDateString('id-ID', { weekday: 'long' });
 
-    let latitude = exifData?.latitude || null;
-    let longitude = exifData?.longitude || null;
+    let latitude = null;
+    let longitude = null;
     let lokasiText = "Mengambil lokasi...";
 
-    // Jika ada EXIF data, gunakan itu
-    if (exifData && exifData.latitude && exifData.longitude) {
-        try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
-            const data = await response.json();
-            lokasiText = data.display_name || 'Lokasi tidak diketahui';
-        } catch {
-            lokasiText = "Gagal mengambil nama lokasi";
-        }
-    } else {
-        // Coba dapatkan lokasi dari GPS browser
-        if (navigator.geolocation) {
-            await new Promise((resolve) => {
-                navigator.geolocation.getCurrentPosition(async pos => {
-                    latitude = pos.coords.latitude;
-                    longitude = pos.coords.longitude;
+    // Coba dapatkan lokasi dari GPS browser
+    if (navigator.geolocation) {
+        await new Promise((resolve) => {
+            navigator.geolocation.getCurrentPosition(async pos => {
+                latitude = pos.coords.latitude;
+                longitude = pos.coords.longitude;
 
-                    try {
-                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
-                        const data = await response.json();
-                        lokasiText = data.display_name || 'Lokasi tidak diketahui';
-                    } catch {
-                        lokasiText = "Gagal mengambil nama lokasi";
-                    }
-                    resolve();
-                }, () => {
-                    lokasiText = "Lokasi tidak diizinkan";
-                    resolve();
-                });
-            });
-        } else {
-            lokasiText = "Geolokasi tidak didukung";
-        }
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
+                    const data = await response.json();
+                    lokasiText = data.display_name || 'Lokasi tidak diketahui';
+                } catch {
+                    lokasiText = "Gagal mengambil nama lokasi";
+                }
+                resolve();
+            }, () => {
+                lokasiText = "Lokasi tidak diizinkan";
+                resolve();
+            }, { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 });
+        });
+    } else {
+        lokasiText = "Geolokasi tidak didukung";
     }
 
     // Draw watermark
@@ -360,16 +350,17 @@ async function addWatermarkToCanvas(canvas, exifData = null) {
     ctx.fillRect(0, canvas.height - fontSize * 5.5, canvas.width, fontSize * 5.5);
     ctx.fillStyle = "white";
 
-    ctx.fillText(`${lokasiText}`, padding, canvas.height - fontSize * 4);
-    ctx.fillText(`${hari}, ${formattedTime}`, padding, canvas.height - fontSize * 2.5);
-    ctx.fillText(`Lat: ${latitude?.toFixed(5) || '-'}, Lng: ${longitude?.toFixed(5) || '-'}`, padding, canvas.height - fontSize);
+    ctx.fillText(`📍 ${lokasiText}`, padding, canvas.height - fontSize * 4);
+    ctx.fillText(`🕓 ${hari}, ${formattedTime}`, padding, canvas.height - fontSize * 2.5);
+    ctx.fillText(`🌐 Lat: ${latitude?.toFixed(5) || '-'}, Lng: ${longitude?.toFixed(5) || '-'}`, padding, canvas.height - fontSize);
 
     return {
         latitude,
         longitude,
         timestamp: timestamp.toISOString(),
         locationText: lokasiText,
-        formattedTime
+        formattedTime,
+        hari
     };
 }
 
@@ -506,7 +497,7 @@ function setupPhotoHandler(container, itemSelector) {
             methodButtons.forEach(btn => btn.classList.remove('hidden'));
         }
 
-        // Capture from camera
+        // Capture from camera (DENGAN WATERMARK)
         if (captureBtn) {
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = video.videoWidth;
@@ -561,6 +552,7 @@ function setupPhotoHandler(container, itemSelector) {
         fileInput.click();
     });
 
+    // Handle file upload (TANPA WATERMARK)
     container.addEventListener('change', async e => {
         if (!e.target.classList.contains('file-input')) return;
         
@@ -578,6 +570,7 @@ function setupPhotoHandler(container, itemSelector) {
 
         // Get EXIF data
         const exifData = await getExifData(file);
+        const timestamp = new Date();
 
         // Load image
         const reader = new FileReader();
@@ -591,7 +584,18 @@ function setupPhotoHandler(container, itemSelector) {
                 tempCtx.drawImage(tempImg, 0, 0);
 
                 const squareCanvas = cropToSquare(tempCanvas);
-                const metadata = await addWatermarkToCanvas(squareCanvas, exifData);
+
+                // Metadata tanpa watermark
+                const metadata = {
+                    latitude: exifData?.latitude || null,
+                    longitude: exifData?.longitude || null,
+                    timestamp: timestamp.toISOString(),
+                    locationText: exifData?.latitude && exifData?.longitude 
+                        ? `${exifData.latitude.toFixed(5)}, ${exifData.longitude.toFixed(5)}` 
+                        : 'Tidak ada data lokasi',
+                    formattedTime: timestamp.toLocaleString('id-ID'),
+                    hari: timestamp.toLocaleDateString('id-ID', { weekday: 'long' })
+                };
 
                 const photoData = squareCanvas.toDataURL('image/jpeg', PHOTO_CONFIG.quality);
 
@@ -608,7 +612,7 @@ function setupPhotoHandler(container, itemSelector) {
                 photoInfo.innerHTML = `
                     <strong>Lokasi:</strong> ${metadata.locationText}<br>
                     <strong>Koordinat:</strong> ${metadata.latitude?.toFixed(5) || '-'}, ${metadata.longitude?.toFixed(5) || '-'}<br>
-                    <strong>Waktu:</strong> ${metadata.formattedTime}
+                    <strong>Waktu:</strong> ${metadata.hari}, ${metadata.formattedTime}
                 `;
 
                 e.target.value = '';

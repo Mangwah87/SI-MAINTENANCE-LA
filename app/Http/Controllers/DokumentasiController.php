@@ -19,10 +19,10 @@ class DokumentasiController extends Controller
         $dokumentasi = Dokumentasi::query()
             ->when($search, function($query, $search) {
                 return $query->where(function($q) use ($search) {
-                    $q->where('nomor_dokumen', 'like', "%{$search}%")
-                      ->orWhere('lokasi', 'like', "%{$search}%")
+                    $q->where('lokasi', 'like', "%{$search}%")
                       ->orWhere('perusahaan', 'like', "%{$search}%")
-                      ->orWhere('keterangan', 'like', "%{$search}%");
+                      ->orWhere('keterangan', 'like', "%{$search}%")
+                      ->orWhereRaw("JSON_SEARCH(pelaksana, 'one', ?, NULL, '$[*].nama') IS NOT NULL", ["%{$search}%"]);
                 });
             })
             ->latest()

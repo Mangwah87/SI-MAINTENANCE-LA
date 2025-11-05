@@ -896,17 +896,12 @@ function syncFromMobile(baseId) {
 }
 
 // ==================== CONFIGURATION ====================
-const PHOTO_SCALE = {
-    widthRatio: 85 / 210,
-    heightRatio: 50 / 297,
-    dpi: 300,
-    a4WidthPx: Math.round((210 / 25.4) * 300),
-    a4HeightPx: Math.round((297 / 25.4) * 300),
-    get photoWidthPx() { return Math.round(this.a4WidthPx * this.widthRatio); },
-    get photoHeightPx() { return Math.round(this.a4HeightPx * this.heightRatio); }
+const PHOTO_CONFIG = {
+    size: 800,
+    quality: 0.85
 };
 
-// Photo Counters - Initialize with existing photo counts
+// counters - Initialize with existing photo counts
 let environmentPhotoIndex = {{ isset($environmentData['photos']) ? count($environmentData['photos']) : 0 }};
 let ledPhotoIndex = {{ isset($ledData['photos']) ? count($ledData['photos']) : 0 }};
 let dcVoltagePhotoIndex = {{ isset($dcVoltageData['photos']) ? count($dcVoltageData['photos']) : 0 }};
@@ -915,52 +910,190 @@ let acCurrentPhotoIndex = {{ isset($acCurrentData['photos']) ? count($acCurrentD
 let neutralGroundPhotoIndex = {{ isset($neutralGroundData['photos']) ? count($neutralGroundData['photos']) : 0 }};
 let temperaturePhotoIndex = {{ isset($temperatureData['photos']) ? count($temperatureData['photos']) : 0 }};
 
-// ==================== UTILITY: CROP & RESIZE ====================
-function cropAndResizePhoto(sourceCanvas, targetWidth, targetHeight) {
-    const sourceWidth = sourceCanvas.width;
-    const sourceHeight = sourceCanvas.height;
-    const sourceAspect = sourceWidth / sourceHeight;
-    const targetAspect = targetWidth / targetHeight;
+// ==================== UTILITY: CROP TO SQUARE ====================
+function cropToSquare(sourceCanvas) {
+    const size = Math.min(sourceCanvas.width, sourceCanvas.height);
+    const x = (sourceCanvas.width - size) / 2;
+    const y = (sourceCanvas.height - size) / 2;
     
-    let cropWidth, cropHeight, cropX, cropY;
+    const squareCanvas = document.createElement('canvas');
+    squareCanvas.width = PHOTO_CONFIG.size;
+    squareCanvas.height = PHOTO_CONFIG.size;
+    const ctx = squareCanvas.getContext('2d');
     
-    if (sourceAspect > targetAspect) {
-        cropHeight = sourceHeight;
-        cropWidth = sourceHeight * targetAspect;
-        cropX = (sourceWidth - cropWidth) / 2;
-        cropY = 0;
-    } else {
-        cropWidth = sourceWidth;
-        cropHeight = sourceWidth / targetAspect;
-        cropX = 0;
-        cropY = (sourceHeight - cropHeight) / 2;
-    }
+    ctx.drawImage(
+        sourceCanvas,
+        x, y, size, size,
+        0, 0, PHOTO_CONFIG.size, PHOTO_CONFIG.size
+    );
     
-    const croppedCanvas = document.createElement('canvas');
-    croppedCanvas.width = targetWidth;
-    croppedCanvas.height = targetHeight;
-    const ctx = croppedCanvas.getContext('2d');
-    
-    ctx.drawImage(sourceCanvas, cropX, cropY, cropWidth, cropHeight, 0, 0, targetWidth, targetHeight);
-    return croppedCanvas;
+    return squareCanvas;
 }
 
-// ==================== CREATE PHOTO COMPONENT ====================
+// ==================== WATERMARK WITH GEOLOCATION (HANYA UNTUK KAMERA) ====================
+async function addWatermarkToCanvas(canvas) {
+    const ctx = canvas.getContext('2d');
+    const timestamp = new Date();
+    const formattedTime = timestamp.toLocaleString('id-ID');
+    const hari = timestamp.toLocaleDateString('id-ID', { weekday: 'long' });
+
+    let latitude = null;
+    let longitude = null;
+    let lokasiText = "Mengambil lokasi...";
+
+    if (navigator.geolocation) {
+        await new Promise((resolve) => {
+            navigator.geolocation.getCurrentPosition(async pos => {
+                latitude = pos.coords.latitude;
+                longitude = pos.coords.longitude;
+
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
+                    const data = await response.json();
+                    lokasiText = data.display_name || 'Lokasi tidak diketahui';
+                } catch {
+                    lokasiText = "Gagal mengambil nama lokasi";
+                }
+                resolve();
+            }, () => {
+                lokasiText = "Lokasi tidak diizinkan";
+                resolve();
+            }, { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 });
+        });
+    } else {
+        lokasiText = "Geolokasi tidak didukung";
+    }
+
+    // Draw watermark
+    const padding = 12;
+    const fontSize = Math.max(14, canvas.width / 50);
+    ctx.font = `bold ${fontSize}px Arial`;
+    ctx.fillStyle = "rgba(0,0,0,0.6)";
+    ctx.fillRect(0, canvas.height - fontSize * 5.5, canvas.width, fontSize * 5.5);
+    ctx.fillStyle = "white";
+
+    ctx.fillText(`📍 ${lokasiText}`, padding, canvas.height - fontSize * 4);
+    ctx.fillText(`🕓 ${hari}, ${formattedTime}`, padding, canvas.height - fontSize * 2.5);
+    ctx.fillText(`🌐 Lat: ${latitude?.toFixed(5) || '-'}, Lng: ${longitude?.toFixed(5) || '-'}`, padding, canvas.height - fontSize);
+
+    return {
+        latitude,
+        longitude,
+        timestamp: timestamp.toISOString(),
+        locationText: lokasiText,
+        formattedTime,
+        hari
+    };
+}
+
+// ==================== EXIF DATA READER ====================
+function getExifData(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const view = new DataView(e.target.result);
+            if (view.getUint16(0, false) != 0xFFD8) {
+                resolve(null);
+                return;
+            }
+            
+            const length = view.byteLength;
+            let offset = 2;
+            
+            while (offset < length) {
+                if (view.getUint16(offset + 2, false) <= 8) {
+                    resolve(null);
+                    return;
+                }
+                const marker = view.getUint16(offset, false);
+                offset += 2;
+                
+                if (marker == 0xFFE1) {
+                    const exifOffset = offset + 10;
+                    const little = view.getUint16(exifOffset) == 0x4949;
+                    
+                    try {
+                        let lat = null, lng = null;
+                        const tags = view.getUint16(exifOffset + 8, little);
+                        
+                        for (let i = 0; i < tags; i++) {
+                            const tagOffset = exifOffset + 12 + (i * 12);
+                            const tag = view.getUint16(tagOffset, little);
+                            
+                            if (tag === 0x0002) {
+                                const latOffset = exifOffset + view.getUint32(tagOffset + 8, little);
+                                const d = view.getUint32(latOffset, little) / view.getUint32(latOffset + 4, little);
+                                const m = view.getUint32(latOffset + 8, little) / view.getUint32(latOffset + 12, little);
+                                const s = view.getUint32(latOffset + 16, little) / view.getUint32(latOffset + 20, little);
+                                lat = d + m / 60 + s / 3600;
+                            }
+                            
+                            if (tag === 0x0004) {
+                                const lngOffset = exifOffset + view.getUint32(tagOffset + 8, little);
+                                const d = view.getUint32(lngOffset, little) / view.getUint32(lngOffset + 4, little);
+                                const m = view.getUint32(lngOffset + 8, little) / view.getUint32(lngOffset + 12, little);
+                                const s = view.getUint32(lngOffset + 16, little) / view.getUint32(lngOffset + 20, little);
+                                lng = d + m / 60 + s / 3600;
+                            }
+                        }
+                        
+                        if (lat && lng) {
+                            resolve({ latitude: lat, longitude: lng });
+                            return;
+                        }
+                    } catch (e) {
+                        console.log('Error parsing EXIF:', e);
+                    }
+                }
+                
+                offset += view.getUint16(offset, false);
+            }
+            
+            resolve(null);
+        };
+        reader.readAsArrayBuffer(file.slice(0, 64 * 1024));
+    });
+}
+
+// ==================== CREATE PHOTO COMPONENT (NEW FORMAT 1:1) ====================
 function createPhotoComponent(description, dataIndex, photoIndex) {
     const div = document.createElement('div');
     div.className = 'border-2 border-dashed border-gray-300 rounded-lg p-3 bg-white relative photo-component';
     div.innerHTML = `
         <button type="button" class="remove-photo absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold z-10 shadow-md">×</button>
-        <label class="block text-xs font-semibold text-gray-700 mb-2">Foto ${description} #${photoIndex + 1} (New)</label>
-        <video class="camera-preview w-full h-48 bg-black rounded-lg mb-2 hidden object-cover" autoplay playsinline muted></video>
-        <img class="captured-image w-full h-auto max-h-64 rounded-lg mb-2 hidden" alt="Captured">
-        <canvas class="hidden"></canvas>
-        <div class="flex flex-wrap gap-2 justify-center mb-2">
-            <button type="button" class="start-camera px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm font-semibold rounded-lg shadow">📷 Buka Kamera</button>
-            <button type="button" class="capture-photo hidden px-3 py-2 bg-green-500 hover:bg-green-600 text-white text-xs sm:text-sm font-semibold rounded-lg shadow">✓ Ambil Foto</button>
-            <button type="button" class="retake-photo hidden px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs sm:text-sm font-semibold rounded-lg shadow">↻ Foto Ulang</button>
+        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Foto ${description} #${photoIndex + 1} (New)</label>
+        
+        <!-- Pilihan Metode Input -->
+        <div class="method-buttons flex gap-3 mb-4 justify-center">
+            <button type="button" class="method-camera px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold rounded-lg">📷 Kamera</button>
+            <button type="button" class="method-upload px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm font-semibold rounded-lg">📁 Upload</button>
         </div>
-        <div class="photo-info text-xs text-gray-600 text-center bg-gray-50 p-2 rounded mb-2"></div>
+
+        <!-- Area Kamera -->
+        <div class="camera-area hidden">
+            <video class="camera-preview w-full h-48 bg-black rounded-lg mb-2" autoplay playsinline muted></video>
+            <div class="flex gap-2 justify-center mb-2">
+                <button type="button" class="capture-photo px-3 py-2 bg-green-500 hover:bg-green-600 text-white text-xs sm:text-sm font-semibold rounded-lg shadow">✓ Ambil Foto</button>
+                <button type="button" class="cancel-camera px-3 py-2 bg-gray-500 hover:bg-gray-600 text-white text-xs sm:text-sm font-semibold rounded-lg shadow">Batal</button>
+            </div>
+        </div>
+
+        <!-- Area Upload -->
+        <div class="upload-area hidden">
+            <input type="file" class="file-input hidden" accept="image/*">
+            <div class="border-2 border-dashed border-blue-400 rounded-lg p-6 text-center cursor-pointer hover:bg-blue-50 transition upload-trigger">
+                <p class="text-gray-600 text-sm">Klik untuk memilih foto</p>
+                <p class="text-xs text-gray-400 mt-2">Format: JPG, PNG (Max 10MB)</p>
+            </div>
+            <button type="button" class="cancel-upload mt-3 px-3 py-2 bg-gray-500 hover:bg-gray-600 text-white text-xs sm:text-sm font-semibold rounded-lg shadow">Batal</button>
+        </div>
+
+        <!-- Preview Hasil - FOTO 1:1 SQUARE -->
+        <img class="captured-image w-full aspect-square object-cover rounded-lg mb-2 hidden" alt="Captured">
+        <canvas class="hidden"></canvas>
+        <button type="button" class="retake-photo hidden px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs sm:text-sm font-semibold rounded-lg block mx-auto">↻ Foto Ulang</button>
+        
+        <div class="photo-info text-xs text-gray-600 text-center bg-gray-50 p-2 rounded mt-2"></div>
         <input type="hidden" name="data_inverter[${dataIndex}][photos][${photoIndex}][photo_data]">
         <input type="hidden" name="data_inverter[${dataIndex}][photos][${photoIndex}][photo_latitude]">
         <input type="hidden" name="data_inverter[${dataIndex}][photos][${photoIndex}][photo_longitude]">
@@ -1033,17 +1166,27 @@ function addTemperaturePhoto(mode = 'desktop') {
     temperaturePhotoIndex++;
 }
 
-// ==================== CAMERA HANDLERS ====================
+// ==================== SETUP CAMERA HANDLERS (UPDATED) ====================
 function setupCameraHandlers(container) {
     if (!container) return;
 
     const video = container.querySelector('.camera-preview');
     const img = container.querySelector('.captured-image');
     const canvas = container.querySelector('canvas');
-    const startBtn = container.querySelector('.start-camera');
+    const cameraArea = container.querySelector('.camera-area');
+    const uploadArea = container.querySelector('.upload-area');
+    const methodButtons = container.querySelector('.method-buttons');
+    const fileInput = container.querySelector('.file-input');
+    const uploadTrigger = container.querySelector('.upload-trigger');
+    
+    const methodCamera = container.querySelector('.method-camera');
+    const methodUpload = container.querySelector('.method-upload');
     const captureBtn = container.querySelector('.capture-photo');
+    const cancelCamera = container.querySelector('.cancel-camera');
+    const cancelUpload = container.querySelector('.cancel-upload');
     const retakeBtn = container.querySelector('.retake-photo');
     const photoInfo = container.querySelector('.photo-info');
+    
     const photoDataInput = container.querySelector('input[name$="[photo_data]"]');
     const latInput = container.querySelector('input[name$="[photo_latitude]"]');
     const lngInput = container.querySelector('input[name$="[photo_longitude]"]');
@@ -1051,6 +1194,7 @@ function setupCameraHandlers(container) {
 
     let currentStream = null;
 
+    // Remove photo button
     container.querySelector('.remove-photo').addEventListener('click', function() {
         if (confirm('Hapus foto ini?')) {
             if (currentStream) {
@@ -1060,7 +1204,8 @@ function setupCameraHandlers(container) {
         }
     });
 
-    startBtn.addEventListener('click', async () => {
+    // Show camera
+    methodCamera.addEventListener('click', async () => {
         try {
             currentStream = await navigator.mediaDevices.getUserMedia({
                 video: {
@@ -1071,119 +1216,141 @@ function setupCameraHandlers(container) {
                 audio: false
             });
             video.srcObject = currentStream;
-            video.classList.remove('hidden');
-            img.classList.add('hidden');
-            startBtn.classList.add('hidden');
-            captureBtn.classList.remove('hidden');
-            retakeBtn.classList.add('hidden');
-            photoInfo.innerHTML = '📷 Kamera aktif. Arahkan ke objek dan tekan Ambil Foto.';
+            methodButtons.classList.add('hidden');
+            cameraArea.classList.remove('hidden');
         } catch (err) {
             console.error('Error accessing camera:', err);
-            photoInfo.innerHTML = `❌ Error: ${err.message}`;
             alert('Gagal membuka kamera: ' + err.message);
         }
     });
 
-    captureBtn.addEventListener('click', () => {
+    // Show upload
+    methodUpload.addEventListener('click', () => {
+        methodButtons.classList.add('hidden');
+        uploadArea.classList.remove('hidden');
+    });
+
+    // Cancel camera
+    cancelCamera.addEventListener('click', () => {
+        if (currentStream) {
+            currentStream.getTracks().forEach(t => t.stop());
+            currentStream = null;
+        }
+        video.srcObject = null;
+        cameraArea.classList.add('hidden');
+        methodButtons.classList.remove('hidden');
+    });
+
+    // Cancel upload
+    cancelUpload.addEventListener('click', () => {
+        uploadArea.classList.add('hidden');
+        methodButtons.classList.remove('hidden');
+    });
+
+    // Capture from camera (DENGAN WATERMARK)
+    captureBtn.addEventListener('click', async () => {
         if (!video || !video.videoWidth) {
             photoInfo.innerHTML = '❌ Tidak ada gambar dari kamera.';
             return;
         }
 
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = video.videoWidth;
+        tempCanvas.height = video.videoHeight;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(video, 0, 0);
 
         if (currentStream) {
             currentStream.getTracks().forEach(t => t.stop());
             currentStream = null;
         }
         video.srcObject = null;
+        cameraArea.classList.add('hidden');
 
-        const finalCanvas = cropAndResizePhoto(canvas, PHOTO_SCALE.photoWidthPx, PHOTO_SCALE.photoHeightPx);
-        const ctxFinal = finalCanvas.getContext('2d');
-
-        const timestamp = new Date();
-        const formattedTime = timestamp.toLocaleString('id-ID');
-        const hari = timestamp.toLocaleDateString('id-ID', { weekday: 'long' });
-
-        let latitude = null, longitude = null;
-        let lokasiText = 'Mengambil lokasi...';
-
-        function drawTextToCanvas() {
-            const padding = 12;
-            const barHeight = 96;
-            const fontSize = Math.round(finalCanvas.height * 0.035);
-            ctxFinal.fillStyle = "rgba(0,0,0,0.65)";
-            ctxFinal.fillRect(0, finalCanvas.height - barHeight, finalCanvas.width, barHeight);
-
-            ctxFinal.fillStyle = "white";
-            ctxFinal.font = `bold ${fontSize}px Arial`;
-            ctxFinal.textBaseline = 'top';
-
-            const maxWidth = finalCanvas.width - padding*2;
-            const lines = wrapTextArray(ctxFinal, `📍 ${lokasiText}`, maxWidth);
-            let y = finalCanvas.height - barHeight + 8;
-            lines.forEach((line) => {
-                ctxFinal.fillText(line, padding, y);
-                y += fontSize + 4;
-            });
-
-            ctxFinal.fillText(`🕓 ${hari}, ${formattedTime}`, padding, y);
-            y += fontSize + 4;
-            ctxFinal.fillText(`🌐 Lat: ${latitude ? latitude.toFixed(5) : '-'}, Lng: ${longitude ? longitude.toFixed(5) : '-'}`, padding, y);
-        }
-
-        function saveAndDisplay() {
-            drawTextToCanvas();
-            const photoData = finalCanvas.toDataURL('image/jpeg', 0.85);
-            img.src = photoData;
-            img.classList.remove('hidden');
-            video.classList.add('hidden');
-            captureBtn.classList.add('hidden');
-            retakeBtn.classList.remove('hidden');
-
-            if (photoDataInput) photoDataInput.value = photoData;
-            if (latInput) latInput.value = latitude || '';
-            if (lngInput) lngInput.value = longitude || '';
-            if (timeInput) timeInput.value = timestamp.toISOString();
-
-            photoInfo.innerHTML = `
-                📍 <strong>${lokasiText}</strong><br>
-                🕓 ${hari}, ${formattedTime}<br>
-                🌐 ${latitude ? latitude.toFixed(5) : '-'}, ${longitude ? longitude.toFixed(5) : '-'}
-            `;
-        }
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                latitude = pos.coords.latitude;
-                longitude = pos.coords.longitude;
-
-                try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        lokasiText = data.display_name || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-                    } else {
-                        lokasiText = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-                    }
-                } catch (err) {
-                    lokasiText = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-                }
-
-                saveAndDisplay();
-            }, (err) => {
-                lokasiText = 'Lokasi tidak diizinkan';
-                saveAndDisplay();
-            }, { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 });
-        } else {
-            lokasiText = 'Geolocation tidak didukung';
-            saveAndDisplay();
-        }
+        const squareCanvas = cropToSquare(tempCanvas);
+        const metadata = await addWatermarkToCanvas(squareCanvas);
+        displayFinalImage(squareCanvas, metadata);
     });
 
+    // Upload file click trigger
+    if (uploadTrigger) {
+        uploadTrigger.addEventListener('click', () => {
+            fileInput.click();
+        });
+    }
+
+    // Handle file upload (TANPA WATERMARK)
+    if (fileInput) {
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const exifData = await getExifData(file);
+            const timestamp = new Date();
+
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                const tempImg = new Image();
+                tempImg.onload = async function() {
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = tempImg.width;
+                    tempCanvas.height = tempImg.height;
+                    const tempCtx = tempCanvas.getContext('2d');
+                    tempCtx.drawImage(tempImg, 0, 0);
+
+                    const squareCanvas = cropToSquare(tempCanvas);
+
+                    // Metadata tanpa watermark
+                    const metadata = {
+                        latitude: exifData?.latitude || null,
+                        longitude: exifData?.longitude || null,
+                        timestamp: timestamp.toISOString(),
+                        locationText: exifData?.latitude && exifData?.longitude 
+                            ? `${exifData.latitude.toFixed(5)}, ${exifData.longitude.toFixed(5)}` 
+                            : 'Tidak ada data lokasi',
+                        formattedTime: timestamp.toLocaleString('id-ID'),
+                        hari: timestamp.toLocaleDateString('id-ID', { weekday: 'long' })
+                    };
+
+                    uploadArea.classList.add('hidden');
+                    displayFinalImage(squareCanvas, metadata);
+                    fileInput.value = '';
+                };
+                tempImg.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Drag & drop
+    if (uploadTrigger) {
+        uploadTrigger.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadTrigger.classList.add('bg-blue-100');
+        });
+
+        uploadTrigger.addEventListener('dragleave', () => {
+            uploadTrigger.classList.remove('bg-blue-100');
+        });
+
+        uploadTrigger.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            uploadTrigger.classList.remove('bg-blue-100');
+
+            const file = e.dataTransfer.files[0];
+            if (!file || !file.type.startsWith('image/')) {
+                alert('File harus berupa gambar');
+                return;
+            }
+
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+            fileInput.dispatchEvent(new Event('change'));
+        });
+    }
+
+    // Retake photo
     retakeBtn.addEventListener('click', () => {
         if (photoDataInput) photoDataInput.value = '';
         if (latInput) latInput.value = '';
@@ -1192,29 +1359,29 @@ function setupCameraHandlers(container) {
 
         img.src = '';
         img.classList.add('hidden');
-        captureBtn.classList.add('hidden');
         retakeBtn.classList.add('hidden');
-        startBtn.classList.remove('hidden');
-        photoInfo.innerHTML = '🔄 Siap mengambil foto ulang.';
+        methodButtons.classList.remove('hidden');
+        photoInfo.innerHTML = '';
     });
-}
 
-function wrapTextArray(ctx, text, maxWidth) {
-    const words = text.split(' ');
-    const lines = [];
-    let current = '';
-    for (let i=0;i<words.length;i++){
-        const test = current ? (current + ' ' + words[i]) : words[i];
-        const w = ctx.measureText(test).width;
-        if (w > maxWidth && current) {
-            lines.push(current);
-            current = words[i];
-        } else {
-            current = test;
-        }
+    function displayFinalImage(canvas, metadata) {
+        const photoData = canvas.toDataURL('image/jpeg', PHOTO_CONFIG.quality);
+
+        img.src = photoData;
+        img.classList.remove('hidden');
+        retakeBtn.classList.remove('hidden');
+
+        if (photoDataInput) photoDataInput.value = photoData;
+        if (latInput) latInput.value = metadata.latitude || '';
+        if (lngInput) lngInput.value = metadata.longitude || '';
+        if (timeInput) timeInput.value = metadata.timestamp;
+
+        photoInfo.innerHTML = `
+            📍 <strong>${metadata.locationText}</strong><br>
+            🕓 ${metadata.hari}, ${metadata.formattedTime}<br>
+            🌐 ${metadata.latitude?.toFixed(5) || '-'}, ${metadata.longitude?.toFixed(5) || '-'}
+        `;
     }
-    if (current) lines.push(current);
-    return lines;
 }
 
 // ==================== VALIDATION FUNCTIONS ====================
@@ -1335,7 +1502,7 @@ function saveAcCurrentType() {
     if (hiddenInput) hiddenInput.value = type;
 }
 
-// ==================== INITIALIZE ====================
+// ==================== INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', () => {
     validateDcInputVoltage();
     validateDcCurrentInput();
