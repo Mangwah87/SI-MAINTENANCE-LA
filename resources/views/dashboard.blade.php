@@ -150,11 +150,11 @@
 
                 <!-- Maintenance Rectifier -->
                 <a href="{{ route('rectifier.index') }}" class="block h-full">
-                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-blue-400 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border-2 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                            <i data-lucide="git-compare-arrows" class="w-12 h-12 text-white"></i>
+                            <i data-lucide="git-compare-arrows" class="w-12 h-12 text-blue-600"></i>
                         </div>
-                        <span class="text-sm sm:text-base font-semibold text-white text-center leading-tight">Maintenance
+                        <span class="text-sm sm:text-base font-semibold text-black text-center leading-tight">Maintenance
                             Rectifier
                         </span>
                     </div>

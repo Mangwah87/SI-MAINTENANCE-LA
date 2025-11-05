@@ -188,6 +188,31 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [ScheduleController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [ScheduleController::class, 'pdf'])->name('pdf');
     });
+    
+    // Inverter Routes
+    Route::prefix('inverter')->name('inverter.')->group(function () {
+        Route::get('/', [InverterController::class, 'index'])->name('index');
+        Route::get('/create', [InverterController::class, 'create'])->name('create');
+        Route::post('/', [InverterController::class, 'store'])->name('store');
+        Route::get('/{id}', [InverterController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [InverterController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [InverterController::class, 'update'])->name('update');
+        Route::delete('/{id}', [InverterController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [InverterController::class, 'generatePdf'])->name('pdf');
+    });
+
+
+    // Dokumentasi Routes
+    Route::prefix('dokumentasi')->name('dokumentasi.')->group(function () {
+        Route::get('/', [DokumentasiController::class, 'index'])->name('index');
+        Route::get('/create', [DokumentasiController::class, 'create'])->name('create');
+        Route::post('/', [DokumentasiController::class, 'store'])->name('store');
+        Route::get('/{id}', [DokumentasiController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [DokumentasiController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [DokumentasiController::class, 'update'])->name('update');
+        Route::delete('/{id}', [DokumentasiController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [DokumentasiController::class, 'generatePdf'])->name('pdf');
+    });
 });
 
 
