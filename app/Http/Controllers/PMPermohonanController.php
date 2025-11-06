@@ -11,12 +11,38 @@ class PMPermohonanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $permohonan = PMPermohonan::with('user')
-            ->where('user_id', auth()->id())
-            ->latest()
-            ->paginate(10);
+        $query = PMPermohonan::with('user')->where('user_id', auth()->id());
+
+        // Search - mencari di nama, lokasi, dan department
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                    ->orWhere('lokasi', 'like', "%{$search}%")
+                    ->orWhere('department', 'like', "%{$search}%")
+                    ->orWhere('ditujukan_department', 'like', "%{$search}%");
+            });
+        }
+
+        // Sorting by date (desc = terbaru, asc = terlama)
+        $sortDirection = $request->get('sort', 'desc');
+        if (in_array($sortDirection, ['asc', 'desc'])) {
+            $query->orderBy('tanggal', $sortDirection)->orderBy('jam', $sortDirection);
+        } else {
+            $query->orderBy('tanggal', 'desc')->orderBy('jam', 'desc');
+        }
+
+        $permohonan = $query->paginate(10)->withQueryString();
+
+        // For AJAX requests (realtime search)
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('pm-permohonan.partials.table', compact('permohonan'))->render(),
+                'count' => $permohonan->total()
+            ]);
+        }
 
         return view('pm-permohonan.index', compact('permohonan'));
     }
@@ -74,8 +100,6 @@ class PMPermohonanController extends Controller
     {
         $pmPermohonan = PMPermohonan::findOrFail($id);
 
-
-
         return view('pm-permohonan.edit', compact('pmPermohonan'));
     }
 
@@ -85,8 +109,6 @@ class PMPermohonanController extends Controller
     public function update(Request $request, string $id)
     {
         $pmPermohonan = PMPermohonan::findOrFail($id);
-
-
 
         $validated = $request->validate([
             'nama' => 'required|string|max:255',

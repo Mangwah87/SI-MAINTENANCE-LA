@@ -423,11 +423,11 @@
                 @enderror
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">NIK</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ID</label>
                 <input type="text" name="approvers[0][nik]" 
                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
                        value="{{ old('approvers.0.nik', $pmShelter->approvers[0]['nik'] ?? '') }}" 
-                       placeholder="Nomor Induk Karyawan">
+                       placeholder="ID Approval">
                 @error('approvers.0.nik')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
