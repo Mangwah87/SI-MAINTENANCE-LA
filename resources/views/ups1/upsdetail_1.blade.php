@@ -345,21 +345,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach($images as $index => $imagePath)
                             @if(is_string($imagePath))
-                                <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
+                                <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer" onclick="openImageModal('{{ asset('storage/' . $imagePath) }}', 'Image {{ $index + 1 }}')">
                                     <img src="{{ asset('storage/' . $imagePath) }}"
                                          alt="Documentation Image {{ $index + 1 }}"
                                          class="w-full h-48 object-cover"
                                          onerror="this.parentElement.innerHTML='<div class=\'w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500\'>Image not found</div>'">
                                     <div class="p-2 bg-gray-50">
                                         <p class="text-xs text-gray-600 mb-1">Image {{ $index + 1 }}</p>
-                                        <a href="{{ asset('storage/' . $imagePath) }}"
-                                           target="_blank"
-                                           class="text-sm text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
+                                        <span class="text-sm text-blue-600 hover:text-blue-800 hover:underline">Click to view</span>
                                     </div>
                                 </div>
                             @elseif(is_array($imagePath) && isset($imagePath['path']))
                                 {{-- Support format with category structure --}}
-                                <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
+                                <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer" onclick="openImageModal('{{ asset('storage/' . $imagePath['path']) }}', '{{ $imagePath['category'] ?? 'Documentation Image' }}')">
                                     <img src="{{ asset('storage/' . $imagePath['path']) }}"
                                          alt="{{ $imagePath['category'] ?? 'Documentation Image' }}"
                                          class="w-full h-48 object-cover"
@@ -368,9 +366,7 @@
                                         @if(isset($imagePath['category']))
                                             <p class="text-xs text-gray-600 mb-1">{{ ucwords(str_replace('_', ' ', $imagePath['category'])) }}</p>
                                         @endif
-                                        <a href="{{ asset('storage/' . $imagePath['path']) }}"
-                                           target="_blank"
-                                           class="text-sm text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
+                                        <span class="text-sm text-blue-600 hover:text-blue-800 hover:underline">Click to view</span>
                                     </div>
                                 </div>
                             @endif
@@ -402,4 +398,45 @@
             </div>
         </div>
     </div>
+
+    {{-- Image Modal --}}
+    <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4" onclick="closeImageModal()">
+        <div class="relative max-w-7xl max-h-full" onclick="event.stopPropagation()">
+            <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full w-10 h-10 flex items-center justify-center text-2xl z-10">
+                ×
+            </button>
+            <img id="modalImage" src="" alt="" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl">
+            <div id="modalCaption" class="text-white text-center mt-4 text-lg font-medium"></div>
+        </div>
+    </div>
+
+    <script>
+        function openImageModal(imageSrc, caption) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalCaption = document.getElementById('modalCaption');
+
+            modalImage.src = imageSrc;
+            modalCaption.textContent = caption.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            modal.classList.remove('hidden');
+
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.add('hidden');
+
+            // Restore body scroll
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+    </script>
 </x-app-layout>

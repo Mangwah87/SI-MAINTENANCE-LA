@@ -280,31 +280,27 @@
                         @foreach($images as $index => $img)
                             @if(is_string($img))
                                 {{-- Handle simple string path --}}
-                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer" onclick="openImageModal('{{ asset('storage/' . $img) }}', 'Image {{ $index + 1 }}')">
                                     <div class="relative bg-gray-100 aspect-video">
                                         <img src="{{ asset('storage/' . $img) }}"
                                             alt="Documentation Image {{ $index + 1 }}"
-                                            class="w-full h-full object-cover cursor-pointer"
-                                            onclick="openImageModal('{{ asset('storage/' . $img) }}')"
+                                            class="w-full h-full object-cover"
                                             onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm\'>Image not found</div>'">
                                     </div>
                                     <div class="p-3 bg-white">
                                         <p class="text-sm font-medium text-gray-700 mb-1">Image {{ $index + 1 }}</p>
-                                        <a href="{{ asset('storage/' . $img) }}"
-                                        target="_blank"
-                                        class="text-sm text-blue-600 hover:text-blue-800 hover:underline inline-block">
-                                            View Full Size
-                                        </a>
+                                        <span class="text-sm text-blue-600 hover:text-blue-800 hover:underline inline-block">
+                                            Click to view
+                                        </span>
                                     </div>
                                 </div>
                             @elseif(is_array($img) && isset($img['path']))
                                 {{-- Handle array with path and category --}}
-                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer" onclick="openImageModal('{{ asset('storage/' . $img['path']) }}', '{{ $img['category'] ?? 'Documentation Image' }}')">
                                     <div class="relative bg-gray-100 aspect-video">
                                         <img src="{{ asset('storage/' . $img['path']) }}"
                                             alt="{{ $img['category'] ?? 'Documentation Image' }}"
-                                            class="w-full h-full object-cover cursor-pointer"
-                                            onclick="openImageModal('{{ asset('storage/' . $img['path']) }}')"
+                                            class="w-full h-full object-cover"
                                             onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm\'>Image not found</div>'">
                                     </div>
                                     <div class="p-3 bg-white">
@@ -313,11 +309,9 @@
                                                 {{ ucwords(str_replace('_', ' ', $img['category'])) }}
                                             </p>
                                         @endif
-                                        <a href="{{ asset('storage/' . $img['path']) }}"
-                                        target="_blank"
-                                        class="text-sm text-blue-600 hover:text-blue-800 hover:underline inline-block">
-                                            View Full Size
-                                        </a>
+                                        <span class="text-sm text-blue-600 hover:text-blue-800 hover:underline inline-block">
+                                            Click to view
+                                        </span>
                                     </div>
                                 </div>
                             @endif
@@ -362,27 +356,40 @@
 
     {{-- Image Modal for Full View --}}
     <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4" onclick="closeImageModal()">
-        <div class="relative max-w-7xl max-h-full">
-            <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white text-4xl font-bold hover:text-gray-300 z-10">&times;</button>
-            <img id="modalImage" src="" alt="Full Size Image" class="max-w-full max-h-screen object-contain">
+        <div class="relative max-w-7xl max-h-full" onclick="event.stopPropagation()">
+            <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full w-10 h-10 flex items-center justify-center text-2xl z-10">
+                ×
+            </button>
+            <img id="modalImage" src="" alt="" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl">
+            <div id="modalCaption" class="text-white text-center mt-4 text-lg font-medium"></div>
         </div>
     </div>
 
     <script>
-        function openImageModal(imageSrc) {
-            document.getElementById('modalImage').src = imageSrc;
-            document.getElementById('imageModal').classList.remove('hidden');
+        function openImageModal(imageSrc, caption) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalCaption = document.getElementById('modalCaption');
+
+            modalImage.src = imageSrc;
+            modalCaption.textContent = caption.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            modal.classList.remove('hidden');
+
+            // Prevent body scroll when modal is open
             document.body.style.overflow = 'hidden';
         }
 
         function closeImageModal() {
-            document.getElementById('imageModal').classList.add('hidden');
+            const modal = document.getElementById('imageModal');
+            modal.classList.add('hidden');
+
+            // Restore body scroll
             document.body.style.overflow = 'auto';
         }
 
         // Close modal with ESC key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
                 closeImageModal();
             }
         });

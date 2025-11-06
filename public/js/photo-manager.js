@@ -1,4 +1,4 @@
-// Photo Manager Component untuk PM Shelter
+// Photo Manager Component untuk PM Shelter - FIXED VERSION
 class PhotoManager {
     constructor(containerId, fieldName, existingPhotos = []) {
         this.container = document.getElementById(containerId);
@@ -10,7 +10,6 @@ class PhotoManager {
         this.currentMetadata = null;
         this.init();
 
-        // Load existing photos jika ada (untuk edit mode)
         if (existingPhotos && existingPhotos.length > 0) {
             this.loadExistingPhotos(existingPhotos);
         }
@@ -36,7 +35,6 @@ class PhotoManager {
                 <div id="${this.fieldName}_camera_modal" 
                      class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
                     <div class="w-full h-full max-w-4xl flex flex-col">
-                        <!-- Header -->
                         <div class="flex justify-between items-center mb-3 px-2">
                             <h3 class="text-lg font-semibold text-white">Ambil Foto</h3>
                             <button type="button" onclick="photoManagers['${this.fieldName}'].closeCamera()" 
@@ -45,7 +43,6 @@ class PhotoManager {
                             </button>
                         </div>
 
-                        <!-- Video Section -->
                         <div id="${this.fieldName}_video_section" class="relative flex-1 flex items-center justify-center mb-3">
                             <video id="${this.fieldName}_video" 
                                    class="w-full h-full object-contain rounded-lg" 
@@ -53,19 +50,16 @@ class PhotoManager {
                             <canvas id="${this.fieldName}_canvas" class="hidden"></canvas>
                         </div>
 
-                        <!-- Captured Image Section (Hidden by default) -->
                         <div id="${this.fieldName}_captured_section" class="hidden relative flex-1 flex items-center justify-center mb-3">
                             <img id="${this.fieldName}_captured_img" 
                                  class="w-full h-full object-contain rounded-lg" 
                                  alt="Captured photo">
                         </div>
 
-                        <!-- Location Info -->
                         <div class="mb-3 text-xs text-white bg-black bg-opacity-50 p-3 rounded" id="${this.fieldName}_location_info">
                             <i data-lucide="loader" class="w-4 h-4 inline animate-spin"></i> Memuat informasi lokasi...
                         </div>
 
-                        <!-- Capture Controls -->
                         <div id="${this.fieldName}_capture_controls" class="flex gap-2">
                             <button type="button" onclick="photoManagers['${this.fieldName}'].capturePhoto()" 
                                     class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg font-medium">
@@ -77,7 +71,6 @@ class PhotoManager {
                             </button>
                         </div>
 
-                        <!-- Retake Controls (Hidden by default) -->
                         <div id="${this.fieldName}_retake_controls" class="hidden flex gap-2">
                             <button type="button" onclick="photoManagers['${this.fieldName}'].retakePhoto()" 
                                     class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-3 rounded-lg font-medium">
@@ -134,7 +127,6 @@ class PhotoManager {
             `${this.fieldName}_retake_controls`
         );
 
-        // Reset UI state
         videoSection.classList.remove("hidden");
         capturedSection.classList.add("hidden");
         captureControls.classList.remove("hidden");
@@ -207,159 +199,234 @@ class PhotoManager {
                     console.log("  Latitude:", lat.toFixed(6));
                     console.log("  Longitude:", lon.toFixed(6));
                     console.log("  Accuracy:", accuracy, "meters");
-                    console.log(
-                        "  Source:",
-                        accuracy < 100
-                            ? "✓ GPS (Akurat)"
-                            : "⚠ WiFi/IP (Kurang akurat)"
-                    );
+
+                    // 🔥 FIX: Coba API alternatif yang lebih reliable
+                    let locationName = null;
 
                     try {
+                        // Coba Nominatim (OpenStreetMap) - lebih reliable
+                        const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
+
                         const controller = new AbortController();
                         const timeoutId = setTimeout(
                             () => controller.abort(),
-                            10000
+                            8000
                         );
 
-                        const url = `https://geocode.maps.co/reverse?lat=${lat}&lon=${lon}&format=json`;
-
-                        const response = await fetch(url, {
+                        const response = await fetch(nominatimUrl, {
                             signal: controller.signal,
-                            headers: { Accept: "application/json" },
+                            headers: {
+                                Accept: "application/json",
+                                "User-Agent": "PM-Shelter-App/1.0", // Required by Nominatim
+                            },
                         });
 
                         clearTimeout(timeoutId);
 
-                        if (!response.ok)
-                            throw new Error("API returned non-200 status");
+                        if (response.ok) {
+                            const data = await response.json();
+                            let locationParts = [];
 
-                        const data = await response.json();
-                        let locationParts = [];
-
-                        if (data.address) {
-                            const addr = data.address;
-                            if (addr.road) locationParts.push(addr.road);
-                            if (
-                                addr.village ||
-                                addr.suburb ||
-                                addr.neighbourhood ||
-                                addr.hamlet
-                            ) {
-                                locationParts.push(
+                            if (data.address) {
+                                const addr = data.address;
+                                // Prioritas: Jalan > Desa/Kelurahan > Kecamatan > Kota
+                                if (addr.road) locationParts.push(addr.road);
+                                if (
                                     addr.village ||
-                                        addr.suburb ||
-                                        addr.neighbourhood ||
-                                        addr.hamlet
-                                );
-                            }
-                            if (
-                                addr.municipality ||
-                                addr.city_district ||
-                                addr.county
-                            ) {
-                                locationParts.push(
+                                    addr.suburb ||
+                                    addr.neighbourhood ||
+                                    addr.hamlet
+                                ) {
+                                    locationParts.push(
+                                        addr.village ||
+                                            addr.suburb ||
+                                            addr.neighbourhood ||
+                                            addr.hamlet
+                                    );
+                                }
+                                if (
                                     addr.municipality ||
-                                        addr.city_district ||
-                                        addr.county
-                                );
+                                    addr.city_district ||
+                                    addr.county
+                                ) {
+                                    locationParts.push(
+                                        addr.municipality ||
+                                            addr.city_district ||
+                                            addr.county
+                                    );
+                                }
+                                if (addr.city || addr.town) {
+                                    locationParts.push(addr.city || addr.town);
+                                }
                             }
-                            if (addr.city || addr.town) {
-                                locationParts.push(addr.city || addr.town);
-                            }
+
+                            locationName =
+                                locationParts.length > 0
+                                    ? locationParts.join(", ")
+                                    : data.display_name
+                                    ? data.display_name
+                                          .split(",")
+                                          .slice(0, 3)
+                                          .join(",")
+                                    : null;
                         }
-
-                        const locationName =
-                            locationParts.length > 0
-                                ? locationParts.join(", ")
-                                : data.display_name ||
-                                  `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
-
-                        const metadata = {
-                            latitude: lat,
-                            longitude: lon,
-                            location_name: locationName,
-                            taken_at: new Date().toISOString(),
-                        };
-
-                        infoElement.innerHTML = `
-                            <div class="space-y-1">
-                                <div><i data-lucide="map-pin" class="w-4 h-4 inline"></i> <strong>Lokasi:</strong> ${locationName}</div>
-                                <div><i data-lucide="navigation" class="w-4 h-4 inline"></i> <strong>Koordinat:</strong> ${lat.toFixed(
-                                    6
-                                )}, ${lon.toFixed(6)}</div>
-                                <div><i data-lucide="clock" class="w-4 h-4 inline"></i> <strong>Waktu:</strong> ${new Date().toLocaleString(
-                                    "id-ID",
-                                    {
-                                        timeZone: "Asia/Makassar",
-                                        day: "2-digit",
-                                        month: "2-digit",
-                                        year: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                        second: "2-digit",
-                                    }
-                                )} WITA</div>
-                            </div>
-                        `;
-                        lucide.createIcons();
-
-                        this.currentMetadata = metadata;
-                        resolve(metadata);
                     } catch (err) {
-                        const metadata = {
-                            latitude: lat,
-                            longitude: lon,
-                            location_name: `${lat.toFixed(6)}, ${lon.toFixed(
-                                6
-                            )}`,
-                            taken_at: new Date().toISOString(),
-                        };
+                        console.log(
+                            "⚠ Nominatim gagal, mencoba geocode.maps.co..."
+                        );
 
+                        // Fallback ke geocode.maps.co
+                        try {
+                            const controller2 = new AbortController();
+                            const timeoutId2 = setTimeout(
+                                () => controller2.abort(),
+                                8000
+                            );
+
+                            const url2 = `https://geocode.maps.co/reverse?lat=${lat}&lon=${lon}&format=json`;
+                            const response2 = await fetch(url2, {
+                                signal: controller2.signal,
+                                headers: { Accept: "application/json" },
+                            });
+
+                            clearTimeout(timeoutId2);
+
+                            if (response2.ok) {
+                                const data2 = await response2.json();
+                                let locationParts = [];
+
+                                if (data2.address) {
+                                    const addr = data2.address;
+                                    if (addr.road)
+                                        locationParts.push(addr.road);
+                                    if (
+                                        addr.village ||
+                                        addr.suburb ||
+                                        addr.neighbourhood
+                                    ) {
+                                        locationParts.push(
+                                            addr.village ||
+                                                addr.suburb ||
+                                                addr.neighbourhood
+                                        );
+                                    }
+                                    if (addr.city || addr.town) {
+                                        locationParts.push(
+                                            addr.city || addr.town
+                                        );
+                                    }
+                                }
+
+                                locationName =
+                                    locationParts.length > 0
+                                        ? locationParts.join(", ")
+                                        : data2.display_name
+                                        ? data2.display_name
+                                              .split(",")
+                                              .slice(0, 3)
+                                              .join(",")
+                                        : null;
+                            }
+                        } catch (err2) {
+                            console.log(
+                                "⚠ Semua API gagal, menggunakan koordinat"
+                            );
+                        }
+                    }
+
+                    const metadata = {
+                        latitude: lat,
+                        longitude: lon,
+                        location_name: locationName, // Bisa null jika gagal
+                        taken_at: new Date().toISOString(),
+                    };
+
+                    // 🔥 FIX: Tampilkan UI yang lebih jelas
+                    if (locationName) {
                         infoElement.innerHTML = `
                             <div class="space-y-1">
-                                <div><i data-lucide="navigation" class="w-4 h-4 inline"></i> <strong>Koordinat:</strong> ${lat.toFixed(
-                                    6
-                                )}, ${lon.toFixed(6)}</div>
-                                <div><i data-lucide="clock" class="w-4 h-4 inline"></i> <strong>Waktu:</strong> ${new Date().toLocaleString(
-                                    "id-ID",
-                                    {
-                                        timeZone: "Asia/Makassar",
-                                        day: "2-digit",
-                                        month: "2-digit",
-                                        year: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                        second: "2-digit",
-                                    }
-                                )} WITA</div>
+                                <div class="font-semibold text-green-400">
+                                    <i data-lucide="map-pin" class="w-4 h-4 inline"></i> ${locationName}
+                                </div>
+                                <div class="text-gray-300">
+                                    <i data-lucide="navigation" class="w-4 h-4 inline"></i> ${lat.toFixed(
+                                        6
+                                    )}, ${lon.toFixed(6)}
+                                </div>
+                                <div class="text-gray-300">
+                                    <i data-lucide="clock" class="w-4 h-4 inline"></i> ${new Date().toLocaleString(
+                                        "id-ID",
+                                        {
+                                            timeZone: "Asia/Makassar",
+                                            day: "2-digit",
+                                            month: "2-digit",
+                                            year: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            second: "2-digit",
+                                        }
+                                    )} WITA
+                                </div>
                             </div>
                         `;
-                        lucide.createIcons();
-
-                        this.currentMetadata = metadata;
-                        resolve(metadata);
+                    } else {
+                        // Jika gagal dapat nama lokasi
+                        infoElement.innerHTML = `
+                            <div class="space-y-1">
+                                <div class="text-yellow-400">
+                                    <i data-lucide="alert-circle" class="w-4 h-4 inline"></i> Nama lokasi tidak tersedia
+                                </div>
+                                <div class="text-gray-300">
+                                    <i data-lucide="navigation" class="w-4 h-4 inline"></i> ${lat.toFixed(
+                                        6
+                                    )}, ${lon.toFixed(6)}
+                                </div>
+                                <div class="text-gray-300">
+                                    <i data-lucide="clock" class="w-4 h-4 inline"></i> ${new Date().toLocaleString(
+                                        "id-ID",
+                                        {
+                                            timeZone: "Asia/Makassar",
+                                            day: "2-digit",
+                                            month: "2-digit",
+                                            year: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            second: "2-digit",
+                                        }
+                                    )} WITA
+                                </div>
+                            </div>
+                        `;
                     }
+
+                    lucide.createIcons();
+                    this.currentMetadata = metadata;
+                    resolve(metadata);
                 },
                 (error) => {
                     const metadata = { taken_at: new Date().toISOString() };
                     infoElement.innerHTML = `
-                        <div><i data-lucide="alert-circle" class="w-4 h-4 inline"></i> Tidak dapat mengakses lokasi</div>
-                        <div><i data-lucide="clock" class="w-4 h-4 inline"></i> <strong>Waktu:</strong> ${new Date().toLocaleString(
-                            "id-ID",
-                            {
-                                timeZone: "Asia/Makassar",
-                                day: "2-digit",
-                                month: "2-digit",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                second: "2-digit",
-                            }
-                        )} WITA</div>
+                        <div class="text-red-400">
+                            <i data-lucide="alert-circle" class="w-4 h-4 inline"></i> Tidak dapat mengakses lokasi
+                        </div>
+                        <div class="text-gray-300">
+                            <i data-lucide="clock" class="w-4 h-4 inline"></i> ${new Date().toLocaleString(
+                                "id-ID",
+                                {
+                                    timeZone: "Asia/Makassar",
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit",
+                                }
+                            )} WITA
+                        </div>
                     `;
                     lucide.createIcons();
                     this.currentMetadata = metadata;
-                    resolve(this.currentMetadata);
+                    resolve(metadata);
                 },
                 {
                     enableHighAccuracy: true,
@@ -399,25 +466,21 @@ class PhotoManager {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
-        // Mirror image for front camera
         context.save();
         context.scale(-1, 1);
         context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
         context.restore();
 
-        // Add watermark
         this.addWatermarkToCanvas(context, canvas.width, canvas.height);
 
         const imageData = canvas.toDataURL("image/jpeg", 0.92);
         capturedImg.src = imageData;
 
-        // Switch UI
         videoSection.classList.add("hidden");
         capturedSection.classList.remove("hidden");
         captureControls.classList.add("hidden");
         retakeControls.classList.remove("hidden");
 
-        // Stop camera stream
         if (this.stream) {
             this.stream.getTracks().forEach((track) => track.stop());
         }
@@ -467,15 +530,9 @@ class PhotoManager {
         const dayName = days[witaDate.getDay()];
         const formattedDate = `${dayName}, ${day} ${monthName} ${year}`;
 
-        // Koordinat dan lokasi
-        const lat = latitude ? latitude.toFixed(6) : "-";
-        const lon = longitude ? longitude.toFixed(6) : "-";
-        const coordText = `${lat}, ${lon}`;
-        const location = location_name || `${lat}, ${lon}`;
-
         // Posisi & padding
         const padding = 40;
-        const baseY = height - 260; // 🔽 lebih turun dari sebelumnya
+        const baseY = height - 260;
         const startX = padding;
 
         // Warna & outline
@@ -512,18 +569,26 @@ class PhotoManager {
         ctx.strokeText("WITA", witaX, witaY);
         ctx.fillText("WITA", witaX, witaY);
 
-        // 3️⃣ Koordinat
+        // 3️⃣ Koordinat (hanya jika ada latitude/longitude)
+        let currentY = timeY + timeFontSize + 25;
         const coordFontSize = Math.floor(width / 38);
         ctx.font = `bold ${coordFontSize}px Arial, sans-serif`;
-        const coordY = timeY + timeFontSize + 25;
         ctx.lineWidth = 4;
-        ctx.strokeText(coordText, startX, coordY);
-        ctx.fillText(coordText, startX, coordY);
 
-        // 4️⃣ Nama lokasi
-        const locY = coordY + coordFontSize + 10;
-        ctx.strokeText(location, startX, locY);
-        ctx.fillText(location, startX, locY);
+        if (latitude && longitude) {
+            const lat = latitude.toFixed(6);
+            const lon = longitude.toFixed(6);
+            const coordText = `${lat}, ${lon}`;
+            ctx.strokeText(coordText, startX, currentY);
+            ctx.fillText(coordText, startX, currentY);
+            currentY += coordFontSize + 10;
+        }
+
+        // 4️⃣ Nama lokasi (hanya jika ada nama lokasi sebenarnya)
+        if (location_name) {
+            ctx.strokeText(location_name, startX, currentY);
+            ctx.fillText(location_name, startX, currentY);
+        }
     }
 
     async retakePhoto() {
@@ -633,54 +698,53 @@ class PhotoManager {
                       )
                     : "";
                 return `
-                    <div class="relative border rounded-lg overflow-hidden bg-gray-50 group">
-                        <img src="${
-                            photo.preview
-                        }" class="w-full h-32 object-cover cursor-pointer" 
-                             onclick="photoManagers['${
-                                 this.fieldName
-                             }'].viewPhoto('${photo.id}')">
-                        <button type="button" onclick="photoManagers['${
-                            this.fieldName
-                        }'].removePhoto('${photo.id}')" 
-                                class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                        ${
-                            photo.metadata.location_name ||
-                            photo.metadata.latitude ||
-                            takenAt
-                                ? `
-                            <div class="absolute bottom-0 left-0 right-0 p-2 text-xs bg-gradient-to-t from-black/80 to-transparent text-white">
-                                ${
-                                    photo.metadata.location_name
-                                        ? `<div class="truncate font-medium mb-1" title="${photo.metadata.location_name}">
-                                            <i data-lucide="map-pin" class="w-3 h-3 inline text-red-400"></i> ${photo.metadata.location_name}
-                                           </div>`
-                                        : ""
-                                }
-                                ${
-                                    photo.metadata.latitude
-                                        ? `<div class="truncate text-gray-200 text-[10px]">
-                                            <i data-lucide="navigation" class="w-3 h-3 inline"></i> ${photo.metadata.latitude.toFixed(
-                                                6
-                                            )}, ${photo.metadata.longitude.toFixed(
-                                              6
-                                          )}
-                                           </div>`
-                                        : ""
-                                }
-                                ${
-                                    takenAt
-                                        ? `<div class="truncate text-gray-200 text-[10px]">
-                                            <i data-lucide="clock" class="w-3 h-3 inline"></i> ${takenAt}
-                                           </div>`
-                                        : ""
-                                }
-                            </div>`
-                                : ""
-                        }
-                    </div>`;
+                <div class="relative border rounded-lg overflow-hidden bg-gray-50 group">
+                    <img src="${
+                        photo.preview
+                    }" class="w-full h-32 object-cover cursor-pointer" 
+                         onclick="photoManagers['${
+                             this.fieldName
+                         }'].viewPhoto('${photo.id}')">
+                    <button type="button" onclick="photoManagers['${
+                        this.fieldName
+                    }'].removePhoto('${photo.id}')" 
+                            class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                    ${
+                        photo.metadata.location_name ||
+                        photo.metadata.latitude ||
+                        takenAt
+                            ? `
+                        <div class="absolute bottom-0 left-0 right-0 p-2 text-xs bg-gradient-to-t from-black/80 to-transparent text-white">
+                            ${
+                                photo.metadata.location_name
+                                    ? `<div class="truncate font-medium mb-1" title="${photo.metadata.location_name}">
+                                    <i data-lucide="map-pin" class="w-3 h-3 inline text-red-400"></i> ${photo.metadata.location_name}
+                                   </div>`
+                                    : ""
+                            }
+                            ${
+                                photo.metadata.latitude &&
+                                !photo.metadata.location_name
+                                    ? `<div class="truncate text-gray-200 text-[10px]">
+                                    <i data-lucide="navigation" class="w-3 h-3 inline"></i> ${photo.metadata.latitude.toFixed(
+                                        6
+                                    )}, ${photo.metadata.longitude.toFixed(6)}
+                                   </div>`
+                                    : ""
+                            }
+                            ${
+                                takenAt
+                                    ? `<div class="truncate text-gray-200 text-[10px]">
+                                    <i data-lucide="clock" class="w-3 h-3 inline"></i> ${takenAt}
+                                   </div>`
+                                    : ""
+                            }
+                        </div>`
+                            : ""
+                    }
+                </div>`;
             })
             .join("");
 
