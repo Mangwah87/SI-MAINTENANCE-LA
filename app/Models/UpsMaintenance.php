@@ -10,6 +10,8 @@ class UpsMaintenance extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
+
         // Informasi Lokasi dan Perangkat
         'location',
         'date_time',
@@ -166,5 +168,13 @@ class UpsMaintenance extends Model
                 ->orWhere('status_charging_voltage', 'NOK')
                 ->orWhere('status_charging_current', 'NOK');
         });
+    }
+
+    /**
+     * Get the user that owns the maintenance record.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

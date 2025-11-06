@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GensetController;
 use App\Http\Controllers\UpsMaintenanceController;
@@ -11,15 +12,20 @@ use App\Http\Controllers\AcMaintenanceConrtoller;
 use App\Http\Controllers\GroundingController;
 use App\Http\Controllers\CablePanelMaintenanceController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\InverterController;
+use App\Http\Controllers\DokumentasiController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RectifierMaintenanceController;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     // Profile routes
@@ -51,7 +57,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/{upsMaintenance1}/print', [UpsMaintenance1Controller::class, 'print'])->name('print');
     });
 
-    //PM shelter
+
+    // PM Shelter Routes
     Route::prefix('pm-shelter')->name('pm-shelter.')->group(function () {
         Route::get('/', [PmShelterController::class, 'index'])->name('index');
         Route::get('/create', [PmShelterController::class, 'create'])->name('create');
@@ -63,7 +70,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{pmShelter}/photo/{index}', [PmShelterController::class, 'deletePhoto'])->name('photo.delete');
         Route::get('/{pmShelter}/export-pdf', [PmShelterController::class, 'exportPdf'])->name('export-pdf');
     });
-    // UPS3 Maintenance routes (Grouped under 'ups3' prefix)
+
+
+    // UPS3 Maintenance Routes
     Route::prefix('ups3')->name('ups3.')->group(function () {
         Route::get('/', [UpsMaintenanceController::class, 'index'])->name('index');
         Route::get('/create', [UpsMaintenanceController::class, 'create'])->name('create');
@@ -99,6 +108,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/pdf', [GroundingController::class, 'pdf'])->name('pdf');
     });
 
+
     // Battery Routes
     Route::prefix('battery')->name('battery.')->group(function () {
         Route::get('/', [BatteryController::class, 'index'])->name('index');
@@ -110,7 +120,21 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [BatteryController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [BatteryController::class, 'pdf'])->name('pdf');
     });
+    // Rectifier Maintenance routes
+    Route::prefix('rectifier')->name('rectifier.')->middleware('auth')->group(function () {
+        Route::get('/', [RectifierMaintenanceController::class, 'index'])->name('index');
+        Route::get('/create', [RectifierMaintenanceController::class, 'create'])->name('create');
+        Route::post('/', [RectifierMaintenanceController::class, 'store'])->name('store');
+        Route::get('/{id}', [RectifierMaintenanceController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [RectifierMaintenanceController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [RectifierMaintenanceController::class, 'update'])->name('update');
+        Route::delete('/{id}', [RectifierMaintenanceController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/export-pdf', [RectifierMaintenanceController::class, 'exportPdf'])->name('export-pdf');
 
+        Route::get('/rectifier/{id}/debug-images', [RectifierMaintenanceController::class, 'debugImages'])
+            ->name('rectifier.debug-images')
+            ->middleware('auth');
+    });
     // PMPermohonan Routes
     Route::prefix('pm-permohonan')->name('pm-permohonan.')->group(function () {
         Route::get('/', [PMPermohonanController::class, 'index'])->name('index');
@@ -122,6 +146,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [PMPermohonanController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [PMPermohonanController::class, 'pdf'])->name('pdf');
     });
+
 
     // Tindak Lanjut Routes
     Route::resource('tindak-lanjut', TindakLanjutController::class);
@@ -151,7 +176,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [CablePanelMaintenanceController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [CablePanelMaintenanceController::class, 'pdf'])->name('pdf');
     });
-    
+
     // Schedule Routes (Jadwal Preventive Maintenance Sentral)
     Route::prefix('schedule')->name('schedule.')->group(function () {
         Route::get('/', [ScheduleController::class, 'index'])->name('index');
@@ -163,6 +188,32 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [ScheduleController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [ScheduleController::class, 'pdf'])->name('pdf');
     });
+    
+    // Inverter Routes
+    Route::prefix('inverter')->name('inverter.')->group(function () {
+        Route::get('/', [InverterController::class, 'index'])->name('index');
+        Route::get('/create', [InverterController::class, 'create'])->name('create');
+        Route::post('/', [InverterController::class, 'store'])->name('store');
+        Route::get('/{id}', [InverterController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [InverterController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [InverterController::class, 'update'])->name('update');
+        Route::delete('/{id}', [InverterController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [InverterController::class, 'generatePdf'])->name('pdf');
+    });
+
+
+    // Dokumentasi Routes
+    Route::prefix('dokumentasi')->name('dokumentasi.')->group(function () {
+        Route::get('/', [DokumentasiController::class, 'index'])->name('index');
+        Route::get('/create', [DokumentasiController::class, 'create'])->name('create');
+        Route::post('/', [DokumentasiController::class, 'store'])->name('store');
+        Route::get('/{id}', [DokumentasiController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [DokumentasiController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [DokumentasiController::class, 'update'])->name('update');
+        Route::delete('/{id}', [DokumentasiController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [DokumentasiController::class, 'generatePdf'])->name('pdf');
+    });
 });
+
 
 require __DIR__ . '/auth.php';
