@@ -651,10 +651,6 @@
   }
 
   function replaceImageWithData(imageDiv, newImageData, category, position) {
-    // Get parent container and position before removal
-    const previewContainer = imageDiv.parentElement;
-    const nextSibling = imageDiv.nextElementSibling; // Save position reference
-
     // Mark old image for deletion if it's an existing image
     if (imageDiv.classList.contains('existing-image')) {
       const imagePath = imageDiv.dataset.path;
@@ -668,8 +664,8 @@
     // Remove the old image div from preview
     imageDiv.remove();
 
-    // Add the new image to preview at the same position
-    addImageToPreview(newImageData, currentSection, category, nextSibling);
+    // Add the new image to preview
+    addImageToPreview(newImageData, currentSection, category);
 
     showNotification('✓ Gambar berhasil diganti!');
   }
