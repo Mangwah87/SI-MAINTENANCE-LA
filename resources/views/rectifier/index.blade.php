@@ -46,11 +46,11 @@
                                 Filter Pencarian
                             </h4>
                             <button type="button" id="toggleFilter" class="text-xs md:text-sm text-blue-600 hover:text-blue-800">
-                                <span id="filterText">Sembunyikan</span>
+                                <span id="filterText">Tampilkan</span>
                             </button>
                         </div>
 
-                        <form method="GET" action="{{ route('rectifier.index') }}" id="filterForm">
+                        <form method="GET" action="{{ route('rectifier.index') }}" id="filterForm" style="display: none;">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
                                 <!-- Location -->
                                 <div>
@@ -128,7 +128,7 @@
 
                     @if($maintenances->count() > 0)
                     <!-- Desktop Table View -->
-                    <div class="hidden md:block overflow-x-auto">
+                    <div class="hidden md:block overflow-x-auto rounded-lg border border-gray-200">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -203,7 +203,7 @@
                         @foreach($maintenances as $index => $maintenance)
                         <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
                             <!-- Card Header -->
-                            <div class="bg-gray-100 px-4 py-3 border-b border-gray-200 rounded-t-lg">
+                            <div class="bg-gradient-to-r from-blue-50 to-indigo-100 px-4 py-3 border-b border-gray-200 rounded-t-lg">
                                 <div class="flex justify-between items-start">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2 mb-1">
@@ -238,18 +238,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Brand/Type
-                                <div class="flex items-start">
-                                    <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                                    </svg>
-                                    <div class="flex-1">
-                                        <p class="text-xs text-gray-500">Brand/Type</p>
-                                        <p class="text-sm font-medium text-gray-900">{{ $maintenance->brand_type }}</p>
-                                    </div>
-                                </div> -->
-
-                                <!-- location -->
+                                <!-- Location -->
                                 <div class="flex items-start">
                                     <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
@@ -306,9 +295,115 @@
                         @endforeach
                     </div>
 
-                    <div class="mt-4">
-                        {{ $maintenances->appends(request()->query())->links() }}
+                    <!-- Custom Pagination -->
+                    <div class="mt-6">
+                        <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+                            <div class="px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <!-- Info Text -->
+                                <div class="text-sm text-gray-700 order-2 sm:order-1">
+                                    Menampilkan
+                                    <span class="font-semibold text-gray-900">{{ $maintenances->firstItem() ?? 0 }}</span>
+                                    sampai
+                                    <span class="font-semibold text-gray-900">{{ $maintenances->lastItem() ?? 0 }}</span>
+                                    dari
+                                    <span class="font-semibold text-gray-900">{{ $maintenances->total() }}</span>
+                                    data
+                                </div>
+
+                                <!-- Pagination Links -->
+                                <div class="order-1 sm:order-2">
+                                    @if ($maintenances->hasPages())
+                                    <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                        {{-- Previous Page Link --}}
+                                        @if ($maintenances->onFirstPage())
+                                            <span class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed">
+                                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <span class="ml-1 hidden sm:inline">Prev</span>
+                                            </span>
+                                        @else
+                                            <a href="{{ $maintenances->appends(request()->query())->previousPageUrl() }}" class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition">
+                                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <span class="ml-1 hidden sm:inline">Prev</span>
+                                            </a>
+                                        @endif
+
+                                        {{-- Pagination Elements --}}
+                                        @php
+                                            $currentPage = $maintenances->currentPage();
+                                            $lastPage = $maintenances->lastPage();
+                                            $startPage = max(1, $currentPage - 2);
+                                            $endPage = min($lastPage, $currentPage + 2);
+                                        @endphp
+
+                                        {{-- First Page --}}
+                                        @if ($startPage > 1)
+                                            <a href="{{ $maintenances->appends(request()->query())->url(1) }}" class="hidden sm:inline-flex relative items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition">
+                                                1
+                                            </a>
+                                            @if ($startPage > 2)
+                                                <span class="hidden sm:inline-flex relative items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                                    ...
+                                                </span>
+                                            @endif
+                                        @endif
+
+                                        {{-- Page Numbers --}}
+                                        @for ($page = $startPage; $page <= $endPage; $page++)
+                                            @if ($page == $currentPage)
+                                                <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-600 text-sm font-semibold text-white z-10">
+                                                    {{ $page }}
+                                                </span>
+                                            @else
+                                                <a href="{{ $maintenances->appends(request()->query())->url($page) }}" class="hidden sm:inline-flex relative items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition">
+                                                    {{ $page }}
+                                                </a>
+                                            @endif
+                                        @endfor
+
+                                        {{-- Last Page --}}
+                                        @if ($endPage < $lastPage)
+                                            @if ($endPage < $lastPage - 1)
+                                                <span class="hidden sm:inline-flex relative items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                                    ...
+                                                </span>
+                                            @endif
+                                            <a href="{{ $maintenances->appends(request()->query())->url($lastPage) }}" class="hidden sm:inline-flex relative items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition">
+                                                {{ $lastPage }}
+                                            </a>
+                                        @endif
+
+                                        {{-- Current Page Info for Mobile --}}
+                                        <span class="sm:hidden relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                            {{ $currentPage }} / {{ $lastPage }}
+                                        </span>
+
+                                        {{-- Next Page Link --}}
+                                        @if ($maintenances->hasMorePages())
+                                            <a href="{{ $maintenances->appends(request()->query())->nextPageUrl() }}" class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition">
+                                                <span class="mr-1 hidden sm:inline">Next</span>
+                                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </a>
+                                        @else
+                                            <span class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed">
+                                                <span class="mr-1 hidden sm:inline">Next</span>
+                                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </span>
+                                        @endif
+                                    </nav>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                     @else
                     <div class="text-center py-8 md:py-12">
                         <svg class="mx-auto h-10 w-10 md:h-12 md:w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -345,7 +440,6 @@
                                 </svg>
                                 Tambah Data
                             </a>
-
                         </div>
                     </div>
                     @endif
@@ -356,17 +450,30 @@
 
     <script>
         // Toggle filter visibility
-        document.getElementById('toggleFilter').addEventListener('click', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             const filterForm = document.getElementById('filterForm');
             const filterText = document.getElementById('filterText');
+            const toggleButton = document.getElementById('toggleFilter');
 
-            if (filterForm.style.display === 'none') {
+            // Check if there are active filters
+            const hasActiveFilters = {{ request()->hasAny(['search', 'date_from', 'date_to', 'power_module', 'location', 'brand_type', 'executor']) ? 'true' : 'false' }};
+
+            // Show filter if there are active filters
+            if (hasActiveFilters) {
                 filterForm.style.display = 'block';
                 filterText.textContent = 'Sembunyikan';
-            } else {
-                filterForm.style.display = 'none';
-                filterText.textContent = 'Tampilkan';
             }
+
+            // Toggle filter on button click
+            toggleButton.addEventListener('click', function() {
+                if (filterForm.style.display === 'none') {
+                    filterForm.style.display = 'block';
+                    filterText.textContent = 'Sembunyikan';
+                } else {
+                    filterForm.style.display = 'none';
+                    filterText.textContent = 'Tampilkan';
+                }
+            });
         });
     </script>
 </x-app-layout>

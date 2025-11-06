@@ -80,79 +80,138 @@
             </div>
 
             <!-- 1. Visual Check -->
-            <div class="mb-6">
-                <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">1. Visual Check</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full border text-sm md:text-base">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="border p-2 text-left text-xs md:text-sm">Activity</th>
-                                <th class="border p-2 text-left text-xs md:text-sm">Result</th>
-                                <th class="border p-2 text-left text-xs md:text-sm">Operational Standard</th>
-                                <th class="border p-2 text-center text-xs md:text-sm">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="border p-2">a. Environmental Condition</td>
-                                <td class="border p-2 font-semibold">{{ $maintenance->env_condition }}</td>
-                                <td class="border p-2 text-xs md:text-sm text-gray-600">Clean, No dust</td>
-                                <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_env_condition == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_env_condition }}
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="border p-2">b. LED / display</td>
-                                <td class="border p-2 font-semibold">{{ $maintenance->led_display }}</td>
-                                <td class="border p-2 text-xs md:text-sm text-gray-600">Normal</td>
-                                <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_led_display == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_led_display }}
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="border p-2">c. Battery Connection</td>
-                                <td class="border p-2 font-semibold">{{ $maintenance->battery_connection }}</td>
-                                <td class="border p-2 text-xs md:text-sm text-gray-600">Tighten, No Corrosion</td>
-                                <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_battery_connection == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_battery_connection }}
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                @if(collect($maintenance->images ?? [])->where('category', 'visual_check')->isNotEmpty())
-                <div class="mt-4">
-                    <p class="text-sm font-medium text-gray-700 mb-2">Documentation Images:</p>
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        @foreach(collect($maintenance->images ?? [])->where('category', 'visual_check') as $image)
-                        <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
-                            @if(isset($image['path']) && file_exists(storage_path('app/public/' . $image['path'])))
-                            <img src="{{ asset('storage/' . $image['path']) }}"
-                                alt="Visual Check"
-                                class="w-full h-32 md:h-40 object-cover cursor-pointer"
-                                onclick="window.open('{{ asset('storage/' . $image['path']) }}', '_blank')">
-                            @else
-                            <div class="w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
-                                Image not found
-                            </div>
-                            @endif
-                            <div class="p-2 bg-gray-50">
-                                <a href="{{ asset('storage/' . ($image['path'] ?? '')) }}"
-                                    target="_blank"
-                                    class="text-xs text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
+            <!-- 1. Visual Check -->
+<div class="mb-6">
+    <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">1. Visual Check</h3>
+    <div class="overflow-x-auto">
+        <table class="w-full border text-sm md:text-base">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border p-2 text-left text-xs md:text-sm">Activity</th>
+                    <th class="border p-2 text-left text-xs md:text-sm">Result</th>
+                    <th class="border p-2 text-left text-xs md:text-sm">Operational Standard</th>
+                    <th class="border p-2 text-center text-xs md:text-sm">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="border p-2">a. Environmental Condition</td>
+                    <td class="border p-2 font-semibold">{{ $maintenance->env_condition }}</td>
+                    <td class="border p-2 text-xs md:text-sm text-gray-600">Clean, No dust</td>
+                    <td class="border p-2 text-center">
+                        <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_env_condition == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $maintenance->status_env_condition }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="border p-2">b. LED / display</td>
+                    <td class="border p-2 font-semibold">{{ $maintenance->led_display }}</td>
+                    <td class="border p-2 text-xs md:text-sm text-gray-600">Normal</td>
+                    <td class="border p-2 text-center">
+                        <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_led_display == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $maintenance->status_led_display }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="border p-2">c. Battery Connection</td>
+                    <td class="border p-2 font-semibold">{{ $maintenance->battery_connection }}</td>
+                    <td class="border p-2 text-xs md:text-sm text-gray-600">Tighten, No Corrosion</td>
+                    <td class="border p-2 text-center">
+                        <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_battery_connection == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $maintenance->status_battery_connection }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    {{-- Environmental Condition Images --}}
+    @if(collect($maintenance->images ?? [])->where('category', 'env_condition')->isNotEmpty())
+    <div class="mt-4">
+        <p class="text-sm font-medium text-gray-700 mb-2">Environmental Condition Images:</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            @foreach(collect($maintenance->images ?? [])->where('category', 'env_condition') as $image)
+            <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
+                @if(isset($image['path']) && file_exists(storage_path('app/public/' . $image['path'])))
+                <img src="{{ asset('storage/' . $image['path']) }}"
+                    alt="Environmental Condition"
+                    class="w-full h-32 md:h-40 object-cover cursor-pointer"
+                    onclick="window.open('{{ asset('storage/' . $image['path']) }}', '_blank')">
+                @else
+                <div class="w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+                    Image not found
                 </div>
                 @endif
+                <div class="p-2 bg-gray-50">
+                    <a href="{{ asset('storage/' . ($image['path'] ?? '')) }}"
+                        target="_blank"
+                        class="text-xs text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
+                </div>
             </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    {{-- LED Display Images --}}
+    @if(collect($maintenance->images ?? [])->where('category', 'led_display')->isNotEmpty())
+    <div class="mt-4">
+        <p class="text-sm font-medium text-gray-700 mb-2">LED/Display Images:</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            @foreach(collect($maintenance->images ?? [])->where('category', 'led_display') as $image)
+            <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
+                @if(isset($image['path']) && file_exists(storage_path('app/public/' . $image['path'])))
+                <img src="{{ asset('storage/' . $image['path']) }}"
+                    alt="LED Display"
+                    class="w-full h-32 md:h-40 object-cover cursor-pointer"
+                    onclick="window.open('{{ asset('storage/' . $image['path']) }}', '_blank')">
+                @else
+                <div class="w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+                    Image not found
+                </div>
+                @endif
+                <div class="p-2 bg-gray-50">
+                    <a href="{{ asset('storage/' . ($image['path'] ?? '')) }}"
+                        target="_blank"
+                        class="text-xs text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    {{-- Battery Connection Images --}}
+    @if(collect($maintenance->images ?? [])->where('category', 'battery_connection')->isNotEmpty())
+    <div class="mt-4">
+        <p class="text-sm font-medium text-gray-700 mb-2">Battery Connection Images:</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            @foreach(collect($maintenance->images ?? [])->where('category', 'battery_connection') as $image)
+            <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
+                @if(isset($image['path']) && file_exists(storage_path('app/public/' . $image['path'])))
+                <img src="{{ asset('storage/' . $image['path']) }}"
+                    alt="Battery Connection"
+                    class="w-full h-32 md:h-40 object-cover cursor-pointer"
+                    onclick="window.open('{{ asset('storage/' . $image['path']) }}', '_blank')">
+                @else
+                <div class="w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+                    Image not found
+                </div>
+                @endif
+                <div class="p-2 bg-gray-50">
+                    <a href="{{ asset('storage/' . ($image['path'] ?? '')) }}"
+                        target="_blank"
+                        class="text-xs text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+</div>
 
             <!-- 2. Performance and Capacity Check -->
             <div class="mb-6">
