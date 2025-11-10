@@ -27,6 +27,18 @@
                     </div>
                 </a>
 
+                <!-- Maintenance Rectifier -->
+                <a href="{{ route('rectifier.index') }}" class="block h-full">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border-2 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
+                        <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                            <i data-lucide="git-compare-arrows" class="w-12 h-12 text-blue-600"></i>
+                        </div>
+                        <span class="text-sm sm:text-base font-semibold text-black text-center leading-tight">Maintenance
+                            Rectifier
+                        </span>
+                    </div>
+                </a>
+
                 <!-- Genset -->
                 <a href="{{ route('genset.index') }}" class="block h-full">
                     <div class="bg-white rounded-2xl p-6 shadow-lg border-2  h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
@@ -86,8 +98,8 @@
                         <span class="text-sm sm:text-base font-bold text-black text-center leading-tight">Formulir Tindak Lanjut Preventive Maintenance</span>
                     </div>
                 </a>
-                
-                                
+
+
                 <a href="{{ route('dokumentasi.index') }}" class="block h-full">
                     <div class="bg-white rounded-2xl p-6 shadow-xl border-2 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
@@ -108,7 +120,7 @@
                 </a>
 
                 <!-- PM Inverter -->
-                
+
                 <a href="inverter" class="block h-full">
                     <div class="bg-white rounded-2xl p-6 shadow-lg border-2 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
                         <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
@@ -148,17 +160,7 @@
                     </div>
                 </a>
 
-                <!-- Maintenance Rectifier -->
-                <a href="{{ route('rectifier.index') }}" class="block h-full">
-                    <div class="bg-white rounded-2xl p-6 shadow-lg border-2 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
-                        <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                            <i data-lucide="git-compare-arrows" class="w-12 h-12 text-blue-600"></i>
-                        </div>
-                        <span class="text-sm sm:text-base font-semibold text-black text-center leading-tight">Maintenance
-                            Rectifier
-                        </span>
-                    </div>
-                </a>
+
 
             </div>
         </div>

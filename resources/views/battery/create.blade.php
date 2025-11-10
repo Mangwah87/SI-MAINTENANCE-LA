@@ -517,7 +517,7 @@
                                     const address = await getAddress(lat, lng);
 
                                     // Add watermark
-                                    addWatermarkToCanvas(canvas, lat, lng, timestamp, address);
+                                    // addWatermarkToCanvas(canvas, lat, lng, timestamp, address);
 
                                     const imageData = canvas.toDataURL('image/jpeg', 0.85);
                                     uploadedImage.src = imageData;
