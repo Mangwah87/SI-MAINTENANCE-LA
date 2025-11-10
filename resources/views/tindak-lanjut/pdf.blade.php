@@ -257,7 +257,7 @@
                 <tr>
                     <td style="border:1px solid #000; text-align:center; height:91px; vertical-align:bottom;">
                         <div style="text-decoration: underline">{{ $tindakLanjut->mengetahui['nama'] ?? '' }}</div>
-                        <div>{{ $tindakLanjut->mengetahui['nik'] ?? '' }}</div>
+                        <div>ID.{{ $tindakLanjut->mengetahui['nik'] ?? '' }}</div>
                     </td>
                 </tr>
             </table>
