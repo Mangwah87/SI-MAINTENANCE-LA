@@ -142,6 +142,20 @@
                         </div>
                     </div>
                 </div>
+                <!-- Mengetahui (Supervisor) -->
+<div class="border-2 border-green-200 rounded-lg p-3 sm:p-4 bg-gradient-to-br from-white to-green-50">
+    <h4 class="text-sm sm:text-md font-bold text-green-700 mb-3">Mengetahui</h4>
+    <div class="grid grid-cols-1 gap-3 sm:gap-4">
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Supervisor / Atasan</label>
+            <input type="text" name="supervisor"
+                value="{{ old('supervisor', $maintenance->supervisor) }}"
+                class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="Nama supervisor yang mengetahui (opsional)">
+            <p class="mt-1 text-xs text-gray-600 italic">Kosongkan jika tidak ada supervisor yang mengetahui</p>
+        </div>
+    </div>
+</div>
 
                 <!-- Data Battery Readings -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4 sm:mb-6">
@@ -161,9 +175,9 @@
                     <div class="p-4 sm:p-6">
                         <div id="battery-readings" class="space-y-4 sm:space-y-6">
                             @foreach($maintenance->readings as $index => $reading)
-                            <div class="battery-item border-2 border-purple-300 rounded-xl p-4 sm:p-6 bg-gradient-to-br from-white to-purple-50" data-index="{{ $index }}">
+                            <div class="battery-item border-2 border-white-300 rounded-xl p-4 sm:p-6 bg-gradient-to-br from-white to-purple-50" data-index="{{ $index }}">
                                 <div class="flex justify-between items-center mb-4">
-                                    <h4 class="text-base sm:text-lg font-bold text-purple-700">Battery #{{ $index + 1 }}</h4>
+                                    <h4 class="text-base sm:text-lg font-bold text-blue-700">Battery #{{ $index + 1 }}</h4>
                                     @if($index > 0)
                                     <button type="button" class="btn-remove px-2 sm:px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200">
                                         Hapus
@@ -179,21 +193,21 @@
                                         <input type="number" name="readings[{{ $index }}][bank_number]"
                                             value="{{ old('readings.'.$index.'.bank_number', $reading->bank_number) }}"
                                             required min="1"
-                                            class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                            class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-grey-500 focus:border-transparent">
                                     </div>
                                     <div>
                                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">No *</label>
                                         <input type="number" name="readings[{{ $index }}][battery_number]"
                                             value="{{ old('readings.'.$index.'.battery_number', $reading->battery_number) }}"
                                             required min="1"
-                                            class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                            class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-grey-500 focus:border-transparent">
                                     </div>
                                     <div>
                                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Voltage (VDC) *</label>
                                         <input type="number" step="0.1" name="readings[{{ $index }}][voltage]"
                                             value="{{ old('readings.'.$index.'.voltage', $reading->voltage) }}"
                                             required min="0" max="20"
-                                            class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                            class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-grey-500 focus:border-transparent">
                                     </div>
                                 </div>
 
@@ -215,15 +229,15 @@
 
                                             <!-- Gambar yang sudah ada -->
                                             <img src="{{ Storage::url($reading->photo_path) }}"
-                                                class="existing-photo w-full h-auto max-h-80 sm:max-h-96 rounded-lg border-4 border-green-400 object-contain shadow-lg"
+                                                class="existing-photo w-full h-auto max-h-80 sm:max-h-96 rounded-lg border-4  object-contain shadow-lg"
                                                 alt="Battery Photo #{{ $index + 1 }}"
                                                 onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'bg-red-50 border-2 border-red-300 rounded-lg p-4 text-center\'><p class=\'text-red-600 font-semibold\'>⚠️ Gambar tidak dapat dimuat</p><p class=\'text-sm text-gray-600 mt-2\'>Path: {{ $reading->photo_path }}</p></div>';"
                                                 data-index="{{ $index }}">
                                         </div>
 
                                         <!-- Info foto yang sudah ada -->
-                                        <div class="mt-3 bg-green-50 border-l-4 border-green-500 p-3 rounded">
-                                            <p class="text-sm text-green-700 font-semibold mb-1">
+                                        <div class="mt-3 bg-grey-50 border-l-4 border-grey-500 p-3 rounded">
+                                            <p class="text-sm text-grey-700 font-semibold mb-1">
                                                 <svg class="inline-block w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                                 </svg>
@@ -333,17 +347,12 @@
     </div>
 
     <script>
-        let batteryCount = {
-            {
-                $maintenance - > readings - > count()
-            }
-        };
-        let streams = {};
-
+      let batteryCount = @json($maintenance->readings ? $maintenance->readings->count() : 0);
+    let streams = {};
         document.getElementById('add-battery').addEventListener('click', function() {
             const container = document.getElementById('battery-readings');
             const newBattery = document.createElement('div');
-            newBattery.className = 'battery-item border-2 border-purple-200 rounded-xl p-4 sm:p-6 bg-gradient-to-br from-white to-purple-50';
+            newBattery.className = 'battery-item border-2 border-gray-70 rounded-xl p-4 sm:p-6  ';
             newBattery.setAttribute('data-index', batteryCount);
 
             newBattery.innerHTML = `

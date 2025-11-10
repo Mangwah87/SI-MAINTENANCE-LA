@@ -5,7 +5,7 @@
                 {{ __('Preventive Maintenance Ruang Shelter') }}
             </h2>
             <a href="{{ route('pm-shelter.create') }}"
-               class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white 
+               class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white
                       px-4 py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto justify-center sm:justify-start">
                 <i data-lucide="plus" class="w-4 h-4 mr-1"></i>
                 Tambah Data
@@ -15,7 +15,7 @@
 
     <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-4 sm:p-6">
                     <!-- Search & Filter Section -->
@@ -27,13 +27,13 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
                                 </div>
-                                <input type="text" 
-                                       name="search" 
+                                <input type="text"
+                                       name="search"
                                        id="searchInput"
                                        value="{{ request('search') }}"
-                                       placeholder="Cari lokasi atau pelaksana..." 
+                                       placeholder="Cari lokasi atau pelaksana..."
                                        class="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                                <button type="button" 
+                                <button type="button"
                                         id="clearSearch"
                                         class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 hidden">
                                     <i data-lucide="x" class="w-5 h-5"></i>
@@ -42,7 +42,7 @@
 
                             <!-- Sort Dropdown -->
                             <div class="flex gap-2">
-                                <select name="sort" 
+                                <select name="sort"
                                         id="sortSelect"
                                         class=" text-left x-6 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white text-sm text-gray-700 hover:bg-gray-50 transition">
                                     <option value="desc" {{ request('sort', 'desc') == 'desc' ? 'selected' : '' }}>
@@ -53,9 +53,9 @@
                                         📅 Terlama
                                     </option>
                                 </select>
-                                
+
                                 {{-- <!-- Reset Button -->
-                                <button type="button" 
+                                <button type="button"
                                         id="resetFilter"
                                         class="inline-flex items-center justify-center px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition"
                                         title="Reset Filter">
@@ -64,7 +64,7 @@
                             </div>
                         </div>
 
-                        
+
                     </form>
                 </div>
             </div>
@@ -151,10 +151,10 @@
         .then(data => {
             // Replace entire content container with new HTML
             contentContainer.innerHTML = data.html;
-            
+
             loadingIndicator.classList.add('hidden');
             contentContainer.style.opacity = '1';
-            
+
             // Reinitialize lucide icons
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
@@ -185,7 +185,7 @@
                 const url = new URL(this.href);
                 const formData = new FormData(filterForm);
                 const params = new URLSearchParams(formData);
-                
+
                 const page = url.searchParams.get('page');
                 if (page) params.set('page', page);
 
@@ -207,10 +207,10 @@
                 .then(data => {
                     // Replace entire content container with new HTML
                     contentContainer.innerHTML = data.html;
-                    
+
                     loadingIndicator.classList.add('hidden');
                     contentContainer.style.opacity = '1';
-                    
+
                     // Reinitialize lucide icons
                     if (typeof lucide !== 'undefined') {
                         lucide.createIcons();

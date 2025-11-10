@@ -51,11 +51,11 @@
 
         .info-table td {
             border: none;
-            padding: 2px 4px;
+            padding: 1px 4px;
         }
 
         .info-table {
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             width: 100%;
         }
 
@@ -70,7 +70,7 @@
         .section-title {
             background: #e0e0e0;
             font-weight: bold;
-            padding: 4px 6px;
+            padding: 1px 6px;
             margin-top: 5px;
             margin-bottom: 4px;
         }
@@ -83,7 +83,7 @@
         }
 
         .main-table td {
-            padding: 3px 5px;
+            padding: 1px 5px;
         }
 
         .status-ok {
@@ -103,19 +103,19 @@
 
         .notes-box {
             border: 1px solid #000;
-            min-height: 50px;
+            min-height: 30px;
             padding: 4px;
             margin: 8px 0;
         }
 
         .signature-section {
-            margin-top: 10px;
+            margin-top: 3px;
         }
 
         .signature-table th,
         .signature-table td {
             border: 1px solid #000;
-            padding: 3px 5px;
+            padding: 1px 5px;
         }
 
         .page-break {
@@ -261,7 +261,7 @@
         </table>
 
         {{-- Info Table --}}
-        <table class="info-table" style="margin-top: 5px;">
+        <table class="info-table" style="margin-top: 2px;">
             <tr>
                 <td width="15%"><strong>Location</strong></td>
                 <td width="35%">: {{ $maintenance->location }}</td>
@@ -447,7 +447,7 @@
                         <table style="border: none; width: 100%; border-collapse: collapse;">
                             <tr>
                                 <td style="border: none; padding: 2px 0; width: 50%; font-size: 6.5pt; color: #000000ff;">Measurement I :</td>
-                                <td style="border: none; padding: 2px 0; font-weight: bold;">{{ $maintenance->backup_test_voltage_measurement1 ?? '-' }} VDC</td>
+                                <td style="border: none; padding: 2px 0;  ">{{ $maintenance->backup_test_voltage_measurement1 ?? '-' }} VDC</td>
                             </tr>
                         </table>
                     </td>
@@ -465,7 +465,7 @@
                         <table style="border: none; width: 100%; border-collapse: collapse;">
                             <tr>
                                 <td style="border: none; padding: 2px 0; width: 50%; font-size: 6.5pt; color: #000000ff;">Measurement II :</td>
-                                <td style="border: none; padding: 2px 0; font-weight: bold;">{{ $maintenance->backup_test_voltage_measurement2 ?? '-' }} VDC</td>
+                                <td style="border: none; padding: 2px 0; ">{{ $maintenance->backup_test_voltage_measurement2 ?? '-' }} VDC</td>
                             </tr>
                         </table>
                     </td>
@@ -514,12 +514,12 @@
         {{-- Signature Section --}}
         <div class="signature-section">
             <div style="width: 65%; float: left;">
-                <div class="bold" style="margin-bottom: 3px;">Pelaksana:</div>
+                <div class="bold" style="margin-bottom: 1px;">Pelaksana:</div>
                 <table class="signature-table">
                     <tr>
-                        <th width="10%">No</th>
+                        <th width="5%">No</th>
                         <th width="40%">Name</th>
-                        <th width="30%">Department</th>
+                        <th width="35%">Department</th>
                         <th width="20%">Signature</th>
                     </tr>
                     <tr>
@@ -547,8 +547,8 @@
                 </table>
             </div>
             <div style="width: 33%; float: right;">
-                <div class="bold" style="margin-bottom: 3px;">Mengetahui (Supervisor):</div>
-                <div style="border: 1px solid #000; height: 80px; text-align: center; padding: 5px;">
+                <div class="bold" style="margin-bottom: 3px;">Mengetahui,</div>
+                <div style="border: 1px solid #000; height: 72px; text-align: center; padding: 2px;">
                     <div style="height: 40px;"></div>
                     <div>{{ $maintenance->supervisor }}</div>
                     <div style="font-size: 7pt;">ID: {{ $maintenance->supervisor_id_number ?? '-' }}</div>
