@@ -8,20 +8,61 @@
     <div class="container mx-auto p-6 max-w-6xl">
         <div class="bg-white rounded-lg shadow-lg p-6">
             <!-- Header Actions -->
-            <div class="flex justify-end items-center mb-6 pb-4 border-b-2">
-                <div class="flex gap-2">
-                    <a href="{{ route('tindak-lanjut.pdf', $tindakLanjut) }}" 
-                       class="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-                        <i data-lucide="file-down" class="w-4 h-4 inline mr-1"></i> Download PDF
-                    </a>
-                    <a href="{{ route('tindak-lanjut.edit', $tindakLanjut) }}" 
-                       class="inline-block px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
-                        <i data-lucide="edit" class="w-4 h-4 inline mr-1"></i> Edit
-                    </a>
+             <div class="mb-6 pb-4 border-b-2">
+                <!-- Desktop Layout -->
+                <div class="hidden sm:flex justify-between items-center">
+                    <!-- Back Button -->
                     <a href="{{ route('tindak-lanjut.index') }}" 
-                       class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                        <i data-lucide="arrow-left" class="w-4 h-4 inline mr-1"></i> Kembali
+                       class="inline-flex items-center bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                        <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> 
+                        Kembali
                     </a>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2">
+                        <!-- Edit Button -->
+                        <a href="{{ route('tindak-lanjut.edit', $tindakLanjut) }}" 
+                           class="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">
+                            <i data-lucide="edit" class="w-4 h-4 mr-2"></i> 
+                            Edit
+                        </a>
+                        
+                        <!-- Print PDF Button -->
+                        <a href="{{ route('tindak-lanjut.pdf', $tindakLanjut) }}" target="_blank"
+                           class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            <i data-lucide="download" class="w-4 h-4 mr-2"></i> 
+                            Cetak PDF
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mobile Layout -->
+                <div class="flex sm:hidden justify-between items-center gap-2">
+                    <!-- Back Button - Icon Only -->
+                    <a href="{{ route('tindak-lanjut.index') }}" 
+                       class="inline-flex items-center justify-center w-10 h-10 bg-gray-500 text-white rounded-lg hover:bg-gray-700 transition"
+                       title="Kembali">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </a>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2 flex-1">
+                        <!-- Edit Button -->
+                        <a href="{{ route('tindak-lanjut.edit', $tindakLanjut) }}" 
+                           class="inline-flex items-center justify-center flex-1 px-3 py-2.5 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition text-sm font-medium"
+                           title="Edit">
+                            <i data-lucide="edit" class="w-4 h-4 mr-1.5"></i> 
+                            Edit
+                        </a>
+                        
+                        <!-- Print PDF Button -->
+                        <a href="{{ route('tindak-lanjut.pdf', $tindakLanjut) }}" target="_blank"
+                           class="inline-flex items-center justify-center flex-1 px-3 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
+                           title="Cetak PDF">
+                            <i data-lucide="download" class="w-4 h-4 mr-1.5"></i> 
+                            PDF
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -173,7 +214,7 @@
                         <h4 class="font-semibold text-gray-700 mb-3 text-center">Mengetahui</h4>
                         <div class="border p-4 rounded bg-gray-50 text-center">
                             <p class="font-medium text-gray-800">{{ $tindakLanjut->mengetahui['nama'] ?? '-' }}</p>
-                            <p class="text-sm text-gray-600 mt-1">NIK: {{ $tindakLanjut->mengetahui['nik'] ?? '-' }}</p>
+                            <p class="text-sm text-gray-600 mt-1">ID: {{ $tindakLanjut->mengetahui['nik'] ?? '-' }}</p>
                         </div>
                     </div>
                 </div>

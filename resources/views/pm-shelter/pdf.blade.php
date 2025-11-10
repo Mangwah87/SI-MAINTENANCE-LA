@@ -412,8 +412,8 @@
                 <tr class="center bold" style="background:#f0f0f0;">
                     <td style="border:1px solid #000; width:6%;">No</td>
                     <td style="border:1px solid #000; width:48%;">Nama</td>
-                    <td style="border:1px solid #000; width:23%;">Departemen</td>
-                    <td style="border:1px solid #000; width:23%;">Sub Departemen</td>
+                    <td style="border:1px solid #000; width:23%;">Departement</td>
+                    <td style="border:1px solid #000; width:23%;">Sub Departement</td>
                 </tr>
                 @foreach($pmShelter->executors as $i => $ex)
                 <tr>
@@ -437,7 +437,7 @@
             </span>
             <div style="border-bottom:1px solid #000; width:100%; margin:2px 0;"></div>
             <span style="display:block; margin:0; padding:0;">
-                NIK: {{ $pmShelter->approvers[0]['nik'] ?? '' }}
+               {{ $pmShelter->approvers[0]['nik'] ?? '' }}
             </span>
         </div>
     </div>

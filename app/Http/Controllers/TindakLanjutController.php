@@ -66,7 +66,7 @@ class TindakLanjutController extends Controller
             'pelaksana.*.department' => 'required|string|max:255',
             'pelaksana.*.sub_department' => 'nullable|string|max:255',
             'mengetahui_nama' => 'required|string|max:255',
-            'mengetahui_nik' => 'required|string|max:255',
+            'mengetahui_nik' => 'nullable|string|max:255',
         ];
 
         // Conditional validation based on status_penyelesaian
@@ -174,7 +174,7 @@ class TindakLanjutController extends Controller
             'pelaksana.*.department' => 'required|string|max:255',
             'pelaksana.*.sub_department' => 'nullable|string|max:255',
             'mengetahui_nama' => 'required|string|max:255',
-            'mengetahui_nik' => 'required|string|max:255',
+            'mengetahui_nik' => 'nullable|string|max:255',
         ];
 
         // Conditional validation
