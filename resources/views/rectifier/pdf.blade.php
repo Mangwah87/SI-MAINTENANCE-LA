@@ -551,7 +551,7 @@
                 <div style="border: 1px solid #000; height: 72px; text-align: center; padding: 2px;">
                     <div style="height: 40px;"></div>
                     <div>{{ $maintenance->supervisor }}</div>
-                    <div style="font-size: 7pt;">ID: {{ $maintenance->supervisor_id_number ?? '-' }}</div>
+                    <div style="font-size: 7pt;"> {{ $maintenance->supervisor_id_number ?? '-' }}</div>
                 </div>
             </div>
             <div style="clear: both;"></div>

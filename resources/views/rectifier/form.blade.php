@@ -7,6 +7,30 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Alert Messages -->
+            @if(session('success'))
+            <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ session('success') }}</span>
+            </div>
+            @endif
+
+            @if(session('error'))
+            <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ session('error') }}</span>
+            </div>
+            @endif
+
+            @if($errors->any())
+            <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">Terjadi kesalahan!</strong>
+                <ul class="mt-2 list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <form action="{{ isset($maintenance) ? route('rectifier.update', $maintenance->id) : route('rectifier.store') }}"
@@ -144,9 +168,10 @@
                                                     Upload Gambar (Optional)
                                                 </span>
                                             </label>
-                                            <input type="file" name="images_env_condition[]" multiple accept="image/*"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                            <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                            <input type="file" name="images_env_condition[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                                onchange="validateImageFiles(this)">
+                                            <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                             @if(isset($maintenance))
                                             <div class="mt-3 grid grid-cols-2 gap-2">
@@ -210,9 +235,10 @@
                                                     Upload Gambar (Optional)
                                                 </span>
                                             </label>
-                                            <input type="file" name="images_led_display[]" multiple accept="image/*"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                            <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                            <input type="file" name="images_led_display[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                                onchange="validateImageFiles(this)">
+                                            <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                             @if(isset($maintenance))
                                             <div class="mt-3 grid grid-cols-2 gap-2">
@@ -276,9 +302,10 @@
                                                     Upload Gambar (Optional)
                                                 </span>
                                             </label>
-                                            <input type="file" name="images_battery_connection[]" multiple accept="image/*"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                            <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                            <input type="file" name="images_battery_connection[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                                onchange="validateImageFiles(this)">
+                                            <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                             @if(isset($maintenance))
                                             <div class="mt-3 grid grid-cols-2 gap-2">
@@ -320,12 +347,11 @@
                                         </select>
                                     </div>
                                 </div>
-
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                                         <label class="block text-sm font-medium text-gray-700 mb-3">
                                             <span class="inline-flex items-center gap-2">
-                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                 <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                                 </svg>
@@ -348,9 +374,10 @@
                                                 Upload Gambar (Optional)
                                             </span>
                                         </label>
-                                        <input type="file" name="images_ac_voltage[]" multiple accept="image/*"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Max: 5MB/file</p>
+                                        <input type="file" name="images_ac_voltage[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                            onchange="validateImageFiles(this)">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
                                         <div class="mt-3 grid grid-cols-2 gap-2">
@@ -417,9 +444,10 @@
                                                 Upload Gambar (Optional)
                                             </span>
                                         </label>
-                                        <input type="file" name="images_ac_current[]" multiple accept="image/*"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                        <input type="file" name="images_ac_current[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                            onchange="validateImageFiles(this)">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
                                         <div class="mt-3 grid grid-cols-2 gap-2">
@@ -486,9 +514,10 @@
                                                 Upload Gambar (Optional)
                                             </span>
                                         </label>
-                                        <input type="file" name="images_dc_current[]" multiple accept="image/*"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                        <input type="file" name="images_dc_current[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                            onchange="validateImageFiles(this)">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
                                         <div class="mt-3 grid grid-cols-2 gap-2">
@@ -550,9 +579,10 @@
                                                 Upload Gambar (Optional)
                                             </span>
                                         </label>
-                                        <input type="file" name="images_battery_temp[]" multiple accept="image/*"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                        <input type="file" name="images_battery_temp[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                            onchange="validateImageFiles(this)">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
                                         <div class="mt-3 grid grid-cols-2 gap-2">
@@ -614,9 +644,10 @@
                                                 Upload Gambar (Optional)
                                             </span>
                                         </label>
-                                        <input type="file" name="images_charging_voltage[]" multiple accept="image/*"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                        <input type="file" name="images_charging_voltage[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                            onchange="validateImageFiles(this)">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
                                         <div class="mt-3 grid grid-cols-2 gap-2">
@@ -678,9 +709,10 @@
                                                 Upload Gambar (Optional)
                                             </span>
                                         </label>
-                                        <input type="file" name="images_charging_current[]" multiple accept="image/*"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                        <input type="file" name="images_charging_current[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                            onchange="validateImageFiles(this)">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
                                         <div class="mt-3 grid grid-cols-2 gap-2">
@@ -749,9 +781,10 @@
                                                 Upload Gambar (Optional)
                                             </span>
                                         </label>
-                                        <input type="file" name="images_rectifier_test[]" multiple accept="image/*"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                        <input type="file" name="images_rectifier_test[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                            onchange="validateImageFiles(this)">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
                                         <div class="mt-3 grid grid-cols-2 gap-2">
@@ -814,9 +847,10 @@
                                                         Upload Gambar (Optional)
                                                     </span>
                                                 </label>
-                                                <input type="file" name="images_battery_voltage_m1[]" multiple accept="image/*"
-                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                                <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Max: 5MB/file</p>
+                                                <input type="file" name="images_battery_voltage_m1[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                                    onchange="validateImageFiles(this)">
+                                                <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                                 @if(isset($maintenance))
                                                 <div class="mt-3 grid grid-cols-2 gap-2">
@@ -884,9 +918,10 @@
                                                         Upload Gambar (Optional)
                                                     </span>
                                                 </label>
-                                                <input type="file" name="images_battery_voltage_m2[]" multiple accept="image/*"
-                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                                <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Max: 5MB/file</p>
+                                                <input type="file" name="images_battery_voltage_m2[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                                    onchange="validateImageFiles(this)">
+                                                <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                                 @if(isset($maintenance))
                                                 <div class="mt-3 grid grid-cols-2 gap-2">
@@ -961,9 +996,10 @@
                                                 Upload Gambar (Optional)
                                             </span>
                                         </label>
-                                        <input type="file" name="images_alarm[]" multiple accept="image/*"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
-                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
+                                        <input type="file" name="images_alarm[]" multiple accept="image/jpeg,image/jpg,image/png"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                            onchange="validateImageFiles(this)">
+                                        <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
                                             <div class="mt-3 grid grid-cols-2 gap-2">
@@ -1091,6 +1127,46 @@
             powerModuleSelect.addEventListener('change', updateFieldsVisibility);
             updateFieldsVisibility();
         });
+
+        // FUNGSI VALIDASI GAMBAR - TAMBAHAN BARU
+        function validateImageFiles(input) {
+            const files = input.files;
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            const allowedExtensions = ['jpg', 'jpeg', 'png'];
+            let invalidFiles = [];
+            let oversizedFiles = [];
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+
+                // Check file type
+                if (!allowedTypes.includes(file.type) || !allowedExtensions.includes(fileExtension)) {
+                    invalidFiles.push(file.name);
+                }
+
+                // Check file size
+                if (file.size > maxSize) {
+                    oversizedFiles.push(file.name);
+                }
+            }
+
+            // Show alerts if there are invalid files
+            if (invalidFiles.length > 0) {
+                alert('❌ Format file tidak valid!\n\nFile yang ditolak:\n' + invalidFiles.join('\n') + '\n\nHanya file JPG, JPEG, dan PNG yang diperbolehkan.');
+                input.value = ''; // Clear the input
+                return false;
+            }
+
+            if (oversizedFiles.length > 0) {
+                alert('❌ Ukuran file terlalu besar!\n\nFile yang melebihi 5MB:\n' + oversizedFiles.join('\n') + '\n\nMaksimal ukuran file adalah 5MB.');
+                input.value = ''; // Clear the input
+                return false;
+            }
+
+            return true;
+        }
 
         // Handle image deletion
         let deletedImages = [];
@@ -1464,7 +1540,7 @@
                                 ctx.fillText(`Latitude: ${lat.toFixed(6)}, Longitude: ${lng.toFixed(6)}`, padding, startY + (lineHeight * 3.5));
                                 ctx.fillText(`${address}`, padding, startY + (lineHeight * 4.5));
 
-                                // Convert to image
+                                // Convert to image (HANYA JPEG/PNG)
                                 const imageData = canvas.toDataURL('image/jpeg', 0.85);
                                 capturedImage.src = imageData;
                                 capturedImage.classList.remove('hidden');

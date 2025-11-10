@@ -16,20 +16,6 @@
 
     <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            
-            {{-- Alert Notifikasi (Dipertahankan dari file Grounding lama) --}}
-            @if(session('success'))
-                <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center gap-3 shadow-sm" role="alert"> {{-- --}}
-                    <i data-lucide="check-circle" class="w-5 h-5 flex-shrink-0"></i>
-                    <span class="text-sm font-medium">{{ session('success') }}</span>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-3 shadow-sm" role="alert"> {{-- --}}
-                    <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0"></i>
-                    <span class="text-sm font-medium">{{ session('error') }}</span>
-                </div>
-            @endif
 
             {{-- Search Bar (Dipertahankan) --}}
             <div class="mb-6 relative">
