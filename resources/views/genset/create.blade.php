@@ -311,16 +311,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="flex justify-end p-6 gap-4 py-6">
+                    <a href="{{ route('genset.index') }}" class="px-8 py-3 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg">Batal</a>
+                    <button type="submit" class="px-8 py-3 bg-blue-500 hover:from-blue-600 hover:to-blue-600 text-white font-bold rounded-lg shadow-lg">
+                        Simpan Data
+                    </button>
+                </div>
                     </div>
                 </div>
 
 
-                <div class="flex justify-center gap-4 py-6">
-                    <a href="{{ route('genset.index') }}" class="px-8 py-3 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg">Batal</a>
-                    <button type="submit" class="px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-bold rounded-lg">
-                        Simpan Data
-                    </button>
-                </div>
+                
             </form>
         </div>
     </div>

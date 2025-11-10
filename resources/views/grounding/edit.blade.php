@@ -222,13 +222,14 @@
                              <div><label class="block text-xs text-gray-600 mb-1">Nama Approver</label><input type="text" name="approver_name" value="{{ old('approver_name', $maintenance->approver_name) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3" placeholder="Nama Atasan"></div>
                         </div>
                     </div>
+                    {{-- Submit Buttons --}}
+                <div class="flex justify-end p-6 gap-4 py-6">
+                    <a href="{{ route('grounding.index') }}" class="px-8 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-lg shadow-lg">Batal</a>
+                    <button type="submit" class="px-8 py-3 bg-blue-500 hover:from-blue-600 hover:to-blue-600 text-white font-bold rounded-lg shadow-lg">Update Data</button>
+                </div>
                 </div>
 
-                {{-- Submit Buttons --}}
-                <div class="flex justify-center gap-4 py-6">
-                    <a href="{{ route('grounding.index') }}" class="px-8 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-lg shadow-lg">Batal</a>
-                    <button type="submit" class="px-8 py-3 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-bold rounded-lg shadow-lg">Update Data</button>
-                </div>
+                
             </form>
         </div>
     </div>
