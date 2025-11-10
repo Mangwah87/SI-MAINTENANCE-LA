@@ -227,8 +227,8 @@
                                     @enderror
                                 </div>
                                 <div>
-                                    <label for="mengetahui_nik" class="block text-sm font-medium text-gray-700 mb-2">NIK <span class="text-red-500">*</span></label>
-                                    <input type="text" name="mengetahui_nik" id="mengetahui_nik" required
+                                    <label for="mengetahui_nik" class="block text-sm font-medium text-gray-700 mb-2">ID</label>
+                                    <input type="text" name="mengetahui_nik" id="mengetahui_nik"
                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                                            value="{{ old('mengetahui_nik') }}">
                                     @error('mengetahui_nik')
@@ -239,13 +239,17 @@
                         </div>
 
                         <!-- Buttons -->
-                        <div class="flex justify-end space-x-3 mt-6">
-                            <a href="{{ route('tindak-lanjut.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
-                                Batal
-                            </a>
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
+                            <button type="submit" 
+                                    class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                <i data-lucide="save" class="w-4 h-4 mr-2"></i>
                                 Simpan
                             </button>
+                            <a href="{{ route('tindak-lanjut.index') }}" 
+                               class="inline-flex items-center justify-center px-6 py-3 bg-gray-300 border border-transparent rounded-md font-semibold text-sm text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:outline-none focus:border-gray-400 focus:ring ring-gray-200 transition ease-in-out duration-150">
+                                <i data-lucide="x" class="w-4 h-4 mr-2"></i>
+                                Batal
+                            </a>
                         </div>
                     </form>
                 </div>

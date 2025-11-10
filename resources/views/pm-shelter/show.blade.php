@@ -311,7 +311,7 @@
                                 {{ $pmShelter->approvers[0]['name'] ?? '-' }}
                             </div>
                             <div class="font-semibold">
-                                NIK : {{ $pmShelter->approvers[0]['nik'] ?? '-' }}
+                                ID : {{ $pmShelter->approvers[0]['nik'] ?? '-' }}
                             </div>
                         </div>
                     </div>

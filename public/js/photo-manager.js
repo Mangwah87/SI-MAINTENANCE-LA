@@ -734,13 +734,7 @@ class PhotoManager {
                                    </div>`
                                     : ""
                             }
-                            ${
-                                takenAt
-                                    ? `<div class="truncate text-gray-200 text-[10px]">
-                                    <i data-lucide="clock" class="w-3 h-3 inline"></i> ${takenAt}
-                                   </div>`
-                                    : ""
-                            }
+                            
                         </div>`
                             : ""
                     }
