@@ -367,47 +367,93 @@
       document.getElementById('location').textContent = fallback;
       currentGeoData.location = fallback;
 
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-        const url = `https://geocode.maps.co/reverse?lat=${lat}&lon=${lon}&format=json`;
-
-        const response = await fetch(url, {
-          signal: controller.signal,
+      // Daftar API geocoding dengan prioritas (dari yang paling diutamakan)
+      const geocodeAPIs = [
+        {
+          name: 'Geocode.maps.co',
+          url: `https://geocode.maps.co/reverse?lat=${lat}&lon=${lon}&format=json`,
           headers: { 'Accept': 'application/json' }
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) throw new Error('API returned non-200 status');
-
-        const data = await response.json();
-
-        let locationParts = [];
-        if (data.address) {
-          const addr = data.address;
-          if (addr.road) locationParts.push(addr.road);
-          if (addr.village || addr.suburb || addr.neighbourhood || addr.hamlet) {
-            locationParts.push(addr.village || addr.suburb || addr.neighbourhood || addr.hamlet);
+        },
+        {
+          name: 'Nominatim OpenStreetMap',
+          url: `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'MaintenanceApp/1.0'
           }
-          if (addr.municipality || addr.city_district || addr.county) {
-            locationParts.push(addr.municipality || addr.city_district || addr.county);
+        },
+        {
+          name: 'BigDataCloud',
+          url: `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=id`,
+          headers: { 'Accept': 'application/json' }
+        }
+      ];
+
+      // Coba setiap API secara berurutan sampai ada yang berhasil
+      for (let i = 0; i < geocodeAPIs.length; i++) {
+        const api = geocodeAPIs[i];
+        try {
+          console.log(`Mencoba ${api.name}...`);
+
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+          const response = await fetch(api.url, {
+            signal: controller.signal,
+            headers: api.headers
+          });
+
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            throw new Error(`${api.name} returned status ${response.status}`);
           }
-          if (addr.city || addr.town) {
-            locationParts.push(addr.city || addr.town);
+
+          const data = await response.json();
+          let location = fallback;
+
+          // Parse response berdasarkan API yang digunakan
+          if (api.name === 'BigDataCloud') {
+            // BigDataCloud format
+            let locationParts = [];
+            if (data.locality) locationParts.push(data.locality);
+            if (data.city) locationParts.push(data.city);
+            if (data.principalSubdivision) locationParts.push(data.principalSubdivision);
+            location = locationParts.length > 0 ? locationParts.join(', ') : (data.localityInfo?.administrative?.[0]?.name || fallback);
+          } else {
+            // Geocode.maps.co & Nominatim format (mirip)
+            let locationParts = [];
+            if (data.address) {
+              const addr = data.address;
+              if (addr.road) locationParts.push(addr.road);
+              if (addr.village || addr.suburb || addr.neighbourhood || addr.hamlet) {
+                locationParts.push(addr.village || addr.suburb || addr.neighbourhood || addr.hamlet);
+              }
+              if (addr.municipality || addr.city_district || addr.county) {
+                locationParts.push(addr.municipality || addr.city_district || addr.county);
+              }
+              if (addr.city || addr.town) {
+                locationParts.push(addr.city || addr.town);
+              }
+            }
+
+            location = locationParts.length > 0
+              ? locationParts.join(', ')
+              : (data.display_name || fallback);
+          }
+
+          document.getElementById('location').textContent = location;
+          currentGeoData.location = location;
+          console.log(`✓ Berhasil menggunakan ${api.name}`);
+          return; // Sukses, keluar dari loop
+
+        } catch (error) {
+          console.warn(`✗ ${api.name} gagal:`, error.message);
+          // Lanjut ke API berikutnya
+          if (i === geocodeAPIs.length - 1) {
+            console.warn('Semua API geocoding gagal, menggunakan koordinat sebagai fallback');
           }
         }
-
-        const location = locationParts.length > 0
-          ? locationParts.join(', ')
-          : (data.display_name || fallback);
-
-        document.getElementById('location').textContent = location;
-        currentGeoData.location = location;
-
-      } catch (error) {
-        console.warn('Location name fetch skipped (optional):', error.message);
       }
     }
 

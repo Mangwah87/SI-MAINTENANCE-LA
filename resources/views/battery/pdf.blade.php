@@ -26,7 +26,8 @@
         th,
         td {
             border: 1px solid #000;
-            padding: 3px 5px;
+            padding: 2px 3px;
+            font-size: 7.5pt;
         }
 
         .header-table th,
@@ -59,35 +60,29 @@
         }
 
         .section-title {
-            background: #e0e0e0;
-            font-weight: bold;
-            padding: 4px 6px;
-            margin-top: 5px;
-            margin-bottom: 4px;
-        }
-
+            margin-top: 20px;
+    font-weight: bold;
+    font-size: 12px;
+    border: none;
+    border-bottom: 1px solid #000; /* hanya garis bawah */
+    display: inline-block;     /* agar garis bawah hanya sepanjang teks */
+    padding-bottom: 1px;       /* jarak kecil antara teks dan garis */
+    margin-bottom: 8px;        /* spasi bawah dari elemen selanjutnya */
+}
         .bank-container {
             margin: 10px 0;
         }
 
-        .bank-table {
-            width: 32%;
-            float: left;
-            margin-right: 1.5%;
-            margin-bottom: 10px;
-            border-collapse: collapse;
-        }
-
-        .bank-table:nth-child(3n) {
-            margin-right: 0;
-        }
-
         .bank-table-wide {
-            width: 65%;
+            width: 49%;
             float: left;
-            margin-right: 1.5%;
+            margin-right: 2%;
             margin-bottom: 10px;
             border-collapse: collapse;
+        }
+
+        .bank-table-wide:nth-child(2n) {
+            margin-right: 0;
         }
 
         .bank-header {
@@ -99,17 +94,14 @@
             font-size: 8pt;
         }
 
-        .bank-table th,
-        .bank-table td,
         .bank-table-wide th,
         .bank-table-wide td {
             border: 1px solid #000;
-            padding: 3px 5px;
+            padding: 2px 3px;
             text-align: center;
-            font-size: 8pt;
+            font-size: 7pt;
         }
 
-        .bank-table th,
         .bank-table-wide th {
             background: #e0e0e0;
             font-weight: bold;
@@ -117,7 +109,7 @@
 
         .notes-box {
             border: 1px solid #000;
-            min-height: 50px;
+            min-height: 80px;
             padding: 4px;
             margin: 8px 0;
         }
@@ -297,7 +289,7 @@
         </table>
 
         {{-- Battery Voltage Data --}}
-        <div class="section-title">Battery Voltage Readings</div>
+        <!-- <div class="section-title">Battery Voltage Readings</div> -->
 
         @php
         $readingsByBank = $maintenance->readings->groupBy('bank_number')->sortKeys();
@@ -307,13 +299,12 @@
             @foreach($readingsByBank as $bankNumber => $readings)
             @php
             $sortedReadings = $readings->sortBy('battery_number')->values();
-            $totalBatteries = $sortedReadings->count();
-            $maxSingleColumn = 16;
-            $needsDualColumn = $totalBatteries > $maxSingleColumn;
+            // Always use dual column layout for 32 batteries (16 rows)
+            $maxRows = 16;
+            $totalSlots = 32;
             @endphp
 
-            @if($needsDualColumn)
-            {{-- Dual Column Layout --}}
+            {{-- Dual Column Layout (Always 32 slots / 16 rows) --}}
             <table class="bank-table-wide">
                 <thead>
                     <tr>
@@ -329,9 +320,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for($i = 0; $i < $maxSingleColumn; $i++)
+                    @for($i = 0; $i < $maxRows; $i++)
                         <tr>
-                        {{-- Left Column --}}
+                        {{-- Left Column (Battery 1-16) --}}
                         @if(isset($sortedReadings[$i]))
                         <td>{{ $sortedReadings[$i]->battery_number }}</td>
                         <td>{{ number_format($sortedReadings[$i]->voltage, 1) }}</td>
@@ -340,8 +331,8 @@
                         <td>&nbsp;</td>
                         @endif
 
-                        {{-- Right Column --}}
-                        @php $rightIndex = $i + $maxSingleColumn; @endphp
+                        {{-- Right Column (Battery 17-32) --}}
+                        @php $rightIndex = $i + $maxRows; @endphp
                         @if(isset($sortedReadings[$rightIndex]))
                         <td>{{ $sortedReadings[$rightIndex]->battery_number }}</td>
                         <td>{{ number_format($sortedReadings[$rightIndex]->voltage, 1) }}</td>
@@ -350,33 +341,9 @@
                         <td>&nbsp;</td>
                         @endif
                         </tr>
-                        @endfor
+                    @endfor
                 </tbody>
             </table>
-            @else
-            {{-- Single Column Layout --}}
-            <table class="bank-table">
-                <thead>
-                    <tr>
-                        <th colspan="2" class="bank-header">
-                            Bank: {{ $bankNumber }}<br>Batt. Brand: {{ $readings->first()->battery_brand }}
-                        </th>
-                    </tr>
-                    <tr>
-                        <th width="40%">No</th>
-                        <th width="60%">Voltage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($sortedReadings as $reading)
-                    <tr>
-                        <td>{{ $reading->battery_number }}</td>
-                        <td>{{ number_format($reading->voltage, 1) }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            @endif
             @endforeach
         </div>
         <div class="clear"></div>
@@ -411,26 +378,22 @@
                         <td>{{ $maintenance->technician_1_company ?? 'PT. Aplikarusa Lintasarta' }}</td>
                         <td>&nbsp;</td>
                     </tr>
-                    @if($maintenance->technician_2_name)
                     <tr>
                         <td class="center">2</td>
-                        <td>{{ $maintenance->technician_2_name }}</td>
-                        <td>{{ $maintenance->technician_2_company ?? '-' }}</td>
+                        <td>{{ $maintenance->technician_2_name ?? '' }}</td>
+                        <td>{{ $maintenance->technician_2_company ?? '' }}</td>
                         <td>&nbsp;</td>
                     </tr>
-                    @endif
-                    @if($maintenance->technician_3_name)
                     <tr>
                         <td class="center">3</td>
-                        <td>{{ $maintenance->technician_3_name }}</td>
-                        <td>{{ $maintenance->technician_3_company ?? '-' }}</td>
+                        <td>{{ $maintenance->technician_3_name ?? '' }}</td>
+                        <td>{{ $maintenance->technician_3_company ?? '' }}</td>
                         <td>&nbsp;</td>
                     </tr>
-                    @endif
                 </table>
             </div>
             <div style="width: 33%; float: right;">
-                <div class="bold" style="margin-bottom: 3px;">Mengetahui (Supervisor):</div>
+                <div class="bold" style="margin-bottom: 3px; text-align: center;">Mengetahui,</div>
                 <div style="border: 1px solid #000; height: 80px; text-align: center; padding: 5px;">
                     <div style="height: 40px;"></div>
                     <div>{{ $maintenance->supervisor ?? '____________________' }}</div>

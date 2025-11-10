@@ -19,11 +19,10 @@ class BatteryController extends Controller
      */
     // In your BatteryController.php (or similar)
 
-    public function index(Request $request)
+   public function index(Request $request)
     {
-        $query = BatteryMaintenance::query(); // Adjust model name as needed
+        $query = BatteryMaintenance::query();
 
-        // Apply filters if present
         if ($request->filled('location')) {
             $query->where('location', 'like', '%' . $request->location . '%');
         }
@@ -36,25 +35,18 @@ class BatteryController extends Controller
             $query->whereDate('maintenance_date', '<=', $request->date_to);
         }
 
-        // Get paginated results with relationships
         $maintenances = $query->with('readings')
             ->orderBy('maintenance_date', 'desc')
-            ->paginate(10); // Adjust per page as needed
+            ->paginate(10);
 
         return view('battery.index', compact('maintenances'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('battery.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         try {
@@ -73,6 +65,9 @@ class BatteryController extends Controller
                 'technician_3_name' => 'nullable|string|max:255',
                 'technician_3_company' => 'nullable|string|max:255',
 
+                // Validasi Supervisor (BARU)
+                'supervisor' => 'nullable|string|max:255',
+
                 // Validasi Readings
                 'readings' => 'required|array|min:1',
                 'readings.*.bank_number' => 'required|integer|min:1',
@@ -87,12 +82,10 @@ class BatteryController extends Controller
 
             DB::beginTransaction();
 
-            // Generate Document Number
             $lastMaintenance = BatteryMaintenance::latest('id')->first();
             $nextNumber = $lastMaintenance ? $lastMaintenance->id + 1 : 1;
             $docNumber = 'FM-LAP-D2-SOP-003-013-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
-            // Simpan Maintenance Data
             $maintenance = BatteryMaintenance::create([
                 'location' => $validated['location'],
                 'maintenance_date' => $validated['maintenance_date'],
@@ -102,17 +95,15 @@ class BatteryController extends Controller
                 'doc_number' => $docNumber,
                 'user_id' => Auth::id(),
                 'technician_name' => $validated['technician_1_name'],
-
-                // Data Pelaksana Baru
                 'technician_1_name' => $validated['technician_1_name'],
                 'technician_1_company' => $validated['technician_1_company'],
                 'technician_2_name' => $validated['technician_2_name'] ?? null,
                 'technician_2_company' => $validated['technician_2_company'] ?? null,
                 'technician_3_name' => $validated['technician_3_name'] ?? null,
                 'technician_3_company' => $validated['technician_3_company'] ?? null,
+                'supervisor' => $validated['supervisor'] ?? null, // BARU
             ]);
 
-            // Simpan Readings dengan Photo
             foreach ($validated['readings'] as $reading) {
                 $readingData = [
                     'battery_maintenance_id' => $maintenance->id,
@@ -122,20 +113,16 @@ class BatteryController extends Controller
                     'voltage' => $reading['voltage'],
                 ];
 
-                // Process Photo if exists
                 if (!empty($reading['photo_data'])) {
                     $photoData = $reading['photo_data'];
 
-                    // Remove data:image/jpeg;base64, prefix
                     if (preg_match('/^data:image\/(\w+);base64,/', $photoData, $type)) {
                         $photoData = substr($photoData, strpos($photoData, ',') + 1);
                         $photoData = base64_decode($photoData);
 
-                        // Generate filename
                         $filename = 'battery_' . $maintenance->id . '_' . $reading['bank_number'] . '_' . $reading['battery_number'] . '_' . time() . '.jpg';
                         $path = 'battery_photos/' . $filename;
 
-                        // Save to storage
                         Storage::disk('public')->put($path, $photoData);
 
                         $readingData['photo_path'] = $path;
@@ -162,9 +149,6 @@ class BatteryController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $maintenance = BatteryMaintenance::with(['readings' => function ($query) {
@@ -174,163 +158,184 @@ class BatteryController extends Controller
         return view('battery.show', compact('maintenance'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $maintenance = BatteryMaintenance::with('readings')->findOrFail($id);
         return view('battery.edit', compact('maintenance'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'location' => 'required|string|max:255',
-            'maintenance_date' => 'required|date',
-            'battery_brand' => 'required|string|max:255',
-            'company' => 'nullable|string|max:255',
-            'battery_temperature' => 'nullable|numeric',
-            'notes' => 'nullable|string',
-            'technician_1_name' => 'required|string|max:255',
-            'technician_1_company' => 'required|string|max:255',
-            'technician_2_name' => 'nullable|string|max:255',
-            'technician_2_company' => 'nullable|string|max:255',
-            'technician_3_name' => 'nullable|string|max:255',
-            'technician_3_company' => 'nullable|string|max:255',
-            'readings' => 'required|array|min:1',
-            'readings.*.bank_number' => 'required|integer|min:1',
-            'readings.*.battery_number' => 'required|integer|min:1',
-            'readings.*.voltage' => 'required|numeric|min:0|max:20',
-            'readings.*.battery_brand' => 'required|string|max:255',
-        ]);
+        try {
+            $validated = $request->validate([
+                'location' => 'required|string|max:255',
+                'maintenance_date' => 'required|date',
+                'battery_temperature' => 'nullable|numeric',
+                'company' => 'nullable|string|max:255',
+                'battery_brand' => 'required|string|max:255',
+                'notes' => 'nullable|string',
+                'technician_1_name' => 'required|string|max:255',
+                'technician_1_company' => 'required|string|max:255',
+                'technician_2_name' => 'nullable|string|max:255',
+                'technician_2_company' => 'nullable|string|max:255',
+                'technician_3_name' => 'nullable|string|max:255',
+                'technician_3_company' => 'nullable|string|max:255',
+                'supervisor' => 'nullable|string|max:255', // BARU
+                'readings' => 'required|array|min:1',
+                'readings.*.id' => 'nullable|integer|exists:battery_readings,id',
+                'readings.*.bank_number' => 'required|integer|min:1',
+                'readings.*.battery_number' => 'required|integer|min:1',
+                'readings.*.voltage' => 'required|numeric|min:0|max:20',
+                'readings.*.battery_brand' => 'required|string|max:255',
+                'readings.*.photo_data' => 'nullable|string',
+                'readings.*.photo_latitude' => 'nullable|numeric',
+                'readings.*.photo_longitude' => 'nullable|numeric',
+                'readings.*.photo_timestamp' => 'nullable|date',
+                'readings.*.keep_photo' => 'nullable|in:0,1',
+            ]);
 
-        $battery = Battery::findOrFail($id);
+            DB::beginTransaction();
 
-        // Update main battery data
-        $battery->update([
-            'location' => $request->location,
-            'maintenance_date' => $request->maintenance_date,
-            'battery_brand' => $request->battery_brand,
-            'company' => $request->company,
-            'battery_temperature' => $request->battery_temperature,
-            'notes' => $request->notes,
-            'technician_1_name' => $request->technician_1_name,
-            'technician_1_company' => $request->technician_1_company,
-            'technician_2_name' => $request->technician_2_name,
-            'technician_2_company' => $request->technician_2_company,
-            'technician_3_name' => $request->technician_3_name,
-            'technician_3_company' => $request->technician_3_company,
-        ]);
+            $maintenance = BatteryMaintenance::findOrFail($id);
 
-        // Track which reading IDs are being kept
-        $keptReadingIds = [];
+            $maintenance->update([
+                'location' => $validated['location'],
+                'maintenance_date' => $validated['maintenance_date'],
+                'battery_temperature' => $validated['battery_temperature'] ?? null,
+                'company' => $validated['company'] ?? 'PT. Aplikarusa Lintasarta',
+                'notes' => $validated['notes'] ?? null,
+                'technician_1_name' => $validated['technician_1_name'],
+                'technician_1_company' => $validated['technician_1_company'],
+                'technician_2_name' => $validated['technician_2_name'] ?? null,
+                'technician_2_company' => $validated['technician_2_company'] ?? null,
+                'technician_3_name' => $validated['technician_3_name'] ?? null,
+                'technician_3_company' => $validated['technician_3_company'] ?? null,
+                'supervisor' => $validated['supervisor'] ?? null, // BARU
+                'technician_name' => $validated['technician_1_name'],
+            ]);
 
-        // Handle readings
-        foreach ($request->readings as $index => $readingData) {
-            if (isset($readingData['id']) && !empty($readingData['id'])) {
-                // Update existing reading
-                $reading = BatteryReading::find($readingData['id']);
+            $keptReadingIds = [];
 
-                if ($reading && $reading->battery_id == $battery->id) {
-                    $keptReadingIds[] = $reading->id;
+            foreach ($validated['readings'] as $index => $readingData) {
+                if (isset($readingData['id']) && !empty($readingData['id'])) {
+                    $reading = BatteryReading::find($readingData['id']);
 
-                    // Check if we should keep the existing photo or replace it
-                    $shouldKeepPhoto = isset($readingData['keep_photo']) &&
-                        $readingData['keep_photo'] == '1' &&
-                        empty($readingData['photo_data']);
+                    if ($reading && $reading->battery_maintenance_id == $maintenance->id) {
+                        $keptReadingIds[] = $reading->id;
 
-                    if ($shouldKeepPhoto) {
-                        // Keep existing photo - only update battery data
-                        $reading->update([
+                        $updateData = [
                             'bank_number' => $readingData['bank_number'],
                             'battery_number' => $readingData['battery_number'],
                             'voltage' => $readingData['voltage'],
                             'battery_brand' => $readingData['battery_brand'],
-                        ]);
-                    } else if (!empty($readingData['photo_data'])) {
-                        // Replace with new photo
-                        // Delete old photo if exists
-                        if ($reading->photo_path && Storage::exists('public/' . $reading->photo_path)) {
-                            Storage::delete('public/' . $reading->photo_path);
+                        ];
+
+                        $shouldKeepPhoto = isset($readingData['keep_photo']) &&
+                            $readingData['keep_photo'] == '1' &&
+                            empty($readingData['photo_data']);
+
+                        if ($shouldKeepPhoto) {
+                            $reading->update($updateData);
+                        } else if (!empty($readingData['photo_data'])) {
+                            if ($reading->photo_path && Storage::disk('public')->exists($reading->photo_path)) {
+                                Storage::disk('public')->delete($reading->photo_path);
+                            }
+
+                            $photoData = $readingData['photo_data'];
+                            if (preg_match('/^data:image\/(\w+);base64,/', $photoData, $type)) {
+                                $photoData = substr($photoData, strpos($photoData, ',') + 1);
+                                $photoData = base64_decode($photoData);
+
+                                $filename = 'battery_' . $maintenance->id . '_' . $readingData['bank_number'] . '_' . $readingData['battery_number'] . '_' . time() . '.jpg';
+                                $path = 'battery_photos/' . $filename;
+
+                                Storage::disk('public')->put($path, $photoData);
+
+                                $updateData['photo_path'] = $path;
+                                $updateData['photo_latitude'] = $readingData['photo_latitude'] ?? null;
+                                $updateData['photo_longitude'] = $readingData['photo_longitude'] ?? null;
+                                $updateData['photo_timestamp'] = $readingData['photo_timestamp'] ?? null;
+                            }
+
+                            $reading->update($updateData);
+                        } else if (isset($readingData['keep_photo']) && $readingData['keep_photo'] == '0') {
+                            if ($reading->photo_path && Storage::disk('public')->exists($reading->photo_path)) {
+                                Storage::disk('public')->delete($reading->photo_path);
+                            }
+
+                            $updateData['photo_path'] = null;
+                            $updateData['photo_latitude'] = null;
+                            $updateData['photo_longitude'] = null;
+                            $updateData['photo_timestamp'] = null;
+
+                            $reading->update($updateData);
+                        } else {
+                            $reading->update($updateData);
                         }
-
-                        // Save new photo
-                        $photoPath = $this->saveBase64Image($readingData['photo_data']);
-
-                        $reading->update([
-                            'bank_number' => $readingData['bank_number'],
-                            'battery_number' => $readingData['battery_number'],
-                            'voltage' => $readingData['voltage'],
-                            'battery_brand' => $readingData['battery_brand'],
-                            'photo_path' => $photoPath,
-                            'photo_latitude' => $readingData['photo_latitude'] ?? null,
-                            'photo_longitude' => $readingData['photo_longitude'] ?? null,
-                            'photo_timestamp' => $readingData['photo_timestamp'] ?? null,
-                        ]);
-                    } else {
-                        // No photo data and not keeping photo - just update data
-                        $reading->update([
-                            'bank_number' => $readingData['bank_number'],
-                            'battery_number' => $readingData['battery_number'],
-                            'voltage' => $readingData['voltage'],
-                            'battery_brand' => $readingData['battery_brand'],
-                        ]);
                     }
+                } else {
+                    $newReadingData = [
+                        'battery_maintenance_id' => $maintenance->id,
+                        'bank_number' => $readingData['bank_number'],
+                        'battery_number' => $readingData['battery_number'],
+                        'voltage' => $readingData['voltage'],
+                        'battery_brand' => $readingData['battery_brand'],
+                    ];
+
+                    if (!empty($readingData['photo_data'])) {
+                        $photoData = $readingData['photo_data'];
+
+                        if (preg_match('/^data:image\/(\w+);base64,/', $photoData, $type)) {
+                            $photoData = substr($photoData, strpos($photoData, ',') + 1);
+                            $photoData = base64_decode($photoData);
+
+                            $filename = 'battery_' . $maintenance->id . '_' . $readingData['bank_number'] . '_' . $readingData['battery_number'] . '_' . time() . '.jpg';
+                            $path = 'battery_photos/' . $filename;
+
+                            Storage::disk('public')->put($path, $photoData);
+
+                            $newReadingData['photo_path'] = $path;
+                            $newReadingData['photo_latitude'] = $readingData['photo_latitude'] ?? null;
+                            $newReadingData['photo_longitude'] = $readingData['photo_longitude'] ?? null;
+                            $newReadingData['photo_timestamp'] = $readingData['photo_timestamp'] ?? null;
+                        }
+                    }
+
+                    $newReading = BatteryReading::create($newReadingData);
+                    $keptReadingIds[] = $newReading->id;
                 }
-            } else {
-                // Create new reading (for newly added batteries during edit)
-                $newReadingData = [
-                    'battery_id' => $battery->id,
-                    'bank_number' => $readingData['bank_number'],
-                    'battery_number' => $readingData['battery_number'],
-                    'voltage' => $readingData['voltage'],
-                    'battery_brand' => $readingData['battery_brand'],
-                ];
+            }
 
-                // Handle photo if exists
-                if (!empty($readingData['photo_data'])) {
-                    $photoPath = $this->saveBase64Image($readingData['photo_data']);
-                    $newReadingData['photo_path'] = $photoPath;
-                    $newReadingData['photo_latitude'] = $readingData['photo_latitude'] ?? null;
-                    $newReadingData['photo_longitude'] = $readingData['photo_longitude'] ?? null;
-                    $newReadingData['photo_timestamp'] = $readingData['photo_timestamp'] ?? null;
+            $deletedReadings = BatteryReading::where('battery_maintenance_id', $maintenance->id)
+                ->whereNotIn('id', $keptReadingIds)
+                ->get();
+
+            foreach ($deletedReadings as $deletedReading) {
+                if ($deletedReading->photo_path && Storage::disk('public')->exists($deletedReading->photo_path)) {
+                    Storage::disk('public')->delete($deletedReading->photo_path);
                 }
-
-                $newReading = BatteryReading::create($newReadingData);
-                $keptReadingIds[] = $newReading->id;
+                $deletedReading->delete();
             }
+
+            DB::commit();
+
+            return redirect()->route('battery.index')
+                ->with('success', 'Data Preventive Maintenance Battery berhasil diupdate!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating battery maintenance: ' . $e->getMessage());
+
+            return back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan saat mengupdate data: ' . $e->getMessage());
         }
-
-        // Delete readings that were removed (not in the kept list)
-        $deletedReadings = BatteryReading::where('battery_id', $battery->id)
-            ->whereNotIn('id', $keptReadingIds)
-            ->get();
-
-        foreach ($deletedReadings as $deletedReading) {
-            // Delete photo if exists
-            if ($deletedReading->photo_path && Storage::exists('public/' . $deletedReading->photo_path)) {
-                Storage::delete('public/' . $deletedReading->photo_path);
-            }
-            $deletedReading->delete();
-        }
-
-        return redirect()->route('battery.index')
-            ->with('success', 'Data battery maintenance berhasil diupdate!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         try {
             $maintenance = BatteryMaintenance::findOrFail($id);
 
-            // Delete all photos
             foreach ($maintenance->readings as $reading) {
                 if ($reading->photo_path && Storage::disk('public')->exists($reading->photo_path)) {
                     Storage::disk('public')->delete($reading->photo_path);
@@ -347,9 +352,6 @@ class BatteryController extends Controller
         }
     }
 
-    /**
-     * Generate PDF for the specified resource.
-     */
     public function pdf(string $id)
     {
         $maintenance = BatteryMaintenance::with(['readings' => function ($query) {
@@ -361,6 +363,7 @@ class BatteryController extends Controller
 
         return $pdf->stream('Battery-Maintenance-' . $maintenance->doc_number . '.pdf');
     }
+
 
     /**
      * Save base64 image to storage

@@ -351,7 +351,7 @@
                                         <input type="file" name="images_ac_voltage[]" multiple accept="image/*"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Max: 5MB/file</p>
-                                        
+
                                         @if(isset($maintenance))
                                         <div class="mt-3 grid grid-cols-2 gap-2">
                                             @foreach($maintenance->getImagesByCategory('ac_voltage') as $image)
@@ -420,7 +420,7 @@
                                         <input type="file" name="images_ac_current[]" multiple accept="image/*"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
-                                        
+
                                         @if(isset($maintenance))
                                         <div class="mt-3 grid grid-cols-2 gap-2">
                                             @foreach($maintenance->getImagesByCategory('ac_current') as $image)
@@ -752,7 +752,7 @@
                                         <input type="file" name="images_rectifier_test[]" multiple accept="image/*"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG</p>
-                                        
+
                                         @if(isset($maintenance))
                                         <div class="mt-3 grid grid-cols-2 gap-2">
                                             @foreach($maintenance->getImagesByCategory('rectifier_test') as $image)
@@ -817,7 +817,7 @@
                                                 <input type="file" name="images_battery_voltage_m1[]" multiple accept="image/*"
                                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                                 <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Max: 5MB/file</p>
-                                                
+
                                                 @if(isset($maintenance))
                                                 <div class="mt-3 grid grid-cols-2 gap-2">
                                                     @foreach($maintenance->getImagesByCategory('battery_voltage_m1') as $image)
@@ -887,7 +887,7 @@
                                                 <input type="file" name="images_battery_voltage_m2[]" multiple accept="image/*"
                                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
                                                 <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Max: 5MB/file</p>
-                                                
+
                                                 @if(isset($maintenance))
                                                 <div class="mt-3 grid grid-cols-2 gap-2">
                                                     @foreach($maintenance->getImagesByCategory('battery_voltage_m2') as $image)
@@ -976,8 +976,8 @@
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                                             </svg>
                                                         </button>
-                                                    </div>                                              
-                                                @endforeach 
+                                                    </div>
+                                                @endforeach
                                             </div>
                                         @endif
                                     </div>

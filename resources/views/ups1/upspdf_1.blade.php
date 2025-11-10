@@ -67,12 +67,17 @@
             margin-bottom: 3px;
         }
 
+        /* Footer - Fixed at bottom */
         .page-footer {
-            margin-top: 10px;
-            padding-top: 2px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px 20px;
             border-top: 1px solid #000;
             font-size: 7.5px;
             text-align: left;
+            background: white;
         }
 
         .page-break {
