@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class InverterController extends Controller
 {
@@ -18,6 +19,8 @@ class InverterController extends Controller
         $search = $request->input('search');
         
         $inverter = Inverter::query()
+            ->with('user')
+            ->where('user_id', Auth::id())
             ->when($search, function($query, $search) {
                 return $query->where(function($q) use ($search) {
                     // Pencarian untuk field text standar
@@ -169,7 +172,8 @@ class InverterController extends Controller
             }
 
             // --- SIMPAN DATA INVERTER ---
-            $inverter = Inverter::create([
+            Inverter::create([
+                'user_id' => Auth::id(),
                 'nomor_dokumen' => $validated['nomor_dokumen'],
                 'lokasi' => $validated['lokasi'],
                 'tanggal_dokumentasi' => $validated['tanggal_dokumentasi'],
@@ -189,7 +193,7 @@ class InverterController extends Controller
                 'pelaksana' => $pelaksanaFiltered,
                 'pengawas' => $pengawasFiltered,
                 'data_checklist' => $inverterProcessed,
-                'user_id' => auth()->id(),
+                
             ]);
 
             DB::commit();
@@ -208,7 +212,7 @@ class InverterController extends Controller
      */
     public function show($id)
     {
-        $inverter = Inverter::findOrFail($id);
+        $inverter = Inverter::where('user_id', Auth::id())->findOrFail($id);
         
         // Model sudah auto-cast ke array
         if (!is_array($inverter->data_checklist)) {
@@ -229,7 +233,7 @@ class InverterController extends Controller
      */
     public function edit($id)
     {
-        $inverter = Inverter::findOrFail($id);
+        $inverter = Inverter::where('user_id', Auth::id())->findOrFail($id);
 
         // Model sudah auto-cast ke array
         if (!is_array($inverter->data_checklist)) {
@@ -250,7 +254,7 @@ class InverterController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $inverter = Inverter::findOrFail($id);
+        $inverter = Inverter::where('user_id', Auth::id())->findOrFail($id);
 
         // --- VALIDASI ---
         $validated = $request->validate([
@@ -406,7 +410,7 @@ class InverterController extends Controller
     {
         DB::beginTransaction();
         try {
-            $inverter = Inverter::findOrFail($id);
+            $inverter = Inverter::where('user_id', Auth::id())->findOrFail($id);
 
             // Data sudah auto-cast ke array oleh model
             $dataChecklist = $inverter->data_checklist ?? [];
@@ -442,7 +446,7 @@ class InverterController extends Controller
      */
     public function generatePdf($id)
     {
-        $inverter = Inverter::findOrFail($id);
+        $inverter = Inverter::where('user_id', Auth::id())->findOrFail($id);
 
         // Data sudah auto-cast ke array oleh model
         if (!is_array($inverter->data_checklist)) {

@@ -6,6 +6,7 @@ use App\Models\Dokumentasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class DokumentasiController extends Controller
 {
@@ -17,6 +18,8 @@ class DokumentasiController extends Controller
         $search = $request->input('search');
         
         $dokumentasi = Dokumentasi::query()
+            ->with('user')
+            ->where('user_id', Auth::id())
             ->when($search, function($query, $search) {
                 return $query->where(function($q) use ($search) {
                     $q->where('lokasi', 'like', "%{$search}%")
@@ -115,7 +118,7 @@ class DokumentasiController extends Controller
 
         // Create dokumentasi
         Dokumentasi::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'nomor_dokumen' => $validated['nomor_dokumen'],
             'lokasi' => $validated['lokasi'],
             'tanggal_dokumentasi' => $validated['tanggal_dokumentasi'],
@@ -136,7 +139,7 @@ class DokumentasiController extends Controller
      */
     public function show($id)
     {
-        $dokumentasi = Dokumentasi::findOrFail($id);
+        $dokumentasi = Dokumentasi::where('user_id', Auth::id())->findOrFail($id);
         
         // Decode JSON fields
         $dokumentasi->perangkat_sentral = is_string($dokumentasi->perangkat_sentral) 
@@ -159,7 +162,7 @@ class DokumentasiController extends Controller
      */
     public function edit($id)
     {
-        $dokumentasi = Dokumentasi::findOrFail($id);
+        $dokumentasi = Dokumentasi::where('user_id', Auth::id())->findOrFail($id);
         
         // Decode JSON fields
         $dokumentasi->perangkat_sentral = is_string($dokumentasi->perangkat_sentral) 
@@ -182,7 +185,7 @@ class DokumentasiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $dokumentasi = Dokumentasi::findOrFail($id);
+        $dokumentasi = Dokumentasi::where('user_id', Auth::id())->findOrFail($id);
         
         // Validasi
         $validated = $request->validate([
@@ -296,7 +299,7 @@ class DokumentasiController extends Controller
      */
     public function destroy($id)
     {
-        $dokumentasi = Dokumentasi::findOrFail($id);
+        $dokumentasi = Dokumentasi::where('user_id', Auth::id())->findOrFail($id);
         
         // Delete photos from perangkat_sentral
         $perangkatSentral = is_string($dokumentasi->perangkat_sentral) 
@@ -336,7 +339,7 @@ class DokumentasiController extends Controller
      */
     public function generatePdf($id)
     {
-        $dokumentasi = Dokumentasi::findOrFail($id);
+        $dokumentasi = Dokumentasi::where('user_id', Auth::id())->findOrFail($id);
         
         // Decode JSON fields
         $dokumentasi->perangkat_sentral = is_string($dokumentasi->perangkat_sentral) 

@@ -16,15 +16,7 @@
     <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <!-- Alert Success -->
-            @if(session('success'))
-                <div class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg">
-                    <div class="flex items-center">
-                        <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
-                        <strong>{{ session('success') }}</strong>
-                    </div>
-                </div>
-            @endif
+            
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6">
