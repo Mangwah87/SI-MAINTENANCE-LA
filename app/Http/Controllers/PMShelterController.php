@@ -51,73 +51,235 @@ class PmShelterController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'location' => 'required|string|max:255',
-            'date' => 'required|date',
-            'time' => 'required',
-            'brand_type' => 'nullable|string|max:255',
-            'reg_number' => 'nullable|string|max:255',
-            'serial_number' => 'nullable|string|max:255',
-            'kondisi_ruangan_result' => 'nullable|string',
-            'kondisi_ruangan_status' => 'required|in:OK,NOK',
-            'kondisi_kunci_result' => 'nullable|string',
-            'kondisi_kunci_status' => 'required|in:OK,NOK',
-            'layout_tata_ruang_result' => 'nullable|string',
-            'layout_tata_ruang_status' => 'required|in:OK,NOK',
-            'kontrol_keamanan_result' => 'nullable|string',
-            'kontrol_keamanan_status' => 'required|in:OK,NOK',
-            'aksesibilitas_result' => 'nullable|string',
-            'aksesibilitas_status' => 'required|in:OK,NOK',
-            'aspek_teknis_result' => 'nullable|string',
-            'aspek_teknis_status' => 'required|in:OK,NOK',
-            'kondisi_ruangan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'kondisi_kunci_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'layout_tata_ruang_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'kontrol_keamanan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'aksesibilitas_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'aspek_teknis_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'kondisi_ruangan_photo_metadata.*' => 'nullable|string',
-            'kondisi_kunci_photo_metadata.*' => 'nullable|string',
-            'layout_tata_ruang_photo_metadata.*' => 'nullable|string',
-            'kontrol_keamanan_photo_metadata.*' => 'nullable|string',
-            'aksesibilitas_photo_metadata.*' => 'nullable|string',
-            'aspek_teknis_photo_metadata.*' => 'nullable|string',
-            'notes' => 'nullable|string',
-            'executors.*.name' => 'required|string|max:255',
-            'executors.*.department' => 'nullable|string|max:255',
-            'executors.*.sub_department' => 'nullable|string|max:255',
-            'approvers.*.name' => 'required|string|max:255',
-            'approvers.*.nik' => 'nullable|string|max:255',
-        ]);
+        try {
+            $validated = $request->validate([
+                'location' => 'required|string|max:255',
+                'date' => 'required|date',
+                'time' => 'required',
+                'brand_type' => 'nullable|string|max:255',
+                'reg_number' => 'nullable|string|max:255',
+                'serial_number' => 'nullable|string|max:255',
+                'kondisi_ruangan_result' => 'nullable|string',
+                'kondisi_ruangan_status' => 'required|in:OK,NOK',
+                'kondisi_kunci_result' => 'nullable|string',
+                'kondisi_kunci_status' => 'required|in:OK,NOK',
+                'layout_tata_ruang_result' => 'nullable|string',
+                'layout_tata_ruang_status' => 'required|in:OK,NOK',
+                'kontrol_keamanan_result' => 'nullable|string',
+                'kontrol_keamanan_status' => 'required|in:OK,NOK',
+                'aksesibilitas_result' => 'nullable|string',
+                'aksesibilitas_status' => 'required|in:OK,NOK',
+                'aspek_teknis_result' => 'nullable|string',
+                'aspek_teknis_status' => 'required|in:OK,NOK',
+                'kondisi_ruangan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'kondisi_kunci_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'layout_tata_ruang_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'kontrol_keamanan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'aksesibilitas_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'aspek_teknis_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'kondisi_ruangan_photo_metadata.*' => 'nullable|string',
+                'kondisi_kunci_photo_metadata.*' => 'nullable|string',
+                'layout_tata_ruang_photo_metadata.*' => 'nullable|string',
+                'kontrol_keamanan_photo_metadata.*' => 'nullable|string',
+                'aksesibilitas_photo_metadata.*' => 'nullable|string',
+                'aspek_teknis_photo_metadata.*' => 'nullable|string',
+                'notes' => 'nullable|string',
+                'executors.*.name' => 'required|string|max:255',
+                'executors.*.department' => 'nullable|string|max:255',
+                'executors.*.sub_department' => 'nullable|string|max:255',
+                'approvers.*.name' => 'required|string|max:255',
+                'approvers.*.nik' => 'nullable|string|max:255',
+            ], [
+                // Custom error messages untuk foto
+                'kondisi_ruangan_photos.*.image' => 'File harus berupa gambar',
+                'kondisi_ruangan_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+                'kondisi_ruangan_photos.*.max' => 'Ukuran foto maksimal 2MB',
 
-        $validated['user_id'] = auth()->id();
+                'kondisi_kunci_photos.*.image' => 'File harus berupa gambar',
+                'kondisi_kunci_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+                'kondisi_kunci_photos.*.max' => 'Ukuran foto maksimal 2MB',
 
-        $executors = [];
-        if ($request->has('executors')) {
-            foreach ($request->executors as $executor) {
-                if (!empty($executor['name'])) {
-                    $executors[] = $executor;
+                'layout_tata_ruang_photos.*.image' => 'File harus berupa gambar',
+                'layout_tata_ruang_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+                'layout_tata_ruang_photos.*.max' => 'Ukuran foto maksimal 2MB',
+
+                'kontrol_keamanan_photos.*.image' => 'File harus berupa gambar',
+                'kontrol_keamanan_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+                'kontrol_keamanan_photos.*.max' => 'Ukuran foto maksimal 2MB',
+
+                'aksesibilitas_photos.*.image' => 'File harus berupa gambar',
+                'aksesibilitas_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+                'aksesibilitas_photos.*.max' => 'Ukuran foto maksimal 2MB',
+
+                'aspek_teknis_photos.*.image' => 'File harus berupa gambar',
+                'aspek_teknis_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+                'aspek_teknis_photos.*.max' => 'Ukuran foto maksimal 2MB',
+            ]);
+
+            $validated['user_id'] = auth()->id();
+
+            $executors = [];
+            if ($request->has('executors')) {
+                foreach ($request->executors as $executor) {
+                    if (!empty($executor['name'])) {
+                        $executors[] = $executor;
+                    }
                 }
             }
-        }
-        $validated['executors'] = $executors;
+            $validated['executors'] = $executors;
 
-        $approvers = [];
-        if ($request->has('approvers')) {
-            foreach ($request->approvers as $approver) {
-                if (!empty($approver['name'])) {
-                    $approvers[] = $approver;
+            $approvers = [];
+            if ($request->has('approvers')) {
+                foreach ($request->approvers as $approver) {
+                    if (!empty($approver['name'])) {
+                        $approvers[] = $approver;
+                    }
                 }
             }
+            $validated['approvers'] = $approvers;
+
+            $validated['photos'] = $this->processAllPhotos($request);
+
+            $pmShelter = PmShelter::create($validated);
+
+            return redirect()->route('pm-shelter.show', $pmShelter->id)
+                ->with('success', 'Data PM Shelter berhasil ditambahkan');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Ambil error pertama untuk ditampilkan
+            $firstError = $e->validator->errors()->first();
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $firstError);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-        $validated['approvers'] = $approvers;
+    }
 
-        $validated['photos'] = $this->processAllPhotos($request);
+    public function update(Request $request, PmShelter $pmShelter)
+    {
+        try {
+            $validated = $request->validate([
+                'location' => 'required|string|max:255',
+                'date' => 'required|date',
+                'time' => 'required',
+                'brand_type' => 'nullable|string|max:255',
+                'reg_number' => 'nullable|string|max:255',
+                'serial_number' => 'nullable|string|max:255',
+                'kondisi_ruangan_result' => 'nullable|string',
+                'kondisi_ruangan_status' => 'required|in:OK,NOK',
+                'kondisi_kunci_result' => 'nullable|string',
+                'kondisi_kunci_status' => 'required|in:OK,NOK',
+                'layout_tata_ruang_result' => 'nullable|string',
+                'layout_tata_ruang_status' => 'required|in:OK,NOK',
+                'kontrol_keamanan_result' => 'nullable|string',
+                'kontrol_keamanan_status' => 'required|in:OK,NOK',
+                'aksesibilitas_result' => 'nullable|string',
+                'aksesibilitas_status' => 'required|in:OK,NOK',
+                'aspek_teknis_result' => 'nullable|string',
+                'aspek_teknis_status' => 'required|in:OK,NOK',
+                'kondisi_ruangan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'kondisi_kunci_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'layout_tata_ruang_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'kontrol_keamanan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'aksesibilitas_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'aspek_teknis_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'kondisi_ruangan_photo_metadata.*' => 'nullable|string',
+                'kondisi_kunci_photo_metadata.*' => 'nullable|string',
+                'layout_tata_ruang_photo_metadata.*' => 'nullable|string',
+                'kontrol_keamanan_photo_metadata.*' => 'nullable|string',
+                'aksesibilitas_photo_metadata.*' => 'nullable|string',
+                'aspek_teknis_photo_metadata.*' => 'nullable|string',
+                'removed_kondisi_ruangan_photos.*' => 'nullable|string',
+                'removed_kondisi_kunci_photos.*' => 'nullable|string',
+                'removed_layout_tata_ruang_photos.*' => 'nullable|string',
+                'removed_kontrol_keamanan_photos.*' => 'nullable|string',
+                'removed_aksesibilitas_photos.*' => 'nullable|string',
+                'removed_aspek_teknis_photos.*' => 'nullable|string',
+                'notes' => 'nullable|string',
+                'executors.*.name' => 'required|string|max:255',
+                'executors.*.department' => 'nullable|string|max:255',
+                'executors.*.sub_department' => 'nullable|string|max:255',
+                'approvers.*.name' => 'required|string|max:255',
+                'approvers.*.nik' => 'nullable|string|max:255',
+            ], [
+                // Custom error messages untuk foto
+                'kondisi_ruangan_photos.*.image' => 'File harus berupa gambar',
+                'kondisi_ruangan_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+                'kondisi_ruangan_photos.*.max' => 'Ukuran foto maksimal 2MB',
 
-        $pmShelter = PmShelter::create($validated);
+                'kondisi_kunci_photos.*.image' => 'File harus berupa gambar',
+                'kondisi_kunci_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+                'kondisi_kunci_photos.*.max' => 'Ukuran foto maksimal 2MB',
 
-        return redirect()->route('pm-shelter.show', $pmShelter->id)
-            ->with('success', 'Data PM Shelter berhasil ditambahkan');
+                'layout_tata_ruang_photos.*.image' => 'File harus berupa gambar',
+                'layout_tata_ruang_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+                'layout_tata_ruang_photos.*.max' => 'Ukuran foto maksimal 2MB',
+
+                'kontrol_keamanan_photos.*.image' => 'File harus berupa gambar',
+                'kontrol_keamanan_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+                'kontrol_keamanan_photos.*.max' => 'Ukuran foto maksimal 2MB',
+
+                'aksesibilitas_photos.*.image' => 'File harus berupa gambar',
+                'aksesibilitas_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+                'aksesibilitas_photos.*.max' => 'Ukuran foto maksimal 2MB',
+
+                'aspek_teknis_photos.*.image' => 'File harus berupa gambar',
+                'aspek_teknis_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+                'aspek_teknis_photos.*.max' => 'Ukuran foto maksimal 2MB',
+            ]);
+
+            $executors = [];
+            if ($request->has('executors')) {
+                foreach ($request->executors as $executor) {
+                    if (!empty($executor['name'])) {
+                        $executors[] = $executor;
+                    }
+                }
+            }
+            $validated['executors'] = $executors;
+
+            $approvers = [];
+            if ($request->has('approvers')) {
+                foreach ($request->approvers as $approver) {
+                    if (!empty($approver['name'])) {
+                        $approvers[] = $approver;
+                    }
+                }
+            }
+            $validated['approvers'] = $approvers;
+
+            $existingPhotos = $pmShelter->photos ?? [];
+            $removedPaths = $this->getRemovedPhotoPaths($request);
+
+            foreach ($removedPaths as $path) {
+                Storage::disk('public')->delete($path);
+            }
+
+            $existingPhotos = array_filter($existingPhotos, function ($photo) use ($removedPaths) {
+                return !in_array($photo['path'], $removedPaths);
+            });
+
+            $newPhotos = $this->processAllPhotos($request);
+            $validated['photos'] = array_values(array_merge($existingPhotos, $newPhotos));
+
+            $pmShelter->update($validated);
+
+            return redirect()->route('pm-shelter.show', $pmShelter->id)
+                ->with('success', 'Data PM Shelter berhasil diperbarui');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $firstError = $e->validator->errors()->first();
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $firstError);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function show(PmShelter $pmShelter)
@@ -129,94 +291,6 @@ class PmShelterController extends Controller
     {
         return view('pm-shelter.edit', compact('pmShelter'));
     }
-
-    public function update(Request $request, PmShelter $pmShelter)
-    {
-        $validated = $request->validate([
-            'location' => 'required|string|max:255',
-            'date' => 'required|date',
-            'time' => 'required',
-            'brand_type' => 'nullable|string|max:255',
-            'reg_number' => 'nullable|string|max:255',
-            'serial_number' => 'nullable|string|max:255',
-            'kondisi_ruangan_result' => 'nullable|string',
-            'kondisi_ruangan_status' => 'required|in:OK,NOK',
-            'kondisi_kunci_result' => 'nullable|string',
-            'kondisi_kunci_status' => 'required|in:OK,NOK',
-            'layout_tata_ruang_result' => 'nullable|string',
-            'layout_tata_ruang_status' => 'required|in:OK,NOK',
-            'kontrol_keamanan_result' => 'nullable|string',
-            'kontrol_keamanan_status' => 'required|in:OK,NOK',
-            'aksesibilitas_result' => 'nullable|string',
-            'aksesibilitas_status' => 'required|in:OK,NOK',
-            'aspek_teknis_result' => 'nullable|string',
-            'aspek_teknis_status' => 'required|in:OK,NOK',
-            'kondisi_ruangan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'kondisi_kunci_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'layout_tata_ruang_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'kontrol_keamanan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'aksesibilitas_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'aspek_teknis_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'kondisi_ruangan_photo_metadata.*' => 'nullable|string',
-            'kondisi_kunci_photo_metadata.*' => 'nullable|string',
-            'layout_tata_ruang_photo_metadata.*' => 'nullable|string',
-            'kontrol_keamanan_photo_metadata.*' => 'nullable|string',
-            'aksesibilitas_photo_metadata.*' => 'nullable|string',
-            'aspek_teknis_photo_metadata.*' => 'nullable|string',
-            'removed_kondisi_ruangan_photos.*' => 'nullable|string',
-            'removed_kondisi_kunci_photos.*' => 'nullable|string',
-            'removed_layout_tata_ruang_photos.*' => 'nullable|string',
-            'removed_kontrol_keamanan_photos.*' => 'nullable|string',
-            'removed_aksesibilitas_photos.*' => 'nullable|string',
-            'removed_aspek_teknis_photos.*' => 'nullable|string',
-            'notes' => 'nullable|string',
-            'executors.*.name' => 'required|string|max:255',
-            'executors.*.department' => 'nullable|string|max:255',
-            'executors.*.sub_department' => 'nullable|string|max:255',
-            'approvers.*.name' => 'required|string|max:255',
-            'approvers.*.nik' => 'nullable|string|max:255',
-        ]);
-
-        $executors = [];
-        if ($request->has('executors')) {
-            foreach ($request->executors as $executor) {
-                if (!empty($executor['name'])) {
-                    $executors[] = $executor;
-                }
-            }
-        }
-        $validated['executors'] = $executors;
-
-        $approvers = [];
-        if ($request->has('approvers')) {
-            foreach ($request->approvers as $approver) {
-                if (!empty($approver['name'])) {
-                    $approvers[] = $approver;
-                }
-            }
-        }
-        $validated['approvers'] = $approvers;
-
-        $existingPhotos = $pmShelter->photos ?? [];
-        $removedPaths = $this->getRemovedPhotoPaths($request);
-
-        foreach ($removedPaths as $path) {
-            Storage::disk('public')->delete($path);
-        }
-
-        $existingPhotos = array_filter($existingPhotos, function ($photo) use ($removedPaths) {
-            return !in_array($photo['path'], $removedPaths);
-        });
-
-        $newPhotos = $this->processAllPhotos($request);
-        $validated['photos'] = array_values(array_merge($existingPhotos, $newPhotos));
-
-        $pmShelter->update($validated);
-
-        return redirect()->route('pm-shelter.show', $pmShelter->id)
-            ->with('success', 'Data PM Shelter berhasil diperbarui');
-    }
-
     public function destroy(PmShelter $pmShelter)
     {
         if ($pmShelter->photos) {
