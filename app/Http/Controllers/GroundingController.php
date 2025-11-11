@@ -17,7 +17,10 @@ class GroundingController extends Controller
      */
     public function index()
     {
-        $maintenances = GroundingMaintenance::latest()->paginate(10);
+        $maintenances = GroundingMaintenance::with('user') // Opsi: sama seperti UPS
+            ->where('user_id', auth()->id())               // <--- INI BAGIAN PENTING
+            ->latest('maintenance_date')                  // <--- Sortir berdasarkan tanggal
+            ->paginate(10);
         return view('grounding.index', compact('maintenances')); // View path: grounding.index
     }
 
@@ -62,6 +65,7 @@ class GroundingController extends Controller
             // Use correct Doc Number from PDF 
             $validatedData['doc_number'] = sprintf('FM-LAP/%s/%s/%03d/%s', 'D2-SOP-003-011', $locationCode, $count, $date->format('Y'));
 
+            $validatedData['user_id'] = auth()->id();
 
             $maintenance = GroundingMaintenance::create($validatedData);
             Log::info('Grounding Maintenance Created:', ['id' => $maintenance->id, 'images_count' => count($savedImages)]);
@@ -80,7 +84,8 @@ class GroundingController extends Controller
      */
     public function show($id) // Use $id directly
     {
-        $maintenance = GroundingMaintenance::findOrFail($id);
+        $maintenance = GroundingMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
         return view('grounding.show', compact('maintenance')); // View path: grounding.show
     }
 
@@ -89,7 +94,8 @@ class GroundingController extends Controller
      */
     public function edit($id) // Use $id directly
     {
-        $maintenance = GroundingMaintenance::findOrFail($id);
+        $maintenance = GroundingMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
         return view('grounding.edit', compact('maintenance')); // View path: grounding.edit
     }
 
@@ -99,7 +105,8 @@ class GroundingController extends Controller
     public function update(Request $request, $id) // Use $id directly
     {
        try {
-            $maintenance = GroundingMaintenance::findOrFail($id);
+            $maintenance = GroundingMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
             $validatedData = $this->validateRequest($request); // Reuse validation
 
             $existingImages = $maintenance->images ?? [];
@@ -160,7 +167,8 @@ class GroundingController extends Controller
     public function destroy($id) // Use $id directly
     {
        try {
-            $maintenance = GroundingMaintenance::findOrFail($id);
+            $maintenance = GroundingMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
             if ($maintenance->images && is_array($maintenance->images)) {
                 foreach ($maintenance->images as $img) {
                     if (isset($img['path'])) Storage::disk('public')->delete($img['path']);
@@ -179,7 +187,8 @@ class GroundingController extends Controller
      */
     public function pdf($id) // Use $id directly
     {
-        $maintenance = GroundingMaintenance::findOrFail($id);
+        $maintenance = GroundingMaintenance::where('user_id', auth()->id())
+                                           ->findOrFail($id);
         $pdf = PDF::loadView('grounding.pdf_template', compact('maintenance')); // View path: grounding.pdf_template
         $pdf->setPaper('a4', 'portrait');
         $safeDocNumber = str_replace(['/', '\\'], '-', $maintenance->doc_number); // Sanitize filename

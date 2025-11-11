@@ -32,4 +32,8 @@ class CablePanelMaintenance extends Model
         'maintenance_date' => 'datetime',
         'images' => 'array',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -106,6 +106,8 @@ return new class extends Migration
             $table->string('approver_name')->nullable();
             $table->string('approver_department')->nullable();
 
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+
             $table->timestamps();
         });
     }

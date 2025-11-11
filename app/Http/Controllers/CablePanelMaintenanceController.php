@@ -17,7 +17,10 @@ class CablePanelMaintenanceController extends Controller
      */
     public function index()
     {
-        $maintenances = CablePanelMaintenance::latest()->paginate(10);
+        $maintenances = CablePanelMaintenance::with('user') // Opsi: sama seperti UPS
+            ->where('user_id', auth()->id())               // <--- INI BAGIAN PENTING
+            ->latest('maintenance_date')                  // <--- Sortir berdasarkan tanggal
+            ->paginate(10);
         return view('cable-panel.index', compact('maintenances')); // Path view baru
     }
 
@@ -62,6 +65,7 @@ class CablePanelMaintenanceController extends Controller
             // Menggunakan Doc Number dari PDF Kabel Panel (FM-LAP-D2-SOP-003-012)
             $validatedData['doc_number'] = sprintf('FM-LAP/%s/%s/%03d/%s', 'D2-SOP-003-012', $locationCode, $count, $date->format('Y'));
 
+            $validatedData['user_id'] = auth()->id();
 
             $maintenance = CablePanelMaintenance::create($validatedData);
             Log::info('Cable Panel Maintenance Created:', ['id' => $maintenance->id, 'images_count' => count($savedImages)]);
@@ -80,7 +84,8 @@ class CablePanelMaintenanceController extends Controller
      */
     public function show($id)
     {
-        $maintenance = CablePanelMaintenance::findOrFail($id);
+        $maintenance = CablePanelMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
         return view('cable-panel.show', compact('maintenance')); // Path view baru
     }
 
@@ -89,7 +94,8 @@ class CablePanelMaintenanceController extends Controller
      */
     public function edit($id)
     {
-        $maintenance = CablePanelMaintenance::findOrFail($id);
+        $maintenance = CablePanelMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
         return view('cable-panel.edit', compact('maintenance')); // Path view baru
     }
 
@@ -99,7 +105,8 @@ class CablePanelMaintenanceController extends Controller
     public function update(Request $request, $id)
     {
        try {
-            $maintenance = CablePanelMaintenance::findOrFail($id);
+            $maintenance = CablePanelMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
             $validatedData = $this->validateRequest($request); // Reuse validation
 
             $existingImages = $maintenance->images ?? [];
@@ -160,7 +167,8 @@ class CablePanelMaintenanceController extends Controller
     public function destroy($id)
     {
        try {
-            $maintenance = CablePanelMaintenance::findOrFail($id);
+            $maintenance = CablePanelMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
             if ($maintenance->images && is_array($maintenance->images)) {
                 foreach ($maintenance->images as $img) {
                     if (isset($img['path'])) Storage::disk('public')->delete($img['path']);
@@ -179,7 +187,8 @@ class CablePanelMaintenanceController extends Controller
      */
     public function pdf($id)
     {
-        $maintenance = CablePanelMaintenance::findOrFail($id);
+        $maintenance = CablePanelMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
         $pdf = PDF::loadView('cable-panel.pdf_template', compact('maintenance')); // Path view baru
         $pdf->setPaper('a4', 'portrait');
         $safeDocNumber = str_replace(['/', '\\'], '-', $maintenance->doc_number); // Sanitize filename
