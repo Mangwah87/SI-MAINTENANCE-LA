@@ -236,7 +236,10 @@ class RectifierMaintenanceController extends Controller
                 ->setOption('enable_php', true)
                 ->setOption('dpi', 96);
 
-            $filename = 'PM-Rectifier-' . $maintenance->location . '-' . date('Y-m-d', strtotime($maintenance->date_time)) . '.pdf';
+            // Format filename menggunakan date_time dengan format: YYYYMMDD_HHMMSS
+            $dateFormatted = date('dd-mm-yyyy', strtotime($maintenance->date_time));
+
+            $filename = 'PM-Rectifier-' . $maintenance->location . '-' . $dateFormatted . '.pdf';
 
             return $pdf->stream($filename);
         } catch (\Exception $e) {

@@ -17,11 +17,12 @@ class BatteryController extends Controller
     /**
      * Display a listing of the resource with filtering
      */
-    // In your BatteryController.php (or similar)
-
     public function index(Request $request)
     {
         $query = BatteryMaintenance::query();
+
+        // FILTER BY USER_ID
+        $query->where('user_id', auth()->id());
 
         if ($request->filled('location')) {
             $query->where('location', 'like', '%' . $request->location . '%');
@@ -65,7 +66,7 @@ class BatteryController extends Controller
                 'technician_3_name' => 'nullable|string|max:255',
                 'technician_3_company' => 'nullable|string|max:255',
 
-                // Validasi Supervisor (BARU)
+                // Validasi Supervisor
                 'supervisor' => 'nullable|string|max:255',
 
                 // Validasi Readings
@@ -93,7 +94,7 @@ class BatteryController extends Controller
                 'company' => $validated['company'] ?? 'PT. Aplikarusa Lintasarta',
                 'notes' => $validated['notes'] ?? null,
                 'doc_number' => $docNumber,
-                'user_id' => Auth::id(),
+                'user_id' => Auth::id(), // USER_ID SUDAH ADA
                 'technician_name' => $validated['technician_1_name'],
                 'technician_1_name' => $validated['technician_1_name'],
                 'technician_1_company' => $validated['technician_1_company'],
@@ -101,7 +102,7 @@ class BatteryController extends Controller
                 'technician_2_company' => $validated['technician_2_company'] ?? null,
                 'technician_3_name' => $validated['technician_3_name'] ?? null,
                 'technician_3_company' => $validated['technician_3_company'] ?? null,
-                'supervisor' => $validated['supervisor'] ?? null, // BARU
+                'supervisor' => $validated['supervisor'] ?? null,
             ]);
 
             foreach ($validated['readings'] as $reading) {
@@ -151,19 +152,25 @@ class BatteryController extends Controller
 
     public function show(string $id)
     {
-        $maintenance = BatteryMaintenance::with([
-            'readings' => function ($query) {
-                $query->orderBy('bank_number')->orderBy('battery_number');
-            },
-            'user'
-        ])->findOrFail($id);
+        // CHECK USER_ID
+        $maintenance = BatteryMaintenance::with(['readings' => function ($query) {
+            $query->orderBy('bank_number')->orderBy('battery_number');
+        }, 'user'])
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
         return view('battery.show', compact('maintenance'));
     }
 
     public function edit(string $id)
     {
-        $maintenance = BatteryMaintenance::with('readings')->findOrFail($id);
+        // CHECK USER_ID
+        $maintenance = BatteryMaintenance::with('readings')
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
         return view('battery.edit', compact('maintenance'));
     }
 
@@ -183,7 +190,7 @@ class BatteryController extends Controller
                 'technician_2_company' => 'nullable|string|max:255',
                 'technician_3_name' => 'nullable|string|max:255',
                 'technician_3_company' => 'nullable|string|max:255',
-                'supervisor' => 'nullable|string|max:255', // BARU
+                'supervisor' => 'nullable|string|max:255',
                 'readings' => 'required|array|min:1',
                 'readings.*.id' => 'nullable|integer|exists:battery_readings,id',
                 'readings.*.bank_number' => 'required|integer|min:1',
@@ -199,7 +206,10 @@ class BatteryController extends Controller
 
             DB::beginTransaction();
 
-            $maintenance = BatteryMaintenance::findOrFail($id);
+            // CHECK USER_ID
+            $maintenance = BatteryMaintenance::where('id', $id)
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
 
             $maintenance->update([
                 'location' => $validated['location'],
@@ -213,7 +223,7 @@ class BatteryController extends Controller
                 'technician_2_company' => $validated['technician_2_company'] ?? null,
                 'technician_3_name' => $validated['technician_3_name'] ?? null,
                 'technician_3_company' => $validated['technician_3_company'] ?? null,
-                'supervisor' => $validated['supervisor'] ?? null, // BARU
+                'supervisor' => $validated['supervisor'] ?? null,
                 'technician_name' => $validated['technician_1_name'],
             ]);
 
@@ -337,7 +347,10 @@ class BatteryController extends Controller
     public function destroy(string $id)
     {
         try {
-            $maintenance = BatteryMaintenance::findOrFail($id);
+            // CHECK USER_ID
+            $maintenance = BatteryMaintenance::where('id', $id)
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
 
             foreach ($maintenance->readings as $reading) {
                 if ($reading->photo_path && Storage::disk('public')->exists($reading->photo_path)) {
@@ -357,19 +370,23 @@ class BatteryController extends Controller
 
     public function pdf(string $id)
     {
-        $maintenance = BatteryMaintenance::with([
-            'readings' => function ($query) {
-                $query->orderBy('bank_number')->orderBy('battery_number');
-            },
-            'user'
-        ])->findOrFail($id);
+        // CHECK USER_ID
+        $maintenance = BatteryMaintenance::with(['readings' => function ($query) {
+            $query->orderBy('bank_number')->orderBy('battery_number');
+        }, 'user'])
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
         $pdf = Pdf::loadView('battery.pdf', compact('maintenance'))
             ->setPaper('a4', 'portrait');
 
-        return $pdf->stream('Battery-Maintenance-' . $maintenance->doc_number . '.pdf');
-    }
+        // Format nama file dengan maintenance_date
+        $formattedDate = date('Y-m-d', strtotime($maintenance->maintenance_date));
+        $filename = 'Battery-Maintenance-' . $maintenance->location . '-' . $formattedDate . '.pdf';
 
+        return $pdf->stream($filename);
+    }
 
     /**
      * Save base64 image to storage

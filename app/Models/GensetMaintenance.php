@@ -25,4 +25,8 @@ class GensetMaintenance extends Model
         'maintenance_date' => 'datetime',
         'images' => 'array', // <-- TAMBAHKAN INI
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
