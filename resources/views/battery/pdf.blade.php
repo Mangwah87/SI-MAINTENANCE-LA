@@ -221,7 +221,7 @@
     }
 
     // Calculate total pages
-    $imagesPerPage = 9;
+    $imagesPerPage = 6;
     $totalImagePages = !empty($photos) ? ceil(count($photos) / $imagesPerPage) : 0;
     $totalPages = 1 + $totalImagePages;
     @endphp
@@ -292,60 +292,62 @@
         <!-- <div class="section-title">Battery Voltage Readings</div> -->
 
         @php
-        $readingsByBank = $maintenance->readings->groupBy('bank_number')->sortKeys();
+$readingsByBank = $maintenance->readings->groupBy('bank_number')->sortKeys();
+@endphp
+
+<div class="bank-container">
+    @foreach($readingsByBank as $bankNumber => $readings)
+        @php
+            $sortedReadings = $readings->sortBy('battery_number')->values();
+            $total = $sortedReadings->count();
+
+            // Gunakan 2 kolom: jadi total baris = ceil(total / 2)
+            $columns = 2;
+            $rows = ceil($total / $columns);
         @endphp
 
-        <div class="bank-container">
-            @foreach($readingsByBank as $bankNumber => $readings)
-            @php
-            $sortedReadings = $readings->sortBy('battery_number')->values();
-            // Always use dual column layout for 32 batteries (16 rows)
-            $maxRows = 16;
-            $totalSlots = 32;
-            @endphp
-
-            {{-- Dual Column Layout (Always 32 slots / 16 rows) --}}
-            <table class="bank-table-wide">
-                <thead>
+        <table class="bank-table-wide">
+            <thead>
+                <tr>
+                    <th colspan="4" class="bank-header">
+                        Bank: {{ $bankNumber }} | Batt. Brand: {{ $sortedReadings->first()->battery_brand ?? '-' }}
+                    </th>
+                </tr>
+                <tr>
+                    <th width="25%">No</th>
+                    <th width="25%">Voltage</th>
+                    <th width="25%">No</th>
+                    <th width="25%">Voltage</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for($i = 0; $i < $rows; $i++)
+                    @php $rightIndex = $i + $rows; @endphp
                     <tr>
-                        <th colspan="4" class="bank-header">
-                            Bank: {{ $bankNumber }} | Batt. Brand: {{ $readings->first()->battery_brand }}
-                        </th>
-                    </tr>
-                    <tr>
-                        <th width="25%">No</th>
-                        <th width="25%">Voltage</th>
-                        <th width="25%">No</th>
-                        <th width="25%">Voltage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for($i = 0; $i < $maxRows; $i++)
-                        <tr>
-                        {{-- Left Column (Battery 1-16) --}}
+                        {{-- Kolom kiri --}}
                         @if(isset($sortedReadings[$i]))
-                        <td>{{ $sortedReadings[$i]->battery_number }}</td>
-                        <td>{{ number_format($sortedReadings[$i]->voltage, 1) }}</td>
+                            <td>{{ $sortedReadings[$i]->battery_number }}</td>
+                            <td>{{ number_format($sortedReadings[$i]->voltage, 2) }}</td>
                         @else
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
                         @endif
 
-                        {{-- Right Column (Battery 17-32) --}}
-                        @php $rightIndex = $i + $maxRows; @endphp
+                        {{-- Kolom kanan --}}
                         @if(isset($sortedReadings[$rightIndex]))
-                        <td>{{ $sortedReadings[$rightIndex]->battery_number }}</td>
-                        <td>{{ number_format($sortedReadings[$rightIndex]->voltage, 1) }}</td>
+                            <td>{{ $sortedReadings[$rightIndex]->battery_number }}</td>
+                            <td>{{ number_format($sortedReadings[$rightIndex]->voltage, 2) }}</td>
                         @else
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
                         @endif
-                        </tr>
-                    @endfor
-                </tbody>
-            </table>
-            @endforeach
-        </div>
+                    </tr>
+                @endfor
+            </tbody>
+        </table>
+    @endforeach
+</div>
+
         <div class="clear"></div>
 
         <div class="footer-note">
@@ -394,8 +396,8 @@
             </div>
             <div style="width: 33%; float: right;">
                 <div class="bold" style="margin-bottom: 3px; text-align: center;">Mengetahui,</div>
-                <div style="border: 1px solid #000; height: 80px; text-align: center; padding: 5px;">
-                    <div style="height: 50px;"></div>
+                <div style="border: 1px solid #000; height: 95px; text-align: center; padding: 5px;">
+                    <div style="height: 65px;"></div>
                     <div>{{ $maintenance->supervisor ?? '____________________' }}</div>
                 </div>
             </div>
@@ -482,7 +484,7 @@
                 </div>
                 <div style="font-size: 8pt; font-weight: bold; color: #000; padding: 4px 2px; background: #f5f5f5; text-align: center; line-height: 1.2; margin: 0;">
                     Bank {{ $photo['bank'] }} - No. {{ $photo['battery'] }}<br>
-                    Voltage: {{ number_format($photo['voltage'], 1) }} VDC
+                    Voltage: {{ number_format($photo['voltage'], 2) }} VDC
                 </div>
             </div>
             @else

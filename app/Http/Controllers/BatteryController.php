@@ -81,7 +81,7 @@ class BatteryController extends Controller
                 'readings.*.bank_number' => 'required|integer|min:1',
                 'readings.*.battery_brand' => 'required|string|max:255',
                 'readings.*.battery_number' => 'required|integer|min:1',
-                'readings.*.voltage' => 'required|numeric|min:0|max:20',
+                'readings.*.voltage' => 'required|numeric|min:0|max:20|regex:/^\d+(\.\d{1,2})?$/',
                 'readings.*.photo_data' => 'nullable|string',
                 'readings.*.photo_latitude' => 'nullable|numeric',
                 'readings.*.photo_longitude' => 'nullable|numeric',
@@ -156,9 +156,12 @@ class BatteryController extends Controller
 
     public function show(string $id)
     {
-        $maintenance = BatteryMaintenance::with(['readings' => function ($query) {
-            $query->orderBy('bank_number')->orderBy('battery_number');
-        }, 'user'])
+        $maintenance = BatteryMaintenance::with([
+            'readings' => function ($query) {
+                $query->orderBy('bank_number')->orderBy('battery_number');
+            },
+            'user'
+        ])
             ->where('id', $id)
             ->where('user_id', auth()->id())
             ->firstOrFail();
@@ -197,7 +200,7 @@ class BatteryController extends Controller
                 'readings.*.id' => 'nullable|integer|exists:battery_readings,id',
                 'readings.*.bank_number' => 'required|integer|min:1',
                 'readings.*.battery_number' => 'required|integer|min:1',
-                'readings.*.voltage' => 'required|numeric|min:0|max:20',
+                'readings.*.voltage' => 'required|numeric|min:0|max:20|regex:/^\d+(\.\d{1,2})?$/',
                 'readings.*.battery_brand' => 'required|string|max:255',
                 'readings.*.photo_data' => 'nullable|string',
                 'readings.*.photo_latitude' => 'nullable|numeric',
@@ -365,9 +368,12 @@ class BatteryController extends Controller
 
     public function pdf(string $id)
     {
-        $maintenance = BatteryMaintenance::with(['readings' => function ($query) {
-            $query->orderBy('bank_number')->orderBy('battery_number');
-        }, 'user'])
+        $maintenance = BatteryMaintenance::with([
+            'readings' => function ($query) {
+                $query->orderBy('bank_number')->orderBy('battery_number');
+            },
+            'user'
+        ])
             ->where('id', $id)
             ->where('user_id', auth()->id())
             ->firstOrFail();
@@ -405,18 +411,24 @@ class BatteryController extends Controller
             if ($originalWidth > $maxDimension || $originalHeight > $maxDimension) {
                 if ($originalWidth > $originalHeight) {
                     $newWidth = $maxDimension;
-                    $newHeight = (int)(($originalHeight / $originalWidth) * $maxDimension);
+                    $newHeight = (int) (($originalHeight / $originalWidth) * $maxDimension);
                 } else {
                     $newHeight = $maxDimension;
-                    $newWidth = (int)(($originalWidth / $originalHeight) * $maxDimension);
+                    $newWidth = (int) (($originalWidth / $originalHeight) * $maxDimension);
                 }
 
                 $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
                 imagecopyresampled(
-                    $resizedImage, $image,
-                    0, 0, 0, 0,
-                    $newWidth, $newHeight,
-                    $originalWidth, $originalHeight
+                    $resizedImage,
+                    $image,
+                    0,
+                    0,
+                    0,
+                    0,
+                    $newWidth,
+                    $newHeight,
+                    $originalWidth,
+                    $originalHeight
                 );
                 imagedestroy($image);
                 $image = $resizedImage;

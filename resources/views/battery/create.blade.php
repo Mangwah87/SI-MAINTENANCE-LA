@@ -302,7 +302,7 @@
                     </div>
                     <div>
                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Voltage (VDC) *</label>
-                        <input type="number" step="0.1" name="readings[${index}][voltage]" required min="0" max="20" placeholder="13.8"
+                        <input type="number" step="0.01" name="readings[${index}][voltage]" required min="0" max="20" placeholder="13.8"
                                class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent">
                     </div>
                 </div>

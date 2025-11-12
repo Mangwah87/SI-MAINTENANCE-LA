@@ -20,7 +20,7 @@ class BatteryReading extends Model
     ];
 
     protected $casts = [
-        'voltage' => 'decimal:1',
+        'voltage' => 'decimal:2',
         'photo_latitude' => 'decimal:8',
         'photo_longitude' => 'decimal:8',
         'photo_timestamp' => 'datetime',

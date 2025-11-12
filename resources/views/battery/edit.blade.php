@@ -205,7 +205,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Voltage (VDC) *</label>
-                                        <input type="number" step="0.1" name="readings[{{ $index }}][voltage]"
+                                        <input type="number" step="0.2" name="readings[{{ $index }}][voltage]"
                                             value="{{ old('readings.'.$index.'.voltage', $reading->voltage) }}"
                                             required min="0" max="20"
                                             class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
