@@ -251,15 +251,11 @@ class TindakLanjutController extends Controller
 
     public function generatePdf(TindakLanjut $tindakLanjut)
     {
-        // Authorization check - user hanya bisa download PDF data miliknya
-        if ($tindakLanjut->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized action.');
-        }
 
         $pdf = Pdf::loadView('tindak-lanjut.pdf', compact('tindakLanjut'))
             ->setPaper('a4', 'portrait');
 
-        $fileName = 'Tindak-Lanjut-FM-LAP-D2-SOP-003-005-' . $tindakLanjut->id . '.pdf';
+        $fileName = 'Tindak-Lanjut-FM-LAP-D2-SOP-003-005-' . date('d-m-Y', strtotime($tindakLanjut->tanggal)) . '.pdf';
 
         return $pdf->stream($fileName);
     }

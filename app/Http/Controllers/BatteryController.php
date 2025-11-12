@@ -19,7 +19,7 @@ class BatteryController extends Controller
      */
     // In your BatteryController.php (or similar)
 
-   public function index(Request $request)
+    public function index(Request $request)
     {
         $query = BatteryMaintenance::query();
 
@@ -151,9 +151,12 @@ class BatteryController extends Controller
 
     public function show(string $id)
     {
-        $maintenance = BatteryMaintenance::with(['readings' => function ($query) {
-            $query->orderBy('bank_number')->orderBy('battery_number');
-        }, 'user'])->findOrFail($id);
+        $maintenance = BatteryMaintenance::with([
+            'readings' => function ($query) {
+                $query->orderBy('bank_number')->orderBy('battery_number');
+            },
+            'user'
+        ])->findOrFail($id);
 
         return view('battery.show', compact('maintenance'));
     }
@@ -354,9 +357,12 @@ class BatteryController extends Controller
 
     public function pdf(string $id)
     {
-        $maintenance = BatteryMaintenance::with(['readings' => function ($query) {
-            $query->orderBy('bank_number')->orderBy('battery_number');
-        }, 'user'])->findOrFail($id);
+        $maintenance = BatteryMaintenance::with([
+            'readings' => function ($query) {
+                $query->orderBy('bank_number')->orderBy('battery_number');
+            },
+            'user'
+        ])->findOrFail($id);
 
         $pdf = Pdf::loadView('battery.pdf', compact('maintenance'))
             ->setPaper('a4', 'portrait');

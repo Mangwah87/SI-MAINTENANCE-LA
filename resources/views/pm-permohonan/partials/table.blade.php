@@ -178,7 +178,7 @@
                                target="_blank"
                                class="inline-flex items-center justify-center w-8 h-8 text-green-600 hover:bg-green-50 rounded-lg transition"
                                title="Download PDF">
-                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <i data-lucide="file-down" class="w-4 h-4"></i>
                             </a>
                             @if($item->user_id === auth()->id())
                             <form action="{{ route('pm-permohonan.destroy', $item->id) }}" method="POST" 
