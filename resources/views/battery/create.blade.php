@@ -31,41 +31,41 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
                                 <input type="text" name="location" value="{{ old('location') }}" required
-                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent"
                                     placeholder="Contoh: DPSTKU (Teuku Umar)">
                             </div>
 
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Date / Time *</label>
                                 <input type="datetime-local" name="maintenance_date" id="maintenance_date" required
-                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent">
                             </div>
 
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Battery Temperature (°C)</label>
                                 <input type="number" step="0.1" name="battery_temperature" value="{{ old('battery_temperature') }}"
-                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent"
                                     placeholder="Contoh: 25.5">
                             </div>
 
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Company</label>
                                 <input type="text" name="company" value="{{ old('company', 'PT. Aplikarusa Lintasarta') }}"
-                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent"
                                     placeholder="Nama Perusahaan">
                             </div>
 
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Battery Brand *</label>
                                 <input type="text" name="battery_brand" id="main_battery_brand" value="{{ old('battery_brand', 'Ritar') }}" required
-                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent"
                                     placeholder="Contoh: Ritar, Yuasa, Panasonic">
                             </div>
 
                             <div class="sm:col-span-2">
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Notes / Additional Informations</label>
                                 <textarea name="notes" rows="4"
-                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent"
                                     placeholder="Catatan tambahan atau informasi penting lainnya...">{{ old('notes') }}</textarea>
                             </div>
                         </div>
@@ -143,7 +143,7 @@
                                     <div>
                                         <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Supervisor / Atasan</label>
                                         <input type="text" name="supervisor" value="{{ old('supervisor') }}"
-                                            class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                            class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent"
                                             placeholder="Nama supervisor yang mengetahui (opsional)">
                                         <p class="mt-1 text-xs text-gray-600 italic">Kosongkan jika tidak ada supervisor yang mengetahui</p>
                                     </div>
@@ -166,14 +166,14 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Bank *</label>
                                 <input type="number" id="total_banks" min="1" value="1" required
-                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent"
                                     placeholder="Contoh: 2">
                                 <p class="mt-1 text-xs text-gray-600">Berapa bank battery yang akan diinput?</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Battery per Bank *</label>
                                 <input type="number" id="batteries_per_bank" min="1" value="1" required
-                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent"
                                     placeholder="Contoh: 24">
                                 <p class="mt-1 text-xs text-gray-600">Berapa battery dalam satu bank?</p>
                             </div>
@@ -303,7 +303,7 @@
                     <div>
                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Voltage (VDC) *</label>
                         <input type="number" step="0.1" name="readings[${index}][voltage]" required min="0" max="20" placeholder="13.8"
-                               class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                               class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent">
                     </div>
                 </div>
 
@@ -364,6 +364,19 @@
 
             return div;
         }
+        // Fungsi untuk kompres gambar agar maksimal 1 MB
+function compressImageTo1MB(canvas, initialQuality = 0.85) {
+    let quality = initialQuality;
+    let imageData = canvas.toDataURL('image/jpeg', quality);
+
+    // Maksimum 1 MB = 1,000,000 bytes
+    while (imageData.length > 1_000_000 && quality > 0.2) {
+        quality -= 0.05;
+        imageData = canvas.toDataURL('image/jpeg', quality);
+    }
+
+    return imageData;
+}
 
         // Camera Events
         function attachCameraEvents(index) {
@@ -519,7 +532,8 @@
                                     // Add watermark
                                     // addWatermarkToCanvas(canvas, lat, lng, timestamp, address);
 
-                                    const imageData = canvas.toDataURL('image/jpeg', 0.85);
+                                    const imageData = compressImageTo1MB(canvas);
+
                                     uploadedImage.src = imageData;
                                     uploadedPreview.classList.remove('hidden');
 
@@ -532,7 +546,8 @@
                                 },
                                 function(error) {
                                     // Upload without GPS
-                                    const imageData = canvas.toDataURL('image/jpeg', 0.85);
+                                    const imageData = compressImageTo1MB(canvas);
+
                                     uploadedImage.src = imageData;
                                     uploadedPreview.classList.remove('hidden');
                                     document.querySelector(`input[data-photo="${index}"]`).value = imageData;
@@ -541,7 +556,8 @@
                                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                             );
                         } else {
-                            const imageData = canvas.toDataURL('image/jpeg', 0.85);
+                            const imageData = compressImageTo1MB(canvas);
+
                             uploadedImage.src = imageData;
                             uploadedPreview.classList.remove('hidden');
                             document.querySelector(`input[data-photo="${index}"]`).value = imageData;
@@ -642,7 +658,7 @@
 
                         addWatermarkToCanvas(canvas, lat, lng, timestamp, address);
 
-                        const imageData = canvas.toDataURL('image/jpeg', 0.85);
+                        const imageData = compressImageTo1MB(canvas);
                         capturedImage.src = imageData;
                         capturedImage.classList.remove('hidden');
                         video.classList.add('hidden');

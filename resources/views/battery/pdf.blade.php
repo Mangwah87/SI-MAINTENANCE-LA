@@ -232,10 +232,10 @@
         <table class="header-table">
             <tr>
                 <td width="15%" style="vertical-align: top;">
-                    <div style="font-weight: bold; font-size: 7.5pt;">No. Dok.</div>
+                    <div style="font-size: 7.5pt;">No. Dok.</div>
                 </td>
                 <td width="30%" style="vertical-align: top;">
-                    <div style="font-weight: bold; font-size: 7.5pt;">FM-LAP-D2-SOP-003-013</div>
+                    <div style="font-size: 7.5pt;">FM-LAP-D2-SOP-003-013</div>
                 </td>
                 <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
                     <div style="font-weight: bold; font-size: 10pt;">Formulir</div>
@@ -395,7 +395,7 @@
             <div style="width: 33%; float: right;">
                 <div class="bold" style="margin-bottom: 3px; text-align: center;">Mengetahui,</div>
                 <div style="border: 1px solid #000; height: 80px; text-align: center; padding: 5px;">
-                    <div style="height: 40px;"></div>
+                    <div style="height: 50px;"></div>
                     <div>{{ $maintenance->supervisor ?? '____________________' }}</div>
                 </div>
             </div>
@@ -423,10 +423,10 @@
         <table class="header-table">
             <tr>
                 <td width="15%" style="vertical-align: top;">
-                    <div style="font-weight: bold; font-size: 7.5pt;">No. Dok.</div>
+                    <div style="font-size: 7.5pt;">No. Dok.</div>
                 </td>
                 <td width="30%" style="vertical-align: top;">
-                    <div style="font-weight: bold; font-size: 7.5pt;">FM-LAP-D2-SOP-003-013</div>
+                    <div style="font-size: 7.5pt;">FM-LAP-D2-SOP-003-013</div>
                 </td>
                 <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
                     <div style="font-weight: bold; font-size: 10pt;">Dokumentasi Foto</div>
@@ -463,44 +463,45 @@
             </tr>
         </table>
 
-        <div style="margin-top: 5px; margin-bottom: 5px;">
-            <div class="bold" style="margin-bottom: 3px;">Documentation Images @if($totalImagePages > 1)(Page {{ $currentPage - 1 }} of {{ $totalImagePages }})@endif:</div>
+        <div style="margin-top: 8px; margin-bottom: 5px; border: 1px solid #000; border-radius: 4px; padding: 6px;">
+    <div class="bold" style="margin-bottom: 8px; text-align: center; background: #e0e0e0; padding: 5px; border-radius: 4px;">Documentation Images @if($totalImagePages > 1)(Page {{ $currentPage - 1 }} of {{ $totalImagePages }})@endif:</div>
 
-            <table style="width: 100%; border-collapse: collapse;">
-                @foreach(array_chunk($photoChunk, 3) as $rowImages)
-                <tr>
-                    @foreach($rowImages as $photo)
-                    @php
-                    $imageBase64 = imageToBase64($photo['path']);
-                    @endphp
-                    <td style="width: 33.33%; padding: 5px; text-align: center; border: none; vertical-align: top;">
-                        @if($imageBase64)
-                        <div style="border: 1px solid #000; overflow: hidden;">
-                            <div class="image-container">
-                                <img src="{{ $imageBase64 }}" alt="Bank {{ $photo['bank'] }} - Battery {{ $photo['battery'] }}">
-                            </div>
-                            <div style="font-size: 8pt; color: #000; padding: 3px 4px; background: #fff; border-top: 1px solid #000; line-height: 1.3;">
-                                Bank {{ $photo['bank'] }} - No. {{ $photo['battery'] }}<br>
-                                Voltage: {{ number_format($photo['voltage'], 1) }} VDC
-                            </div>
-                        </div>
-                        @else
-                        <div style="border: 1px solid #000; width: 100%; height: 230px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt;">
-                            Image not found
-                        </div>
-                        @endif
-                    </td>
-                    @endforeach
+   <table style="width: 100%; border-collapse: collapse;">
+    @foreach(array_chunk($photoChunk, 3) as $rowImages)
+    <tr>
+        @foreach($rowImages as $photo)
+        @php
+        $imageBase64 = imageToBase64($photo['path']);
+        @endphp
+        <td style="width: 33.33%; padding: 2px; text-align: center; border: none; vertical-align: top;">
+            @if($imageBase64)
+            <div style="width: 100%; background: #f9f9f9; margin-bottom: 2px; border-radius: 2px; overflow: hidden; font-size: 0;">
+                <div style="width: 100%; height: 280px; display: flex; align-items: center; justify-content: center; font-size: 0; line-height: 0;">
+                    <img src="{{ $imageBase64 }}" alt="Bank {{ $photo['bank'] }} - Battery {{ $photo['battery'] }}"
+                     style="max-width: 100%; max-height: 100%; object-fit: contain; display: block; margin: 0; padding: 0;">
+                </div>
+                <div style="font-size: 8pt; font-weight: bold; color: #000; padding: 4px 2px; background: #f5f5f5; text-align: center; line-height: 1.2; margin: 0;">
+                    Bank {{ $photo['bank'] }} - No. {{ $photo['battery'] }}<br>
+                    Voltage: {{ number_format($photo['voltage'], 1) }} VDC
+                </div>
+            </div>
+            @else
+            <div style="border: 1px solid #000; width: 100%; height: 380px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt; margin-bottom: 2px; border-radius: 2px;">
+                Image not found
+            </div>
+            @endif
+        </td>
+        @endforeach
 
-                    {{-- Fill remaining cells --}}
-                    @for($i = count($rowImages); $i < 3; $i++)
-                        <td style="width: 33.33%; padding: 5px; border: none;">
-                        </td>
-                        @endfor
-                </tr>
-                @endforeach
-            </table>
-        </div>
+        {{-- Fill remaining cells --}}
+        @for($i = count($rowImages); $i < 3; $i++)
+            <td style="width: 33.33%; padding: 2px; border: none;">
+            </td>
+        @endfor
+    </tr>
+    @endforeach
+</table>
+</div>
     </div>
 
     <div class="page-footer">

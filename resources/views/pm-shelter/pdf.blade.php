@@ -224,12 +224,12 @@
 @php
     // Hitung total halaman
     $photosByField = [
-        'kondisi_ruangan_photos' => ['title' => 'Foto Kondisi Ruangan', 'photos' => []],
-        'kondisi_kunci_photos' => ['title' => 'Foto Kondisi Kunci Ruang/Shelter', 'photos' => []],
-        'layout_tata_ruang_photos' => ['title' => 'Foto Layout / Tata Ruang', 'photos' => []],
-        'kontrol_keamanan_photos' => ['title' => 'Foto Kontrol Keamanan', 'photos' => []],
-        'aksesibilitas_photos' => ['title' => 'Foto Aksesibilitas', 'photos' => []],
-        'aspek_teknis_photos' => ['title' => 'Foto Aspek Teknis', 'photos' => []],
+        'kondisi_ruangan_photos' => ['title' => 'Kondisi Ruangan', 'photos' => []],
+        'kondisi_kunci_photos' => ['title' => 'Kondisi Kunci Ruang/Shelter', 'photos' => []],
+        'layout_tata_ruang_photos' => ['title' => 'Layout / Tata Ruang', 'photos' => []],
+        'kontrol_keamanan_photos' => ['title' => 'Kontrol Keamanan', 'photos' => []],
+        'aksesibilitas_photos' => ['title' => 'Aksesibilitas', 'photos' => []],
+        'aspek_teknis_photos' => ['title' => 'Aspek Teknis', 'photos' => []],
     ];
 
     // Gabungkan semua foto dari semua field
@@ -413,7 +413,7 @@
                     <td style="border:1px solid #000; width:6%;">No</td>
                     <td style="border:1px solid #000; width:48%;">Nama</td>
                     <td style="border:1px solid #000; width:23%;">Departement</td>
-                    <td style="border:1px solid #000; width:23%;">Sub Departement</td>
+                    <td style="border:1px solid #000; width:33%;">Sub Departement</td>
                 </tr>
                 @foreach($pmShelter->executors as $i => $ex)
                 <tr>
@@ -430,7 +430,7 @@
         </td>
 
        <td class="center" style="vertical-align:bottom; padding:5px;">
-    <div style="width:70%; height: 100px; margin:auto; text-align:center; position: relative; line-height:1.2;">
+    <div style="width:60%; height: 100px; margin:auto; text-align:center; position: relative; line-height:1.2;">
         <div style="margin:0; padding:0; position: absolute; bottom: 0; width: 100%;">
             <span style="display:block; font-weight:bold; margin:0; padding:0;">
                 {{ $pmShelter->approvers[0]['name'] ?? '' }}
@@ -519,36 +519,26 @@
 
                                 <td style="width: 33.33%; padding: 4px; text-align: center; border: 1px solid #ddd; vertical-align: top;">
                                     @if(file_exists($fullPath))
-                                        <img src="{{ $fullPath }}"
-                                             alt="Foto"
-                                             style="width: 100%; max-height: 180px; object-fit: contain; margin-bottom: 4px;">
+                                        <div style="width: 100%; height: 280px; display: flex; align-items: center; justify-content: center; background: #f9f9f9; margin-bottom: 4px; overflow: hidden; border-radius: 2px;">
+                                            <img src="{{ $fullPath }}"
+                                                alt="Foto"
+                                              style="max-width: 100%; max-height: 100%; object-fit: contain; image-rendering: auto; display: block;">
+                                        </div>
                                         
-                                        {{-- Judul di bawah foto --}}
-                                        <div style="font-size: 8pt; font-weight: bold; color: #000; margin-bottom: 3px; padding: 2px; background: #f5f5f5; border-radius: 2px;">
+                                        <div style="font-size: 8pt; font-weight: bold; color: #000; padding: 4px 2px; background: #f5f5f5; border-radius: 2px; text-align: center; min-height: 16px; display: flex; align-items: center; justify-content: center; line-height: 1.2;">
                                             {{ $photo['section_title'] ?? 'Dokumentasi' }}
                                         </div>
-
-                                        {{-- Info foto --}}
-                                        {{-- <div style="font-size: 7pt; color: #666; text-align: left; padding: 2px;">
-                                            @if(!empty($photo['location_name']))
-                                                <div><strong>Lokasi:</strong> {{ Str::limit($photo['location_name'], 45) }}</div>
-                                            @endif
-                                            @if(isset($photo['latitude']) && isset($photo['longitude']))
-                                                <div><strong>Koordinat:</strong> {{ number_format($photo['latitude'], 6) }}, {{ number_format($photo['longitude'], 6) }}</div>
-                                            @endif
-                                            @if(!empty($photo['taken_at']))
-                                                <div><strong>Waktu:</strong> {{ \Carbon\Carbon::parse($photo['taken_at'])->timezone('Asia/Makassar')->format('d/m/Y H:i') }} WITA</div>
-                                            @endif
-                                        </div> --}}
                                     @else
-                                        <div style="width: 100%; height: 180px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt;">
+                                        {{-- Placeholder jika foto tidak ada --}}
+                                        <div style="width: 100%; height: 180px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt; margin-bottom: 4px; border-radius: 2px;">
                                             Foto tidak ditemukan
                                         </div>
+                                        <div style="min-height: 36px; background: #f5f5f5; border-radius: 2px;"></div>
                                     @endif
                                 </td>
                             @endforeach
 
-                            {{-- isi sel kosong jika foto tidak sampai 3 --}}
+                            {{-- Isi sel kosong jika foto tidak sampai 3 --}}
                             @for($i = count($rowPhotos); $i < 3; $i++)
                                 <td style="width: 33.33%; padding: 4px; border: none;"></td>
                             @endfor

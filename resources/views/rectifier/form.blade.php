@@ -82,7 +82,7 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Date/Time <span class="text-red-500">*</span></label>
                                     <input type="datetime-local" name="date_time" value="{{ old('date_time', isset($maintenance) ? $maintenance->date_time->format('Y-m-d\TH:i') : '') }}"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 " required>
                                     @error('date_time')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -91,19 +91,19 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Reg Number</label>
                                     <input type="text" name="reg_number" value="{{ old('reg_number', $maintenance->reg_number ?? '') }}"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  ">
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">S/N</label>
                                     <input type="text" name="sn" value="{{ old('sn', $maintenance->sn ?? '') }}"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 ">
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Brand/Type <span class="text-red-500">*</span></label>
                                     <input type="text" name="brand_type" value="{{ old('brand_type', $maintenance->brand_type ?? '') }}"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 " required>
                                 </div>
 
                                 <div>
@@ -264,7 +264,7 @@
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-medium text-gray-700 mb-2">c. Battery Connection</label>
                                             <input type="text" name="battery_connection" value="{{ old('battery_connection', $maintenance->battery_connection ?? '') }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none "
                                                 placeholder="Tighten, No Corrosion">
                                         </div>
                                         <div>
@@ -1655,5 +1655,134 @@
                 stream.getTracks().forEach(track => track.stop());
             });
         });
+
+        // FUNGSI KOMPRESI GAMBAR - Mengompress gambar menjadi maksimal 1MB
+        async function compressImage(file, maxSizeMB = 1) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Resize jika terlalu besar (maksimal 1920px untuk sisi terpanjang)
+                        const maxDimension = 1920;
+                        if (width > maxDimension || height > maxDimension) {
+                            if (width > height) {
+                                height = (height / width) * maxDimension;
+                                width = maxDimension;
+                            } else {
+                                width = (width / height) * maxDimension;
+                                height = maxDimension;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Mulai dengan kualitas 0.9, turunkan sampai ukuran < 1MB
+                        let quality = 0.9;
+                        const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+                        function tryCompress() {
+                            canvas.toBlob(function(blob) {
+                                if (blob.size <= maxSizeBytes || quality <= 0.1) {
+                                    // Konversi blob ke base64
+                                    const reader = new FileReader();
+                                    reader.onloadend = function() {
+                                        resolve({
+                                            base64: reader.result,
+                                            size: blob.size,
+                                            originalSize: file.size
+                                        });
+                                    };
+                                    reader.readAsDataURL(blob);
+                                } else {
+                                    quality -= 0.1;
+                                    tryCompress();
+                                }
+                            }, 'image/jpeg', quality);
+                        }
+
+                        tryCompress();
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+       // FUNGSI VALIDASI DAN KOMPRESI GAMBAR UPLOAD
+        async function validateImageFiles(input) {
+            const files = input.files;
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            const allowedExtensions = ['jpg', 'jpeg', 'png'];
+            let invalidFiles = [];
+
+            // Validasi format file
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+
+                if (!allowedTypes.includes(file.type) || !allowedExtensions.includes(fileExtension)) {
+                    invalidFiles.push(file.name);
+                }
+            }
+
+            if (invalidFiles.length > 0) {
+                alert('❌ Format file tidak valid!\n\nFile yang ditolak:\n' + invalidFiles.join('\n') + '\n\nHanya file JPG, JPEG, dan PNG yang diperbolehkan.');
+                input.value = '';
+                return false;
+            }
+
+            // Kompresi semua gambar
+            const compressedFiles = [];
+            const statusDiv = document.createElement('div');
+            statusDiv.className = 'mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm';
+            statusDiv.innerHTML = '<p class="text-blue-600">⏳ Mengompress gambar...</p>';
+            input.parentElement.appendChild(statusDiv);
+
+            for (let i = 0; i < files.length; i++) {
+                try {
+                    statusDiv.innerHTML = `<p class="text-blue-600">⏳ Mengompress ${files[i].name} (${i + 1}/${files.length})...</p>`;
+                    const compressed = await compressImage(files[i]);
+                    compressedFiles.push({
+                        name: files[i].name,
+                        base64: compressed.base64,
+                        size: compressed.size,
+                        originalSize: compressed.originalSize
+                    });
+                } catch (error) {
+                    console.error('Error compressing image:', error);
+                    alert(`Gagal mengompress ${files[i].name}`);
+                    statusDiv.remove();
+                    return false;
+                }
+            }
+
+            // Simpan data compressed ke hidden input
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = input.name + '_compressed';
+            hiddenInput.value = JSON.stringify(compressedFiles);
+            input.parentElement.appendChild(hiddenInput);
+
+            // Show success message
+            const totalOriginal = compressedFiles.reduce((sum, f) => sum + f.originalSize, 0);
+            const totalCompressed = compressedFiles.reduce((sum, f) => sum + f.size, 0);
+            const savedPercent = ((1 - totalCompressed/totalOriginal) * 100).toFixed(1);
+
+            statusDiv.innerHTML = `<p class="text-green-600">✓ ${compressedFiles.length} gambar berhasil dikompress! Hemat ${savedPercent}% ukuran</p>`;
+            setTimeout(() => statusDiv.remove(), 3000);
+
+            return true;
+        }
     </script>
 </x-app-layout>

@@ -14,7 +14,10 @@ class GensetController extends Controller
 {
     public function index()
     {
-        $maintenances = GensetMaintenance::latest()->paginate(10);
+        $maintenances = GensetMaintenance::with('user') // Opsi: sama seperti UPS
+            ->where('user_id', auth()->id())               // <--- INI BAGIAN PENTING
+            ->latest('maintenance_date')                  // <--- Sortir berdasarkan tanggal
+            ->paginate(10);
         return view('genset.index', compact('maintenances'));
     }
 
@@ -67,6 +70,8 @@ class GensetController extends Controller
                 GensetMaintenance::whereYear('maintenance_date', $date->year)->count() + 1
             );
 
+            $validatedData['user_id'] = auth()->id();
+
             $maintenance = GensetMaintenance::create($validatedData);
             Log::info('Genset Maintenance Created:', ['id' => $maintenance->id, 'images_count' => count($savedImages)]);
             return redirect()->route('genset.index')->with('success', 'Data maintenance genset berhasil ditambahkan.');
@@ -85,7 +90,8 @@ class GensetController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $maintenance = GensetMaintenance::findOrFail($id);
+            $maintenance = GensetMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
             $validatedData = $this->validateRequest($request);
 
             // 1. Ambil gambar yang ada di DB
@@ -174,7 +180,8 @@ class GensetController extends Controller
     public function destroy($id)
     {
         try {
-            $maintenance = GensetMaintenance::findOrFail($id);
+            $maintenance = GensetMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
 
             // Hapus semua gambar terkait dari storage
             if ($maintenance->images && is_array($maintenance->images)) {
@@ -265,21 +272,24 @@ class GensetController extends Controller
     // Stub untuk show dan pdf, Anda harus membuatnya nanti
     public function show($id)
     {
-        $maintenance = GensetMaintenance::findOrFail($id);
+        $maintenance = GensetMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
         // Anda perlu membuat view: resources/views/genset/show.blade.php
         return view('genset.show', compact('maintenance'));
     }
 
     public function edit($id)
     {
-        $maintenance = GensetMaintenance::findOrFail($id);
+        $maintenance = GensetMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
         // Ini akan memuat file 'edit.blade.php' yang baru saja Anda buat
         return view('genset.edit', compact('maintenance'));
     }
 
     public function pdf($id)
     {
-        $maintenance = GensetMaintenance::findOrFail($id);
+        $maintenance = GensetMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
         $pdf = PDF::loadView('genset.pdf_template', compact('maintenance'));
 
         // [PERUBAHAN] Ganti 'a4' menjadi 'letter'

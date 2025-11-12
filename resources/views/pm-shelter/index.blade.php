@@ -54,13 +54,7 @@
                                     </option>
                                 </select>
 
-                                {{-- <!-- Reset Button -->
-                                <button type="button"
-                                        id="resetFilter"
-                                        class="inline-flex items-center justify-center px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition"
-                                        title="Reset Filter">
-                                    <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
-                                </button> --}}
+                              
                             </div>
                         </div>
 
@@ -121,12 +115,6 @@
     // Sort change listener
     sortSelect.addEventListener('change', performSearch);
 
-    // // Reset filter
-    // resetFilter.addEventListener('click', function() {
-    //     filterForm.reset();
-    //     clearSearch.classList.add('hidden');
-    //     performSearch();
-    // });
 
     // Perform AJAX search
     function performSearch() {

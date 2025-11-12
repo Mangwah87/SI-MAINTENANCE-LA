@@ -78,6 +78,8 @@ return new class extends Migration
             // Add approver company/dept if needed
             // $table->string('approver_company')->nullable();
 
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+
             $table->timestamps();
         });
     }

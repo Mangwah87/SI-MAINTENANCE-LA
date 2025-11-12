@@ -71,12 +71,12 @@ class PmShelterController extends Controller
                 'aksesibilitas_status' => 'required|in:OK,NOK',
                 'aspek_teknis_result' => 'nullable|string',
                 'aspek_teknis_status' => 'required|in:OK,NOK',
-                'kondisi_ruangan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-                'kondisi_kunci_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-                'layout_tata_ruang_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-                'kontrol_keamanan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-                'aksesibilitas_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-                'aspek_teknis_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'kondisi_ruangan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
+                'kondisi_kunci_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
+                'layout_tata_ruang_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
+                'kontrol_keamanan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
+                'aksesibilitas_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
+                'aspek_teknis_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
                 'kondisi_ruangan_photo_metadata.*' => 'nullable|string',
                 'kondisi_kunci_photo_metadata.*' => 'nullable|string',
                 'layout_tata_ruang_photo_metadata.*' => 'nullable|string',
@@ -309,6 +309,7 @@ class PmShelterController extends Controller
     {
         $pdf = Pdf::loadView('pm-shelter.pdf', compact('pmShelter'))
             ->setPaper('a4', 'portrait');
+
         $pdf->getDomPDF()->set_option('enable_php', true);
         $fileName = 'PM Shelter-FM-LAP-D2-SOP-003-009-' . $pmShelter->date->format('d-m-Y') . '.pdf';
 

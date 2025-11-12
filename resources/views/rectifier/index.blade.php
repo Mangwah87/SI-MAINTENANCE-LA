@@ -177,7 +177,7 @@
                                                 <i data-lucide="edit" class="w-5 h-5"></i>
                                             </a>
                                             <a href="{{ route('rectifier.export-pdf', $maintenance->id) }}"
-                                                class="text-green-600 hover:text-green-900" title="Download PDF">
+                                                class="text-green-600 hover:text-green-900" title="Download PDF" target="_blank">
                                                 <i data-lucide="file-down" class="w-5 h-5"></i>
                                             </a>
                                             <form action="{{ route('rectifier.destroy', $maintenance->id) }}"
@@ -270,7 +270,7 @@
                                         <span class="text-xs">Edit</span>
                                     </a>
                                     <a href="{{ route('rectifier.export-pdf', $maintenance->id) }}"
-                                        class="flex flex-col items-center justify-center py-2 text-green-600 hover:bg-green-50 rounded transition">
+                                        class="flex flex-col items-center justify-center py-2 text-green-600 hover:bg-green-50 rounded transition" target="_blank">
                                         <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                         </svg>

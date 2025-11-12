@@ -11,17 +11,25 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-
 class BatteryController extends Controller
 {
+    private $maxImageSizeKB = 1024; // 1MB = 1024KB
+    private $maxImageSizeBytes;
+
+    public function __construct()
+    {
+        $this->maxImageSizeBytes = $this->maxImageSizeKB * 1024;
+    }
+
     /**
      * Display a listing of the resource with filtering
      */
-    // In your BatteryController.php (or similar)
-
-   public function index(Request $request)
+    public function index(Request $request)
     {
         $query = BatteryMaintenance::query();
+
+        // FILTER BY USER_ID
+        $query->where('user_id', auth()->id());
 
         if ($request->filled('location')) {
             $query->where('location', 'like', '%' . $request->location . '%');
@@ -65,7 +73,7 @@ class BatteryController extends Controller
                 'technician_3_name' => 'nullable|string|max:255',
                 'technician_3_company' => 'nullable|string|max:255',
 
-                // Validasi Supervisor (BARU)
+                // Validasi Supervisor
                 'supervisor' => 'nullable|string|max:255',
 
                 // Validasi Readings
@@ -101,7 +109,7 @@ class BatteryController extends Controller
                 'technician_2_company' => $validated['technician_2_company'] ?? null,
                 'technician_3_name' => $validated['technician_3_name'] ?? null,
                 'technician_3_company' => $validated['technician_3_company'] ?? null,
-                'supervisor' => $validated['supervisor'] ?? null, // BARU
+                'supervisor' => $validated['supervisor'] ?? null,
             ]);
 
             foreach ($validated['readings'] as $reading) {
@@ -114,18 +122,15 @@ class BatteryController extends Controller
                 ];
 
                 if (!empty($reading['photo_data'])) {
-                    $photoData = $reading['photo_data'];
+                    $savedPath = $this->saveBase64ImageCompressed(
+                        $reading['photo_data'],
+                        $maintenance->id,
+                        $reading['bank_number'],
+                        $reading['battery_number']
+                    );
 
-                    if (preg_match('/^data:image\/(\w+);base64,/', $photoData, $type)) {
-                        $photoData = substr($photoData, strpos($photoData, ',') + 1);
-                        $photoData = base64_decode($photoData);
-
-                        $filename = 'battery_' . $maintenance->id . '_' . $reading['bank_number'] . '_' . $reading['battery_number'] . '_' . time() . '.jpg';
-                        $path = 'battery_photos/' . $filename;
-
-                        Storage::disk('public')->put($path, $photoData);
-
-                        $readingData['photo_path'] = $path;
+                    if ($savedPath) {
+                        $readingData['photo_path'] = $savedPath;
                         $readingData['photo_latitude'] = $reading['photo_latitude'] ?? null;
                         $readingData['photo_longitude'] = $reading['photo_longitude'] ?? null;
                         $readingData['photo_timestamp'] = $reading['photo_timestamp'] ?? null;
@@ -153,14 +158,21 @@ class BatteryController extends Controller
     {
         $maintenance = BatteryMaintenance::with(['readings' => function ($query) {
             $query->orderBy('bank_number')->orderBy('battery_number');
-        }, 'user'])->findOrFail($id);
+        }, 'user'])
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
         return view('battery.show', compact('maintenance'));
     }
 
     public function edit(string $id)
     {
-        $maintenance = BatteryMaintenance::with('readings')->findOrFail($id);
+        $maintenance = BatteryMaintenance::with('readings')
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
         return view('battery.edit', compact('maintenance'));
     }
 
@@ -180,7 +192,7 @@ class BatteryController extends Controller
                 'technician_2_company' => 'nullable|string|max:255',
                 'technician_3_name' => 'nullable|string|max:255',
                 'technician_3_company' => 'nullable|string|max:255',
-                'supervisor' => 'nullable|string|max:255', // BARU
+                'supervisor' => 'nullable|string|max:255',
                 'readings' => 'required|array|min:1',
                 'readings.*.id' => 'nullable|integer|exists:battery_readings,id',
                 'readings.*.bank_number' => 'required|integer|min:1',
@@ -196,7 +208,9 @@ class BatteryController extends Controller
 
             DB::beginTransaction();
 
-            $maintenance = BatteryMaintenance::findOrFail($id);
+            $maintenance = BatteryMaintenance::where('id', $id)
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
 
             $maintenance->update([
                 'location' => $validated['location'],
@@ -210,7 +224,7 @@ class BatteryController extends Controller
                 'technician_2_company' => $validated['technician_2_company'] ?? null,
                 'technician_3_name' => $validated['technician_3_name'] ?? null,
                 'technician_3_company' => $validated['technician_3_company'] ?? null,
-                'supervisor' => $validated['supervisor'] ?? null, // BARU
+                'supervisor' => $validated['supervisor'] ?? null,
                 'technician_name' => $validated['technician_1_name'],
             ]);
 
@@ -241,17 +255,15 @@ class BatteryController extends Controller
                                 Storage::disk('public')->delete($reading->photo_path);
                             }
 
-                            $photoData = $readingData['photo_data'];
-                            if (preg_match('/^data:image\/(\w+);base64,/', $photoData, $type)) {
-                                $photoData = substr($photoData, strpos($photoData, ',') + 1);
-                                $photoData = base64_decode($photoData);
+                            $savedPath = $this->saveBase64ImageCompressed(
+                                $readingData['photo_data'],
+                                $maintenance->id,
+                                $readingData['bank_number'],
+                                $readingData['battery_number']
+                            );
 
-                                $filename = 'battery_' . $maintenance->id . '_' . $readingData['bank_number'] . '_' . $readingData['battery_number'] . '_' . time() . '.jpg';
-                                $path = 'battery_photos/' . $filename;
-
-                                Storage::disk('public')->put($path, $photoData);
-
-                                $updateData['photo_path'] = $path;
+                            if ($savedPath) {
+                                $updateData['photo_path'] = $savedPath;
                                 $updateData['photo_latitude'] = $readingData['photo_latitude'] ?? null;
                                 $updateData['photo_longitude'] = $readingData['photo_longitude'] ?? null;
                                 $updateData['photo_timestamp'] = $readingData['photo_timestamp'] ?? null;
@@ -283,18 +295,15 @@ class BatteryController extends Controller
                     ];
 
                     if (!empty($readingData['photo_data'])) {
-                        $photoData = $readingData['photo_data'];
+                        $savedPath = $this->saveBase64ImageCompressed(
+                            $readingData['photo_data'],
+                            $maintenance->id,
+                            $readingData['bank_number'],
+                            $readingData['battery_number']
+                        );
 
-                        if (preg_match('/^data:image\/(\w+);base64,/', $photoData, $type)) {
-                            $photoData = substr($photoData, strpos($photoData, ',') + 1);
-                            $photoData = base64_decode($photoData);
-
-                            $filename = 'battery_' . $maintenance->id . '_' . $readingData['bank_number'] . '_' . $readingData['battery_number'] . '_' . time() . '.jpg';
-                            $path = 'battery_photos/' . $filename;
-
-                            Storage::disk('public')->put($path, $photoData);
-
-                            $newReadingData['photo_path'] = $path;
+                        if ($savedPath) {
+                            $newReadingData['photo_path'] = $savedPath;
                             $newReadingData['photo_latitude'] = $readingData['photo_latitude'] ?? null;
                             $newReadingData['photo_longitude'] = $readingData['photo_longitude'] ?? null;
                             $newReadingData['photo_timestamp'] = $readingData['photo_timestamp'] ?? null;
@@ -334,7 +343,9 @@ class BatteryController extends Controller
     public function destroy(string $id)
     {
         try {
-            $maintenance = BatteryMaintenance::findOrFail($id);
+            $maintenance = BatteryMaintenance::where('id', $id)
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
 
             foreach ($maintenance->readings as $reading) {
                 if ($reading->photo_path && Storage::disk('public')->exists($reading->photo_path)) {
@@ -356,42 +367,137 @@ class BatteryController extends Controller
     {
         $maintenance = BatteryMaintenance::with(['readings' => function ($query) {
             $query->orderBy('bank_number')->orderBy('battery_number');
-        }, 'user'])->findOrFail($id);
+        }, 'user'])
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
         $pdf = Pdf::loadView('battery.pdf', compact('maintenance'))
             ->setPaper('a4', 'portrait');
 
-        return $pdf->stream('Battery-Maintenance-' . $maintenance->doc_number . '.pdf');
+        $formattedDate = date('Y-m-d', strtotime($maintenance->maintenance_date));
+        $filename = 'Battery-Maintenance-' . $maintenance->location . '-' . $formattedDate . '.pdf';
+
+        return $pdf->stream($filename);
     }
 
+    /**
+     * Compress image to target size (max 1MB) using native GD
+     */
+    private function compressImage($imageData, $maxSizeKB = 1024)
+    {
+        try {
+            $image = imagecreatefromstring($imageData);
+
+            if ($image === false) {
+                Log::error('Failed to create image from string');
+                return $imageData;
+            }
+
+            $originalWidth = imagesx($image);
+            $originalHeight = imagesy($image);
+
+            // Calculate new dimensions (max 1920px)
+            $maxDimension = 1920;
+            $newWidth = $originalWidth;
+            $newHeight = $originalHeight;
+
+            if ($originalWidth > $maxDimension || $originalHeight > $maxDimension) {
+                if ($originalWidth > $originalHeight) {
+                    $newWidth = $maxDimension;
+                    $newHeight = (int)(($originalHeight / $originalWidth) * $maxDimension);
+                } else {
+                    $newHeight = $maxDimension;
+                    $newWidth = (int)(($originalWidth / $originalHeight) * $maxDimension);
+                }
+
+                $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
+                imagecopyresampled(
+                    $resizedImage, $image,
+                    0, 0, 0, 0,
+                    $newWidth, $newHeight,
+                    $originalWidth, $originalHeight
+                );
+                imagedestroy($image);
+                $image = $resizedImage;
+            }
+
+            // Compress dengan kualitas yang bervariasi
+            $quality = 90;
+            $minQuality = 60;
+            $maxSizeBytes = $maxSizeKB * 1024;
+
+            ob_start();
+            imagejpeg($image, null, $quality);
+            $compressed = ob_get_clean();
+            $currentSize = strlen($compressed);
+
+            // Turunkan kualitas bertahap hingga ukuran <= target
+            while ($currentSize > $maxSizeBytes && $quality > $minQuality) {
+                $quality -= 5;
+                ob_start();
+                imagejpeg($image, null, $quality);
+                $compressed = ob_get_clean();
+                $currentSize = strlen($compressed);
+            }
+
+            imagedestroy($image);
+
+            $finalSizeKB = round($currentSize / 1024, 2);
+            Log::info("Battery image compressed to {$finalSizeKB}KB with quality {$quality}%");
+
+            return $compressed;
+
+        } catch (\Exception $e) {
+            Log::error('Image compression error: ' . $e->getMessage());
+            return $imageData;
+        }
+    }
 
     /**
-     * Save base64 image to storage
+     * Save base64 image with compression
      */
-    private function saveBase64Image($base64String)
+    private function saveBase64ImageCompressed($base64String, $maintenanceId, $bankNumber, $batteryNumber)
     {
-        // Extract base64 data
-        if (preg_match('/^data:image\/(\w+);base64,/', $base64String, $type)) {
-            $base64String = substr($base64String, strpos($base64String, ',') + 1);
-            $type = strtolower($type[1]); // jpg, png, gif
+        try {
+            // Extract base64 data
+            if (preg_match('/^data:image\/(\w+);base64,/', $base64String, $type)) {
+                $base64String = substr($base64String, strpos($base64String, ',') + 1);
+                $base64String = str_replace(' ', '+', $base64String);
+                $imageData = base64_decode($base64String);
 
-            $base64String = str_replace(' ', '+', $base64String);
-            $imageData = base64_decode($base64String);
+                if ($imageData === false) {
+                    throw new \Exception('Base64 decode failed');
+                }
 
-            if ($imageData === false) {
-                throw new \Exception('Base64 decode failed');
+                // Log ukuran sebelum kompresi
+                $originalSizeKB = strlen($imageData) / 1024;
+                Log::info("Original battery image size: {$originalSizeKB}KB");
+
+                // Kompresi gambar
+                $compressedImage = $this->compressImage($imageData, $this->maxImageSizeKB);
+
+                // Log ukuran setelah kompresi
+                $compressedSizeKB = strlen($compressedImage) / 1024;
+                $savedPercent = round((1 - $compressedSizeKB / $originalSizeKB) * 100, 1);
+                Log::info("Compressed battery image size: {$compressedSizeKB}KB (saved {$savedPercent}%)");
+
+            } else {
+                throw new \Exception('Invalid image data');
             }
-        } else {
-            throw new \Exception('Invalid image data');
+
+            // Generate unique filename (selalu .jpg karena hasil kompresi)
+            $filename = 'battery_' . $maintenanceId . '_' . $bankNumber . '_' . $batteryNumber . '_' . time() . '.jpg';
+            $path = 'battery_photos/' . $filename;
+
+            // Save to storage
+            Storage::disk('public')->put($path, $compressedImage);
+
+            return $path;
+
+        } catch (\Exception $e) {
+            Log::error('Error saving battery image: ' . $e->getMessage());
+            return null;
         }
-
-        // Generate unique filename
-        $filename = 'battery_' . time() . '_' . uniqid() . '.' . $type;
-        $path = 'battery_photos/' . $filename;
-
-        // Save to storage
-        Storage::put('public/' . $path, $imageData);
-
-        return $path;
     }
 }
