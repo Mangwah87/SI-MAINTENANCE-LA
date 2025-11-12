@@ -89,9 +89,19 @@
           e.preventDefault();
           fileInput.click();
         });
-        fileInput.addEventListener('change', e =>
-          handleLocalFiles(e.target.files, section, categoryName)
-        );
+        fileInput.addEventListener('change', e => {
+          // Find the section from the file input
+          const fileInputElement = e.target;
+          const sectionElement = fileInputElement.closest('.image-upload-section');
+
+          if (!sectionElement) {
+            console.error('Could not find parent section for file input');
+            return;
+          }
+
+          const category = sectionElement.dataset.fieldName;
+          handleLocalFiles(fileInputElement.files, sectionElement, category);
+        });
       }
 
       // Delete existing images
@@ -549,8 +559,25 @@
     // FILE UPLOAD HANDLING
     // ========================================================================
     function handleLocalFiles(files, section, category) {
+      // Validate inputs
+      if (!section) {
+        console.error('handleLocalFiles: section is null');
+        return;
+      }
+
+      if (!files || files.length === 0) {
+        console.log('handleLocalFiles: no files provided');
+        return;
+      }
+
       // Check if image with same category already exists
       const previewContainer = section.querySelector('.preview-container');
+
+      if (!previewContainer) {
+        console.error('handleLocalFiles: preview container not found');
+        return;
+      }
+
       const existingImageDiv = Array.from(previewContainer.children).find(div => {
         return div.dataset.category === category;
       });
@@ -595,6 +622,14 @@
     }
 
     function replaceImageWithData(imageDiv, newImageData, category, position) {
+      // Find the section from the imageDiv being replaced
+      const section = imageDiv.closest('.image-upload-section');
+
+      if (!section) {
+        console.error('replaceImageWithData: could not find parent section');
+        return;
+      }
+
       console.log('replaceImageWithData called with position:', position);
 
       // Mark old image for deletion if it's an existing image
@@ -611,18 +646,27 @@
       // Remove the old image div from preview
       imageDiv.remove();
 
-      // Add the new image to preview
-      addImageToPreview(newImageData, currentSection, category);
+      // Add the new image to preview using the section we found
+      addImageToPreview(newImageData, section, category);
 
       console.log('Image replaced - old removed, new added for category:', category, 'position:', position);
       showNotification('✓ Gambar berhasil diganti!');
     }
 
     function addImageToPreview(imageData, section, category) {
+      // Validate inputs
+      if (!section) {
+        console.error('addImageToPreview: section is null');
+        return;
+      }
+
       console.log('addImageToPreview - category:', category);
 
       const previewContainer = section.querySelector('.preview-container');
-      if (!previewContainer) return;
+      if (!previewContainer) {
+        console.error('addImageToPreview: preview container not found');
+        return;
+      }
 
       const imageDiv = document.createElement('div');
       imageDiv.className = 'relative group new-image';
