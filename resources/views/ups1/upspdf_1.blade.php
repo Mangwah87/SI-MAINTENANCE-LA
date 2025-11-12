@@ -86,17 +86,17 @@
 
         .image-cell {
             width: 33.33%;
-            padding: 3px;
+            padding: 5px;
             text-align: center;
             border: 1px solid #ddd;
             vertical-align: top;
-            height: 240px;
+            height: 360px;
         }
 
         .image-container {
             display: inline-block;
             text-align: center;
-            height: 210px;
+            height: 330px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -104,7 +104,7 @@
 
         .image-container img {
             max-width: 100%;
-            max-height: 205px;
+            max-height: 325px;
             width: auto;
             height: auto;
             object-fit: contain;
@@ -143,8 +143,8 @@
             }
         }
 
-        // Calculate total pages: 1 main page + image pages (9 images per page)
-        $imagesPerPage = 9;
+        // Calculate total pages: 1 main page + image pages (6 images per page - 3x2 grid)
+        $imagesPerPage = 6;
         $totalImagePages = !empty($images) ? ceil(count($images) / $imagesPerPage) : 0;
         $totalPages = 1 + $totalImagePages;
 
@@ -491,7 +491,7 @@
     {{-- IMAGE PAGES - With manual headers for each page --}}
     @if(!empty($images) && count($images) > 0)
         @php
-            $imageChunks = array_chunk($images, $imagesPerPage); // 9 images per page
+            $imageChunks = array_chunk($images, $imagesPerPage); // 6 images per page (3x2 grid)
             $currentPageNum = 2; // Start from page 2 (page 1 is main content)
         @endphp
 

@@ -90,9 +90,19 @@
           e.preventDefault();
           fileInput.click();
         });
-        fileInput.addEventListener('change', e =>
-          handleLocalFiles(e.target.files, section, categoryName)
-        );
+        fileInput.addEventListener('change', e => {
+          // Find the section from the file input
+          const fileInputElement = e.target;
+          const sectionElement = fileInputElement.closest('.image-upload-section');
+
+          if (!sectionElement) {
+            console.error('Could not find parent section for file input');
+            return;
+          }
+
+          const category = sectionElement.dataset.fieldName;
+          handleLocalFiles(fileInputElement.files, sectionElement, category);
+        });
       }
 
       // Delete existing images
@@ -596,14 +606,54 @@
     // FILE UPLOAD HANDLING
     // ========================================================================
     function handleLocalFiles(files, section, category) {
+      // Validate inputs
+      if (!section) {
+        console.error('handleLocalFiles: section is null');
+        return;
+      }
+
+      if (!files || files.length === 0) {
+        console.log('handleLocalFiles: no files provided');
+        return;
+      }
+
+      console.log('handleLocalFiles called:', {
+        filesCount: files.length,
+        category: category,
+        sectionFieldName: section?.dataset?.fieldName
+      });
+
       // Check if image with same category already exists
       const previewContainer = section.querySelector('.preview-container');
-      const existingImageDiv = Array.from(previewContainer.children).find(div => {
-        return div.dataset.category === category;
+
+      if (!previewContainer) {
+        console.error('handleLocalFiles: preview container not found');
+        return;
+      }
+
+      const existingImages = Array.from(previewContainer.children);
+
+      console.log('Existing images:', existingImages.map(div => ({
+        hasCategory: !!div.dataset.category,
+        category: div.dataset.category,
+        className: div.className
+      })));
+
+      const existingImageDiv = existingImages.find(div => {
+        const isExisting = div.classList.contains('existing-image') || div.dataset.category === category;
+        console.log('Checking div:', {
+          category: div.dataset.category,
+          isExisting: isExisting,
+          matches: div.dataset.category === category
+        });
+        return isExisting && div.dataset.category === category;
       });
+
+      console.log('Found existing image to replace:', !!existingImageDiv);
 
       if (existingImageDiv && files.length === 1) {
         // Replace existing image
+        console.log('Replacing existing image');
         const file = files[0];
         if (file && file.type.startsWith('image/')) {
           const reader = new FileReader();
@@ -614,6 +664,7 @@
         }
       } else {
         // Add new images
+        console.log('Adding new images, count:', files.length);
         Array.from(files).forEach(file => {
           if (!file.type.startsWith('image/')) return;
           const reader = new FileReader();
@@ -639,6 +690,14 @@
     }
 
     function replaceImageWithData(imageDiv, newImageData, category, position) {
+      // Find the section from the imageDiv being replaced
+      const section = imageDiv.closest('.image-upload-section');
+
+      if (!section) {
+        console.error('replaceImageWithData: could not find parent section');
+        return;
+      }
+
       // Mark old image for deletion if it's an existing image
       if (imageDiv.classList.contains('existing-image')) {
         const imagePath = imageDiv.dataset.path;
@@ -652,15 +711,24 @@
       // Remove the old image div from preview
       imageDiv.remove();
 
-      // Add the new image to preview
-      addImageToPreview(newImageData, currentSection, category);
+      // Add the new image to preview using the section we found
+      addImageToPreview(newImageData, section, category);
 
       showNotification('✔ Gambar berhasil diganti!');
     }
 
     function addImageToPreview(imageData, section, category) {
+      // Validate inputs
+      if (!section) {
+        console.error('addImageToPreview: section is null');
+        return;
+      }
+
       const previewContainer = section.querySelector('.preview-container');
-      if (!previewContainer) return;
+      if (!previewContainer) {
+        console.error('addImageToPreview: preview container not found');
+        return;
+      }
 
       const imageDiv = document.createElement('div');
       imageDiv.className = 'relative group';
