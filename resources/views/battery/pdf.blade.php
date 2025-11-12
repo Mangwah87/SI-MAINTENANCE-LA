@@ -476,7 +476,7 @@
         <td style="width: 33.33%; padding: 2px; text-align: center; border: none; vertical-align: top;">
             @if($imageBase64)
             <div style="width: 100%; background: #f9f9f9; margin-bottom: 2px; border-radius: 2px; overflow: hidden; font-size: 0;">
-                <div style="width: 100%; height: 380px; display: flex; align-items: center; justify-content: center; font-size: 0; line-height: 0;">
+                <div style="width: 100%; height: 280px; display: flex; align-items: center; justify-content: center; font-size: 0; line-height: 0;">
                     <img src="{{ $imageBase64 }}" alt="Bank {{ $photo['bank'] }} - Battery {{ $photo['battery'] }}"
                      style="max-width: 100%; max-height: 100%; object-fit: contain; display: block; margin: 0; padding: 0;">
                 </div>
