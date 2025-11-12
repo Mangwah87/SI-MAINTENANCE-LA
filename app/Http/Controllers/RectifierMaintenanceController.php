@@ -8,9 +8,16 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
-
 class RectifierMaintenanceController extends Controller
 {
+    private $maxImageSizeKB = 1024; // 1MB = 1024KB
+    private $maxImageSizeBytes;
+
+    public function __construct()
+    {
+        $this->maxImageSizeBytes = $this->maxImageSizeKB * 1024;
+    }
+
     public function index(Request $request)
     {
         $query = RectifierMaintenance::query();
@@ -219,13 +226,10 @@ class RectifierMaintenanceController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        // Increase memory and execution time for PDF generation
         ini_set('memory_limit', '512M');
         ini_set('max_execution_time', '300');
 
-        $data = [
-            'maintenance' => $maintenance
-        ];
+        $data = ['maintenance' => $maintenance];
 
         try {
             $pdf = Pdf::loadView('rectifier.pdf', $data)
@@ -236,25 +240,89 @@ class RectifierMaintenanceController extends Controller
                 ->setOption('enable_php', true)
                 ->setOption('dpi', 96);
 
-            // Format filename menggunakan date_time dengan format: YYYYMMDD_HHMMSS
-            $dateFormatted = date('dd-mm-yyyy', strtotime($maintenance->date_time));
-
+            $dateFormatted = date('d-m-Y', strtotime($maintenance->date_time));
             $filename = 'PM-Rectifier-' . $maintenance->location . '-' . $dateFormatted . '.pdf';
 
             return $pdf->stream($filename);
         } catch (\Exception $e) {
             Log::error('PDF Generation Error: ' . $e->getMessage());
+            return back()->with('error', 'Gagal generate PDF: ' . $e->getMessage());
+        }
+    }
 
-            if (config('app.debug')) {
-                return response()->json([
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'maintenance_images' => $maintenance->images,
-                    'images_count' => is_array($maintenance->images) ? count($maintenance->images) : 0
-                ], 500);
+    /**
+     * Compress image to target size (max 1MB) using native GD
+     */
+    private function compressImage($imageData, $maxSizeKB = 1024)
+    {
+        try {
+            // Create image from string
+            $image = imagecreatefromstring($imageData);
+
+            if ($image === false) {
+                Log::error('Failed to create image from string');
+                return $imageData;
             }
 
-            return back()->with('error', 'Gagal generate PDF: ' . $e->getMessage());
+            // Get original dimensions
+            $originalWidth = imagesx($image);
+            $originalHeight = imagesy($image);
+
+            // Calculate new dimensions (max 1920px)
+            $maxDimension = 1920;
+            $newWidth = $originalWidth;
+            $newHeight = $originalHeight;
+
+            if ($originalWidth > $maxDimension || $originalHeight > $maxDimension) {
+                if ($originalWidth > $originalHeight) {
+                    $newWidth = $maxDimension;
+                    $newHeight = (int)(($originalHeight / $originalWidth) * $maxDimension);
+                } else {
+                    $newHeight = $maxDimension;
+                    $newWidth = (int)(($originalWidth / $originalHeight) * $maxDimension);
+                }
+
+                // Create resized image
+                $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
+                imagecopyresampled(
+                    $resizedImage, $image,
+                    0, 0, 0, 0,
+                    $newWidth, $newHeight,
+                    $originalWidth, $originalHeight
+                );
+                imagedestroy($image);
+                $image = $resizedImage;
+            }
+
+            // Compress dengan kualitas yang bervariasi
+            $quality = 90;
+            $minQuality = 60;
+            $maxSizeBytes = $maxSizeKB * 1024;
+
+            ob_start();
+            imagejpeg($image, null, $quality);
+            $compressed = ob_get_clean();
+            $currentSize = strlen($compressed);
+
+            // Turunkan kualitas bertahap hingga ukuran <= target
+            while ($currentSize > $maxSizeBytes && $quality > $minQuality) {
+                $quality -= 5;
+                ob_start();
+                imagejpeg($image, null, $quality);
+                $compressed = ob_get_clean();
+                $currentSize = strlen($compressed);
+            }
+
+            imagedestroy($image);
+
+            $finalSizeKB = round($currentSize / 1024, 2);
+            Log::info("Image compressed to {$finalSizeKB}KB with quality {$quality}%");
+
+            return $compressed;
+
+        } catch (\Exception $e) {
+            Log::error('Image compression error: ' . $e->getMessage());
+            return $imageData;
         }
     }
 
@@ -265,7 +333,7 @@ class RectifierMaintenanceController extends Controller
     {
         $images = [];
 
-        // Handle file uploads
+        // Handle file uploads dengan kompresi
         foreach ($request->allFiles() as $key => $files) {
             if (strpos($key, 'images_') === 0) {
                 $category = str_replace('images_', '', $key);
@@ -276,7 +344,21 @@ class RectifierMaintenanceController extends Controller
 
                 foreach ($files as $file) {
                     try {
-                        $path = $file->store('rectifier_images', 'public');
+                        // Baca file dan kompresi
+                        $imageData = file_get_contents($file->getRealPath());
+                        $compressedImage = $this->compressImage($imageData, $this->maxImageSizeKB);
+
+                        // Generate filename
+                        $filename = 'rectifier_' . $category . '_' . time() . '_' . Str::random(10) . '.jpg';
+                        $path = 'rectifier_images/' . $filename;
+
+                        // Simpan gambar yang sudah dikompresi
+                        Storage::disk('public')->put($path, $compressedImage);
+
+                        // Log ukuran file
+                        $sizeKB = strlen($compressedImage) / 1024;
+                        Log::info("Uploaded image saved: {$path} ({$sizeKB}KB)");
+
                         $images[] = [
                             'category' => $category,
                             'path' => $path,
@@ -288,27 +370,13 @@ class RectifierMaintenanceController extends Controller
             }
         }
 
-        // Handle camera photos - ALL CATEGORIES
+        // Handle camera photos dengan kompresi
         $cameraCategories = [
-            'visual_check',
-            'performance',
-            'backup',
-            'alarm',
-            'ac_voltage',
-            'ac_current',
-            'dc_current',
-            'battery_temp',
-            'charging_voltage',
-            'charging_current',
-            'rectifier_test',
-            'battery_voltage',
-            // NEW categories for Visual Check
-            'env_condition',
-            'led_display',
-            'battery_connection',
-            // NEW categories for Battery Voltage Measurements
-            'battery_voltage_m1',
-            'battery_voltage_m2'
+            'visual_check', 'performance', 'backup', 'alarm',
+            'ac_voltage', 'ac_current', 'dc_current', 'battery_temp',
+            'charging_voltage', 'charging_current', 'rectifier_test', 'battery_voltage',
+            'env_condition', 'led_display', 'battery_connection',
+            'battery_voltage_m1', 'battery_voltage_m2'
         ];
 
         foreach ($cameraCategories as $category) {
@@ -317,7 +385,6 @@ class RectifierMaintenanceController extends Controller
             if ($request->has($cameraKey) && !empty($request->$cameraKey)) {
                 $photosJson = $request->$cameraKey;
 
-                // Skip if empty array
                 if ($photosJson === '[]') {
                     continue;
                 }
@@ -328,7 +395,7 @@ class RectifierMaintenanceController extends Controller
                     if (is_array($photos) && count($photos) > 0) {
                         foreach ($photos as $photo) {
                             if (isset($photo['image'])) {
-                                $savedPath = $this->saveBase64Image($photo['image'], $category);
+                                $savedPath = $this->saveBase64ImageCompressed($photo['image'], $category);
 
                                 if ($savedPath) {
                                     $images[] = [
@@ -353,18 +420,18 @@ class RectifierMaintenanceController extends Controller
     }
 
     /**
-     * Save base64 encoded image to storage
+     * Save base64 encoded image with compression
      */
-    private function saveBase64Image($base64Image, $category)
+    private function saveBase64ImageCompressed($base64Image, $category)
     {
         try {
-            // Check if it's a valid base64 image
+            // Validasi format base64
             if (!preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
                 Log::error('Invalid base64 image format');
                 return null;
             }
 
-            // Get image data
+            // Decode base64
             $imageData = substr($base64Image, strpos($base64Image, ',') + 1);
             $imageData = base64_decode($imageData);
 
@@ -373,21 +440,24 @@ class RectifierMaintenanceController extends Controller
                 return null;
             }
 
-            // Get file extension
-            $extension = strtolower($type[1]);
+            // Log ukuran sebelum kompresi
+            $originalSizeKB = strlen($imageData) / 1024;
+            Log::info("Original camera image size: {$originalSizeKB}KB");
 
-            // Validate extension
-            if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                Log::error('Unsupported image extension: ' . $extension);
-                return null;
-            }
+            // Kompresi gambar
+            $compressedImage = $this->compressImage($imageData, $this->maxImageSizeKB);
 
-            // Generate unique filename
-            $filename = 'rectifier_' . $category . '_' . time() . '_' . Str::random(10) . '.' . $extension;
+            // Log ukuran setelah kompresi
+            $compressedSizeKB = strlen($compressedImage) / 1024;
+            $savedPercent = round((1 - $compressedSizeKB / $originalSizeKB) * 100, 1);
+            Log::info("Compressed camera image size: {$compressedSizeKB}KB (saved {$savedPercent}%)");
+
+            // Generate filename (selalu .jpg karena hasil kompresi)
+            $filename = 'rectifier_' . $category . '_' . time() . '_' . Str::random(10) . '.jpg';
             $path = 'rectifier_images/' . $filename;
 
-            // Save to storage
-            Storage::disk('public')->put($path, $imageData);
+            // Simpan ke storage
+            Storage::disk('public')->put($path, $compressedImage);
 
             return $path;
         } catch (\Exception $e) {
@@ -423,6 +493,7 @@ class RectifierMaintenanceController extends Controller
                         'full_path' => $fullPath,
                         'exists' => file_exists($fullPath),
                         'size' => file_exists($fullPath) ? filesize($fullPath) : 0,
+                        'size_kb' => file_exists($fullPath) ? round(filesize($fullPath) / 1024, 2) : 0,
                         'mime' => file_exists($fullPath) ? mime_content_type($fullPath) : null,
                         'category' => is_array($image) ? ($image['category'] ?? 'unknown') : 'unknown',
                         'has_gps' => is_array($image) && isset($image['lat']) && isset($image['lng']),

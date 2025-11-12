@@ -394,9 +394,8 @@
             </div>
             <div style="width: 33%; float: right;">
                 <div class="bold" style="margin-bottom: 3px; text-align: center;">Mengetahui,</div>
-                <div style="border: 1px solid #000; height: 80px; text-align: center; padding: 5px;">
-                    <div style="height: 40px;"></div>
-                    <div>{{ $maintenance->supervisor ?? '____________________' }}</div>
+                <div style="border: 1px solid #000; height: 80px; text-align: center; padding: 5px; position: relative;">
+                    <div style="position: absolute; bottom: 2px; left: 0; right: 0; text-align: center;">{{ $maintenance->supervisor ?? '____________________' }}</div>
                 </div>
             </div>
             <div style="clear: both;"></div>
