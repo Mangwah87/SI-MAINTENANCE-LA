@@ -109,7 +109,7 @@
                             @foreach($readings->sortBy('battery_number') as $reading)
                             <tr class="hover:bg-gray-50 transition-colors duration-150">
                                 <td class="border p-2 font-semibold">{{ $reading->battery_number }}</td>
-                                <td class="border p-2 font-semibold">{{ number_format($reading->voltage, 1) }} VDC</td>
+                                <td class="border p-2 font-semibold">{{ number_format($reading->voltage, 2) }} VDC</td>
                                 <td class="border p-2 text-xs md:text-sm text-gray-600">Min 10.0 VDC</td>
                                 <td class="border p-2 text-center">
                                     @if($reading->voltage >= 12.0)

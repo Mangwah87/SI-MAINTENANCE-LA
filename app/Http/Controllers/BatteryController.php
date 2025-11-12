@@ -200,7 +200,7 @@ class BatteryController extends Controller
                 'readings.*.id' => 'nullable|integer|exists:battery_readings,id',
                 'readings.*.bank_number' => 'required|integer|min:1',
                 'readings.*.battery_number' => 'required|integer|min:1',
-                'readings.*.voltage' => 'required|numeric|min:0|max:20',
+                'readings.*.voltage' => 'required|numeric|min:0|max:20|regex:/^\d+(\.\d{1,2})?$/',
                 'readings.*.battery_brand' => 'required|string|max:255',
                 'readings.*.photo_data' => 'nullable|string',
                 'readings.*.photo_latitude' => 'nullable|numeric',
