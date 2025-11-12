@@ -109,6 +109,8 @@ return new class extends Migration
             // Mengetahui (Approver) 
             $table->string('approver_name')->nullable();
 
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+
             $table->timestamps();
         });
     }

@@ -22,4 +22,14 @@ class GroundingMaintenance extends Model
         'maintenance_date' => 'datetime',
         'images' => 'array', // Automatically encodes/decodes the JSON column
     ];
+
+    /**
+     * [INI YANG PERLU DITAMBAHKAN]
+     * Mendefinisikan relasi "belongsTo" ke model User.
+     * Ini mengizinkan controller memanggil ->user() atau ::with('user').
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

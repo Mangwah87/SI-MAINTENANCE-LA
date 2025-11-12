@@ -155,6 +155,8 @@ class PMPermohonanController extends Controller
         $pdf = Pdf::loadView('pm-permohonan.pdf', compact('permohonan'))
             ->setPaper('a4', 'portrait');
 
-        return $pdf->stream('PM Shelter-FM-LAP-D2-SOP-003-004-' . $permohonan->id . '.pdf');
+        $fileName = 'PM Shelter-FM-LAP-D2-SOP-003-004-' . date('d-m-Y', strtotime($permohonan->tanggal)) . '.pdf';
+
+        return $pdf->stream($fileName);
     }
 }

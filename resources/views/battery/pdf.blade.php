@@ -232,10 +232,10 @@
         <table class="header-table">
             <tr>
                 <td width="15%" style="vertical-align: top;">
-                    <div style="font-weight: bold; font-size: 7.5pt;">No. Dok.</div>
+                    <div style="font-size: 7.5pt;">No. Dok.</div>
                 </td>
                 <td width="30%" style="vertical-align: top;">
-                    <div style="font-weight: bold; font-size: 7.5pt;">FM-LAP-D2-SOP-003-013</div>
+                    <div style="font-size: 7.5pt;">FM-LAP-D2-SOP-003-013</div>
                 </td>
                 <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
                     <div style="font-weight: bold; font-size: 10pt;">Formulir</div>
@@ -394,8 +394,9 @@
             </div>
             <div style="width: 33%; float: right;">
                 <div class="bold" style="margin-bottom: 3px; text-align: center;">Mengetahui,</div>
-                <div style="border: 1px solid #000; height: 80px; text-align: center; padding: 5px; position: relative;">
-                    <div style="position: absolute; bottom: 2px; left: 0; right: 0; text-align: center;">{{ $maintenance->supervisor ?? '____________________' }}</div>
+                <div style="border: 1px solid #000; height: 80px; text-align: center; padding: 5px;">
+                    <div style="height: 50px;"></div>
+                    <div>{{ $maintenance->supervisor ?? '____________________' }}</div>
                 </div>
             </div>
             <div style="clear: both;"></div>
@@ -422,10 +423,10 @@
         <table class="header-table">
             <tr>
                 <td width="15%" style="vertical-align: top;">
-                    <div style="font-weight: bold; font-size: 7.5pt;">No. Dok.</div>
+                    <div style="font-size: 7.5pt;">No. Dok.</div>
                 </td>
                 <td width="30%" style="vertical-align: top;">
-                    <div style="font-weight: bold; font-size: 7.5pt;">FM-LAP-D2-SOP-003-013</div>
+                    <div style="font-size: 7.5pt;">FM-LAP-D2-SOP-003-013</div>
                 </td>
                 <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
                     <div style="font-weight: bold; font-size: 10pt;">Dokumentasi Foto</div>
