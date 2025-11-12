@@ -618,8 +618,8 @@
             </tr>
         </table>
 
-        <div style="margin-top: 5px; margin-bottom: 5px;">
-            <div class="bold" style="margin-bottom: 3px;">Documentation Images @if($totalImagePages > 1)(Page {{ $currentPage - 1 }} of {{ $totalImagePages }})@endif:</div>
+        <div style="margin-top: 8px; margin-bottom: 5px; border: 1px solid #000; border-radius: 4px; padding: 6px;">
+            <div class="bold" style="margin-bottom: 8px; text-align: center; background: #e0e0e0; padding: 5px; border-radius: 4px;">Documentation Images @if($totalImagePages > 1)(Page {{ $currentPage - 1 }} of {{ $totalImagePages }})@endif:</div>
 
             <table style="width: 100%; border-collapse: collapse;">
                 @foreach(array_chunk($imageChunk, 3) as $rowIndex => $rowImages)
@@ -646,13 +646,16 @@
                     }
                     @endphp
 
-                    <td style="width: 33.33%; padding: 3px; text-align: center; border: 1px solid #ddd; vertical-align: top;">
+                    <td style="width: 33.33%; padding: 2px; text-align: center; border: none; vertical-align: top;">
                         @if($imageBase64)
-                        <div class="image-container">
-                            <img src="{{ $imageBase64 }}" alt="{{ ucwords(str_replace('_', ' ', $imageCategory)) }}">
+                        <div class="width: 100%; background: #f9f9f9; margin-bottom: 2px; border-radius: 2px; overflow: hidden; font-size: 0;">
+                            <div style="width: 100%; height: 380px; display: flex; align-items: center; justify-content: center; font-size: 0; line-height: 0;">
+                            <img src="{{ $imageBase64 }}" alt="{{ ucwords(str_replace('_', ' ', $imageCategory)) }}"
+                            style="max-width: 100%; max-height: 100%; object-fit: contain; display: block; margin: 0; padding: 0;">
                         </div>
-                        <div style="font-size: 7pt; color: #666; margin-top: 2px;">
+                        <div style="font-size: 8pt; font-weight: bold; color: #000; padding: 4px 2px; background: #f5f5f5; text-align: center; line-height: 1.2; margin: 0;">
                             {{ ucwords(str_replace('_', ' ', $imageCategory)) }}
+                        </div>
                         </div>
                         @else
                         <div style="width: 100%; height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt; border: 1px solid #ddd;">
