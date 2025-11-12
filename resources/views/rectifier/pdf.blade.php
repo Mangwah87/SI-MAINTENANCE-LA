@@ -209,7 +209,7 @@
     $images = [];
     }
 
-    $imagesPerPage = 9;
+    $imagesPerPage = 6;
     $totalImagePages = !empty($images) ? ceil(count($images) / $imagesPerPage) : 0;
     $totalPages = 1 + $totalImagePages;
     @endphp
