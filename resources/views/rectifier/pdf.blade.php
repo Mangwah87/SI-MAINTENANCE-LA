@@ -209,7 +209,7 @@
     $images = [];
     }
 
-    $imagesPerPage = 9;
+    $imagesPerPage = 6;
     $totalImagePages = !empty($images) ? ceil(count($images) / $imagesPerPage) : 0;
     $totalPages = 1 + $totalImagePages;
     @endphp
@@ -670,7 +670,7 @@
 
                     {{-- Fill remaining cells --}}
                     @for($i = count($rowImages); $i < 3; $i++)
-                        <td style="width: 33.33%; padding: 3px; border: none;">
+                        <td style="width: 33.33%; padding: 2px; border: none;">
                         </td>
                         @endfor
                 </tr>
