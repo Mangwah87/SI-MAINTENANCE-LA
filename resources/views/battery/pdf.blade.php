@@ -61,14 +61,19 @@
 
         .section-title {
             margin-top: 20px;
-    font-weight: bold;
-    font-size: 12px;
-    border: none;
-    border-bottom: 1px solid #000; /* hanya garis bawah */
-    display: inline-block;     /* agar garis bawah hanya sepanjang teks */
-    padding-bottom: 1px;       /* jarak kecil antara teks dan garis */
-    margin-bottom: 8px;        /* spasi bawah dari elemen selanjutnya */
-}
+            font-weight: bold;
+            font-size: 12px;
+            border: none;
+            border-bottom: 1px solid #000;
+            /* hanya garis bawah */
+            display: inline-block;
+            /* agar garis bawah hanya sepanjang teks */
+            padding-bottom: 1px;
+            /* jarak kecil antara teks dan garis */
+            margin-bottom: 8px;
+            /* spasi bawah dari elemen selanjutnya */
+        }
+
         .bank-container {
             margin: 10px 0;
         }
@@ -178,52 +183,52 @@
 
 <body>
     @php
-    // Function to convert image to base64
-    function imageToBase64($imagePath) {
-    try {
-    $fullPath = storage_path('app/public/' . $imagePath);
+        // Function to convert image to base64
+        function imageToBase64($imagePath)
+        {
+            try {
+                $fullPath = storage_path('app/public/' . $imagePath);
 
-    if (!file_exists($fullPath)) {
-    return null;
-    }
+                if (!file_exists($fullPath)) {
+                    return null;
+                }
 
-    $imageData = file_get_contents($fullPath);
-    if ($imageData === false) {
-    return null;
-    }
+                $imageData = file_get_contents($fullPath);
+                if ($imageData === false) {
+                    return null;
+                }
 
-    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mimeType = finfo_file($finfo, $fullPath);
-    finfo_close($finfo);
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mimeType = finfo_file($finfo, $fullPath);
+                finfo_close($finfo);
 
-    $base64 = base64_encode($imageData);
-    return "data:{$mimeType};base64,{$base64}";
+                $base64 = base64_encode($imageData);
+                return "data:{$mimeType};base64,{$base64}";
+            } catch (\Exception $e) {
+                return null;
+            }
+        }
 
-    } catch (\Exception $e) {
-    return null;
-    }
-    }
+        // Collect all photos
+        $photos = [];
+        foreach ($maintenance->readings as $reading) {
+            if ($reading->photo_path && Storage::disk('public')->exists($reading->photo_path)) {
+                $photos[] = [
+                    'path' => $reading->photo_path,
+                    'bank' => $reading->bank_number,
+                    'battery' => $reading->battery_number,
+                    'voltage' => $reading->voltage,
+                    'latitude' => $reading->photo_latitude,
+                    'longitude' => $reading->photo_longitude,
+                    'timestamp' => $reading->photo_timestamp,
+                ];
+            }
+        }
 
-    // Collect all photos
-    $photos = [];
-    foreach($maintenance->readings as $reading) {
-    if ($reading->photo_path && Storage::disk('public')->exists($reading->photo_path)) {
-    $photos[] = [
-    'path' => $reading->photo_path,
-    'bank' => $reading->bank_number,
-    'battery' => $reading->battery_number,
-    'voltage' => $reading->voltage,
-    'latitude' => $reading->photo_latitude,
-    'longitude' => $reading->photo_longitude,
-    'timestamp' => $reading->photo_timestamp
-    ];
-    }
-    }
-
-    // Calculate total pages
-    $imagesPerPage = 6;
-    $totalImagePages = !empty($photos) ? ceil(count($photos) / $imagesPerPage) : 0;
-    $totalPages = 1 + $totalImagePages;
+        // Calculate total pages
+        $imagesPerPage = 6;
+        $totalImagePages = !empty($photos) ? ceil(count($photos) / $imagesPerPage) : 0;
+        $totalPages = 1 + $totalImagePages;
     @endphp
 
     {{-- PAGE 1: Main Content --}}
@@ -243,7 +248,8 @@
                     <div style="font-weight: bold; font-size: 10pt;">Battery</div>
                 </td>
                 <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
-                    <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo" style="width:50px; height:auto;">
+                    <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo"
+                        style="width:50px; height:auto;">
                 </td>
             </tr>
             <tr>
@@ -292,61 +298,62 @@
         <!-- <div class="section-title">Battery Voltage Readings</div> -->
 
         @php
-$readingsByBank = $maintenance->readings->groupBy('bank_number')->sortKeys();
-@endphp
-
-<div class="bank-container">
-    @foreach($readingsByBank as $bankNumber => $readings)
-        @php
-            $sortedReadings = $readings->sortBy('battery_number')->values();
-            $total = $sortedReadings->count();
-
-            // Gunakan 2 kolom: jadi total baris = ceil(total / 2)
-            $columns = 2;
-            $rows = ceil($total / $columns);
+            $readingsByBank = $maintenance->readings->groupBy('bank_number')->sortKeys();
         @endphp
 
-        <table class="bank-table-wide">
-            <thead>
-                <tr>
-                    <th colspan="4" class="bank-header">
-                        Bank: {{ $bankNumber }} | Batt. Brand: {{ $sortedReadings->first()->battery_brand ?? '-' }}
-                    </th>
-                </tr>
-                <tr>
-                    <th width="25%">No</th>
-                    <th width="25%">Voltage</th>
-                    <th width="25%">No</th>
-                    <th width="25%">Voltage</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for($i = 0; $i < $rows; $i++)
-                    @php $rightIndex = $i + $rows; @endphp
-                    <tr>
-                        {{-- Kolom kiri --}}
-                        @if(isset($sortedReadings[$i]))
-                            <td>{{ $sortedReadings[$i]->battery_number }}</td>
-                            <td>{{ number_format($sortedReadings[$i]->voltage, 2) }}</td>
-                        @else
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                        @endif
+        <div class="bank-container">
+            @foreach ($readingsByBank as $bankNumber => $readings)
+                @php
+                    $sortedReadings = $readings->sortBy('battery_number')->values();
+                    $total = $sortedReadings->count();
 
-                        {{-- Kolom kanan --}}
-                        @if(isset($sortedReadings[$rightIndex]))
-                            <td>{{ $sortedReadings[$rightIndex]->battery_number }}</td>
-                            <td>{{ number_format($sortedReadings[$rightIndex]->voltage, 2) }}</td>
-                        @else
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                        @endif
-                    </tr>
-                @endfor
-            </tbody>
-        </table>
-    @endforeach
-</div>
+                    // Gunakan 2 kolom: jadi total baris = ceil(total / 2)
+                    $columns = 2;
+                    $rows = ceil($total / $columns);
+                @endphp
+
+                <table class="bank-table-wide">
+                    <thead>
+                        <tr>
+                            <th colspan="4" class="bank-header">
+                                Bank: {{ $bankNumber }} | Batt. Brand:
+                                {{ $sortedReadings->first()->battery_brand ?? '-' }}
+                            </th>
+                        </tr>
+                        <tr>
+                            <th width="25%">No</th>
+                            <th width="25%">Voltage</th>
+                            <th width="25%">No</th>
+                            <th width="25%">Voltage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for ($i = 0; $i < $rows; $i++)
+                            @php $rightIndex = $i + $rows; @endphp
+                            <tr>
+                                {{-- Kolom kiri --}}
+                                @if (isset($sortedReadings[$i]))
+                                    <td>{{ $sortedReadings[$i]->battery_number }}</td>
+                                    <td>{{ number_format($sortedReadings[$i]->voltage, 2) }}</td>
+                                @else
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                @endif
+
+                                {{-- Kolom kanan --}}
+                                @if (isset($sortedReadings[$rightIndex]))
+                                    <td>{{ $sortedReadings[$rightIndex]->battery_number }}</td>
+                                    <td>{{ number_format($sortedReadings[$rightIndex]->voltage, 2) }}</td>
+                                @else
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                @endif
+                            </tr>
+                        @endfor
+                    </tbody>
+                </table>
+            @endforeach
+        </div>
 
         <div class="clear"></div>
 
@@ -356,11 +363,11 @@ $readingsByBank = $maintenance->readings->groupBy('bank_number')->sortKeys();
         </div>
 
         {{-- Notes --}}
-        @if($maintenance->notes)
-        <div class="section-title">Notes / Additional Informations</div>
-        <div class="notes-box">
-            {{ $maintenance->notes }}
-        </div>
+        @if ($maintenance->notes)
+            <div class="section-title">Notes / Additional Informations</div>
+            <div class="notes-box">
+                {{ $maintenance->notes }}
+            </div>
         @endif
 
         {{-- Signature Section --}}
@@ -411,108 +418,120 @@ $readingsByBank = $maintenance->readings->groupBy('bank_number')->sortKeys();
     </div>
 
     {{-- IMAGE PAGES --}}
-    @if(!empty($photos))
-    @php
-    $photoChunks = array_chunk($photos, $imagesPerPage);
-    $currentPage = 2;
-    @endphp
-
-    @foreach($photoChunks as $chunkIndex => $photoChunk)
-    <div class="page-break"></div>
-
-    <div class="content-wrapper">
-        {{-- Header for image page --}}
-        <table class="header-table">
-            <tr>
-                <td width="15%" style="vertical-align: top;">
-                    <div style="font-size: 7.5pt;">No. Dok.</div>
-                </td>
-                <td width="30%" style="vertical-align: top;">
-                    <div style="font-size: 7.5pt;">FM-LAP-D2-SOP-003-013</div>
-                </td>
-                <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
-                    <div style="font-weight: bold; font-size: 10pt;">Dokumentasi Foto</div>
-                    <div style="font-weight: bold; font-size: 10pt;">Preventive Maintenance</div>
-                    <div style="font-weight: bold; font-size: 10pt;">Battery</div>
-                </td>
-                <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
-                    <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo" style="width:50px; height:auto;">
-                </td>
-            </tr>
-            <tr>
-                <td style="vertical-align: top;">
-                    <div style="font-size: 7.5pt;">Versi</div>
-                </td>
-                <td style="vertical-align: top;">
-                    <div style="font-size: 7.5pt;">1.0</div>
-                </td>
-            </tr>
-            <tr>
-                <td style="vertical-align: top;">
-                    <div style="font-size: 7.5pt;">Hal</div>
-                </td>
-                <td style="vertical-align: top;">
-                    <div style="font-size: 7.5pt;">{{ $currentPage }} dari {{ $totalPages }}</div>
-                </td>
-            </tr>
-            <tr>
-                <td style="vertical-align: top;">
-                    <div style="font-size: 7.5pt;">Label</div>
-                </td>
-                <td style="vertical-align: top;">
-                    <div style="font-size: 7.5pt;">Internal</div>
-                </td>
-            </tr>
-        </table>
-
-        <div style="margin-top: 8px; margin-bottom: 5px; border: 1px solid #000; border-radius: 4px; padding: 6px;">
-    <div class="bold" style="margin-bottom: 8px; text-align: center; background: #e0e0e0; padding: 5px; border-radius: 4px;">Documentation Images @if($totalImagePages > 1)(Page {{ $currentPage - 1 }} of {{ $totalImagePages }})@endif:</div>
-
-   <table style="width: 100%; border-collapse: collapse;">
-    @foreach(array_chunk($photoChunk, 3) as $rowImages)
-    <tr>
-        @foreach($rowImages as $photo)
+    @if (!empty($photos))
         @php
-        $imageBase64 = imageToBase64($photo['path']);
+            $photoChunks = array_chunk($photos, $imagesPerPage);
+            $currentPage = 2;
         @endphp
-        <td style="width: 33.33%; padding: 2px; text-align: center; border: none; vertical-align: top;">
-            @if($imageBase64)
-            <div style="width: 100%; background: #f9f9f9; margin-bottom: 2px; border-radius: 2px; overflow: hidden; font-size: 0;">
-                <div style="width: 100%; height: 280px; display: flex; align-items: center; justify-content: center; font-size: 0; line-height: 0;">
-                    <img src="{{ $imageBase64 }}" alt="Bank {{ $photo['bank'] }} - Battery {{ $photo['battery'] }}"
-                     style="max-width: 100%; max-height: 100%; object-fit: contain; display: block; margin: 0; padding: 0;">
-                </div>
-                <div style="font-size: 8pt; font-weight: bold; color: #000; padding: 4px 2px; background: #f5f5f5; text-align: center; line-height: 1.2; margin: 0;">
-                    Bank {{ $photo['bank'] }} - No. {{ $photo['battery'] }}<br>
-                    Voltage: {{ number_format($photo['voltage'], 2) }} VDC
+
+        @foreach ($photoChunks as $chunkIndex => $photoChunk)
+            <div class="page-break"></div>
+
+            <div class="content-wrapper">
+                {{-- Header for image page --}}
+                <table class="header-table">
+                    <tr>
+                        <td width="15%" style="vertical-align: top;">
+                            <div style="font-size: 7.5pt;">No. Dok.</div>
+                        </td>
+                        <td width="30%" style="vertical-align: top;">
+                            <div style="font-size: 7.5pt;">FM-LAP-D2-SOP-003-013</div>
+                        </td>
+                        <td width="40%" rowspan="4" style="text-align: center; vertical-align: middle;">
+                            <div style="font-weight: bold; font-size: 10pt;">Dokumentasi Foto</div>
+                            <div style="font-weight: bold; font-size: 10pt;">Preventive Maintenance</div>
+                            <div style="font-weight: bold; font-size: 10pt;">Battery</div>
+                        </td>
+                        <td width="15%" rowspan="4" style="text-align: center; vertical-align: middle;">
+                            <img src="{{ public_path('assets/images/logo2.png') }}" alt="Logo"
+                                style="width:50px; height:auto;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;">
+                            <div style="font-size: 7.5pt;">Versi</div>
+                        </td>
+                        <td style="vertical-align: top;">
+                            <div style="font-size: 7.5pt;">1.0</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;">
+                            <div style="font-size: 7.5pt;">Hal</div>
+                        </td>
+                        <td style="vertical-align: top;">
+                            <div style="font-size: 7.5pt;">{{ $currentPage }} dari {{ $totalPages }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;">
+                            <div style="font-size: 7.5pt;">Label</div>
+                        </td>
+                        <td style="vertical-align: top;">
+                            <div style="font-size: 7.5pt;">Internal</div>
+                        </td>
+                    </tr>
+                </table>
+
+                <div
+                    style="margin-top: 8px; margin-bottom: 5px; border: 1px solid #000; border-radius: 4px; padding: 6px;">
+                    <div class="bold"
+                        style="margin-bottom: 8px; text-align: center; background: #e0e0e0; padding: 5px; border-radius: 4px;">
+                        Documentation Images @if ($totalImagePages > 1)
+                            (Page {{ $currentPage - 1 }} of {{ $totalImagePages }})
+                        @endif:</div>
+
+                    <table style="width: 100%; border-collapse: collapse;">
+                        @foreach (array_chunk($photoChunk, 3) as $rowImages)
+                            <tr>
+                                @foreach ($rowImages as $photo)
+                                    @php
+                                        $imageBase64 = imageToBase64($photo['path']);
+                                    @endphp
+                                    <td
+                                        style="width: 33.33%; padding: 2px; text-align: center; border: none; vertical-align: top;">
+                                        @if ($imageBase64)
+                                            <div
+                                                style="width: 100%; background: #f9f9f9; margin-bottom: 2px; border-radius: 2px; overflow: hidden; font-size: 0;">
+                                                <div
+                                                    style="width: 100%; height: 280px; display: flex; align-items: center; justify-content: center; font-size: 0; line-height: 0;">
+                                                    <img src="{{ $imageBase64 }}"
+                                                        alt="Bank {{ $photo['bank'] }} - Battery {{ $photo['battery'] }}"
+                                                        style="max-width: 100%; max-height: 100%; object-fit: contain; display: block; margin: 0; padding: 0;">
+                                                </div>
+                                                <div
+                                                    style="font-size: 8pt; font-weight: bold; color: #000; padding: 4px 2px; background: #f5f5f5; text-align: center; line-height: 1.2; margin: 0;">
+                                                    Bank {{ $photo['bank'] }} - No. {{ $photo['battery'] }}<br>
+                                                    Voltage: {{ number_format($photo['voltage'], 2) }} VDC
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div
+                                                style="border: 1px solid #000; width: 100%; height: 380px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt; margin-bottom: 2px; border-radius: 2px;">
+                                                Image not found
+                                            </div>
+                                        @endif
+                                    </td>
+                                @endforeach
+
+                                {{-- Fill remaining cells --}}
+                                @for ($i = count($rowImages); $i < 3; $i++)
+                                    <td style="width: 33.33%; padding: 2px; border: none;">
+                                    </td>
+                                @endfor
+                            </tr>
+                        @endforeach
+                    </table>
                 </div>
             </div>
-            @else
-            <div style="border: 1px solid #000; width: 100%; height: 380px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt; margin-bottom: 2px; border-radius: 2px;">
-                Image not found
+
+            <div class="page-footer">
+                ©HakCipta PT. APLIKARUSA LINTASARTA, Indonesia<br>
+                FM-LAP-D2-SOP-003-013 Formulir Preventive Maintenance Battery - Dokumentasi Foto
             </div>
-            @endif
-        </td>
+
+            @php $currentPage++; @endphp
         @endforeach
-
-        {{-- Fill remaining cells --}}
-        @for($i = count($rowImages); $i < 3; $i++)
-            <td style="width: 33.33%; padding: 2px; border: none;">
-            </td>
-        @endfor
-    </tr>
-    @endforeach
-</table>
-</div>
-    </div>
-
-    <div class="page-footer">
-        ©HakCipta PT. APLIKARUSA LINTASARTA, Indonesia<br>
-        FM-LAP-D2-SOP-003-013 Formulir Preventive Maintenance Battery - Dokumentasi Foto
-    </div>
-
-    @php $currentPage++; @endphp
-    @endforeach
     @endif
 </body>
 
