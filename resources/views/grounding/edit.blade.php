@@ -220,6 +220,10 @@
                         <div class="md:col-span-1">
                              <h4 class="text-md font-semibold text-gray-700 mb-2">Mengetahui</h4>
                              <div><label class="block text-xs text-gray-600 mb-1">Nama Approver</label><input type="text" name="approver_name" value="{{ old('approver_name', $maintenance->approver_name) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3" placeholder="Nama Atasan"></div>
+                             <div class="mt-4">
+                                <label class="block text-xs text-gray-600 mb-1">NIK Approver</label>
+                                <input type="text" name="approver_nik" value="{{ old('approver_nik') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3" placeholder="NIK Atasan">
+                            </div>
                         </div>
                     </div>
                     {{-- Submit Buttons --}}

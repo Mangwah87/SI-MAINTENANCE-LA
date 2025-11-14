@@ -218,7 +218,7 @@ td.pelaksana-table.center {
             <tbody>
                 <tr>
                     <td colspan="4" style="vertical-align: top; border: none; padding: 0 0 3px 0;">
-                        <div class="text-bold" style="margin-bottom: 3px;">Pelaksana :</div>
+                        <div class="text-bold" style="margin-bottom: 3px;">Pelaksana</div>
                     </td>
                     
                     <td style="width: 5%; border: none;">&nbsp;</td> 

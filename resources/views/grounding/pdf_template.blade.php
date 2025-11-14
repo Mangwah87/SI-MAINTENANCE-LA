@@ -40,43 +40,30 @@
             vertical-align: middle; /* Tambahkan atau pastikan ini ada */
         }
         /* Style Tabel Pelaksana (Mirip PDF Asli) */
-        .pelaksana-table { margin-top: 5px; }
-        .pelaksana-table th, .pelaksana-table td {
-            border: 1px solid #000; padding: 3px 5px; vertical-align: middle; text-align: center; font-weight: normal; background-color: #fff;
+        /* --- GANTI DENGAN BLOK INI --- */
+        th.pelaksana-table, td.pelaksana-table {
+            border: 1px solid #000; 
+            padding: 8px 5px; /* <-- Menambah padding atas/bawah agar lebih tinggi */
+            vertical-align: middle; 
+            text-align: center; 
+            font-weight: normal; 
+            background-color: #fff;
         }
-        .pelaksana-table .name-col { text-align: left; }
-        .pelaksana-table .sign-col { height: 35px; } /* Tinggi baris tanda tangan */
+        td.pelaksana-table.name-col { text-align: left; }
+        td.pelaksana-table.center { text-align: center; }
 
         /* Style Bagian Mengetahui (Mirip PDF Asli) */
         /* Style Bagian Mengetahui */
         /* Style Bagian Mengetahui */
-        .mengetahui-section {
-             /* width: 100%; <-- Hapus atau pastikan tidak ada width */
-             float: none; /* Hapus float jika masih ada */
-             text-align: center;
-             /* margin-top: 5px; */ /* Sesuaikan margin jika perlu */
-        }
-        .mengetahui-sign-box {
-            border: 1px solid #000;
-            height: 100px; /* Tinggi kotak (sesuaikan) */
-            margin-top: 2px;
-            margin-bottom: 2px;
-            position: relative;
-            padding-bottom: 15px;
-            /* [BARU] Atur lebar tetap & auto margin */
-            width: 55mm; /* <-- Atur lebar tetap di sini (misal 55mm) */
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .mengetahui-name {
+        /* --- GANTI DENGAN BLOK INI --- */
+        .mengetahui-name-line {
             font-size: 10pt;
-            position: absolute;
-            bottom: 5px; /* Naikkan sedikit dari bawah */
-            left: 0;
-            right: 0;
             text-align: center;
-            width: 80%; /* Lebar nama relatif thd kotak */
-            margin: 0 auto;
+            padding-bottom: 2px;
+        }
+        .mengetahui-nik-line {
+            font-size: 9pt; /* NIK sedikit lebih kecil */
+            text-align: center;
         }
 
         /* Style Notes (Mirip PDF Asli) */
@@ -224,47 +211,70 @@
             <div class="notes-heading avoid-break">Notes / additional informations :</div>
             <div class="notes-box avoid-break">
                 {!! nl2br(e($maintenance->notes ?? '')) !!}
-            </div>
+            </div><br>
 
             {{-- SESUAI PDF ASLI --}}
-            <table style="width: 100%; border: none;" class="avoid-break">
-            <tr>
-                {{-- Kolom Kiri: Pelaksana --}}
-                <td style="width: 65%; vertical-align: bottom; border: none; padding-right: 10px;">
-                    <div class="text-bold" style="margin-bottom: 3px;"><strong>Pelaksana :</strong></div>
-                    <table class="pelaksana-table">
-                         <thead>
-                            <tr>
-                                <th width="10%">No</th>
-                                <th width="35%">Name</th>
-                                <th width="30%">Perusahaan</th>
-                                <th width="25%">Tanda Tangan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for ($i = 1; $i <= 3; $i++)
-                            <tr>
-                                <td class="center">{{ $i }}.</td>
-                                <td class="name-col">{{ $maintenance->{'technician_'.$i.'_name'} ?? '' }}</td>
-                                <td>{{ $maintenance->{'technician_'.$i.'_company'} ?? '' }}</td>
-                                <td class="sign-col"></td>
-                            </tr>
-                            @endfor
-                        </tbody>
-                    </table>
-                </td>
+            <table style="width: 100%; border-collapse: collapse;" class="avoid-break">
+                <tbody>
+                    <tr>
+                        <td colspan="4" style="vertical-align: top; border: none; padding: 0 0 3px 0;">
+                            <div class="text-bold" style="margin-bottom: 3px;">Pelaksana :</div>
+                        </td>
+                        <td style="width: 5%; border: none;">&nbsp;</td> 
+                        <td style="width: 35%; vertical-align: top; text-align: center; border: none; padding: 0 0 3px 0;">
+                             <span class="text-bold">Mengetahui,</span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="pelaksana-table" style="width: 5%;">No</th>
+                        <th class="pelaksana-table" style="width: 20%;">Name</th>
+                        <th class="pelaksana-table" style="width: 20%;">Perusahaan</th>
+                        <th class="pelaksana-table" style="width: 15%;">Tanda Tangan</th>
+                        
+                        <td rowspan="4" style="border: none; width: 5%;">&nbsp;</td> 
 
-                {{-- Kolom Kanan: Mengetahui --}}
-                <td style="width: 35%; vertical-align: bottom; border: none;">
-                     <div class="mengetahui-section"> {{-- Hapus style float & margin-top --}}
-                         <span class="text-bold"><strong>Mengetahui,</strong></span>
-                         <div class="mengetahui-sign-box">
-                             <div class="mengetahui-name">( {{ $maintenance->approver_name ?? '..................' }} )</div>
+                        <td rowspan="4" style="border: 1px solid #000; text-align: center; vertical-align: bottom; width: 35%;">
+                            {{-- Wrapper ini akan menempel di bagian bawah sel --}}
+                            <div style="padding-bottom: 5px;">
+                                <div class="mengetahui-name-line">( {{ $maintenance->approver_name ?? '..................' }} )</div>
+                                <div class="mengetahui-nik-line">(NIK: {{ $maintenance->approver_nik ?? '..................' }})</div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    @for ($i = 1; $i <= 3; $i++)
+                    <tr>
+                        <td class="pelaksana-table center">{{ $i }}.</td>
+                        <td class="pelaksana-table name-col">{{ $maintenance->{'technician_'.$i.'_name'} ?? '' }}</td>
+                        <td class="pelaksana-table">{{ $maintenance->{'technician_'.$i.'_company'} ?? '' }}</td>
+                        {{-- Atur tinggi sel tanda tangan di sini jika perlu --}}
+                        <td class="pelaksana-table" style="height: 35px;"></td> 
+                    </tr>
+                    @endfor
+                </tbody>
+            </table>
+
+            {{-- =============================================== --}}
+            {{-- == AWAL BLOK YANG DIHAPUS (PENYEBAB ERROR) == --}}
+            {{-- =============================================== --}}
+                
+                 {{-- 
+                    <td style="width: 35%; vertical-align: bottom; border: none;">
+                         <div class="mengetahui-section"> 
+                             <span class="text-bold"><strong>Mengetahui,</strong></span>
+                             <div class="mengetahui-sign-box">
+                                 <div class="mengetahui-name">( {{ $maintenance->approver_name ?? '..................' }} )</div>
+                                 <div class="mengetahui-nik">(NIK: {{ $maintenance->approver_nik ?? '..................' }})</div>
+                             </div>
                          </div>
-                     </div>
-                </td>
-            </tr>
-        </table>
+                    </td>
+                </tr>
+            </table> 
+                 --}}
+            {{-- =============================================== --}}
+            {{-- == AKHIR BLOK YANG DIHAPUS (PENYEBAB ERROR) == --}}
+            {{-- =============================================== --}}
 
         </div>
     <div class="page-footer">
@@ -280,7 +290,7 @@
                     <table class="header-table">
                          <tr>
                             <td width="15%" style="font-size: 8pt; vertical-align: top;">No. Dok.</td><td width="25%" style="font-size: 8pt; vertical-align: top;">: FM-LAP-D2-SOP-003-011</td>
-                            <td width="35%" rowspan="4" class="text-center" style="vertical-align: middle;"><div style="font-size: 12pt; font-weight: bold;">Formulir</div><div style="font-size: 13pt; font-weight: bold;">Preventive Maintenance</div><div style="font-size: 13pt; font-weight: bold;">Petir dan Grounding</div></td>
+                            <td width="35%" rowspan="4" class="text-center" style="vertical-align: middle;"><div style="font-size: 14pt; font-weight: bold;">Formulir</div><div style="font-size: 14pt; font-weight: bold;">Preventive Maintenance</div><div style="font-size: 14pt; font-weight: bold;">Petir dan Grounding</div></td>
                             <td width="25%" rowspan="4" class="text-center" style="vertical-align: middle;"><img src="{{ public_path('assets/images/Lintasarta_Logo_Logogram.png') }}" style="width: 70px;"></td>
                         </tr>
                         <tr><td style="font-size: 8pt; vertical-align: top;">Versi</td><td style="font-size: 8pt; vertical-align: top;">: 1.0</td></tr>
