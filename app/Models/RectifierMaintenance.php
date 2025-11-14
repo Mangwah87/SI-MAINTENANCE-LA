@@ -141,4 +141,8 @@ class RectifierMaintenance extends Model
     {
         return $this->images->toArray();
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
