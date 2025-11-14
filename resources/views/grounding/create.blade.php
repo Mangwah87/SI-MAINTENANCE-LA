@@ -58,15 +58,15 @@
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Brand / Type</label>
-                            <input type="text" name="brand_type" value="{{ old('brand_type') }}" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" placeholder="Contoh: Bakiral, Erico">
+                            <input type="text" name="brand_type" value="{{ old('brand_type') }}" required class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" placeholder="Contoh: Bakiral, Erico">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Reg. Number</label>
-                            <input type="text" name="reg_number" value="{{ old('reg_number') }}" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" placeholder="Nomor Registrasi (jika ada)">
+                            <input type="text" name="reg_number" value="{{ old('reg_number') }}" required class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" placeholder="Nomor Registrasi (jika ada)">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">S/N</label>
-                            <input type="text" name="sn" value="{{ old('sn') }}" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" placeholder="Serial Number (jika ada)">
+                            <input type="text" name="sn" value="{{ old('sn') }}" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" placeholder="Serial Number (jika ada)" required>
                         </div>
                     </div>
                 </div>
@@ -94,7 +94,7 @@
                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs text-gray-600 mb-1">Result</label>
-                                    <input type="text" name="{{ $check['field'] }}_result" value="{{ old($check['field'].'_result') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3" placeholder="Hasil pemeriksaan...">
+                                    <input type="text" name="{{ $check['field'] }}_result" value="{{ old($check['field'].'_result') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3" placeholder="Hasil pemeriksaan..." required>
                                 </div>
                                 <div>
                                     <label class="block text-xs text-gray-600 mb-1">Status *</label>
@@ -139,7 +139,7 @@
                                 <div>
                                     <label class="block text-xs text-gray-600 mb-1">Result</label>
                                     <div class="flex items-center">
-                                        <input type="{{ $check['unit'] ? 'number' : 'text' }}" {{ $check['unit'] ? 'step=0.01' : ''}} name="{{ $check['field'] }}_result" value="{{ old($check['field'].'_result') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3 {{ !$check['unit'] ? 'rounded-md' : 'rounded-r-none' }}" placeholder="Hasil pengukuran...">
+                                        <input type="{{ $check['unit'] ? 'number' : 'text' }}" {{ $check['unit'] ? 'step=0.01' : ''}} name="{{ $check['field'] }}_result" value="{{ old($check['field'].'_result') }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3 {{ !$check['unit'] ? 'rounded-md' : 'rounded-r-none' }}" placeholder="Hasil pengukuran...">
                                         @if($check['unit']) <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-100 border border-l-0 border-gray-300 rounded-r-md h-[38px]">{{ $check['unit'] }}</span> @endif
                                     </div>
                                 </div>
@@ -189,7 +189,7 @@
                         </div>
                         <div class="md:col-span-1">
                              <h4 class="text-md font-semibold text-gray-700 mb-2">Mengetahui</h4>
-                             <div><label class="block text-xs text-gray-600 mb-1">Nama Approver</label><input type="text" name="approver_name" value="{{ old('approver_name') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3" placeholder="Nama Atasan"></div>
+                             <div><label class="block text-xs text-gray-600 mb-1">Nama Approver</label><input type="text" name="approver_name" value="{{ old('approver_name') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3" placeholder="Nama Atasan" required></div>
                              {{-- TAMBAHKAN BLOK INI --}}
                             <div class="mt-4">
                                 <label class="block text-xs text-gray-600 mb-1">NIK Approver</label>

@@ -241,6 +241,7 @@
                         <div class="border p-3 rounded-lg bg-gray-50 md:col-start-3">
                             <p class="text-sm text-gray-600">Mengetahui (Approver)</p>
                             <p class="font-semibold mt-1">{{ $maintenance->approver_name ?? '-' }}</p>
+                            <p class="text-xs text-gray-500 mt-1">NIK: {{ $maintenance->approver_nik ?? '-' }}</p>
                         </div>
                     </div>
                 </div>
