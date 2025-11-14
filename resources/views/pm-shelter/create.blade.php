@@ -18,64 +18,30 @@
                                 Informasi Lokasi & Perangkat
                             </h3>
                             
+                            
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                <!-- Dropdown Lokasi Central -->
                                 <div class="sm:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Lokasi <span class="text-red-500">*</span>
+                                        Lokasi Sentral <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="location" 
+                                    <select name="central_id" id="central_id"
                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
-                                           value="{{ old('location') }}" required>
-                                    @error('location')
+                                           required>
+                                        <option value="">-- Pilih Lokasi Sentral --</option>
+                                        @foreach($centrals as $central)
+                                            <option value="{{ $central->id }}" 
+                                                    {{ old('central_id') == $central->id ? 'selected' : '' }}
+                                                    data-area="{{ $central->area }}"
+                                                    data-id-sentral="{{ $central->id_sentral }}">
+                                                {{ $central->nama }} - {{ $central->area }} ({{ $central->id_sentral }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('central_id')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Tanggal <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="date" name="date" 
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
-                                           value="{{ old('date', date('Y-m-d')) }}" required>
-                                    @error('date')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Waktu <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="time" name="time" 
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
-                                           value="{{ old('time', date('H:i')) }}" required>
-                                    @error('time')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Brand/Type</label>
-                                    <input type="text" name="brand_type" 
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
-                                           value="{{ old('brand_type') }}">
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Reg. Number</label>
-                                    <input type="text" name="reg_number" 
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
-                                           value="{{ old('reg_number') }}">
-                                </div>
-
-                                <div class="sm:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">S/N</label>
-                                    <input type="text" name="serial_number" 
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" 
-                                           value="{{ old('serial_number') }}">
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Visual Check -->
