@@ -224,8 +224,8 @@
                     </div>
                     {{-- Submit Buttons --}}
                 <div class="flex justify-end p-6 gap-4 py-6">
-                    <a href="{{ route('grounding.index') }}" class="px-8 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-lg shadow-lg">Batal</a>
-                    <button type="submit" class="px-8 py-3 bg-blue-500 hover:from-blue-600 hover:to-blue-600 text-white font-bold rounded-lg shadow-lg">Update Data</button>
+                    <a href="{{ route('grounding.index') }}" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-sm rounded-lg shadow-lg">Batal</a>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 hover:from-blue-600 hover:to-blue-600 text-white font-sm rounded-lg shadow-lg">Update Data</button>
                 </div>
                 </div>
 

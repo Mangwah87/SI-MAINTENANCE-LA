@@ -10,24 +10,34 @@
         .header-table td, .main-table th, .main-table td { border: 1px solid #000; padding: 2px 4px; vertical-align: top; }
         .main-table th { text-align: center; font-weight: bold; }
         .info-table td { border: none; padding: 1px 2px; }
-        .pelaksana-table { margin-bottom: 5px; }
-        .pelaksana-table th, .pelaksana-table td { border: 1px solid #000; padding: 2px 6px; vertical-align: top; text-align: left; background-color: #fff !important; font-weight: normal !important; }
-        .pelaksana-table th { text-align: center; }
-        .pelaksana-table td.center { text-align: center; }
+        /* DENGAN INI: (perhatikan titiknya menempel pada 'th' dan 'td') */
+th.pelaksana-table, td.pelaksana-table { 
+    border: 1px solid #000; 
+    padding: 8px 6px; 
+    vertical-align: top; 
+    text-align: left; 
+    background-color: #fff !important; 
+    font-weight: normal !important; 
+}
+
+th.pelaksana-table { 
+    text-align: center; 
+}
+
+td.pelaksana-table.center { 
+    text-align: center; 
+}
         .mengetahui-section { width: 35%; float: right; text-align: center; margin-top: 15px; }
         .mengetahui-box { border: 1px solid #000; height: 68px; margin-top: 5px; margin-bottom: 2px; position: relative; padding-bottom: 15px; }
-        .mengetahui-name {
-            font-size: 8pt;
-            position: absolute;
-            bottom: 3px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            /* border-top: 1px solid #000; <-- Line removed */
-            width: 80%;
-            margin: 0 auto;
-            padding-top: 1px; /* Keep padding if needed for vertical space */
-        }
+        .mengetahui-name-line {
+    font-size: 10pt;
+    text-align: center;
+    padding-bottom: 2px; /* Hapus 'position', 'bottom', 'left', 'right' */
+}
+.mengetahui-nik-line {
+    font-size: 9pt;
+    text-align: center; /* Hapus 'position', 'bottom', 'left', 'right' */
+}
         .text-center { text-align: center; }
         .text-bold { font-weight: bold; }
         .sub-item { padding-left: 10px; }
@@ -154,7 +164,7 @@
         @if($totalPages > 1)
             <div class="page-header avoid-break">
                 <table class="header-table">
-                    <tr><td width="12%" style="font-size: 10pt; vertical-align: top;">No. Dok.</td><td width="23%" style="font-size: 10pt; vertical-align: top;">: FM-LAP-D2-SOP-003-006</td><td width="40%" rowspan="4" class="text-center" style="vertical-align: middle;"><div style="font-size: 11pt; font-weight: bold;">Formulir</div><div style="font-size: 12pt; font-weight: bold;">Preventive Maintenance</div><div style="font-size: 14pt; font-weight: bold;">Genset</div></td><td width="25%" rowspan="4" class="text-center" style="vertical-align: middle;"><img src="{{ public_path('assets/images/Lintasarta_Logo_Logogram.png') }}" style="width: 80px;"></td></tr>
+                    <tr><td width="12%" style="font-size: 10pt; vertical-align: top;">No. Dok.</td><td width="23%" style="font-size: 10pt; vertical-align: top;">: FM-LAP-D2-SOP-003-006</td><td width="40%" rowspan="4" class="text-center" style="vertical-align: middle;"><div style="font-size: 14pt; font-weight: bold;">Formulir</div><div style="font-size: 14pt; font-weight: bold;">Preventive Maintenance</div><div style="font-size: 14pt; font-weight: bold;">Genset</div></td><td width="25%" rowspan="4" class="text-center" style="vertical-align: middle;"><img src="{{ public_path('assets/images/Lintasarta_Logo_Logogram.png') }}" style="width: 80px;"></td></tr>
                     <tr><td style="font-size: 10pt; vertical-align: top;">Versi</td><td style="font-size: 10pt; vertical-align: top;">: 1.0</td></tr>
                     <tr><td style="font-size: 10pt; vertical-align: top;">Hal</td><td style="font-size: 10pt; vertical-align: top;">: 2 dari {{ $totalPages }}</td></tr> {{-- Asumsikan ini selalu halaman 2 --}}
                     <tr><td style="font-size: 10pt; vertical-align: top;">Label</td><td style="font-size: 10pt; vertical-align: top;">: Internal</td></tr>
@@ -201,13 +211,59 @@
 
     {{-- Notes dan Pelaksana (selalu setelah potensi page break) --}}
     <div class="notes-heading avoid-break">Notes / additional informations :</div>
-    <div class="notes-box avoid-break"> {!! nl2br(e($maintenance->notes ?? 'Tidak ada catatan.')) !!} </div>
+    <div class="notes-box avoid-break"> {!! nl2br(e($maintenance->notes ?? 'Tidak ada catatan.')) !!} </div><br>
     <div class="signature-section avoid-break">
-         <div class="mengetahui-section"><span class="text-bold">Mengetahui</span><div class="mengetahui-box">
-    <div class="mengetahui-name">({{ $maintenance->approver_name ?? '..................' }})</div>
-</div></div>
-         <div style="width: 60%; float: left;"><div class="text-bold" style="margin-bottom: 3px;">Pelaksana :</div><table class="pelaksana-table"><thead><tr><th width="10%">No</th><th width="40%">Nama</th><th width="25%">Departement</th><th width="25%">Sub Departement</th></tr></thead><tbody><tr><td class="center">1</td><td>{{ $maintenance->technician_1_name }}</td><td>{{ $maintenance->technician_1_department }}</td><td></td></tr><tr><td class="center">2</td><td>{{ $maintenance->technician_2_name ?? '-' }}</td><td>{{ $maintenance->technician_2_department ?? '-' }}</td><td></td></tr><tr><td class="center">3</td><td>{{ $maintenance->technician_3_name ?? '-' }}</td><td>{{ $maintenance->technician_3_department ?? '-' }}</td><td></td></tr></tbody></table></div>
-         <div style="clear: both;"></div>
+        {{-- [PERBAIKAN] Menggunakan 1 tabel + 1 kolom pemisah (gutter) --}}
+        <table style="width: 100%; border-collapse: collapse;">
+            <tbody>
+                <tr>
+                    <td colspan="4" style="vertical-align: top; border: none; padding: 0 0 3px 0;">
+                        <div class="text-bold" style="margin-bottom: 3px;">Pelaksana :</div>
+                    </td>
+                    
+                    <td style="width: 5%; border: none;">&nbsp;</td> 
+                    
+                    <td style="width: 35%; vertical-align: top; text-align: center; border: none; padding: 0 0 3px 0;">
+                         <span class="text-bold">Mengetahui</span>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th class="pelaksana-table" style="width: 5%;">No</th>
+                    <th class="pelaksana-table" style="width: 18%;">Nama</th>
+                    <th class="pelaksana-table" style="width: 17%;">Departement</th>
+                    <th class="pelaksana-table" style="width: 20%;">Sub Departement</th>
+                    
+                    <td rowspan="4" style="border: none; width: 5%;">&nbsp;</td> <td rowspan="4" style="border: 1px solid #000; text-align: center; vertical-align: bottom; width: 35%;">
+                        <div style="padding-bottom: 5px;">
+                            <div class="mengetahui-name-line">({{ $maintenance->approver_name ?? '..................' }})</div>
+                            <div class="mengetahui-nik-line">(NIK: {{ $maintenance->approver_nik ?? '..................' }})</div>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="pelaksana-table center">1</td>
+                    <td class="pelaksana-table">{{ $maintenance->technician_1_name }}</td>
+                    <td class="pelaksana-table">{{ $maintenance->technician_1_department }}</td>
+                    <td class="pelaksana-table"></td>
+                </tr>
+                
+                <tr>
+                    <td class="pelaksana-table center">2</td>
+                    <td class="pelaksana-table">{{ $maintenance->technician_2_name ?? '-' }}</td>
+                    <td class="pelaksana-table">{{ $maintenance->technician_2_department ?? '-' }}</td>
+                    <td class="pelaksana-table"></td>
+                </tr>
+                
+                <tr>
+                    <td class="pelaksana-table center">3</td>
+                    <td class="pelaksana-table">{{ $maintenance->technician_3_name ?? '-' }}</td>
+                    <td class="pelaksana-table">{{ $maintenance->technician_3_department ?? '-' }}</td>
+                    <td class="pelaksana-table"></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     {{-- Footer Halaman Terakhir Bagian Data --}}
@@ -230,7 +286,7 @@
             <div class="page-header avoid-break">
                 <table class="header-table">
                    {{-- Konten header halaman gambar --}}
-                   <tr><td width="12%" style="font-size: 10pt; vertical-align: top;">No. Dok.</td><td width="23%" style="font-size: 10pt; vertical-align: top;">: FM-LAP-D2-SOP-003-006</td><td width="40%" rowspan="4" class="text-center" style="vertical-align: middle;"><div style="font-size: 11pt; font-weight: bold;">Formulir</div><div style="font-size: 12pt; font-weight: bold;">Preventive Maintenance</div><div style="font-size: 14pt; font-weight: bold;">Genset</div></td><td width="25%" rowspan="4" class="text-center" style="vertical-align: middle;"><img src="{{ public_path('assets/images/Lintasarta_Logo_Logogram.png') }}" style="width: 80px;"></td></tr>
+                   <tr><td width="12%" style="font-size: 10pt; vertical-align: top;">No. Dok.</td><td width="23%" style="font-size: 10pt; vertical-align: top;">: FM-LAP-D2-SOP-003-006</td><td width="40%" rowspan="4" class="text-center" style="vertical-align: middle;"><div style="font-size: 14pt; font-weight: bold;">Formulir</div><div style="font-size: 14pt; font-weight: bold;">Preventive Maintenance</div><div style="font-size: 14pt; font-weight: bold;">Genset</div></td><td width="25%" rowspan="4" class="text-center" style="vertical-align: middle;"><img src="{{ public_path('assets/images/Lintasarta_Logo_Logogram.png') }}" style="width: 80px;"></td></tr>
                    <tr><td style="font-size: 10pt; vertical-align: top;">Versi</td><td style="font-size: 10pt; vertical-align: top;">: 1.0</td></tr>
                    {{-- [PERBAIKAN FINAL] Gunakan $startImagePage + index --}}
                    <tr><td style="font-size: 10pt; vertical-align: top;">Hal</td><td style="font-size: 10pt; vertical-align: top;">: {{ $startImagePage + $chunkIndex }} dari {{ $totalPages }}</td></tr>

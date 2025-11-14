@@ -68,11 +68,11 @@
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Brand / Type</label>
-                            <input type="text" name="brand_type" class="w-full border-gray-300 rounded-lg" placeholder="Contoh: DENYO">
+                            <input type="text" name="brand_type" required class="w-full border-gray-300 rounded-lg" placeholder="Contoh: DENYO">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Capacity</label>
-                            <input type="text" name="capacity" class="w-full border-gray-300 rounded-lg" placeholder="Contoh: 20 KVA">
+                            <input type="text" name="capacity" required class="w-full border-gray-300 rounded-lg" placeholder="Contoh: 20 KVA">
                         </div>
                     </div>
                 </div>
@@ -104,7 +104,7 @@
                             <p class="text-xs text-gray-500 mb-2">Standard: {{ $check['std'] }}</p>
                             
                             <div class="space-y-2 flex-grow">
-                                <input type="text" name="{{ $check['name'] }}_result" class="w-full text-sm border-gray-300 rounded-md" placeholder="Result...">
+                                <input type="text" name="{{ $check['name'] }}_result" required class="w-full text-sm border-gray-300 rounded-md" placeholder="Result...">
                                 <textarea name="{{ $check['name'] }}_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment..."></textarea>
                             </div>
                             
@@ -141,7 +141,7 @@
                                         @php $name = 'no_load_ac_voltage_' . $phase; @endphp
                                         <div class="border rounded-lg p-3 bg-gray-50 image-upload-section" data-field-name="{{ $name }}">
                                             <label class="block text-xs font-semibold text-gray-700 mb-2">Phase {{ strtoupper(implode(' - ', str_split($phase))) }}</label>
-                                            <input type="text" name="{{ $name }}" class="w-full text-sm border-gray-300 rounded-md mb-2" placeholder="Volt">
+                                            <input type="text" name="{{ $name }}" required class="w-full text-sm border-gray-300 rounded-md mb-2" placeholder="Volt">
                                             <div class="flex gap-2 mb-2">
                                                 <button type="button" class="upload-local-btn px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload</button>
                                                 <button type="button" class="camera-btn px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">Kamera</button>
@@ -170,7 +170,7 @@
                                 <label class="block text-sm font-semibold text-gray-700">{{ $test['label'] }}</label>
                                 <p class="text-xs text-gray-500 mb-2">Standard: {{ $test['std'] }}</p>
                                 <div class="space-y-2 flex-grow">
-                                    <input type="text" name="{{ $test['name'] }}_result" class="w-full text-sm border-gray-300 rounded-md" placeholder="Result...">
+                                    <input type="text" name="{{ $test['name'] }}_result" required class="w-full text-sm border-gray-300 rounded-md" placeholder="Result...">
                                     <textarea name="{{ $test['name'] }}_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment..."></textarea>
                                 </div>
                                 <div class="mt-2 space-y-2">
@@ -199,7 +199,7 @@
                                         @php $name = 'load_ac_voltage_' . $phase; @endphp
                                         <div class="border rounded-lg p-3 bg-gray-50 image-upload-section" data-field-name="{{ $name }}">
                                             <label class="block text-xs font-semibold text-gray-700 mb-2">Phase {{ strtoupper(implode(' - ', str_split($phase))) }}</label>
-                                            <input type="text" name="{{ $name }}" class="w-full text-sm border-gray-300 rounded-md mb-2" placeholder="Volt">
+                                            <input type="text" name="{{ $name }}" required class="w-full text-sm border-gray-300 rounded-md mb-2" placeholder="Volt">
                                             <div class="flex gap-2 mb-2">
                                                 <button type="button" class="upload-local-btn px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload</button>
                                                 <button type="button" class="camera-btn px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">Kamera</button>
@@ -223,7 +223,7 @@
                                         @php $name = 'load_ac_current_' . $phase; @endphp
                                         <div class="border rounded-lg p-3 bg-gray-50 image-upload-section" data-field-name="{{ $name }}">
                                             <label class="block text-xs font-semibold text-gray-700 mb-2">Phase {{ strtoupper($phase) }}</label>
-                                            <input type="text" name="{{ $name }}" class="w-full text-sm border-gray-300 rounded-md mb-2" placeholder="Amp">
+                                            <input type="text" name="{{ $name }}" required class="w-full text-sm border-gray-300 rounded-md mb-2" placeholder="Amp">
                                             <div class="flex gap-2 mb-2">
                                                 <button type="button" class="upload-local-btn px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload</button>
                                                 <button type="button" class="camera-btn px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">Kamera</button>
@@ -252,7 +252,7 @@
                                 <label class="block text-sm font-semibold text-gray-700">{{ $test['label'] }}</label>
                                 <p class="text-xs text-gray-500 mb-2">Standard: {{ $test['std'] }}</p>
                                 <div class="space-y-2 flex-grow">
-                                    <input type="text" name="{{ $test['name'] }}_result" class="w-full text-sm border-gray-300 rounded-md" placeholder="Result...">
+                                    <input type="text" name="{{ $test['name'] }}_result" required class="w-full text-sm border-gray-300 rounded-md" placeholder="Result...">
                                     <textarea name="{{ $test['name'] }}_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment..."></textarea>
                                 </div>
                                 <div class="mt-2 space-y-2">
@@ -304,16 +304,19 @@
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Mengetahui (Approver)</h3>
                         <div class="space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded-md">
-                                <span class="md:col-span-1 font-semibold self-center">Approver (Opsional)</span>
-                                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                     <input type="text" name="approver_name" placeholder="Nama Atasan" class="w-full text-sm border-gray-300 rounded-md">
-                                     <input type="text" name="approver_department" placeholder="Departemen" class="w-full text-sm border-gray-300 rounded-md">
+                                <span class="md:col-span-1 font-semibold self-center">Approver</span>
+                                {{-- [PERUBAHAN] Ubah grid jadi 3 kolom --}}
+                                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                     <input type="text" name="approver_name" placeholder="Nama Atasan" required class="sm:col-span-1 w-full text-sm border-gray-300 rounded-md">
+                                     {{-- [BARU] Input NIK --}}
+                                     <input type="text" name="approver_nik" placeholder="NIK Atasan" class="sm:col-span-1 w-full text-sm border-gray-300 rounded-md">
+                                     <input type="text" name="approver_department" placeholder="Departemen" class="sm:col-span-1 w-full text-sm border-gray-300 rounded-md">
                                 </div>
                             </div>
                         </div>
                         <div class="flex justify-end p-6 gap-4 py-6">
-                    <a href="{{ route('genset.index') }}" class="px-8 py-3 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg">Batal</a>
-                    <button type="submit" class="px-8 py-3 bg-blue-500 hover:from-blue-600 hover:to-blue-600 text-white font-bold rounded-lg shadow-lg">
+                    <a href="{{ route('genset.index') }}" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-sm rounded-md">Batal</a>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 hover:from-blue-600 hover:to-blue-600 text-white font-sm rounded-md shadow-lg">
                         Simpan Data
                     </button>
                 </div>

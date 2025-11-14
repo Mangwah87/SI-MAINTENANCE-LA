@@ -75,6 +75,7 @@ return new class extends Migration
 
             // Mengetahui (Approver)
             $table->string('approver_name')->nullable();
+            $table->string('approver_nik')->nullable();
             // Add approver company/dept if needed
             // $table->string('approver_company')->nullable();
 
