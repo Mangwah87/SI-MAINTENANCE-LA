@@ -188,7 +188,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [ScheduleController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [ScheduleController::class, 'pdf'])->name('pdf');
     });
-    
+
     // Inverter Routes
     Route::prefix('inverter')->name('inverter.')->group(function () {
         Route::get('/', [InverterController::class, 'index'])->name('index');

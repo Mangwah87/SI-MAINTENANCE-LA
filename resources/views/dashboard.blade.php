@@ -159,9 +159,6 @@
                         <span class="text-sm sm:text-base font-semibold text-black text-center leading-tight">PM Instalasi Kabel dan Panel Distribusi</span>
                     </div>
                 </a>
-
-
-
             </div>
         </div>
     </div>
