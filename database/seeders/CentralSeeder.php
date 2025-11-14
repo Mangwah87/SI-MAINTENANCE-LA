@@ -45,8 +45,38 @@ class CentralSeeder extends Seeder
             ['id_sentral' => 'SRJPOS', 'nama' => 'CT SINGARAJA POS', 'area' => 'BALI'],
 
             //area ntt
+            ['id_sentral' => 'KPGSTL', 'nama' => 'CT INDOSAT KUPANG', 'area' => 'NTT'],
+            ['id_sentral' => 'BLUTTM', 'nama' => 'CT ATAMBUA', 'area' => 'NTT'],
+            ['id_sentral' => 'FLTLRT', 'nama' => 'CT LARANTUKA', 'area' => 'NTT'],
+            ['id_sentral' => 'MGRRTG', 'nama' => 'CT RUTENG', 'area' => 'NTT'],
+            ['id_sentral' => 'EDEETR', 'nama' => 'CT ENDE', 'area' => 'NTT'],
+            ['id_sentral' => 'SKANML', 'nama' => 'CT MAUMERE', 'area' => 'NTT'],
+            ['id_sentral' => 'MGBSRN', 'nama' => 'CT LABUAN BAJO', 'area' => 'NTT'],
+            ['id_sentral' => 'SBMJDS', 'nama' => 'CT WAINGAPU', 'area' => 'NTT'],
 
             //area ntb
+            ['id_sentral' => 'BIMIDS', 'nama' => 'CT INDOSAT BIMA', 'area' => 'NTB'],
+            ['id_sentral' => 'MTRAMP', 'nama' => 'CT INDOSAT AMPENAN', 'area' => 'NTB'],
+            ['id_sentral' => 'MTRBPD', 'nama' => 'CT BPD NTBS', 'area' => 'NTB'],
+            ['id_sentral' => 'MTRHOS', 'nama' => 'CT INDOSAT HOS COKRO', 'area' => 'NTB'],
+            ['id_sentral' => 'PRYPYA', 'nama' => 'CT INDOSAT PRAYA', 'area' => 'NTB'],
+            ['id_sentral' => 'SBWIDS', 'nama' => 'CT INDOSAT SUMBAWA', 'area' => 'NTB'],
+            ['id_sentral' => 'DPUJDS', 'nama' => 'CT DOMPU', 'area' => 'NTB'],
+            ['id_sentral' => 'LBBGRG', 'nama' => 'CT LOMBOK BARAT', 'area' => 'NTB'],
+            ['id_sentral' => 'LBMSLG', 'nama' => 'CT  LOMBOK TIMUR', 'area' => 'NTB'],
+            ['id_sentral' => 'LKGBNK', 'nama' => 'CT KOPANG', 'area' => 'NTB'],
+            ['id_sentral' => 'LKGRYK', 'nama' => 'CT MANDALIKA', 'area' => 'NTB'],
+            ['id_sentral' => 'SWBMLK', 'nama' => 'CT MALUK', 'area' => 'NTB'],
+            ['id_sentral' => 'SBWLBK', 'nama' => 'CT LABANGKA', 'area' => 'NTB'],
+            ['id_sentral' => 'SBWLTS', 'nama' => 'CT PLAMPANG', 'area' => 'NTB'],
+            ['id_sentral' => 'SBWLSB', 'nama' => 'CT LOPOK', 'area' => 'NTB'],
+            ['id_sentral' => 'SBWLST', 'nama' => 'CT LABUHAN BADAS', 'area' => 'NTB'],
+            ['id_sentral' => 'SBWUTN', 'nama' => 'CT UTAN', 'area' => 'NTB'],
+            ['id_sentral' => 'SBWRAB', 'nama' => 'CT ALAS BARAT', 'area' => 'NTB'],
+            ['id_sentral' => 'SWBRTG', 'nama' => 'CT TALIWANG', 'area' => 'NTB'],
+            ['id_sentral' => 'LBMLBH', 'nama' => 'CT LABUHAN HAJI', 'area' => 'NTB'],
+            ['id_sentral' => 'SBWBDM', 'nama' => 'CT BUKIT DAMAI', 'area' => 'NTB'],
+
 
         ];
 
