@@ -15,6 +15,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\InverterController;
 use App\Http\Controllers\DokumentasiController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\CentralController;
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RectifierMaintenanceController;
@@ -214,6 +215,23 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}', [DokumentasiController::class, 'update'])->name('update');
         Route::delete('/{id}', [DokumentasiController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [DokumentasiController::class, 'generatePdf'])->name('pdf');
+    });
+
+    Route::prefix('central')->name('central.')->group(function () {
+        // Semua user bisa lihat list
+        Route::get('/', [CentralController::class, 'index'])->name('index');
+
+        // Hanya superadmin yang bisa create, edit, delete
+        Route::middleware('superadmin')->group(function () {
+            Route::get('/create', [CentralController::class, 'create'])->name('create'); // ✅ PINDAH KE ATAS
+            Route::post('/', [CentralController::class, 'store'])->name('store');
+            Route::get('/{central}/edit', [CentralController::class, 'edit'])->name('edit');
+            Route::put('/{central}', [CentralController::class, 'update'])->name('update');
+            Route::delete('/{central}', [CentralController::class, 'destroy'])->name('destroy');
+        });
+
+        // Route dengan parameter dinamis di AKHIR
+        Route::get('/{central}', [CentralController::class, 'show'])->name('show'); // ✅ PINDAH KE BAWAH
     });
 
     Route::get('/reports/all-forms', [ReportController::class, 'index'])->name('reports.all-forms');

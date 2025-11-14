@@ -157,7 +157,8 @@
 
 
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {{ $item['created_by'] }}
+                                                {{ Str::limit($item['teknisi'], 20) }}
+                                            </td>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div class="flex gap-2">

@@ -15,6 +15,35 @@
     <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
+            <!-- SECTION: SUPERADMIN ONLY - CENTRAL MANAGEMENT -->
+            @if (Auth::user()->isSuperAdmin())
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-5 h-5 text-purple-600"></i>
+                        Super Admin Area
+                    </h3>
+                    <a href="{{ route('central.index') }}" class="block">
+                        <div
+                            class="bg-gradient-to-r from-purple-600 to-purple-800 rounded-2xl p-6 shadow-xl border-2 border-purple-700 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="bg-white rounded-xl p-4 transform group-hover:scale-110 transition-transform duration-300">
+                                    <i data-lucide="building-2" class="w-10 h-10 text-purple-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-xl font-bold text-white mb-1">Data Sentral</h4>
+                                    <p class="text-purple-100 text-sm">Kelola data sentral di seluruh area</p>
+                                </div>
+                                <div class="hidden sm:block">
+                                    <i data-lucide="arrow-right"
+                                        class="w-6 h-6 text-white transform group-hover:translate-x-2 transition-transform duration-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            @endif
+
             <!-- SECTION: LAPORAN (Featured/Highlighted) -->
             <div class="mb-8">
                 <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -31,7 +60,7 @@
                             </div>
                             <div class="flex-1">
                                 <h4 class="text-xl font-bold text-white mb-1">Laporan Semua Form Maintenance</h4>
-
+                                <p class="text-blue-100 text-sm">Lihat dan download laporan dari 14 form maintenance</p>
                             </div>
                             <div class="hidden sm:block">
                                 <i data-lucide="arrow-right"
