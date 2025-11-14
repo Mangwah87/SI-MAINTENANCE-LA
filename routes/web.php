@@ -14,6 +14,8 @@ use App\Http\Controllers\CablePanelMaintenanceController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\InverterController;
 use App\Http\Controllers\DokumentasiController;
+use App\Http\Controllers\ReportController;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RectifierMaintenanceController;
 
@@ -213,6 +215,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [DokumentasiController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [DokumentasiController::class, 'generatePdf'])->name('pdf');
     });
+
+    Route::get('/reports/all-forms', [ReportController::class, 'index'])->name('reports.all-forms');
+    Route::get('/reports/export-all-pdf', [ReportController::class, 'exportAllPdf'])->name('reports.export-all-pdf');
 });
 
 
