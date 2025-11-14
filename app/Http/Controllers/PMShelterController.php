@@ -3,27 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\PmShelter;
+use App\Models\Central;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
 
 class PmShelterController extends Controller
 {
     public function index(Request $request)
     {
-        $query = PmShelter::with('user')->where('user_id', auth()->id());
+        $query = PmShelter::with(['user', 'central'])->where('user_id', auth()->id());
 
-        // Search - mencari di location dan executors
+        // Search 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('location', 'like', "%{$search}%")
+                    ->orWhereHas('central', function ($q) use ($search) {
+                        $q->where('nama', 'like', "%{$search}%")
+                            ->orWhere('id_sentral', 'like', "%{$search}%")
+                            ->orWhere('area', 'like', "%{$search}%");
+                    })
                     ->orWhereRaw("JSON_SEARCH(LOWER(executors), 'one', LOWER(?)) IS NOT NULL", ["%{$search}%"]);
             });
         }
 
-        // Sorting by date (desc = terbaru, asc = terlama)
+        // Sorting by date
         $sortDirection = $request->get('sort', 'desc');
         if (in_array($sortDirection, ['asc', 'desc'])) {
             $query->orderBy('date', $sortDirection)->orderBy('time', $sortDirection);
@@ -33,7 +38,7 @@ class PmShelterController extends Controller
 
         $pmShelters = $query->paginate(10)->withQueryString();
 
-        // For AJAX requests (realtime search)
+        //(realtime search)
         if ($request->ajax()) {
             return response()->json([
                 'html' => view('pm-shelter.partials.table', compact('pmShelters'))->render(),
@@ -46,14 +51,15 @@ class PmShelterController extends Controller
 
     public function create()
     {
-        return view('pm-shelter.create');
+        $centrals = Central::orderBy('area')->orderBy('id_sentral')->get();
+        return view('pm-shelter.create', compact('centrals'));
     }
 
     public function store(Request $request)
     {
         try {
             $validated = $request->validate([
-                'location' => 'required|string|max:255',
+                'central_id' => 'required|exists:central,id',
                 'date' => 'required|date',
                 'time' => 'required',
                 'brand_type' => 'nullable|string|max:255',
@@ -90,33 +96,15 @@ class PmShelterController extends Controller
                 'approvers.*.name' => 'required|string|max:255',
                 'approvers.*.nik' => 'nullable|string|max:255',
             ], [
-                // Custom error messages untuk foto
-                'kondisi_ruangan_photos.*.image' => 'File harus berupa gambar',
-                'kondisi_ruangan_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'kondisi_ruangan_photos.*.max' => 'Ukuran foto maksimal 2MB',
-
-                'kondisi_kunci_photos.*.image' => 'File harus berupa gambar',
-                'kondisi_kunci_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'kondisi_kunci_photos.*.max' => 'Ukuran foto maksimal 2MB',
-
-                'layout_tata_ruang_photos.*.image' => 'File harus berupa gambar',
-                'layout_tata_ruang_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'layout_tata_ruang_photos.*.max' => 'Ukuran foto maksimal 2MB',
-
-                'kontrol_keamanan_photos.*.image' => 'File harus berupa gambar',
-                'kontrol_keamanan_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'kontrol_keamanan_photos.*.max' => 'Ukuran foto maksimal 2MB',
-
-                'aksesibilitas_photos.*.image' => 'File harus berupa gambar',
-                'aksesibilitas_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'aksesibilitas_photos.*.max' => 'Ukuran foto maksimal 2MB',
-
-                'aspek_teknis_photos.*.image' => 'File harus berupa gambar',
-                'aspek_teknis_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'aspek_teknis_photos.*.max' => 'Ukuran foto maksimal 2MB',
+                'central_id.required' => 'Lokasi sentral wajib dipilih.',
+                'central_id.exists' => 'Lokasi sentral tidak valid.',
             ]);
 
             $validated['user_id'] = auth()->id();
+
+            // Ambil nama sentral untuk disimpan di location (opsional)
+            $central = Central::find($validated['central_id']);
+            $validated['location'] = $central->nama . ' - ' . $central->area;
 
             $executors = [];
             if ($request->has('executors')) {
@@ -146,7 +134,6 @@ class PmShelterController extends Controller
                 ->with('success', 'Data PM Shelter berhasil ditambahkan');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Ambil error pertama untuk ditampilkan
             $firstError = $e->validator->errors()->first();
             return redirect()->back()
                 ->withInput()
@@ -162,7 +149,7 @@ class PmShelterController extends Controller
     {
         try {
             $validated = $request->validate([
-                'location' => 'required|string|max:255',
+                'central_id' => 'required|exists:central,id',
                 'date' => 'required|date',
                 'time' => 'required',
                 'brand_type' => 'nullable|string|max:255',
@@ -205,31 +192,13 @@ class PmShelterController extends Controller
                 'approvers.*.name' => 'required|string|max:255',
                 'approvers.*.nik' => 'nullable|string|max:255',
             ], [
-                // Custom error messages untuk foto
-                'kondisi_ruangan_photos.*.image' => 'File harus berupa gambar',
-                'kondisi_ruangan_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'kondisi_ruangan_photos.*.max' => 'Ukuran foto maksimal 2MB',
-
-                'kondisi_kunci_photos.*.image' => 'File harus berupa gambar',
-                'kondisi_kunci_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'kondisi_kunci_photos.*.max' => 'Ukuran foto maksimal 2MB',
-
-                'layout_tata_ruang_photos.*.image' => 'File harus berupa gambar',
-                'layout_tata_ruang_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'layout_tata_ruang_photos.*.max' => 'Ukuran foto maksimal 2MB',
-
-                'kontrol_keamanan_photos.*.image' => 'File harus berupa gambar',
-                'kontrol_keamanan_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'kontrol_keamanan_photos.*.max' => 'Ukuran foto maksimal 2MB',
-
-                'aksesibilitas_photos.*.image' => 'File harus berupa gambar',
-                'aksesibilitas_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'aksesibilitas_photos.*.max' => 'Ukuran foto maksimal 2MB',
-
-                'aspek_teknis_photos.*.image' => 'File harus berupa gambar',
-                'aspek_teknis_photos.*.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'aspek_teknis_photos.*.max' => 'Ukuran foto maksimal 2MB',
+                'central_id.required' => 'Lokasi sentral wajib dipilih.',
+                'central_id.exists' => 'Lokasi sentral tidak valid.',
             ]);
+
+            // Update location berdasarkan central yang dipilih
+            $central = Central::find($validated['central_id']);
+            $validated['location'] = $central->nama . ' - ' . $central->area;
 
             $executors = [];
             if ($request->has('executors')) {
@@ -284,13 +253,16 @@ class PmShelterController extends Controller
 
     public function show(PmShelter $pmShelter)
     {
+        $pmShelter->load('central');
         return view('pm-shelter.show', compact('pmShelter'));
     }
 
     public function edit(PmShelter $pmShelter)
     {
-        return view('pm-shelter.edit', compact('pmShelter'));
+        $centrals = Central::orderBy('area')->orderBy('id_sentral')->get();
+        return view('pm-shelter.edit', compact('pmShelter', 'centrals'));
     }
+
     public function destroy(PmShelter $pmShelter)
     {
         if ($pmShelter->photos) {
@@ -307,6 +279,7 @@ class PmShelterController extends Controller
 
     public function exportPdf(PmShelter $pmShelter)
     {
+        $pmShelter->load('central');
         $pdf = Pdf::loadView('pm-shelter.pdf', compact('pmShelter'))
             ->setPaper('a4', 'portrait');
 

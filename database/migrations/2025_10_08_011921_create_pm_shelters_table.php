@@ -10,6 +10,7 @@ return new class extends Migration {
         Schema::create('pm_shelters', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('central_id')->constrained('central')->onDelete('cascade');
 
             // Location & Equipment Info
             $table->string('location')->nullable();

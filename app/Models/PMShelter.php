@@ -11,6 +11,7 @@ class PmShelter extends Model
 
     protected $fillable = [
         'user_id',
+        'central_id', 
         'location',
         'date',
         'time',
@@ -47,6 +48,12 @@ class PmShelter extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Tambahkan relasi ke Central
+    public function central()
+    {
+        return $this->belongsTo(Central::class);
+    }
+
     // Accessor untuk memfilter foto berdasarkan field
     public function getKondisiRuanganPhotosAttribute()
     {
@@ -78,7 +85,6 @@ class PmShelter extends Model
         return $this->filterPhotosByField('aspek_teknis_photos');
     }
 
-    // Helper method untuk filter
     private function filterPhotosByField($fieldName)
     {
         if (!$this->photos || !is_array($this->photos)) {
@@ -89,7 +95,6 @@ class PmShelter extends Model
             return isset($photo['field']) && $photo['field'] === $fieldName;
         });
 
-        // ⭐ PENTING: Re-index array agar index berurutan dari 0
         return array_values($filtered);
     }
 }
