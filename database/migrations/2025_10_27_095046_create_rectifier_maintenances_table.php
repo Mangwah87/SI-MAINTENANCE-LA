@@ -78,6 +78,10 @@ return new class extends Migration
             $table->string('executor_1');
             $table->string('executor_2')->nullable();
             $table->string('executor_3')->nullable();
+            // Di migration, tambahkan kolom:
+            $table->string('executor_1_department')->nullable();
+            $table->string('executor_2_department')->nullable();
+            $table->string('executor_3_department')->nullable();
             $table->string('supervisor');
             $table->string('supervisor_id_number')->nullable();
             $table->string('department')->nullable();

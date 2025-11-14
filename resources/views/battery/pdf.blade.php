@@ -62,11 +62,11 @@
         .section-title {
             margin-top: 20px;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 10px;
     border: none;
     border-bottom: 1px solid #000; /* hanya garis bawah */
     display: inline-block;     /* agar garis bawah hanya sepanjang teks */
-    padding-bottom: 1px;       /* jarak kecil antara teks dan garis */
+    padding-bottom: 0.1px;       /* jarak kecil antara teks dan garis */
     margin-bottom: 8px;        /* spasi bawah dari elemen selanjutnya */
 }
         .bank-container {
@@ -357,52 +357,59 @@ $readingsByBank = $maintenance->readings->groupBy('bank_number')->sortKeys();
 
         {{-- Notes --}}
         @if($maintenance->notes)
-        <div class="section-title">Notes / Additional Informations</div>
+        <div class="section-title">Notes / Additional Informations:</div>
         <div class="notes-box">
             {{ $maintenance->notes }}
         </div>
         @endif
 
         {{-- Signature Section --}}
-        <div class="signature-section">
-            <div style="width: 65%; float: left;">
-                <div class="bold" style="margin-bottom: 3px;">Pelaksana:</div>
-                <table class="signature-table">
-                    <tr>
-                        <th width="10%">No</th>
-                        <th width="40%">Name</th>
-                        <th width="30%">Perusahaan</th>
-                        <th width="20%">Signature</th>
-                    </tr>
-                    <tr>
-                        <td class="center">1</td>
-                        <td>{{ $maintenance->technician_1_name ?? '' }}</td>
-                        <td>{{ $maintenance->technician_1_company ?? 'PT. Aplikarusa Lintasarta' }}</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td class="center">2</td>
-                        <td>{{ $maintenance->technician_2_name ?? '' }}</td>
-                        <td>{{ $maintenance->technician_2_company ?? '' }}</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td class="center">3</td>
-                        <td>{{ $maintenance->technician_3_name ?? '' }}</td>
-                        <td>{{ $maintenance->technician_3_company ?? '' }}</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                </table>
+<div class="signature-section">
+    <div style="width: 65%; float: left;">
+        <div class="bold" style="margin-bottom: 5px;">Pelaksana:</div>
+        <table class="signature-table">
+            <tr>
+                <th width="10%">No</th>
+                <th width="40%">Name</th>
+                <th width="30%">Perusahaan</th>
+                <th width="20%">Signature</th>
+            </tr>
+            <tr>
+                <td class="center">1</td>
+                <td>{{ $maintenance->technician_1_name ?? '' }}</td>
+                <td>{{ $maintenance->technician_1_company ?? 'PT. Aplikarusa Lintasarta' }}</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td class="center">2</td>
+                <td>{{ $maintenance->technician_2_name ?? '' }}</td>
+                <td>{{ $maintenance->technician_2_company ?? '' }}</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td class="center">3</td>
+                <td>{{ $maintenance->technician_3_name ?? '' }}</td>
+                <td>{{ $maintenance->technician_3_company ?? '' }}</td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+    </div>
+    <div style="width: 33%; float: right;">
+        <div class="bold" style="margin-bottom: 3px; text-align: center;">Mengetahui,</div>
+        <div style="border: 1px solid #000; text-align: center; padding: 5px; height: 100px;">
+            <div style="height: 65px;"></div>
+            <div style="border-bottom: 1px solid #000; padding-bottom: 3px; margin: 0 5px;">
+                {{ $maintenance->supervisor ?? '____________________' }}
             </div>
-            <div style="width: 33%; float: right;">
-                <div class="bold" style="margin-bottom: 3px; text-align: center;">Mengetahui,</div>
-                <div style="border: 1px solid #000; height: 95px; text-align: center; padding: 5px;">
-                    <div style="height: 65px;"></div>
-                    <div>{{ $maintenance->supervisor ?? '____________________' }}</div>
-                </div>
+            @if($maintenance->supervisor_id)
+            <div style="font-size: 7pt; color: #000000ff; margin-top: 2px;">
+                {{ $maintenance->supervisor_id }}
             </div>
-            <div style="clear: both;"></div>
+            @endif
         </div>
+    </div>
+    <div style="clear: both;"></div>
+</div>
     </div>
 
     <div class="page-footer">

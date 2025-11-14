@@ -166,7 +166,7 @@
                     <div class="border p-3 rounded bg-gray-50">
                         <p class="text-xs md:text-sm text-gray-600">Pelaksana 1</p>
                         <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->technician_1_name }}</p>
-                        <p class="text-xs text-gray-500 mt-2">Company: {{ $maintenance->technician_1_company ?? '-' }}</p>
+                        <p class="text-xs text-gray-500 mt-2">Department: {{ $maintenance->technician_1_company ?? '-' }}</p>
                     </div>
                     @endif
 
@@ -174,7 +174,7 @@
                     <div class="border p-3 rounded bg-gray-50">
                         <p class="text-xs md:text-sm text-gray-600">Pelaksana 2</p>
                         <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->technician_2_name }}</p>
-                        <p class="text-xs text-gray-500 mt-2">Company: {{ $maintenance->technician_2_company ?? '-' }}</p>
+                        <p class="text-xs text-gray-500 mt-2">Department: {{ $maintenance->technician_2_company ?? '-' }}</p>
                     </div>
                     @endif
 
@@ -182,21 +182,30 @@
                     <div class="border p-3 rounded bg-gray-50">
                         <p class="text-xs md:text-sm text-gray-600">Pelaksana 3</p>
                         <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->technician_3_name }}</p>
-                        <p class="text-xs text-gray-500 mt-2">Company: {{ $maintenance->technician_3_company ?? '-' }}</p>
+                        <p class="text-xs text-gray-500 mt-2">Department: {{ $maintenance->technician_3_company ?? '-' }}</p>
                     </div>
                     @endif
                 </div>
             </div>
-<!-- Supervisor/Mengetahui Section -->
-@if($maintenance->supervisor)
-<div class="mb-6">
-    <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Mengetahui</h3>
-    <div class="border p-3 rounded bg-gray-50">
-        <p class="font-semibold text-sm md:text-base">{{ $maintenance->supervisor }}</p>
-        <p class="text-xs text-gray-500 mt-1">Supervisor / Atasan</p>
-    </div>
-</div>
-@endif
+            <!-- Supervisor/Mengetahui Section -->
+            @if($maintenance->supervisor || $maintenance->supervisor_id)
+            <div class="mb-6">
+                <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Mengetahui</h3>
+                <div class="border p-3 rounded bg-gray-50">
+                    @if($maintenance->supervisor)
+                        <p class="font-semibold text-sm md:text-base">{{ $maintenance->supervisor }}</p>
+                        <p class="text-xs text-gray-500 mt-1">Supervisor / Atasan</p>
+                    @endif
+
+                    @if($maintenance->supervisor_id)
+                        <div class="mt-2 pt-2 border-t border-gray-200">
+                            <p class="text-xs text-gray-600">ID Supervisor</p>
+                            <p class="font-medium text-sm">{{ $maintenance->supervisor_id }}</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 

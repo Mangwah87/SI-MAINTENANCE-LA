@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('technician_2_company')->nullable();
             $table->string('technician_3_name')->nullable();
             $table->string('technician_3_company')->nullable();
+            $table->string('supervisor_id')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

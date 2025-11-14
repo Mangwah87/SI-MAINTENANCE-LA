@@ -481,39 +481,84 @@
             </div>
             @endif
 
-            <!-- Personnel Information -->
-            <div class="mb-6">
-                <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Pelaksana / Mengetahui</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-                    <div class="border p-3 rounded bg-gray-50">
-                        <p class="text-xs md:text-sm text-gray-600">Pelaksana 1</p>
-                        <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->executor_1 }}</p>
-                        <p class="text-xs text-gray-500 mt-2">
-                            Departemen: {{ $maintenance->department ?? '-' }}
-                        </p>
-                    </div>
-                    @if($maintenance->executor_2)
-                    <div class="border p-3 rounded bg-gray-50">
-                        <p class="text-xs md:text-sm text-gray-600">Pelaksana 2</p>
-                        <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->executor_2 }}</p>
-                        <p class="text-xs text-gray-500 mt-2">
-                            Sub Dept: {{ $maintenance->sub_department ?? '-' }}
-                        </p>
-                    </div>
-                    @endif
-                    @if($maintenance->executor_3)
-                    <div class="border p-3 rounded bg-gray-50">
-                        <p class="text-xs md:text-sm text-gray-600">Pelaksana 3</p>
-                        <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->executor_3 }}</p>
-                    </div>
-                    @endif
-                    <div class="border p-3 rounded bg-gray-50">
-                        <p class="text-xs md:text-sm text-gray-600">Mengetahui (Supervisor)</p>
-                        <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->supervisor }}</p>
-                        <p class="text-xs text-gray-500 mt-2">ID: {{ $maintenance->supervisor_id_number ?? '-' }}</p>
-                    </div>
+            <!-- Personnel Information - SHOW VERSION -->
+<div class="mb-6">
+    <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Personnel Information</h3>
+
+    <!-- Pelaksana Section -->
+    <div class="mb-4">
+        <h4 class="text-sm font-semibold text-gray-700 mb-3">Pelaksana:</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+            <!-- Pelaksana 1 -->
+            <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-3 rounded">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                    <p class="text-xs md:text-sm text-gray-600 font-medium">Pelaksana 1</p>
                 </div>
+                <p class="font-semibold text-sm md:text-base">{{ $maintenance->executor_1 }}</p>
+                <p class="text-xs text-gray-500 mt-2">
+                    <span class="inline-block mr-1">📋</span>
+                    Dept: {{ $maintenance->executor_1_department ?? '-' }}
+                </p>
             </div>
+
+            <!-- Pelaksana 2 -->
+            @if($maintenance->executor_2)
+            <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-3 rounded">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                    <p class="text-xs md:text-sm text-gray-600 font-medium">Pelaksana 2</p>
+                </div>
+                <p class="font-semibold text-sm md:text-base">{{ $maintenance->executor_2 }}</p>
+                <p class="text-xs text-gray-500 mt-2">
+                    <span class="inline-block mr-1">📋</span>
+                    Dept: {{ $maintenance->executor_2_department ?? '-' }}
+                </p>
+            </div>
+            @endif
+
+            <!-- Pelaksana 3 -->
+            @if($maintenance->executor_3)
+            <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-3 rounded">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                    <p class="text-xs md:text-sm text-gray-600 font-medium">Pelaksana 3</p>
+                </div>
+                <p class="font-semibold text-sm md:text-base">{{ $maintenance->executor_3 }}</p>
+                <p class="text-xs text-gray-500 mt-2">
+                    <span class="inline-block mr-1">📋</span>
+                    Dept: {{ $maintenance->executor_3_department ?? '-' }}
+                </p>
+            </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Supervisor Section -->
+    <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div class="flex items-center gap-2 mb-3">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+            <h4 class="text-sm font-semibold text-gray-700">Supervisor (Mengetahui)</h4>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <p class="text-xs text-gray-600">Nama Supervisor</p>
+                <p class="font-semibold text-sm md:text-base mt-1">{{ $maintenance->supervisor }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-600">ID Number / NIK</p>
+                <p class="font-semibold text-sm md:text-base mt-1">{{ $maintenance->supervisor_id_number ?? '-' }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-600">Department</p>
+                <p class="font-semibold text-sm md:text-base mt-1">{{ $maintenance->department ?? '-' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </x-app-layout>

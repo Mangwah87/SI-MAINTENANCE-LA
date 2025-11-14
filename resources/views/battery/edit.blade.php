@@ -152,38 +152,84 @@
                                             placeholder="Nama supervisor yang mengetahui (opsional)">
                                         <p class="mt-1 text-xs text-gray-600 italic">Kosongkan jika tidak ada supervisor yang mengetahui</p>
                                     </div>
+
+                                    <!-- ID Supervisor - Field Baru -->
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">ID Supervisor</label>
+                                        <input type="text" name="supervisor_id"
+                                            value="{{ old('supervisor_id', $maintenance->supervisor_id) }}"
+                                            class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder="ID atau NIK supervisor (opsional)">
+                                        <p class="mt-1 text-xs text-gray-600 italic">Masukkan ID/NIK supervisor jika ada</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Data Battery Readings -->
+                <!-- Battery Configuration - SAMA DENGAN CREATE -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4 sm:mb-6">
-                    <div class="p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">🔋 Data Pembacaan Battery</h3>
-                            <button type="button" id="add-battery"
-                                class="inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-sm sm:text-base font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 w-full sm:w-auto">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <div class="p-4 sm:p-6 border-b border-gray-200">
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-800">Konfigurasi Battery</h3>
+                    </div>
+                    <div class="p-4 sm:p-6">
+                        <div class="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                            <p class="text-sm text-yellow-700">
+                                <strong>⚠️ Perhatian:</strong> Jika Anda generate ulang, semua data battery yang sudah ada akan diganti dengan konfigurasi baru.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Bank *</label>
+                                <input type="number" id="total_banks" min="1" value="{{ old('total_banks', $maintenance->readings->max('bank_number') ?? 1) }}" required
+                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+                                    placeholder="Contoh: 2">
+                                <p class="mt-1 text-xs text-gray-600">Berapa bank battery yang akan diinput?</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Battery per Bank *</label>
+                                <input type="number" id="batteries_per_bank" min="1" value="{{ old('batteries_per_bank', $maintenance->readings->where('bank_number', 1)->count() ?? 1) }}" required
+                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+                                    placeholder="Contoh: 24">
+                                <p class="mt-1 text-xs text-gray-600">Berapa battery dalam satu bank?</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+                            <button type="button" id="generate-batteries"
+                                class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-bold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                                 </svg>
-                                Tambah Battery
+                                Generate Form Battery
+                            </button>
+                            <button type="button" id="add-battery-manual"
+                                class="inline-flex items-center justify-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-base font-bold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" />
+                                </svg>
+                                Tambah Battery Manual
                             </button>
                         </div>
+                        <p class="mt-3 text-sm text-center text-gray-600 italic">
+                            Total Battery: <strong><span id="total-batteries">{{ $maintenance->readings->count() }}</span></strong>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Data Battery Readings -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4 sm:mb-6">
+                    <div class="p-4 sm:p-6 border-b border-gray-200">
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-800">Data Pembacaan Battery</h3>
                     </div>
 
                     <div class="p-4 sm:p-6">
                         <div id="battery-readings" class="space-y-4 sm:space-y-6">
                             @foreach($maintenance->readings as $index => $reading)
-                            <div class="battery-item border-2 border-blue-300 rounded-xl p-4 sm:p-6 bg-gradient-to-br from-white to-blue-50" data-index="{{ $index }}">
+                            <div class="battery-item border-2 border-gray-200 rounded-xl p-4 sm:p-6" data-index="{{ $index }}">
                                 <div class="flex justify-between items-center mb-4">
-                                    <h4 class="text-base sm:text-lg font-bold text-blue-700">Bank {{ $reading->bank_number }} - Battery #{{ $reading->battery_number }}</h4>
-                                    @if($index > 0)
-                                    <button type="button" class="btn-remove px-2 sm:px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200">
-                                        Hapus
-                                    </button>
-                                    @endif
+                                    <h4 class="text-base sm:text-lg font-bold text-blue-700">Bank {{ $reading->bank_number }} - Battery {{ $reading->battery_number }}</h4>
                                 </div>
 
                                 <input type="hidden" name="readings[{{ $index }}][id]" value="{{ $reading->id }}">
@@ -205,7 +251,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Voltage (VDC) *</label>
-                                        <input type="number" step="0.2" name="readings[{{ $index }}][voltage]"
+                                        <input type="number" step="0.01" name="readings[{{ $index }}][voltage]"
                                             value="{{ old('readings.'.$index.'.voltage', $reading->voltage) }}"
                                             required min="0" max="20"
                                             class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -216,21 +262,21 @@
 
                                 <!-- Photo Documentation Section -->
                                 <div class="mt-4 border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 bg-white">
-                                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-3">Dokumentasi Foto Battery</label>
+                                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-3">Dokumentasi Foto Battery (Opsional)</label>
 
                                     @if($reading->photo_path && Storage::disk('public')->exists($reading->photo_path))
                                     <div class="existing-photo-container mb-4" data-index="{{ $index }}">
                                         <div class="relative">
-                                            <div class="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
+                                            <div class="absolute top-2 right-2 bg-green-700 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
                                                 ✓ Foto Tersedia
                                             </div>
                                             <img src="{{ Storage::url($reading->photo_path) }}"
-                                                class="existing-photo w-full h-auto max-h-80 sm:max-h-96 rounded-lg border-4 border-green-300 object-contain shadow-lg"
+                                                class="existing-photo w-full h-auto max-h-80 sm:max-h-96 rounded-lg border-4  object-contain shadow-lg"
                                                 alt="Battery Photo #{{ $index + 1 }}"
                                                 data-index="{{ $index }}">
                                         </div>
 
-                                        <div class="mt-3 bg-green-50 border-l-4 border-green-500 p-3 rounded">
+                                        <div class="mt-3 bg-gray-100 border-l-4 border-green-700 p-3 rounded">
                                             <p class="text-sm text-green-700 font-semibold mb-1">
                                                 <svg class="inline-block w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
@@ -238,12 +284,6 @@
                                                 Foto sudah tersimpan untuk battery ini
                                             </p>
                                             <p class="text-xs text-gray-600 mt-1">Pilih metode di bawah jika ingin menggantinya.</p>
-                                            @if($reading->photo_latitude && $reading->photo_longitude)
-                                            <p class="text-xs text-gray-600 mt-2">📍 Lokasi: {{ number_format($reading->photo_latitude, 6) }}, {{ number_format($reading->photo_longitude, 6) }}</p>
-                                            @endif
-                                            @if($reading->photo_timestamp)
-                                            <p class="text-xs text-gray-600 mt-1">🕐 Waktu: {{ \Carbon\Carbon::parse($reading->photo_timestamp)->format('d M Y, H:i:s') }}</p>
-                                            @endif
                                         </div>
 
                                         <input type="hidden" name="readings[{{ $index }}][keep_photo]" value="1" class="keep-photo-input" data-index="{{ $index }}">
@@ -263,17 +303,21 @@
                                     <!-- Upload Method Selection -->
                                     <div class="flex gap-2 mb-3">
                                         <button type="button" class="method-camera flex-1 px-3 py-2 bg-blue-500 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="{{ $index }}">
-                                            📷 Camera
+                                            Camera
                                         </button>
                                         <button type="button" class="method-upload flex-1 px-3 py-2 bg-gray-300 text-gray-700 text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="{{ $index }}">
-                                            📁 Upload File
+                                            Upload File
                                         </button>
                                     </div>
 
                                     <!-- Camera Section -->
                                     <div class="camera-section" data-index="{{ $index }}">
-                                        <video class="camera-preview w-full h-48 sm:h-64 bg-black rounded-lg mb-3 hidden shadow-lg" data-index="{{ $index }}" autoplay playsinline></video>
-                                        <img class="captured-image w-full h-auto max-h-64 sm:max-h-96 rounded-lg mb-3 border-4 border-blue-400 shadow-lg hidden" data-index="{{ $index }}" alt="Captured">
+                                        <div class="flex justify-center bg-gray-100 rounded-lg mb-3">
+                                            <video class="camera-preview max-w-full h-48 sm:h-64 bg-black rounded-lg hidden shadow-lg object-cover" data-index="{{ $index }}" autoplay playsinline></video>
+                                        </div>
+                                        <div class="flex justify-center bg-gray-50 rounded-lg mb-3">
+                                            <img class="captured-image max-w-full h-auto max-h-96 rounded-lg border-4 border-blue-400 shadow-lg hidden object-contain" data-index="{{ $index }}" alt="Captured">
+                                        </div>
                                         <canvas class="hidden" data-index="{{ $index }}"></canvas>
 
                                         <div class="flex flex-wrap gap-2 justify-center mb-3">
@@ -310,8 +354,10 @@
                                     <div class="upload-section hidden" data-index="{{ $index }}">
                                         <input type="file" class="file-input w-full px-3 py-2 text-sm border border-gray-300 rounded-lg" accept="image/*" data-index="{{ $index }}">
                                         <div class="uploaded-preview mt-3 hidden">
-                                            <img class="uploaded-image w-full h-auto max-h-64 sm:max-h-96 rounded-lg mb-2 border-4 border-blue-400 shadow-lg" data-index="{{ $index }}" alt="Uploaded">
-                                            <button type="button" class="remove-upload px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="{{ $index }}">
+                                            <div class="flex justify-center bg-gray-50 rounded-lg p-2">
+                                                <img class="uploaded-image max-w-full h-auto max-h-96 rounded-lg border-4 border-blue-400 shadow-lg object-contain" data-index="{{ $index }}" alt="Uploaded">
+                                            </div>
+                                            <button type="button" class="remove-upload mt-2 px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="{{ $index }}">
                                                 Hapus Foto
                                             </button>
                                         </div>
@@ -337,7 +383,7 @@
                         Batal
                     </a>
                     <button type="submit"
-                        class="px-6 sm:px-8 py-3 bg-blue-600 text-white text-sm sm:text-base font-bold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200">
+                        class="px-6 sm:px-8 py-3 bg-blue-700 hover:bg-blue-600 text-white text-sm sm:text-base font-bold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200">
                         Update Data
                     </button>
                 </div>
@@ -346,8 +392,18 @@
     </div>
 
     <script>
-        let batteryCount = @json($maintenance->readings ? $maintenance->readings->count() : 0);
         let streams = {};
+
+        // Calculate and display total batteries
+        function updateTotalBatteries() {
+            const banks = parseInt(document.getElementById('total_banks').value) || 0;
+            const perBank = parseInt(document.getElementById('batteries_per_bank').value) || 0;
+            const total = banks * perBank;
+            document.getElementById('total-batteries').textContent = total;
+        }
+
+        document.getElementById('total_banks').addEventListener('input', updateTotalBatteries);
+        document.getElementById('batteries_per_bank').addEventListener('input', updateTotalBatteries);
 
         // Compress image to max 1MB
         function compressImageTo1MB(canvas, initialQuality = 0.85) {
@@ -414,16 +470,56 @@
             ctx.fillText(address, padding, startY + (lineHeight * 4.5));
         }
 
-        // Add new battery
-        document.getElementById('add-battery').addEventListener('click', function() {
+        // Add Battery Manual - Menambah 1 battery tanpa menghapus data existing
+        document.getElementById('add-battery-manual').addEventListener('click', function() {
             const container = document.getElementById('battery-readings');
-            const newBattery = document.createElement('div');
-            newBattery.className = 'battery-item border-2 border-blue-300 rounded-xl p-4 sm:p-6 bg-gradient-to-br from-white to-blue-50';
-            newBattery.setAttribute('data-index', batteryCount);
+            const existingItems = container.querySelectorAll('.battery-item');
 
-            newBattery.innerHTML = `
+            // Get next index
+            let nextIndex = 0;
+            if (existingItems.length > 0) {
+                const lastIndex = parseInt(existingItems[existingItems.length - 1].getAttribute('data-index'));
+                nextIndex = lastIndex + 1;
+            }
+
+            // Get default values for bank and battery number
+            let defaultBank = 1;
+            let defaultBatteryNum = 1;
+
+            if (existingItems.length > 0) {
+                const lastItem = existingItems[existingItems.length - 1];
+                const lastBankInput = lastItem.querySelector('input[name*="[bank_number]"]');
+                const lastBatteryInput = lastItem.querySelector('input[name*="[battery_number]"]');
+
+                if (lastBankInput && lastBatteryInput) {
+                    defaultBank = parseInt(lastBankInput.value);
+                    defaultBatteryNum = parseInt(lastBatteryInput.value) + 1;
+                }
+            }
+
+            // Create new battery item
+            const newBatteryItem = createBatteryItemManual(nextIndex, defaultBank, defaultBatteryNum);
+            container.appendChild(newBatteryItem);
+            attachCameraEvents(nextIndex);
+            attachRemoveEvent(newBatteryItem);
+
+            // Scroll to new item
+            // newBatteryItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Update total display
+            const totalBatteries = container.querySelectorAll('.battery-item').length;
+            document.getElementById('total-batteries').textContent = totalBatteries;
+        });
+
+        // Create Battery Item Manual (editable bank and battery number)
+        function createBatteryItemManual(index, defaultBank, defaultBatteryNum) {
+            const div = document.createElement('div');
+            div.className = 'battery-item border-2 border-grey-300 rounded-xl p-4 sm:p-6 ';
+            div.setAttribute('data-index', index);
+
+            div.innerHTML = `
                 <div class="flex justify-between items-center mb-4">
-                    <h4 class="text-base sm:text-lg font-bold text-blue-700">Battery #${batteryCount + 1}</h4>
+                    <h4 class="text-base sm:text-lg font-bold text-green-700">Battery Baru ${index + 1}</h4>
                     <button type="button" class="btn-remove px-2 sm:px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200">
                         Hapus
                     </button>
@@ -432,70 +528,80 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
                     <div>
                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Bank *</label>
-                        <input type="number" name="readings[${batteryCount}][bank_number]" value="1" required min="1"
-                               class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="number" name="readings[${index}][bank_number]" value="${defaultBank}" required min="1"
+                               class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     </div>
                     <div>
                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">No *</label>
-                        <input type="number" name="readings[${batteryCount}][battery_number]" value="${batteryCount + 1}" required min="1"
-                               class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="number" name="readings[${index}][battery_number]" value="${defaultBatteryNum}" required min="1"
+                               class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     </div>
                     <div>
                         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Voltage (VDC) *</label>
-                        <input type="number" step="0.1" name="readings[${batteryCount}][voltage]" required min="0" max="20" placeholder="13.8"
-                               class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="number" step="0.01" name="readings[${index}][voltage]" required min="0" max="20" placeholder="13.8"
+                               class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     </div>
                 </div>
 
-                <input type="hidden" name="readings[${batteryCount}][battery_brand]" class="reading-battery-brand">
+                <input type="hidden" name="readings[${index}][battery_brand]" class="reading-battery-brand">
 
+                <!-- Photo Documentation Section -->
                 <div class="mt-4 border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 bg-white">
                     <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-3">Dokumentasi Foto Battery (Opsional)</label>
 
+                    <!-- Upload Method Selection -->
                     <div class="flex gap-2 mb-3">
-                        <button type="button" class="method-camera flex-1 px-3 py-2 bg-blue-500 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${batteryCount}">
+                        <button type="button" class="method-camera flex-1 px-3 py-2 bg-blue-500 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${index}">
                             📷 Camera
                         </button>
-                        <button type="button" class="method-upload flex-1 px-3 py-2 bg-gray-300 text-gray-700 text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${batteryCount}">
+                        <button type="button" class="method-upload flex-1 px-3 py-2 bg-gray-300 text-gray-700 text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${index}">
                             📁 Upload File
                         </button>
                     </div>
 
-                    <div class="camera-section" data-index="${batteryCount}">
-                        <video class="camera-preview w-full h-48 sm:h-64 bg-black rounded-lg mb-3 hidden" data-index="${batteryCount}" autoplay playsinline></video>
-                        <img class="captured-image w-full h-auto max-h-64 sm:max-h-96 rounded-lg mb-3 hidden" data-index="${batteryCount}" alt="Captured">
-                        <canvas class="hidden" data-index="${batteryCount}"></canvas>
+                    <!-- Camera Section -->
+                    <div class="camera-section" data-index="${index}">
+                        <video class="camera-preview w-full h-48 sm:h-64 bg-black rounded-lg mb-3 hidden" data-index="${index}" autoplay playsinline></video>
+                        <img class="captured-image w-full h-auto max-h-64 sm:max-h-96 rounded-lg mb-3 hidden" data-index="${index}" alt="Captured">
+                        <canvas class="hidden" data-index="${index}"></canvas>
 
                         <div class="flex flex-wrap gap-2 justify-center mb-3">
-                            <button type="button" class="start-camera px-3 sm:px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${batteryCount}">Buka Kamera</button>
-                            <button type="button" class="capture-photo hidden px-3 sm:px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${batteryCount}">Ambil Foto</button>
-                            <button type="button" class="retake-photo hidden px-3 sm:px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${batteryCount}">Foto Ulang</button>
+                            <button type="button" class="start-camera px-3 sm:px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${index}">
+                                Buka Kamera
+                            </button>
+                            <button type="button" class="capture-photo hidden px-3 sm:px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${index}">
+                                Ambil Foto
+                            </button>
+                            <button type="button" class="retake-photo hidden px-3 sm:px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${index}">
+                                Foto Ulang
+                            </button>
                         </div>
                     </div>
 
-                    <div class="upload-section hidden" data-index="${batteryCount}">
-                        <input type="file" class="file-input w-full px-3 py-2 text-sm border border-gray-300 rounded-lg" accept="image/*" data-index="${batteryCount}">
+                    <!-- Upload Section -->
+                    <div class="upload-section hidden" data-index="${index}">
+                        <input type="file" class="file-input w-full px-3 py-2 text-sm border border-gray-300 rounded-lg" accept="image/*" data-index="${index}">
                         <div class="uploaded-preview mt-3 hidden">
-                            <img class="uploaded-image w-full h-auto max-h-64 sm:max-h-96 rounded-lg mb-2" data-index="${batteryCount}" alt="Uploaded">
-                            <button type="button" class="remove-upload px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${batteryCount}">Hapus Foto</button>
+                            <img class="uploaded-image w-full h-auto max-h-64 sm:max-h-96 rounded-lg mb-2" data-index="${index}" alt="Uploaded">
+                            <button type="button" class="remove-upload px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${index}">
+                                Hapus Foto
+                            </button>
                         </div>
                     </div>
 
-                    <div class="photo-info text-xs text-gray-600 text-center bg-gray-50 p-2 rounded" data-index="${batteryCount}"></div>
+                    <div class="photo-info text-xs text-gray-600 text-center bg-gray-50 p-2 rounded mt-3" data-index="${index}"></div>
 
-                    <input type="hidden" name="readings[${batteryCount}][photo_data]" data-photo="${batteryCount}">
-                    <input type="hidden" name="readings[${batteryCount}][photo_latitude]" data-lat="${batteryCount}">
-                    <input type="hidden" name="readings[${batteryCount}][photo_longitude]" data-lng="${batteryCount}">
-                    <input type="hidden" name="readings[${batteryCount}][photo_timestamp]" data-time="${batteryCount}">
+                    <input type="hidden" name="readings[${index}][photo_data]" data-photo="${index}">
+                    <input type="hidden" name="readings[${index}][photo_latitude]" data-lat="${index}">
+                    <input type="hidden" name="readings[${index}][photo_longitude]" data-lng="${index}">
+                    <input type="hidden" name="readings[${index}][photo_timestamp]" data-time="${index}">
                 </div>
             `;
 
-            container.appendChild(newBattery);
-            attachCameraEvents(batteryCount);
-            attachRemoveEvent(newBattery);
-            batteryCount++;
-        });
+            return div;
+        }
 
+        // Attach remove event for manual batteries
         function attachRemoveEvent(item) {
             const removeBtn = item.querySelector('.btn-remove');
             if (removeBtn) {
@@ -506,10 +612,146 @@
                         delete streams[index];
                     }
                     item.remove();
+
+                    // Update total display
+                    const container = document.getElementById('battery-readings');
+                    const totalBatteries = container.querySelectorAll('.battery-item').length;
+                    document.getElementById('total-batteries').textContent = totalBatteries;
                 });
             }
         }
 
+        // Generate Battery Forms - SAMA DENGAN CREATE
+        document.getElementById('generate-batteries').addEventListener('click', function() {
+            const totalBanks = parseInt(document.getElementById('total_banks').value);
+            const batteriesPerBank = parseInt(document.getElementById('batteries_per_bank').value);
+
+            if (!totalBanks || !batteriesPerBank || totalBanks < 1 || batteriesPerBank < 1) {
+                alert('Mohon isi jumlah bank dan battery per bank dengan benar!');
+                return;
+            }
+
+            const total = totalBanks * batteriesPerBank;
+            const confirm = window.confirm(`Akan membuat ${total} form battery (${totalBanks} bank × ${batteriesPerBank} battery).\n\n⚠️ Data battery yang sudah ada akan diganti!\n\nLanjutkan?`);
+
+            if (!confirm) return;
+
+            // Stop all existing camera streams
+            Object.keys(streams).forEach(key => {
+                if (streams[key]) {
+                    streams[key].getTracks().forEach(track => track.stop());
+                }
+            });
+            streams = {};
+
+            const container = document.getElementById('battery-readings');
+            container.innerHTML = '';
+
+            let index = 0;
+            for (let bank = 1; bank <= totalBanks; bank++) {
+                for (let batteryNum = 1; batteryNum <= batteriesPerBank; batteryNum++) {
+                    const batteryItem = createBatteryItem(index, bank, batteryNum);
+                    container.appendChild(batteryItem);
+                    attachCameraEvents(index);
+                    index++;
+                }
+            }
+
+            // Update total display
+            updateTotalBatteries();
+
+            // Scroll to battery readings
+            // container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        // Create Battery Item - SAMA DENGAN CREATE
+        function createBatteryItem(index, bankNumber, batteryNumber) {
+            const div = document.createElement('div');
+            div.className = 'battery-item border-2 border-gray-200 rounded-xl p-4 sm:p-6';
+            div.setAttribute('data-index', index);
+
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-base sm:text-lg font-bold text-blue-700">Bank ${bankNumber} - Battery #${batteryNumber}</h4>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Bank *</label>
+                        <input type="number" name="readings[${index}][bank_number]" value="${bankNumber}" required readonly
+                               class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg bg-gray-100">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">No *</label>
+                        <input type="number" name="readings[${index}][battery_number]" value="${batteryNumber}" required readonly
+                               class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg bg-gray-100">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Voltage (VDC) *</label>
+                        <input type="number" step="0.01" name="readings[${index}][voltage]" required min="0" max="20" placeholder="13.8"
+                               class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent">
+                    </div>
+                </div>
+
+                <input type="hidden" name="readings[${index}][battery_brand]" class="reading-battery-brand">
+
+                <!-- Photo Documentation Section -->
+                <div class="mt-4 border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 bg-white">
+                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-3">Dokumentasi Foto Battery (Opsional)</label>
+
+                    <!-- Upload Method Selection -->
+                    <div class="flex gap-2 mb-3">
+                        <button type="button" class="method-camera flex-1 px-3 py-2 bg-blue-500 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${index}">
+                            📷 Camera
+                        </button>
+                        <button type="button" class="method-upload flex-1 px-3 py-2 bg-gray-300 text-gray-700 text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${index}">
+                            📁 Upload File
+                        </button>
+                    </div>
+
+                    <!-- Camera Section -->
+                    <div class="camera-section" data-index="${index}">
+                        <video class="camera-preview w-full h-48 sm:h-64 bg-black rounded-lg mb-3 hidden" data-index="${index}" autoplay playsinline></video>
+                        <img class="captured-image w-full h-auto max-h-64 sm:max-h-96 rounded-lg mb-3 hidden" data-index="${index}" alt="Captured">
+                        <canvas class="hidden" data-index="${index}"></canvas>
+
+                        <div class="flex flex-wrap gap-2 justify-center mb-3">
+                            <button type="button" class="start-camera px-3 sm:px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${index}">
+                                Buka Kamera
+                            </button>
+                            <button type="button" class="capture-photo hidden px-3 sm:px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${index}">
+                                Ambil Foto
+                            </button>
+                            <button type="button" class="retake-photo hidden px-3 sm:px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${index}">
+                                Foto Ulang
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Upload Section -->
+                    <div class="upload-section hidden" data-index="${index}">
+                        <input type="file" class="file-input w-full px-3 py-2 text-sm border border-gray-300 rounded-lg" accept="image/*" data-index="${index}">
+                        <div class="uploaded-preview mt-3 hidden">
+                            <img class="uploaded-image w-full h-auto max-h-64 sm:max-h-96 rounded-lg mb-2" data-index="${index}" alt="Uploaded">
+                            <button type="button" class="remove-upload px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200" data-index="${index}">
+                                Hapus Foto
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="photo-info text-xs text-gray-600 text-center bg-gray-50 p-2 rounded mt-3" data-index="${index}"></div>
+
+                    <input type="hidden" name="readings[${index}][photo_data]" data-photo="${index}">
+                    <input type="hidden" name="readings[${index}][photo_latitude]" data-lat="${index}">
+                    <input type="hidden" name="readings[${index}][photo_longitude]" data-lng="${index}">
+                    <input type="hidden" name="readings[${index}][photo_timestamp]" data-time="${index}">
+                </div>
+            `;
+
+            return div;
+        }
+
+        // Camera Events
         function attachCameraEvents(index) {
             const item = document.querySelector(`.battery-item[data-index="${index}"]`);
             if (!item) return;
@@ -784,10 +1026,9 @@
             existingReadings.forEach(function(item) {
                 const index = parseInt(item.getAttribute('data-index'));
                 attachCameraEvents(index);
-                if (index > 0) {
-                    attachRemoveEvent(item);
-                }
             });
+
+            updateTotalBatteries();
         });
     </script>
 </x-app-layout>
