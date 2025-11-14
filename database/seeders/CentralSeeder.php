@@ -33,6 +33,20 @@ class CentralSeeder extends Seeder
             ['id_sentral' => 'KRSGTS', 'nama' => 'CT KARANGASEM', 'area' => 'BALI'],
             ['id_sentral' => 'BLIBNR', 'nama' => 'CT BANGLI', 'area' => 'BALI'],
             ['id_sentral' => 'DPSNDC', 'nama' => 'CT MORATEL NDC', 'area' => 'BALI'],
+            ['id_sentral' => 'TABRDG', 'nama' => 'CT BAJERA', 'area' => 'BALI'],
+            ['id_sentral' => 'JRNYMK', 'nama' => 'CT RAMBUT SIWI', 'area' => 'BALI'],
+            ['id_sentral' => 'TABMBB', 'nama' => 'CT BEDUGUL', 'area' => 'BALI'],
+            ['id_sentral' => 'JRNRDG', 'nama' => 'CT GILIMANUK', 'area' => 'BALI'],
+            ['id_sentral' => 'KRSRPB', 'nama' => 'CT PADANG BAI', 'area' => 'BALI'],
+            ['id_sentral' => 'TABPOS', 'nama' => 'CT TABANAN POS', 'area' => 'BALI'],
+            ['id_sentral' => 'JRNPOS', 'nama' => 'CT JEMBRANA POS', 'area' => 'BALI'],
+            ['id_sentral' => 'TABLLG', 'nama' => 'CT LALALINGGAH', 'area' => 'BALI'],
+            ['id_sentral' => 'DPSNTX', 'nama' => 'CT NEUCENTRIX DENPASAR', 'area' => 'BALI'],
+            ['id_sentral' => 'SRJPOS', 'nama' => 'CT SINGARAJA POS', 'area' => 'BALI'],
+
+            //area ntt
+
+            //area ntb
 
         ];
 
