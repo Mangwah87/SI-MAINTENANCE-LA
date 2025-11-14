@@ -222,6 +222,7 @@ class GensetController extends Controller
             'technician_3_department' => 'nullable|string',
             'approver_name' => 'nullable|string',
             'approver_department' => 'nullable|string',
+            'approver_nik' => 'nullable|string',
             
             // Gambar
             'images' => 'nullable|array',

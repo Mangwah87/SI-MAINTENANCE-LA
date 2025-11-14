@@ -75,6 +75,7 @@ class BatteryController extends Controller
 
                 // Validasi Supervisor
                 'supervisor' => 'nullable|string|max:255',
+                'supervisor_id' => 'nullable|string|max:100',
 
                 // Validasi Readings
                 'readings' => 'required|array|min:1',
@@ -110,6 +111,7 @@ class BatteryController extends Controller
                 'technician_3_name' => $validated['technician_3_name'] ?? null,
                 'technician_3_company' => $validated['technician_3_company'] ?? null,
                 'supervisor' => $validated['supervisor'] ?? null,
+                'supervisor_id' => $validated['supervisor_id'] ?? null,
             ]);
 
             foreach ($validated['readings'] as $reading) {

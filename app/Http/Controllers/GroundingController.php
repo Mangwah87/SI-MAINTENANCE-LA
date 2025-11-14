@@ -215,6 +215,7 @@ class GroundingController extends Controller
             'technician_3_name' => 'nullable|string|max:255',
             'technician_3_company' => 'nullable|string|max:255',
             'approver_name' => 'nullable|string|max:255',
+            'approver_nik' => 'nullable|string|max:255',
             'images' => 'nullable|array',
             'images.*' => 'nullable|json',
             'delete_images' => 'nullable|array',

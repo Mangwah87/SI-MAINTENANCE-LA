@@ -137,18 +137,27 @@
                             </div>
 
                             <!-- Mengetahui (Supervisor) - FIELD BARU -->
-                            <div class="border-2  rounded-lg p-3 sm:p-4 ">
-                                <h4 class="text-sm sm:text-md font-bold text-black-700 mb-3">Mengetahui</h4>
-                                <div class="grid grid-cols-1 gap-3 sm:gap-4">
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Supervisor / Atasan</label>
-                                        <input type="text" name="supervisor" value="{{ old('supervisor') }}"
-                                            class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent"
-                                            placeholder="Nama supervisor yang mengetahui (opsional)">
-                                        <p class="mt-1 text-xs text-gray-600 italic">Kosongkan jika tidak ada supervisor yang mengetahui</p>
-                                    </div>
+                        <div class="border-2 rounded-lg p-3 sm:p-4">
+                            <h4 class="text-sm sm:text-md font-bold text-black-700 mb-3">Mengetahui</h4>
+                            <div class="grid grid-cols-1 gap-3 sm:gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Supervisor / Atasan</label>
+                                    <input type="text" name="supervisor" value="{{ old('supervisor') }}"
+                                        class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+                                        placeholder="Nama supervisor yang mengetahui (opsional)">
+                                    <p class="mt-1 text-xs text-gray-600 italic">Kosongkan jika tidak ada supervisor yang mengetahui</p>
+                                </div>
+
+                                <!-- ID Supervisor - Field Baru -->
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">ID Supervisor</label>
+                                    <input type="text" name="supervisor_id" value="{{ old('supervisor_id') }}"
+                                        class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+                                        placeholder="ID atau NIK supervisor (opsional)">
+                                    <p class="mt-1 text-xs text-gray-600 italic">Masukkan ID/NIK supervisor jika ada</p>
                                 </div>
                             </div>
+                        </div>
                         </div>
                         <p class="mt-4 text-xs sm:text-sm text-gray-600 italic">
                             <strong>Catatan:</strong> Minimal 1 pelaksana harus diisi. Pelaksana ke-2 dan ke-3 bersifat opsional.
@@ -286,7 +295,7 @@
 
             div.innerHTML = `
                 <div class="flex justify-between items-center mb-4">
-                    <h4 class="text-base sm:text-lg font-bold text-purple-700">Bank ${bankNumber} - Battery #${batteryNumber}</h4>
+                    <h4 class="text-base sm:text-lg font-bold text-blue-700">Bank ${bankNumber} - Battery ${batteryNumber}</h4>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">

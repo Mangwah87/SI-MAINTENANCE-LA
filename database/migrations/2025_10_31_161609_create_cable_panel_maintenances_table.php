@@ -108,6 +108,7 @@ return new class extends Migration
 
             // Mengetahui (Approver) 
             $table->string('approver_name')->nullable();
+            $table->string('approver_nik')->nullable();
 
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
 

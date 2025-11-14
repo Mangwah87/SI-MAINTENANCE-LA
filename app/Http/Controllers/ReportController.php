@@ -76,7 +76,8 @@ class ReportController extends Controller
         // 1. Battery Maintenance
         if ($formType == 'all' || $formType == 'battery') {
             $batteries = BatteryMaintenance::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('maintenance_date', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('maintenance_date', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('maintenance_date', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('maintenance_date', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
                 ->get()
@@ -101,7 +102,8 @@ class ReportController extends Controller
         // 2. Rectifier Maintenance
         if ($formType == 'all' || $formType == 'rectifier') {
             $rectifiers = RectifierMaintenance::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('date_time', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('date_time', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('date_time', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('date_time', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
                 ->get()
@@ -126,7 +128,8 @@ class ReportController extends Controller
         // 3. Genset Maintenance
         if ($formType == 'all' || $formType == 'genset') {
             $gensets = GensetMaintenance::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('maintenance_date', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('maintenance_date', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('maintenance_date', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('maintenance_date', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
                 ->get()
@@ -151,7 +154,8 @@ class ReportController extends Controller
         // 4. UPS 1 Phase Maintenance
         if ($formType == 'all' || $formType == 'ups1') {
             $ups1 = UpsMaintenance1::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('date_time', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('date_time', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('date_time', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('date_time', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
                 ->get()
@@ -176,7 +180,8 @@ class ReportController extends Controller
         // 5. UPS 3 Phase Maintenance
         if ($formType == 'all' || $formType == 'ups3') {
             $ups3 = UpsMaintenance::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('date_time', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('date_time', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('date_time', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('date_time', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
                 ->get()
@@ -201,7 +206,8 @@ class ReportController extends Controller
         // 6. AC Maintenance
         if ($formType == 'all' || $formType == 'ac') {
             $acs = AcMaintenance::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('date_time', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('date_time', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('date_time', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('date_time', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
                 ->get()
@@ -226,7 +232,8 @@ class ReportController extends Controller
         // 7. PM Permohonan
         if ($formType == 'all' || $formType == 'permohonan') {
             $permohonan = PMPermohonan::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('tanggal', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('tanggal', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('tanggal', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('tanggal', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('lokasi', 'like', "%$location%"))
                 ->get()
@@ -251,7 +258,8 @@ class ReportController extends Controller
         // 8. Tindak Lanjut
         if ($formType == 'all' || $formType == 'tindaklanjut') {
             $tindakLanjut = TindakLanjut::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('tanggal', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('tanggal', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('tanggal', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('tanggal', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('lokasi', 'like', "%$location%"))
                 ->get()
@@ -281,7 +289,8 @@ class ReportController extends Controller
         // 9. Dokumentasi
         if ($formType == 'all' || $formType == 'dokumentasi') {
             $dokumentasi = Dokumentasi::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('tanggal_dokumentasi', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('tanggal_dokumentasi', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('tanggal_dokumentasi', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('tanggal_dokumentasi', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('lokasi', 'like', "%$location%"))
                 ->get()
@@ -311,7 +320,8 @@ class ReportController extends Controller
         // 10. Jadwal PM Sentral
         if ($formType == 'all' || $formType == 'jadwal') {
             $jadwal = ScheduleMaintenance::with('user', 'locations')
-                ->when($dateFrom, fn($q) => $q->whereDate('tanggal_pembuatan', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('tanggal_pembuatan', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('tanggal_pembuatan', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('tanggal_pembuatan', '<=', $dateTo))
                 ->get()
                 ->map(function ($item) {
@@ -335,7 +345,8 @@ class ReportController extends Controller
         // 11. PM Inverter
         if ($formType == 'all' || $formType == 'inverter') {
             $inverters = Inverter::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('tanggal_dokumentasi', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('tanggal_dokumentasi', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('tanggal_dokumentasi', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('tanggal_dokumentasi', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('lokasi', 'like', "%$location%"))
                 ->get()
@@ -365,7 +376,8 @@ class ReportController extends Controller
         // 12. PM Shelter
         if ($formType == 'all' || $formType == 'shelter') {
             $shelters = PmShelter::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('date', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('date', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('date', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('date', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
                 ->get()
@@ -395,7 +407,8 @@ class ReportController extends Controller
         // 13. PM Petir & Grounding
         if ($formType == 'all' || $formType == 'grounding') {
             $grounding = GroundingMaintenance::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('maintenance_date', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('maintenance_date', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('maintenance_date', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('maintenance_date', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
                 ->get()
@@ -420,7 +433,8 @@ class ReportController extends Controller
         // 14. PM Instalasi Kabel & Panel Distribusi
         if ($formType == 'all' || $formType == 'cable') {
             $cables = CablePanelMaintenance::with('user')
-                ->when($dateFrom, fn($q) => $q->whereDate('maintenance_date', '>=', $dateFrom))
+                ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('maintenance_date', '=', $dateFrom))
+                ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('maintenance_date', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('maintenance_date', '<=', $dateTo))
                 ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
                 ->get()

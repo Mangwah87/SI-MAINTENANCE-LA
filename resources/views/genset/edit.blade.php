@@ -340,7 +340,7 @@
                     <div class="p-6 border-t border-gray-200">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Pelaksana</h3>
                         <div class="space-y-4">
-                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded-md">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded-md">
                                 <span class="md:col-span-1 font-semibold self-center">Pelaksana #1 *</span>
                                 <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                                      <input type="text" name="technician_1_name" value="{{ old('technician_1_name', $maintenance->technician_1_name) }}" class="w-full text-sm border-gray-300 rounded-md" required>
@@ -367,17 +367,20 @@
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Mengetahui (Approver)</h3>
                         <div class="space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded-md">
-                                <span class="md-col-span-1 font-semibold self-center">Approver (Opsional)</span>
-                                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                     <input type="text" name="approver_name" value="{{ old('approver_name', $maintenance->approver_name) }}" class="w-full text-sm border-gray-300 rounded-md">
-                                     <input type="text" name="approver_department" value="{{ old('approver_department', $maintenance->approver_department) }}" class"w-full text-sm border-gray-300 rounded-md">
+                                <span class="md:col-span-1 font-semibold self-center">Approver (Opsional)</span>
+                                {{-- [PERUBAHAN] Ubah grid jadi 3 kolom --}}
+                                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                     <input type="text" name="approver_name" placeholder="Nama Atasan" value="{{ old('approver_name', $maintenance->approver_name) }}" class="sm:col-span-1 w-full text-sm border-gray-300 rounded-md">
+                                     {{-- [BARU] Input NIK --}}
+                                     <input type="text" name="approver_nik" placeholder="NIK Atasan" value="{{ old('approver_nik', $maintenance->approver_nik) }}" class="sm:col-span-1 w-full text-sm border-gray-300 rounded-md">
+                                     <input type="text" name="approver_department" placeholder="Departemen" value="{{ old('approver_department', $maintenance->approver_department) }}" class="sm:col-span-1 w-full text-sm border-gray-300 rounded-md">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="flex justify-end p-6 gap-4 py-6">
-                    <a href="{{ route('genset.index') }}" class="px-8 py-3 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg">Batal</a>
-                    <button type="submit" class="px-8 py-3 bg-blue-500 hover:from-blue-600 hover:to-blue-600 text-white font-bold rounded-lg shadow-lg">
+                    <a href="{{ route('genset.index') }}" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-sm rounded-lg">Batal</a>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 hover:from-blue-600 hover:to-blue-600 text-white font-sm rounded-lg shadow-lg">
                         Update Data
                     </button>
                 </div>

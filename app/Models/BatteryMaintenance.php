@@ -24,7 +24,8 @@ class BatteryMaintenance extends Model
         'technician_2_company',
         'technician_3_name',
         'technician_3_company',
-        'supervisor', // Field baru untuk Mengetahui
+        'supervisor',
+        'supervisor_id',
     ];
 
     protected $casts = [
