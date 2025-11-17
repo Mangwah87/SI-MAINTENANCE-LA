@@ -50,7 +50,28 @@
                     <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
-                            <input type="text" name="location" value="{{ old('location') }}" required class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" placeholder="Contoh: Site Name (Area)">
+                            <select name="location" required
+                                class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <option value="">-- Pilih Lokasi --</option>
+                                @if(isset($centralsByArea))
+                                    @foreach($centralsByArea as $area => $centrals)
+                                        <optgroup label="{{ $area }}">
+                                            @foreach($centrals as $central)
+                                                {{-- Value disamakan dengan format Genset: ID (Nama) --}}
+                                                <option value="{{ $central->id_sentral }} ({{ $central->nama }})"
+                                                    {{ old('location') == $central->id_sentral . ' (' . $central->nama . ')' ? 'selected' : '' }}>
+                                                    {{ $central->id_sentral }} - {{ $central->nama }}
+                                                </option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endforeach
+                                @else
+                                    <option value="" disabled>Data Central tidak ditemukan (Cek Controller)</option>
+                                @endif
+                            </select>
+                            @error('location')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Date / Time *</label>

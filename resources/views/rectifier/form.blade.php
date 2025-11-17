@@ -1579,7 +1579,7 @@
                                 });
 
                                 // Determine timezone
-                                let timezone = 'WIB';
+                                let timezone = 'WITA';
                                 if (lng >= 120 && lng < 130) {
                                     timezone = 'WITA';
                                 } else if (lng >= 130) {

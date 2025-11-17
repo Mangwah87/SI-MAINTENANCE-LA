@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Dokumentasi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +41,15 @@ class DokumentasiController extends Controller
      */
     public function create()
     {
-        return view('dokumentasi.create');
+        // Ambil data central dari database
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        // Group by area untuk tampilan yang lebih rapi
+        $centralsByArea = $centrals->groupBy('area');
+        return view('dokumentasi.create', compact('centralsByArea'));
     }
 
     /**
@@ -177,7 +186,13 @@ class DokumentasiController extends Controller
             ? json_decode($dokumentasi->pelaksana, true) 
             : $dokumentasi->pelaksana;
         
-        return view('dokumentasi.edit', compact('dokumentasi'));
+        $centrals = DB::table('central')
+        ->orderBy('area')
+        ->orderBy('nama')
+        ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+        return view('dokumentasi.edit', compact('dokumentasi', 'centralsByArea'));
     }
 
     /**

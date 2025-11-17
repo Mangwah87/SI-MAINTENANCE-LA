@@ -38,12 +38,35 @@
                                 </div>
 
                                 <div>
-                                    <label for="lokasi" class="block text-sm font-medium text-gray-700 mb-1">Lokasi</label>
-                                    <input type="text" name="lokasi" id="lokasi" 
-                                           value="{{ old('lokasi', $dokumentasi->lokasi) }}"
-                                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-blue-500 focus:ring-blue-500"
-                                           placeholder="Masukkan lokasi dokumentasi" required>
-                                </div>
+                            <label for="lokasi" class="block text-sm font-medium text-gray-700 mb-1">Lokasi</label>
+                            {{-- Pastikan name="lokasi" --}}
+                            <select name="lokasi" id="location-select-edit" required
+                                class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">-- Pilih Location --</option>
+                                @foreach($centralsByArea as $area => $centrals)
+                                    <optgroup label="AREA {{ $area }}">
+                                        @foreach($centrals as $central)
+                                            @php
+                                                $valueString = $central->id_sentral . ' (' . $central->nama . ')';
+                                            @endphp
+
+                                            <option value="{{ $valueString }}"
+                                                {{-- 
+                                                    PERBAIKAN: 
+                                                    1. Menggunakan old('lokasi')
+                                                    2. Menggunakan $dokumentasi->lokasi (bukan $maintenance->location)
+                                                --}}
+                                                {{ old('lokasi', $dokumentasi->lokasi) == $valueString ? 'selected' : '' }}>
+                                                
+                                                {{-- Tampilan di layar --}}
+                                                {{ $central->id_sentral }} - {{ $central->nama }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-gray-600">Pilih lokasi central dari daftar</p>
+                        </div>
 
                                 <div>
                                     <label for="tanggal_dokumentasi" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Dokumentasi</label>

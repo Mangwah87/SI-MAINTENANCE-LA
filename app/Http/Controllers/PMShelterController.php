@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PmShelter;
+use App\Models\PMShelter;
 use App\Models\Central;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -12,7 +12,7 @@ class PmShelterController extends Controller
 {
     public function index(Request $request)
     {
-        $query = PmShelter::with(['user', 'central'])->where('user_id', auth()->id());
+        $query = PMShelter::with(['user', 'central'])->where('user_id', auth()->id());
 
         // Search 
         if ($request->filled('search')) {
