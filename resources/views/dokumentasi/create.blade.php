@@ -9,6 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
+                    
                     <form action="{{ route('dokumentasi.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
@@ -28,7 +29,7 @@
                                 <label for="lokasi" class="block text-sm font-medium text-gray-700">Lokasi</label>
                                 <div>
                             
-                            <select name="location" required
+                            <select name="lokasi"
                                 class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                                 <option value="">-- Pilih Lokasi --</option>
                                 @if(isset($centralsByArea))

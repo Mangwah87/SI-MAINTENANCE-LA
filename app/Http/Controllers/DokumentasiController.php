@@ -186,7 +186,13 @@ class DokumentasiController extends Controller
             ? json_decode($dokumentasi->pelaksana, true) 
             : $dokumentasi->pelaksana;
         
-        return view('dokumentasi.edit', compact('dokumentasi'));
+        $centrals = DB::table('central')
+        ->orderBy('area')
+        ->orderBy('nama')
+        ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+        return view('dokumentasi.edit', compact('dokumentasi', 'centralsByArea'));
     }
 
     /**
