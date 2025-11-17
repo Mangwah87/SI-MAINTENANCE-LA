@@ -439,7 +439,7 @@
                     <td style="padding-left: 10px; font-size: 7.5pt; line-height: 1.3;">
                         a. Rectifier Switching test, from the main source (PLN) to back up mode, by turning off Rectifier input MCB
                     </td>
-                    <td></td>
+                    <td>{{ $maintenance->backup_test_rectifier ?? '-' }}</td>
                     <td style="vertical-align: middle;">Rectifier Normal Operations</td>
                     <td class="center" style="vertical-align: middle;">
                         <span class="{{ $maintenance->status_backup_test_rectifier == 'OK' ? 'status-ok' : 'status-nok' }}">
@@ -455,7 +455,9 @@
                             - Measurement II ( 15<sup>th</sup> minutes )
                         </div>
                     </td>
-                    <td style="vertical-align: middle;"></td>
+                    <td style="vertical-align: middle; font-size: 7pt;">
+                        {{ $maintenance->backup_test_voltage_measurement1 ?? '-' }} VDC
+                    </td>
                     <td style="vertical-align: middle;">Min 48 VDC</td>
                     <td rowspan="2" class="center" style="vertical-align: middle;">
                         <span class="{{ $maintenance->status_backup_test_voltage == 'OK' ? 'status-ok' : 'status-nok' }}">
@@ -464,7 +466,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="vertical-align: middle;"></td>
+                    <td style="vertical-align: middle; font-size: 7pt;">
+                        {{ $maintenance->backup_test_voltage_measurement2 ?? '-' }} VDC
+                    </td>
                     <td style="vertical-align: middle;">Min 42 VDC</td>
                 </tr>
 
