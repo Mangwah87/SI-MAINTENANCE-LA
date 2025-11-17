@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+
 class BatteryController extends Controller
 {
     private $maxImageSizeKB = 1024; // 1MB = 1024KB
@@ -47,12 +48,29 @@ class BatteryController extends Controller
             ->orderBy('maintenance_date', 'desc')
             ->paginate(10);
 
-        return view('battery.index', compact('maintenances'));
+        // Ambil data central untuk filter
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+
+        return view('battery.index', compact('maintenances', 'centralsByArea'));
     }
 
     public function create()
     {
-        return view('battery.create');
+        // Ambil data central dari database, urutkan berdasarkan area dan nama
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        // Group by area untuk tampilan yang lebih rapi
+        $centralsByArea = $centrals->groupBy('area');
+
+        return view('battery.create', compact('centralsByArea'));
     }
 
     public function store(Request $request)
@@ -159,6 +177,7 @@ class BatteryController extends Controller
     public function show(string $id)
     {
         $maintenance = BatteryMaintenance::with([
+             'central',
             'readings' => function ($query) {
                 $query->orderBy('bank_number')->orderBy('battery_number');
             },
@@ -178,7 +197,15 @@ class BatteryController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        return view('battery.edit', compact('maintenance'));
+        // Ambil data central untuk dropdown
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+
+        return view('battery.edit', compact('maintenance', 'centralsByArea'));
     }
 
     public function update(Request $request, $id)
@@ -198,6 +225,7 @@ class BatteryController extends Controller
                 'technician_3_name' => 'nullable|string|max:255',
                 'technician_3_company' => 'nullable|string|max:255',
                 'supervisor' => 'nullable|string|max:255',
+                'supervisor_id' => 'nullable|string|max:100',
                 'readings' => 'required|array|min:1',
                 'readings.*.id' => 'nullable|integer|exists:battery_readings,id',
                 'readings.*.bank_number' => 'required|integer|min:1',
@@ -230,6 +258,7 @@ class BatteryController extends Controller
                 'technician_3_name' => $validated['technician_3_name'] ?? null,
                 'technician_3_company' => $validated['technician_3_company'] ?? null,
                 'supervisor' => $validated['supervisor'] ?? null,
+                'supervisor_id' => $validated['supervisor_id'] ?? null,
                 'technician_name' => $validated['technician_1_name'],
             ]);
 

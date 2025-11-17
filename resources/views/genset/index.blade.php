@@ -144,12 +144,17 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {{ $maintenances->firstItem() + $loop->index }}
                                         </td>
-                                        <td class="px-6 py-4 text-sm text-gray-900">
-                                            <div class="flex items-start">
-                                                <i data-lucide="map-pin" class="w-4 h-4 mr-2 mt-0.5 text-red-500 flex-shrink-0"></i> {{-- --}}
-                                                <span>{{ $maintenance->location ?? '-' }}</span>
+                                         <td class="px-6 py-4 text-sm text-gray-900">
+                                        @if($maintenance->central)
+                                            <div>
+                                                <span class="font-semibold">{{ $maintenance->central->id_sentral }}</span>
+                                                <span class="text-gray-600">- {{ $maintenance->central->nama }}</span>
                                             </div>
-                                        </td>
+                                            <!-- <span class="text-xs text-gray-500">{{ $maintenance->central->area }}</span> -->
+                                        @else
+                                            <span class="text-red-500">ID: {{ $maintenance->location }}</span>
+                                        @endif
+                                    </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             <div class="flex items-center">
                                                 <i data-lucide="calendar" class="w-4 h-4 mr-2 text-gray-400 flex-shrink-0"></i> {{-- --}}

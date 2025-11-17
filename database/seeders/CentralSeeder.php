@@ -63,7 +63,7 @@ class CentralSeeder extends Seeder
             ['id_sentral' => 'SBWIDS', 'nama' => 'CT INDOSAT SUMBAWA', 'area' => 'NTB'],
             ['id_sentral' => 'DPUJDS', 'nama' => 'CT DOMPU', 'area' => 'NTB'],
             ['id_sentral' => 'LBBGRG', 'nama' => 'CT LOMBOK BARAT', 'area' => 'NTB'],
-            ['id_sentral' => 'LBMSLG', 'nama' => 'CT  LOMBOK TIMUR', 'area' => 'NTB'],
+            ['id_sentral' => 'LBMSLG', 'nama' => 'CT LOMBOK TIMUR', 'area' => 'NTB'],
             ['id_sentral' => 'LKGBNK', 'nama' => 'CT KOPANG', 'area' => 'NTB'],
             ['id_sentral' => 'LKGRYK', 'nama' => 'CT MANDALIKA', 'area' => 'NTB'],
             ['id_sentral' => 'SWBMLK', 'nama' => 'CT MALUK', 'area' => 'NTB'],

@@ -36,94 +36,103 @@
                     </div>
 
                     <!-- Filter Section -->
-<div class="mb-4 md:mb-6 bg-gray-50 rounded-lg p-3 md:p-4 border border-gray-200">
-    <div class="flex items-center justify-between mb-3">
-        <h4 class="text-xs md:text-sm font-semibold text-gray-700">
-            <svg class="w-4 h-4 md:w-5 md:h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-            </svg>
-            Filter Pencarian
-        </h4>
-        <button type="button" id="toggleFilter" class="text-xs md:text-sm text-blue-600 hover:text-blue-800">
-            <span id="filterText">Tampilkan</span>
-        </button>
-    </div>
+                    <div class="mb-4 md:mb-6 bg-gray-50 rounded-lg p-3 md:p-4 border border-gray-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-xs md:text-sm font-semibold text-gray-700">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                </svg>
+                                Filter Pencarian
+                            </h4>
+                            <button type="button" id="toggleFilter" class="text-xs md:text-sm text-blue-600 hover:text-blue-800">
+                                <span id="filterText">Tampilkan</span>
+                            </button>
+                        </div>
 
-    <form method="GET" action="{{ route('battery.index') }}" id="filterForm" style="display: none;">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-            <!-- Location -->
-            <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">
-                    <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                    Lokasi
-                </label>
-                <input type="text"
-                    name="location"
-                    value="{{ request('location') }}"
-                    placeholder="Cari berdasarkan lokasi..."
-                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
+                        <form method="GET" action="{{ route('battery.index') }}" id="filterForm" style="display: none;">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+                                <!-- Location Filter -->
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                        Lokasi
+                                    </label>
+                                    <select name="location" id="location-filter"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">-- Semua Lokasi --</option>
+                                        @foreach($centralsByArea as $area => $centrals)
+                                            <optgroup label="AREA {{ $area }}">
+                                                @foreach($centrals as $central)
+                                                    <option value="{{ $central->id }}"
+                                                        {{ request('location') == $central->id ? 'selected' : '' }}>
+                                                        {{ $central->id_sentral }} - {{ $central->nama }}
+                                                    </option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-            <!-- Date From -->
-            <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">
-                    <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    Dari Tanggal
-                </label>
-                <input type="date"
-                    name="date_from"
-                    value="{{ request('date_from') }}"
-                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
+                                <!-- Date From -->
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Dari Tanggal
+                                    </label>
+                                    <input type="date"
+                                        name="date_from"
+                                        value="{{ request('date_from') }}"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
 
-            <!-- Date To -->
-            <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">
-                    <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    Sampai Tanggal
-                </label>
-                <input type="date"
-                    name="date_to"
-                    value="{{ request('date_to') }}"
-                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-        </div>
+                                <!-- Date To -->
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Sampai Tanggal
+                                    </label>
+                                    <input type="date"
+                                        name="date_to"
+                                        value="{{ request('date_to') }}"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
 
-        <!-- Filter Buttons -->
-        <div class="flex flex-wrap gap-2 mt-4">
-            <button type="submit"
-                class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                Cari
-            </button>
-            <a href="{{ route('battery.index') }}"
-                class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 transition">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                Reset
-            </a>
+                            <!-- Filter Buttons -->
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                <button type="submit"
+                                    class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                    Cari
+                                </button>
+                                <a href="{{ route('battery.index') }}"
+                                    class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 transition">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    Reset
+                                </a>
 
-            @if(request()->hasAny(['location', 'date_from', 'date_to']))
-            <span class="w-full sm:w-auto inline-flex items-center justify-center px-3 py-2 text-sm text-gray-600 bg-yellow-50 border border-yellow-200 rounded-md">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                Filter aktif
-            </span>
-            @endif
-        </div>
-    </form>
-</div>
+                                @if(request()->hasAny(['location', 'date_from', 'date_to']))
+                                <span class="w-full sm:w-auto inline-flex items-center justify-center px-3 py-2 text-sm text-gray-600 bg-yellow-50 border border-yellow-200 rounded-md">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Filter aktif
+                                </span>
+                                @endif
+                            </div>
+                        </form>
+                    </div>
 
                     <!-- Table Section -->
                     @if($maintenances->count() > 0)
@@ -146,7 +155,15 @@
                                         {{ $maintenances->firstItem() + $index }}
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-900">
-                                        {{ $maintenance->location }}
+                                        @if($maintenance->central)
+                                            <div>
+                                                <span class="font-semibold">{{ $maintenance->central->id_sentral }}</span>
+                                                <span class="text-gray-600">- {{ $maintenance->central->nama }}</span>
+                                            </div>
+                                            <!-- <span class="text-xs text-gray-500">{{ $maintenance->central->area }}</span> -->
+                                        @else
+                                            <span class="text-red-500">ID: {{ $maintenance->location }}</span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -158,25 +175,18 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                         <div class="flex justify-center gap-2">
-                                            <!-- View Button -->
                                             <a href="{{ route('battery.show', $maintenance->id) }}"
                                                 class="text-blue-600 hover:text-blue-900" title="Lihat Detail">
                                                 <i data-lucide="eye" class="w-5 h-5"></i>
                                             </a>
-
-                                            <!-- Edit Button -->
                                             <a href="{{ route('battery.edit', $maintenance->id) }}"
                                                 class="text-yellow-600 hover:text-yellow-900" title="Edit">
                                                 <i data-lucide="edit" class="w-5 h-5"></i>
                                             </a>
-
-                                            <!-- PDF Button -->
                                             <a href="{{ route('battery.pdf', $maintenance->id) }}"
                                                 class="text-green-600 hover:text-green-900" title="Download PDF" target="_blank">
                                                 <i data-lucide="file-down" class="w-5 h-5"></i>
                                             </a>
-
-                                            <!-- Delete Button -->
                                             <form action="{{ route('battery.destroy', $maintenance->id) }}" method="POST" class="inline"
                                                 onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                                 @csrf
@@ -196,7 +206,7 @@
                     <!-- Mobile Card View -->
                     <div class="md:hidden space-y-4">
                         @foreach($maintenances as $index => $maintenance)
-                        <div class=" border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+                        <div class="border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
                             <!-- Card Header -->
                             <div class="bg-blue-100 px-4 py-3 border-b border-gray-200 rounded-t-lg">
                                 <div class="flex justify-between items-start">
@@ -209,7 +219,13 @@
                                                 {{ $maintenance->readings->count() }} Battery
                                             </span>
                                         </div>
-                                        <h3 class="font-semibold text-gray-900 text-sm">{{ $maintenance->location }}</h3>
+                                        <h3 class="font-semibold text-gray-900 text-sm">
+                                            @if($maintenance->central)
+                                                {{ $maintenance->central->id_sentral }} - {{ $maintenance->central->nama }}
+                                            @else
+                                                ID: {{ $maintenance->location }}
+                                            @endif
+                                        </h3>
                                     </div>
                                 </div>
                             </div>
@@ -235,7 +251,13 @@
                                     </svg>
                                     <div class="flex-1">
                                         <p class="text-xs text-gray-500">Lokasi</p>
-                                        <p class="text-sm font-medium text-gray-900">{{ $maintenance->location }}</p>
+                                        <p class="text-sm font-medium text-gray-900">
+                                            @if($maintenance->central)
+                                                {{ $maintenance->central->id_sentral }} - {{ $maintenance->central->nama }}
+                                            @else
+                                                ID: {{ $maintenance->location }}
+                                            @endif
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -285,153 +307,15 @@
                         @endforeach
                     </div>
 
-                    <!-- Pagination -->
-                    <!-- Custom Pagination -->
-<div class="mt-6">
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
-        <div class="px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <!-- Info Text -->
-            <div class="text-sm text-gray-700 order-2 sm:order-1">
-                Menampilkan
-                <span class="font-semibold text-gray-900">{{ $maintenances->firstItem() ?? 0 }}</span>
-                sampai
-                <span class="font-semibold text-gray-900">{{ $maintenances->lastItem() ?? 0 }}</span>
-                dari
-                <span class="font-semibold text-gray-900">{{ $maintenances->total() }}</span>
-                data
-            </div>
+                    <!-- Pagination (sisanya tetap sama) -->
+                    <div class="mt-6">
+                        {{ $maintenances->links() }}
+                    </div>
 
-            <!-- Pagination Links -->
-            <div class="order-1 sm:order-2">
-                @if ($maintenances->hasPages())
-                <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                    {{-- Previous Page Link --}}
-                    @if ($maintenances->onFirstPage())
-                        <span class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed">
-                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="ml-1 hidden sm:inline">Prev</span>
-                        </span>
                     @else
-                        <a href="{{ $maintenances->appends(request()->query())->previousPageUrl() }}" class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition">
-                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="ml-1 hidden sm:inline">Prev</span>
-                        </a>
-                    @endif
-
-                    {{-- Pagination Elements --}}
-                    @php
-                        $currentPage = $maintenances->currentPage();
-                        $lastPage = $maintenances->lastPage();
-                        $startPage = max(1, $currentPage - 2);
-                        $endPage = min($lastPage, $currentPage + 2);
-                    @endphp
-
-                    {{-- First Page --}}
-                    @if ($startPage > 1)
-                        <a href="{{ $maintenances->appends(request()->query())->url(1) }}" class="hidden sm:inline-flex relative items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition">
-                            1
-                        </a>
-                        @if ($startPage > 2)
-                            <span class="hidden sm:inline-flex relative items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                                ...
-                            </span>
-                        @endif
-                    @endif
-
-                    {{-- Page Numbers --}}
-                    @for ($page = $startPage; $page <= $endPage; $page++)
-                        @if ($page == $currentPage)
-                            <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-600 text-sm font-semibold text-white z-10">
-                                {{ $page }}
-                            </span>
-                        @else
-                            <a href="{{ $maintenances->appends(request()->query())->url($page) }}" class="hidden sm:inline-flex relative items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition">
-                                {{ $page }}
-                            </a>
-                        @endif
-                    @endfor
-
-                    {{-- Last Page --}}
-                    @if ($endPage < $lastPage)
-                        @if ($endPage < $lastPage - 1)
-                            <span class="hidden sm:inline-flex relative items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                                ...
-                            </span>
-                        @endif
-                        <a href="{{ $maintenances->appends(request()->query())->url($lastPage) }}" class="hidden sm:inline-flex relative items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition">
-                            {{ $lastPage }}
-                        </a>
-                    @endif
-
-                    {{-- Current Page Info for Mobile --}}
-                    <span class="sm:hidden relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                        {{ $currentPage }} / {{ $lastPage }}
-                    </span>
-
-                    {{-- Next Page Link --}}
-                    @if ($maintenances->hasMorePages())
-                        <a href="{{ $maintenances->appends(request()->query())->nextPageUrl() }}" class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition">
-                            <span class="mr-1 hidden sm:inline">Next</span>
-                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                        </a>
-                    @else
-                        <span class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed">
-                            <span class="mr-1 hidden sm:inline">Next</span>
-                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                        </span>
-                    @endif
-                </nav>
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
-                    @else
-                    <!-- Empty State -->
-                    <div class="text-center py-8 md:py-12">
-                        <svg class="mx-auto h-10 w-10 md:h-12 md:w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">
-                            @if(request()->hasAny(['location', 'date_from', 'date_to']))
-                            Tidak ada data yang sesuai dengan filter
-                            @else
-                            Belum ada data
-                            @endif
-                        </h3>
-                        <p class="mt-1 text-xs md:text-sm text-gray-500">
-                            @if(request()->hasAny(['location', 'date_from', 'date_to']))
-                            Coba ubah kriteria pencarian Anda.
-                            @else
-                            Mulai dengan menambahkan data battery maintenance baru.
-                            @endif
-                        </p>
-                        <div class="mt-6 flex flex-col sm:flex-row gap-2 justify-center items-center">
-                            @if(request()->hasAny(['location', 'date_from', 'date_to']))
-                            <a href="{{ route('battery.index') }}"
-                                class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                </svg>
-                                Reset Filter
-                            </a>
-                            @endif
-                            <a href="{{ route('battery.create') }}"
-                                class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                </svg>
-                                Tambah Data
-                            </a>
-                        </div>
+                    <!-- Empty State (tetap sama) -->
+                    <div class="text-center py-12">
+                        <p class="text-gray-500">Belum ada data</p>
                     </div>
                     @endif
                 </div>
@@ -440,7 +324,6 @@
     </div>
 
     <script>
-        // Toggle filter visibility
         document.getElementById('toggleFilter').addEventListener('click', function() {
             const filterForm = document.getElementById('filterForm');
             const filterText = document.getElementById('filterText');

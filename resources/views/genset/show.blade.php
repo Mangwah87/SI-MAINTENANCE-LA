@@ -26,13 +26,13 @@
     <div class="py-8">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-                
+
                 {{-- Informasi Dokumen (Tidak Berubah) --}}
                 <div class="mb-6">
                     <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Informasi Dokumen</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="border-l-4 border-blue-500 pl-3 rounded-md"><p class="text-sm text-gray-600">No. Dokumen</p><p class="text-lg font-bold text-blue-700">{{ $maintenance->doc_number }}</p></div>
-                        <div class="border-l-4 border-blue-500 pl-3 rounded-md"><p class="text-sm text-gray-600">Location</p><p class="text-lg text-gray-800">{{ $maintenance->location }}</p></div>
+                        <div class="border-l-4 border-blue-500 pl-3 rounded-md"><p class="text-sm text-gray-600">Location</p><p class="text-lg text-gray-800">{{ $maintenance->central->nama ?? $maintenance->location }}</p></div>
                         <div class="border-l-4 border-blue-500 pl-3 rounded-md"><p class="text-sm text-gray-600">Date / Time</p><p class="text-lg text-gray-800">{{ $maintenance->maintenance_date->format('d F Y, H:i') }}</p></div>
                         <div class="border-l-4 border-blue-500 pl-3 rounded-md"><p class="text-sm text-gray-600">Brand / Type</p><p class="text-lg text-gray-800">{{ $maintenance->brand_type ?? '-' }}</p></div>
                         <div class="border-l-4 border-blue-500 pl-3 rounded-md"><p class="text-sm text-gray-600">Capacity</p><p class="text-lg text-gray-800">{{ $maintenance->capacity ?? '-' }}</p></div>

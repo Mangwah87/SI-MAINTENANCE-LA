@@ -60,9 +60,11 @@
                         <p class="text-xs md:text-sm text-gray-600">No. Dokumen</p>
                         <p class="font-semibold text-sm md:text-base text-blue-700">{{ $maintenance->doc_number }}</p>
                     </div> -->
-                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-2 rounded">
-                        <p class="text-xs md:text-sm text-gray-600">Location</p>
-                        <p class="font-semibold text-sm md:text-base">{{ $maintenance->location }}</p>
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
+                        <p class="text-sm text-gray-600">Location</p>
+                        <p class="text-lg text-gray-800">
+                            {{ $maintenance->central->nama ?? $maintenance->location }}
+                        </p>
                     </div>
                     <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-2 rounded">
                         <p class="text-xs md:text-sm text-gray-600">Date / Time</p>

@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\RectifierMaintenance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
+
 class RectifierMaintenanceController extends Controller
 {
     private $maxImageSizeKB = 1024; // 1MB = 1024KB
@@ -18,32 +20,53 @@ class RectifierMaintenanceController extends Controller
         $this->maxImageSizeBytes = $this->maxImageSizeKB * 1024;
     }
 
-    public function index(Request $request)
-    {
-        $query = RectifierMaintenance::query();
-        $query->where('user_id', auth()->id());
+    // Update method index() di RectifierMaintenanceController
 
-        if ($request->filled('location')) {
-            $query->where('location', 'like', "%{$request->location}%");
-        }
+public function index(Request $request)
+{
+    $query = RectifierMaintenance::query();
+    $query->where('user_id', auth()->id());
 
-        if ($request->filled('date_from')) {
-            $query->whereDate('date_time', '>=', $request->date_from);
-        }
-
-        if ($request->filled('date_to')) {
-            $query->whereDate('date_time', '<=', $request->date_to);
-        }
-
-        $query->orderBy('date_time', 'desc');
-        $maintenances = $query->paginate(15);
-
-        return view('rectifier.index', compact('maintenances'));
+    if ($request->filled('location')) {
+        $query->where('location', $request->location);
     }
+
+    if ($request->filled('date_from')) {
+        $query->whereDate('date_time', '>=', $request->date_from);
+    }
+
+    if ($request->filled('date_to')) {
+        $query->whereDate('date_time', '<=', $request->date_to);
+    }
+
+    $query->orderBy('date_time', 'desc');
+
+    // Load relasi 'central' saja, TIDAK ADA 'readings'
+    $maintenances = $query->with('central')->paginate(15);
+
+    // Ambil data central untuk filter
+    $centrals = DB::table('central')
+        ->orderBy('area')
+        ->orderBy('nama')
+        ->get();
+
+    $centralsByArea = $centrals->groupBy('area');
+
+    return view('rectifier.index', compact('maintenances', 'centralsByArea'));
+}
 
     public function create()
     {
-        return view('rectifier.form');
+        // Ambil data central dari database
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        // Group by area untuk tampilan yang lebih rapi
+        $centralsByArea = $centrals->groupBy('area');
+
+        return view('rectifier.form', compact('centralsByArea'));
     }
 
     public function store(Request $request)
@@ -90,7 +113,6 @@ class RectifierMaintenanceController extends Controller
             'department' => 'nullable|string|max:255',
             'supervisor' => 'required|string|max:255',
             'supervisor_id_number' => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
             'sub_department' => 'nullable|string|max:255',
         ]);
 
@@ -105,13 +127,15 @@ class RectifierMaintenanceController extends Controller
     }
 
     public function show($id)
-    {
-        $maintenance = RectifierMaintenance::where('id', $id)
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
+{
+    $maintenance = RectifierMaintenance::with('central') // Load relasi central
+        ->where('id', $id)
+        ->where('user_id', auth()->id())
+        ->firstOrFail();
 
-        return view('rectifier.show', compact('maintenance'));
-    }
+    return view('rectifier.show', compact('maintenance'));
+}
+
 
     public function edit($id)
     {
@@ -119,7 +143,15 @@ class RectifierMaintenanceController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        return view('rectifier.form', compact('maintenance'));
+        // Ambil data central untuk dropdown
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+
+        return view('rectifier.form', compact('maintenance', 'centralsByArea'));
     }
 
     public function update(Request $request, $id)
@@ -170,7 +202,6 @@ class RectifierMaintenanceController extends Controller
             'department' => 'nullable|string|max:255',
             'supervisor' => 'required|string|max:255',
             'supervisor_id_number' => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
             'sub_department' => 'nullable|string|max:255',
             'deleted_images' => 'nullable|json',
         ]);

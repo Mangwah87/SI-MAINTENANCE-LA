@@ -282,7 +282,7 @@
         <table class="info-table" style="margin-top: 5px;">
             <tr>
                 <td width="20%"><strong>Location</strong></td>
-                <td width="80%">: {{ $maintenance->location }}</td>
+                <td width="35%">: {{ $maintenance->central->nama ?? $maintenance->location }}</td>
             </tr>
             <tr>
                 <td><strong>Date / Time</strong></td>

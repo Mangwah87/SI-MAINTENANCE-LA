@@ -30,9 +30,25 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
-                                <input type="text" name="location" value="{{ old('location') }}" required
-                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2  focus:border-transparent"
-                                    placeholder="Contoh: DPSTKU (Teuku Umar)">
+                                <select name="location" id="location-select" required
+                                    class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent">
+                                    <option value="">-- Pilih Location --</option>
+                                    @foreach($centralsByArea as $area => $centrals)
+                                        <optgroup label="AREA {{ $area }}">
+                                            @foreach($centrals as $central)
+                                                <!-- VALUE = ID dari tabel central (1, 2, 3, dst) -->
+                                                <option value="{{ $central->id }}"
+                                                    {{ old('location') == $central->id ? 'selected' : '' }}>
+                                                    {{ $central->id_sentral }} - {{ $central->nama }}
+                                                </option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endforeach
+                                </select>
+                                <p class="mt-1 text-xs text-gray-600">Pilih lokasi central dari daftar</p>
+                                @error('location')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div>

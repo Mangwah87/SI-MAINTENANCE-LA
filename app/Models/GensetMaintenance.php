@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class GensetMaintenance extends Model
 {
     use HasFactory;
-    
+
     /**
      * The attributes that aren't mass assignable.
      *
@@ -29,4 +29,15 @@ class GensetMaintenance extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function central()
+{
+    return $this->belongsTo(Central::class, 'location', 'id');
+}
+
+public function getLocationNameAttribute()
+{
+    return $this->central
+        ? "{$this->central->id_sentral} - {$this->central->nama}"
+        : 'Unknown Location';
+}
 }
