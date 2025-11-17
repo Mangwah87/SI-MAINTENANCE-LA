@@ -15,7 +15,7 @@ class UpsMaintenanceController extends Controller
      */
     public function index()
     {
-        $maintenances = UpsMaintenance::with('user')
+        $maintenances = UpsMaintenance::with(['user', 'central'])
             ->where('user_id', auth()->id())
             ->latest('date_time')
             ->paginate(10);
@@ -27,7 +27,8 @@ class UpsMaintenanceController extends Controller
      */
     public function create()
     {
-        return view('ups3.upsform');
+        $centrals = \App\Models\Central::orderBy('area')->orderBy('id_sentral')->get();
+        return view('ups3.upsform', compact('centrals'));
     }
 
     /**
@@ -36,7 +37,7 @@ class UpsMaintenanceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'location' => 'required|string|max:255',
+            'central_id' => 'required|exists:central,id',
             'date_time' => 'required|date',
             'brand_type' => 'required|string|max:255',
             'capacity' => 'required|string|max:255',
@@ -87,6 +88,7 @@ class UpsMaintenanceController extends Controller
 
             'executor_1' => 'required|string|max:255',
             'executor_2' => 'nullable|string|max:255',
+            'executor_3' => 'nullable|string|max:255',
             'supervisor' => 'required|string|max:255',
             'supervisor_id_number' => 'nullable|string|max:255',
 
@@ -140,6 +142,7 @@ class UpsMaintenanceController extends Controller
      */
     public function show(UpsMaintenance $upsMaintenance)
     {
+        $upsMaintenance->load('central');
         return view('ups3.upsdetail', ['maintenance' => $upsMaintenance]);
     }
 
@@ -148,7 +151,8 @@ class UpsMaintenanceController extends Controller
      */
     public function edit(UpsMaintenance $upsMaintenance)
     {
-        return view('ups3.upsform', ['maintenance' => $upsMaintenance]);
+        $centrals = \App\Models\Central::orderBy('area')->orderBy('id_sentral')->get();
+        return view('ups3.upsform', ['maintenance' => $upsMaintenance, 'centrals' => $centrals]);
     }
 
     /**
@@ -157,7 +161,7 @@ class UpsMaintenanceController extends Controller
     public function update(Request $request, UpsMaintenance $upsMaintenance)
     {
         $validated = $request->validate([
-            'location' => 'required|string|max:255',
+            'central_id' => 'required|exists:central,id',
             'date_time' => 'required|date',
             'brand_type' => 'required|string|max:255',
             'capacity' => 'required|string|max:255',
@@ -208,6 +212,7 @@ class UpsMaintenanceController extends Controller
 
             'executor_1' => 'required|string|max:255',
             'executor_2' => 'nullable|string|max:255',
+            'executor_3' => 'nullable|string|max:255',
             'supervisor' => 'required|string|max:255',
             'supervisor_id_number' => 'nullable|string|max:255',
 
@@ -357,6 +362,7 @@ class UpsMaintenanceController extends Controller
      */
     public function print(UpsMaintenance $upsMaintenance)
     {
+        $upsMaintenance->load('central');
         $maintenance = $upsMaintenance;
         $pdf = PDF::loadView('ups3.upsdetail_pdf', compact('maintenance'));
         return $pdf->stream('preventive_maintenance_ups_'.$maintenance->id.'.pdf');

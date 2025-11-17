@@ -13,7 +13,7 @@ class UpsMaintenance extends Model
         'user_id',
 
         // Informasi Lokasi dan Perangkat
-        'location',
+        'central_id',
         'date_time',
         'brand_type',
         'capacity',
@@ -176,5 +176,13 @@ class UpsMaintenance extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the central location.
+     */
+    public function central()
+    {
+        return $this->belongsTo(Central::class);
     }
 }
