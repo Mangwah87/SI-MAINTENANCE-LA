@@ -53,6 +53,7 @@
                         <form method="GET" action="{{ route('rectifier.index') }}" id="filterForm" style="display: none;">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
                                 <!-- Location -->
+                               <!-- Location Filter -->
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">
                                         <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,11 +62,20 @@
                                         </svg>
                                         Lokasi
                                     </label>
-                                    <input type="text"
-                                        name="location"
-                                        value="{{ request('location') }}"
-                                        placeholder="Cari berdasarkan lokasi..."
+                                    <select name="location" id="location-filter"
                                         class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">-- Semua Lokasi --</option>
+                                        @foreach($centralsByArea as $area => $centrals)
+                                            <optgroup label="AREA {{ $area }}">
+                                                @foreach($centrals as $central)
+                                                    <option value="{{ $central->id_sentral }} ({{ $central->nama }})"
+                                                        {{ request('location') == $central->id_sentral . ' (' . $central->nama . ')' ? 'selected' : '' }}>
+                                                        {{ $central->id_sentral }} - {{ $central->nama }}
+                                                    </option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endforeach
+                                    </select>
                                 </div>
 
                                 <!-- Date From -->

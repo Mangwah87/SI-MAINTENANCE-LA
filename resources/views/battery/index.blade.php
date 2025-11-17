@@ -52,21 +52,30 @@
     <form method="GET" action="{{ route('battery.index') }}" id="filterForm" style="display: none;">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
             <!-- Location -->
-            <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">
-                    <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                    Lokasi
-                </label>
-                <input type="text"
-                    name="location"
-                    value="{{ request('location') }}"
-                    placeholder="Cari berdasarkan lokasi..."
-                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-
+            <!-- Location Filter -->
+<div>
+    <label class="block text-xs font-medium text-gray-700 mb-1">
+        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        Lokasi
+    </label>
+    <select name="location" id="location-filter"
+        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="">-- Semua Lokasi --</option>
+        @foreach($centralsByArea as $area => $centrals)
+            <optgroup label="AREA {{ $area }}">
+                @foreach($centrals as $central)
+                    <option value="{{ $central->id_sentral }} ({{ $central->nama }})"
+                        {{ request('location') == $central->id_sentral . ' (' . $central->nama . ')' ? 'selected' : '' }}>
+                        {{ $central->id_sentral }} - {{ $central->nama }}
+                    </option>
+                @endforeach
+            </optgroup>
+        @endforeach
+    </select>
+</div>
             <!-- Date From -->
             <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">

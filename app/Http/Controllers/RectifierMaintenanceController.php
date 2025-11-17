@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\RectifierMaintenance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
+
 class RectifierMaintenanceController extends Controller
 {
     private $maxImageSizeKB = 1024; // 1MB = 1024KB
@@ -38,12 +40,29 @@ class RectifierMaintenanceController extends Controller
         $query->orderBy('date_time', 'desc');
         $maintenances = $query->paginate(15);
 
-        return view('rectifier.index', compact('maintenances'));
+        // Ambil data central untuk filter
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+
+        return view('rectifier.index', compact('maintenances', 'centralsByArea'));
     }
 
     public function create()
     {
-        return view('rectifier.form');
+        // Ambil data central dari database
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        // Group by area untuk tampilan yang lebih rapi
+        $centralsByArea = $centrals->groupBy('area');
+
+        return view('rectifier.form', compact('centralsByArea'));
     }
 
     public function store(Request $request)
@@ -90,7 +109,6 @@ class RectifierMaintenanceController extends Controller
             'department' => 'nullable|string|max:255',
             'supervisor' => 'required|string|max:255',
             'supervisor_id_number' => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
             'sub_department' => 'nullable|string|max:255',
         ]);
 
@@ -119,7 +137,15 @@ class RectifierMaintenanceController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        return view('rectifier.form', compact('maintenance'));
+        // Ambil data central untuk dropdown
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+
+        return view('rectifier.form', compact('maintenance', 'centralsByArea'));
     }
 
     public function update(Request $request, $id)
@@ -170,7 +196,6 @@ class RectifierMaintenanceController extends Controller
             'department' => 'nullable|string|max:255',
             'supervisor' => 'required|string|max:255',
             'supervisor_id_number' => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
             'sub_department' => 'nullable|string|max:255',
             'deleted_images' => 'nullable|json',
         ]);
