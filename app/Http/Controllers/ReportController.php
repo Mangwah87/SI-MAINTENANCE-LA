@@ -379,20 +379,35 @@ class ReportController extends Controller
                 ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('date', '=', $dateFrom))
                 ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('date', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('date', '<=', $dateTo))
-                ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
+                ->when($location, function ($q) use ($location) {
+                    $q->where(function ($query) use ($location) {
+                        $query->where('location', 'like', "%$location%")
+                            ->orWhereHas('central', function ($q) use ($location) {
+                                $q->where('nama', 'like', "%$location%")
+                                    ->orWhere('area', 'like', "%$location%")
+                                    ->orWhere('id_sentral', 'like', "%$location%");
+                            });
+                    });
+                })
                 ->get()
                 ->map(function ($item) {
                     $executorNama = '-';
                     if (is_array($item->executors) && count($item->executors) > 0) {
                         $executorNama = $item->executors[0]['name'] ?? '-';
                     }
+                    $lokasi = '-';
+
+                    if ($item->central) {
+                        $lokasi = $item->central->id_sentral . " - " . $item->central->nama;
+                    }
+
 
                     return [
                         'id' => $item->id,
                         'type' => 'Preventive Maintenance Ruang Shelter',
                         'icon' => 'house',
                         'tanggal' => $item->date,
-                        'lokasi' => $item->location ?? '-',
+                        'lokasi' => $lokasi,
                         'teknisi' => $executorNama,
                         'status' => 'Completed',
                         'created_by' => $item->user->name ?? '-',

@@ -72,7 +72,14 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Lokasi</p>
-                        <p class="font-semibold">{{ $pmShelter->location ?? '-' }}</p>
+                        @if ($pmShelter->central)
+                            <p class="font-semibold"> {{ $pmShelter->central->nama }} -
+                                {{ $pmShelter->central->area }} - ({{ $pmShelter->central->id_sentral }})
+                            </p>
+                            <p class="text-xs text-gray-500 mt-1"></p>
+                        @else
+                            <p class="font-semibold">{{ $pmShelter->location ?? '-' }}</p>
+                        @endif
                     </div>
                     <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Tanggal</p>
