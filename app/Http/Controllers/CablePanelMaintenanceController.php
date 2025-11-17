@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CablePanelMaintenance; // Menggunakan model yang baru
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -29,7 +30,14 @@ class CablePanelMaintenanceController extends Controller
      */
     public function create()
     {
-        return view('cable-panel.create'); // Path view baru
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        // Group by area untuk tampilan yang lebih rapi
+        $centralsByArea = $centrals->groupBy('area');
+        return view('cable-panel.create',compact('centralsByArea')); // Path view baru
     }
 
     /**
@@ -96,7 +104,13 @@ class CablePanelMaintenanceController extends Controller
     {
         $maintenance = CablePanelMaintenance::where('user_id', auth()->id())
                                                ->findOrFail($id);
-        return view('cable-panel.edit', compact('maintenance')); // Path view baru
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+        return view('cable-panel.edit', compact('maintenance','centralsByArea')); // Path view baru
     }
 
     /**

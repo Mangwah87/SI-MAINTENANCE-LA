@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PmShelter extends Model
+class PMShelter extends Model
 {
     use HasFactory;
 
+    protected $table = 'pm_shelters';
     protected $fillable = [
         'user_id',
-        'central_id', 
+        'central_id',
         'location',
         'date',
         'time',

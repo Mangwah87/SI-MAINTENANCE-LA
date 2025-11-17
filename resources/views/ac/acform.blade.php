@@ -112,13 +112,22 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                 <div class="sm:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Location <span class="text-red-500">*</span>
+                                        Lokasi Sentral <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="location"
-                                        value="{{ old('location', safeGetValue($maintenance ?? null, 'location')) }}"
-                                        placeholder="DPSTKU (LA Teuku Umar)"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
-                                    @error('location') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                    <select name="central_id" id="central_id"
+                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                                           required>
+                                        <option value="">-- Pilih Lokasi Sentral --</option>
+                                        @foreach($centrals as $central)
+                                            <option value="{{ $central->id }}"
+                                                    {{ old('central_id', isset($maintenance) ? $maintenance->central_id : '') == $central->id ? 'selected' : '' }}
+                                                    data-area="{{ $central->area }}"
+                                                    data-id-sentral="{{ $central->id_sentral }}">
+                                                {{ $central->nama }} - {{ $central->area }} ({{ $central->id_sentral }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('central_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
                                 <div>

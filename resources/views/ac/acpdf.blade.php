@@ -238,8 +238,14 @@
     {{-- Info Table --}}
         <table class="info-table" style="margin-top: 3px;">
             <tr>
-                <td width="18%" style="font-size: 9pt;">Location</td>
-                <td width="32%" style="font-size: 9pt;">: {{ $maintenance->location }}</td>
+                <td width="18%" style="font-size: 9pt;">Lokasi Sentral</td>
+                <td width="32%" style="font-size: 9pt;">
+                    : @if($maintenance->central)
+                        {{ $maintenance->central->nama }} - {{ $maintenance->central->area }} ({{ $maintenance->central->id_sentral }})
+                    @else
+                        -
+                    @endif
+                </td>
                 <td width="18%" style="font-size: 9pt;">Reg. Number</td>
                 <td width="32%" style="font-size: 9pt;">: {{ $maintenance->reg_number ?? '-' }}</td>
             </tr>

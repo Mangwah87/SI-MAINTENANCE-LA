@@ -153,19 +153,30 @@ class ReportController extends Controller
 
         // 4. UPS 1 Phase Maintenance
         if ($formType == 'all' || $formType == 'ups1') {
-            $ups1 = UpsMaintenance1::with('user')
+            $ups1 = UpsMaintenance1::with(['user', 'central'])
                 ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('date_time', '=', $dateFrom))
                 ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('date_time', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('date_time', '<=', $dateTo))
-                ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
+                ->when($location, function ($q) use ($location) {
+                    $q->whereHas('central', function ($query) use ($location) {
+                        $query->where('nama', 'like', "%$location%")
+                            ->orWhere('area', 'like', "%$location%")
+                            ->orWhere('id_sentral', 'like', "%$location%");
+                    });
+                })
                 ->get()
                 ->map(function ($item) {
+                    $lokasi = '-';
+                    if ($item->central) {
+                        $lokasi = $item->central->nama . ' - ' . $item->central->area . ' (' . $item->central->id_sentral . ')';
+                    }
+
                     return [
                         'id' => $item->id,
                         'type' => 'Maintenance 1 Phase UPS',
                         'icon' => 'pc-case',
                         'tanggal' => $item->date_time,
-                        'lokasi' => $item->location ?? '-',
+                        'lokasi' => $lokasi,
                         'teknisi' => $item->executor_1 ?? '-',
                         'status' => $item->overall_status ?? 'Completed',
                         'created_by' => $item->user->name ?? '-',
@@ -179,19 +190,30 @@ class ReportController extends Controller
 
         // 5. UPS 3 Phase Maintenance
         if ($formType == 'all' || $formType == 'ups3') {
-            $ups3 = UpsMaintenance::with('user')
+            $ups3 = UpsMaintenance::with(['user', 'central'])
                 ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('date_time', '=', $dateFrom))
                 ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('date_time', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('date_time', '<=', $dateTo))
-                ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
+                ->when($location, function ($q) use ($location) {
+                    $q->whereHas('central', function ($query) use ($location) {
+                        $query->where('nama', 'like', "%$location%")
+                            ->orWhere('area', 'like', "%$location%")
+                            ->orWhere('id_sentral', 'like', "%$location%");
+                    });
+                })
                 ->get()
                 ->map(function ($item) {
+                    $lokasi = '-';
+                    if ($item->central) {
+                        $lokasi = $item->central->nama . ' - ' . $item->central->area . ' (' . $item->central->id_sentral . ')';
+                    }
+
                     return [
                         'id' => $item->id,
                         'type' => 'Maintenance 3 Phase UPS',
                         'icon' => 'cpu',
                         'tanggal' => $item->date_time,
-                        'lokasi' => $item->location ?? '-',
+                        'lokasi' => $lokasi,
                         'teknisi' => $item->executor_1 ?? '-',
                         'status' => $item->overall_status ?? 'Completed',
                         'created_by' => $item->user->name ?? '-',
@@ -205,19 +227,30 @@ class ReportController extends Controller
 
         // 6. AC Maintenance
         if ($formType == 'all' || $formType == 'ac') {
-            $acs = AcMaintenance::with('user')
+            $acs = AcMaintenance::with(['user', 'central'])
                 ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('date_time', '=', $dateFrom))
                 ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('date_time', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('date_time', '<=', $dateTo))
-                ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
+                ->when($location, function ($q) use ($location) {
+                    $q->whereHas('central', function ($query) use ($location) {
+                        $query->where('nama', 'like', "%$location%")
+                            ->orWhere('area', 'like', "%$location%")
+                            ->orWhere('id_sentral', 'like', "%$location%");
+                    });
+                })
                 ->get()
                 ->map(function ($item) {
+                    $lokasi = '-';
+                    if ($item->central) {
+                        $lokasi = $item->central->nama . ' - ' . $item->central->area . ' (' . $item->central->id_sentral . ')';
+                    }
+
                     return [
                         'id' => $item->id,
                         'type' => 'Maintenance AC',
                         'icon' => 'air-vent',
                         'tanggal' => $item->date_time,
-                        'lokasi' => $item->location ?? '-',
+                        'lokasi' => $lokasi,
                         'teknisi' => $item->executor_1 ?? '-',
                         'status' => 'Completed',
                         'created_by' => $item->user->name ?? '-',
@@ -379,20 +412,35 @@ class ReportController extends Controller
                 ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('date', '=', $dateFrom))
                 ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('date', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('date', '<=', $dateTo))
-                ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
+                ->when($location, function ($q) use ($location) {
+                    $q->where(function ($query) use ($location) {
+                        $query->where('location', 'like', "%$location%")
+                            ->orWhereHas('central', function ($q) use ($location) {
+                                $q->where('nama', 'like', "%$location%")
+                                    ->orWhere('area', 'like', "%$location%")
+                                    ->orWhere('id_sentral', 'like', "%$location%");
+                            });
+                    });
+                })
                 ->get()
                 ->map(function ($item) {
                     $executorNama = '-';
                     if (is_array($item->executors) && count($item->executors) > 0) {
                         $executorNama = $item->executors[0]['name'] ?? '-';
                     }
+                    $lokasi = '-';
+
+                    if ($item->central) {
+                        $lokasi = $item->central->id_sentral . " - " . $item->central->nama;
+                    }
+
 
                     return [
                         'id' => $item->id,
                         'type' => 'Preventive Maintenance Ruang Shelter',
                         'icon' => 'house',
                         'tanggal' => $item->date,
-                        'lokasi' => $item->location ?? '-',
+                        'lokasi' => $lokasi,
                         'teknisi' => $executorNama,
                         'status' => 'Completed',
                         'created_by' => $item->user->name ?? '-',

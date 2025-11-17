@@ -15,7 +15,7 @@ class AcMaintenanceConrtoller extends Controller
      */
     public function index()
     {
-        $maintenances = AcMaintenance::with('user')
+        $maintenances = AcMaintenance::with(['user', 'central'])
             ->where('user_id', auth()->id())
             ->latest('date_time')
             ->paginate(10);
@@ -36,7 +36,8 @@ class AcMaintenanceConrtoller extends Controller
      */
     public function create()
     {
-        return view('ac.acform');
+        $centrals = \App\Models\Central::orderBy('area')->orderBy('id_sentral')->get();
+        return view('ac.acform', compact('centrals'));
     }
 
     /**
@@ -115,7 +116,7 @@ class AcMaintenanceConrtoller extends Controller
      */
     public function show($id)
     {
-        $maintenance = AcMaintenance::findOrFail($id);
+        $maintenance = AcMaintenance::with('central')->findOrFail($id);
         return view('ac.acdetail', compact('maintenance'));
     }
 
@@ -125,7 +126,8 @@ class AcMaintenanceConrtoller extends Controller
     public function edit($id)
     {
         $maintenance = AcMaintenance::findOrFail($id);
-        return view('ac.acform', compact('maintenance'));
+        $centrals = \App\Models\Central::orderBy('area')->orderBy('id_sentral')->get();
+        return view('ac.acform', compact('maintenance', 'centrals'));
     }
 
     /**
@@ -342,7 +344,7 @@ class AcMaintenanceConrtoller extends Controller
 
         $rules = [
             // Informasi Lokasi dan Perangkat
-            'location' => 'required|string|max:255',
+            'central_id' => 'required|exists:central,id',
             'date_time' => 'required|date',
             'brand_type' => 'required|string|max:255',
             'capacity' => 'required|string|max:255',
@@ -461,7 +463,7 @@ class AcMaintenanceConrtoller extends Controller
      */
     public function print($id)
     {
-        $maintenance = AcMaintenance::findOrFail($id);
+        $maintenance = AcMaintenance::with('central')->findOrFail($id);
         $pdf = PDF::loadView('ac.acpdf', compact('maintenance'));
         return $pdf->stream('preventive_maintenance_ac_'.$maintenance->id.'.pdf');
     }

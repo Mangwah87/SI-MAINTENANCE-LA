@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PmShelter;
+use App\Models\PMShelter;
 use App\Models\Central;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -12,7 +12,7 @@ class PmShelterController extends Controller
 {
     public function index(Request $request)
     {
-        $query = PmShelter::with(['user', 'central'])->where('user_id', auth()->id());
+        $query = PMShelter::with(['user', 'central'])->where('user_id', auth()->id());
 
         // Search 
         if ($request->filled('search')) {
@@ -102,9 +102,7 @@ class PmShelterController extends Controller
 
             $validated['user_id'] = auth()->id();
 
-            // Ambil nama sentral untuk disimpan di location (opsional)
-            $central = Central::find($validated['central_id']);
-            $validated['location'] = $central->nama . ' - ' . $central->area;
+
 
             $executors = [];
             if ($request->has('executors')) {
@@ -196,9 +194,7 @@ class PmShelterController extends Controller
                 'central_id.exists' => 'Lokasi sentral tidak valid.',
             ]);
 
-            // Update location berdasarkan central yang dipilih
-            $central = Central::find($validated['central_id']);
-            $validated['location'] = $central->nama . ' - ' . $central->area;
+
 
             $executors = [];
             if ($request->has('executors')) {
@@ -284,10 +280,14 @@ class PmShelterController extends Controller
             ->setPaper('a4', 'portrait');
 
         $pdf->getDomPDF()->set_option('enable_php', true);
-        $fileName = 'PM Shelter-FM-LAP-D2-SOP-003-009-' . $pmShelter->date->format('d-m-Y') . '.pdf';
+
+        $centralId = $pmShelter->central->id_sentral ?? '-';
+        $date = $pmShelter->date->format('d-m-Y');
+        $fileName = "PM Shelter-FM-LAP-D2-SOP-003-009-{$date}-{$centralId}.pdf";
 
         return $pdf->stream($fileName);
     }
+
 
     private function processAllPhotos(Request $request): array
     {

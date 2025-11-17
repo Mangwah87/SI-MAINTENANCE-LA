@@ -18,7 +18,8 @@ return new class extends Migration
             $table->json('images')->nullable();
 
             // Informasi Lokasi dan Perangkat
-            $table->string('location');
+            $table->unsignedBigInteger('central_id')->nullable();
+            $table->foreign('central_id')->references('id')->on('central')->onDelete('set null');
             $table->dateTime('date_time');
             $table->string('brand_type');
             $table->string('capacity');
