@@ -75,7 +75,14 @@ class InverterController extends Controller
      */
     public function create()
     {
-        return view('inverter.create');
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        // Group by area untuk tampilan yang lebih rapi
+        $centralsByArea = $centrals->groupBy('area');
+        return view('inverter.create', compact('centralsByArea'));
     }
 
     /**
@@ -246,7 +253,14 @@ class InverterController extends Controller
             $inverter->pengawas = [];
         }
 
-        return view('inverter.edit', compact('inverter'));
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        // Group by area untuk tampilan yang lebih rapi
+        $centralsByArea = $centrals->groupBy('area');
+        return view('inverter.edit', compact('inverter', 'centralsByArea'));
     }
 
     /**

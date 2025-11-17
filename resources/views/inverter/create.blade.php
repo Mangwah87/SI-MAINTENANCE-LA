@@ -33,10 +33,33 @@
                                            class="mt-1 block w-full text-sm bg-gray-100 border-gray-300 rounded-md shadow-sm px-3 py-2">
                                 </div>
                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Location <span class="text-red-500">*</span></label>
-                                    <input type="text" name="lokasi" value="{{ old('lokasi') }}" required
-                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2" placeholder="Masukkan lokasi">
-                                </div>
+                                <label for="lokasi" class="block text-sm font-medium text-gray-700">Lokasi</label>
+                                <div>
+                            
+                            <select name="lokasi"
+                                class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <option value="">-- Pilih Lokasi --</option>
+                                @if(isset($centralsByArea))
+                                    @foreach($centralsByArea as $area => $centrals)
+                                        <optgroup label="{{ $area }}">
+                                            @foreach($centrals as $central)
+                                                {{-- Value disamakan dengan format Genset: ID (Nama) --}}
+                                                <option value="{{ $central->id_sentral }} ({{ $central->nama }})"
+                                                    {{ old('location') == $central->id_sentral . ' (' . $central->nama . ')' ? 'selected' : '' }}>
+                                                    {{ $central->id_sentral }} - {{ $central->nama }}
+                                                </option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endforeach
+                                @else
+                                    <option value="" disabled>Data Central tidak ditemukan (Cek Controller)</option>
+                                @endif
+                            </select>
+                            @error('location')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                            </div>
                                 <div>
     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Date <span class="text-red-500">*</span></label>
     <input type="date" name="tanggal_dokumentasi_date" id="tanggal_dokumentasi_date" value="{{ old('tanggal_dokumentasi_date', date('Y-m-d')) }}" required

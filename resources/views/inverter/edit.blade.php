@@ -45,11 +45,33 @@
                                            class="mt-1 block w-full text-sm bg-gray-100 border-gray-300 rounded-md shadow-sm px-3 py-2">
                                 </div>
                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Location <span class="text-red-500">*</span></label>
-                                    <input type="text" name="lokasi" value="{{ old('lokasi', $inverter->lokasi) }}" required
-                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
-                                           placeholder="Masukkan lokasi">
-                                </div>
+                            <label for="lokasi" class="block text-sm font-medium text-gray-700 mb-1">Lokasi</label>
+                            <select name="lokasi" id="location-select-edit" required
+                                class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">-- Pilih Location --</option>
+                                @foreach($centralsByArea as $area => $centrals)
+                                    <optgroup label="AREA {{ $area }}">
+                                        @foreach($centrals as $central)
+                                            @php
+                                                $valueString = $central->id_sentral . ' (' . $central->nama . ')';
+                                            @endphp
+
+                                            <option value="{{ $valueString }}"
+                                                {{-- 
+                                                    PERBAIKAN: 
+                                                    Variabel diubah dari $dokumentasi->lokasi menjadi $inverter->lokasi
+                                                --}}
+                                                {{ old('lokasi', $inverter->lokasi) == $valueString ? 'selected' : '' }}>
+                                                
+                                                {{-- Tampilan di layar --}}
+                                                {{ $central->id_sentral }} - {{ $central->nama }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-gray-600">Pilih lokasi central dari daftar</p>
+                        </div>
                                 <div>
                                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Date / Time <span class="text-red-500">*</span></label>
                                     <input type="datetime-local" name="tanggal_dokumentasi" 
