@@ -104,7 +104,13 @@ class CablePanelMaintenanceController extends Controller
     {
         $maintenance = CablePanelMaintenance::where('user_id', auth()->id())
                                                ->findOrFail($id);
-        return view('cable-panel.edit', compact('maintenance')); // Path view baru
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+        return view('cable-panel.edit', compact('maintenance','centralsByArea')); // Path view baru
     }
 
     /**

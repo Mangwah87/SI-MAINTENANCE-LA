@@ -20,15 +20,9 @@ class GensetController extends Controller
             ->latest('maintenance_date')
             ->paginate(10);
 
-        // Ambil data central untuk filter
-        $centrals = DB::table('central')
-            ->orderBy('area')
-            ->orderBy('nama')
-            ->get();
+       
 
-        $centralsByArea = $centrals->groupBy('area');
-
-        return view('genset.index', compact('maintenances', 'centralsByArea'));
+        return view('genset.index', compact('maintenances'));
     }
 
     public function create()

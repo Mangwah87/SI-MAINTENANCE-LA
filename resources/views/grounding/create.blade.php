@@ -52,7 +52,7 @@
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
                             <select name="location" required
                                 class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
-                                <option value="">-- Pilih Location --</option>
+                                <option value="">-- Pilih Lokasi --</option>
                                 @if(isset($centralsByArea))
                                     @foreach($centralsByArea as $area => $centrals)
                                         <optgroup label="{{ $area }}">

@@ -105,7 +105,14 @@ class GroundingController extends Controller
     {
         $maintenance = GroundingMaintenance::where('user_id', auth()->id())
                                                ->findOrFail($id);
-        return view('grounding.edit', compact('maintenance')); // View path: grounding.edit
+        // Ambil data central untuk dropdown
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+        return view('grounding.edit', compact('maintenance','centralsByArea')); // View path: grounding.edit
     }
 
     /**
