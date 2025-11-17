@@ -9,6 +9,7 @@ class PMShelter extends Model
 {
     use HasFactory;
 
+    protected $table = 'pm_shelters';
     protected $fillable = [
         'user_id',
         'central_id',
