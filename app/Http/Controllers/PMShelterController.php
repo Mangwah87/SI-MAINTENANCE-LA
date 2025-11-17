@@ -12,7 +12,7 @@ class PmShelterController extends Controller
 {
     public function index(Request $request)
     {
-        $query = PmShelter::with(['user', 'central'])->where('user_id', auth()->id());
+        $query = PMShelter::with(['user', 'central'])->where('user_id', auth()->id());
 
         // Search 
         if ($request->filled('search')) {
