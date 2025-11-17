@@ -481,10 +481,18 @@
       canvas.height = video.videoHeight;
 
       const ctx = canvas.getContext('2d');
-      ctx.save();
-      ctx.scale(-1, 1);
-      ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-      ctx.restore();
+
+      // Draw video (mirror only for front camera)
+      if (currentFacingMode === 'user') {
+        // Front camera - apply mirror
+        ctx.save();
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+        ctx.restore();
+      } else {
+        // Back camera - no mirror
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      }
 
       addWatermarkToCanvas(ctx, canvas.width, canvas.height);
 
