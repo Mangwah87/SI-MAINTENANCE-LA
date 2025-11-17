@@ -44,9 +44,11 @@
             <div class="mb-6">
                 <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Informasi Lokasi dan Perangkat</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-2 rounded">
-                        <p class="text-xs md:text-sm text-gray-600">Location</p>
-                        <p class="font-semibold text-sm md:text-base">{{ $maintenance->location }}</p>
+                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
+                        <p class="text-sm text-gray-600">Location</p>
+                        <p class="text-lg text-gray-800">
+                            {{ $maintenance->central->nama ?? $maintenance->location }}
+                        </p>
                     </div>
                     <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-2 rounded">
                         <p class="text-xs md:text-sm text-gray-600">Date / Time</p>

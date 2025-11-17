@@ -54,7 +54,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
                                 <!-- Location -->
                                <!-- Location Filter -->
-                                <div>
+                               <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">
                                         <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
@@ -68,8 +68,9 @@
                                         @foreach($centralsByArea as $area => $centrals)
                                             <optgroup label="AREA {{ $area }}">
                                                 @foreach($centrals as $central)
-                                                    <option value="{{ $central->id_sentral }} ({{ $central->nama }})"
-                                                        {{ request('location') == $central->id_sentral . ' (' . $central->nama . ')' ? 'selected' : '' }}>
+                                                    <!-- VALUE = ID dari tabel central -->
+                                                    <option value="{{ $central->id }}"
+                                                        {{ request('location') == $central->id ? 'selected' : '' }}>
                                                         {{ $central->id_sentral }} - {{ $central->nama }}
                                                     </option>
                                                 @endforeach
@@ -160,10 +161,15 @@
                                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                                         {{ \Carbon\Carbon::parse($maintenance->date_time)->format('d/m/Y H:i') }}
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-gray-900">
-                                        <div class="font-medium">{{ $maintenance->location }}</div>
-                                        @if($maintenance->reg_number)
-                                        <div class="text-xs text-gray-500">Reg: {{ $maintenance->reg_number }}</div>
+                                    <td class="px-6 py-4 text-sm text-gray-900">
+                                        @if($maintenance->central)
+                                            <div>
+                                                <span class="font-semibold">{{ $maintenance->central->id_sentral }}</span>
+                                                <span class="text-gray-600">- {{ $maintenance->central->nama }}</span>
+                                            </div>
+                                            <!-- <span class="text-xs text-gray-500">{{ $maintenance->central->area }}</span> -->
+                                        @else
+                                            <span class="text-red-500">ID: {{ $maintenance->location }}</span>
                                         @endif
                                     </td>
                                     <td class="px-4 py-3 text-sm text-gray-900">{{ $maintenance->brand_type }}</td>
@@ -249,16 +255,19 @@
                                 </div>
 
                                 <!-- Location -->
-                                <div class="flex items-start">
-                                    <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    </svg>
-                                    <div class="flex-1">
-                                        <p class="text-xs text-gray-500">Lokasi</p>
-                                        <p class="text-sm font-medium text-gray-900">{{ $maintenance->location }}</p>
+                                 <div class="px-4 py-3 space-y-2.5">
+                                 <td class="px-6 py-4 text-sm text-gray-900">
+                                        @if($maintenance->central)
+                                            <div>
+                                                <span class="font-semibold">{{ $maintenance->central->id_sentral }}</span>
+                                                <span class="text-gray-600">- {{ $maintenance->central->nama }}</span>
+                                            </div>
+                                            <!-- <span class="text-xs text-gray-500">{{ $maintenance->central->area }}</span> -->
+                                        @else
+                                            <span class="text-red-500">ID: {{ $maintenance->location }}</span>
+                                        @endif
+                                    </td>
                                     </div>
-                                </div>
                             </div>
 
                             <!-- Card Footer - Actions -->

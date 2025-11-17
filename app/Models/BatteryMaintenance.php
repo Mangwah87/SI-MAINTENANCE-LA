@@ -59,4 +59,16 @@ class BatteryMaintenance extends Model
             }
         });
     }
+    public function central()
+{
+    return $this->belongsTo(Central::class, 'location', 'id');
+}
+
+// Accessor untuk mendapatkan nama lengkap
+public function getLocationNameAttribute()
+{
+    return $this->central
+        ? "{$this->central->id_sentral} - {$this->central->nama}"
+        : 'Unknown Location';
+}
 }

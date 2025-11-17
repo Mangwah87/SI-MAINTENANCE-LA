@@ -67,7 +67,7 @@
             <form action="{{ route('genset.update', $maintenance->id) }}" method="POST" enctype="multipart/form-data" id="genset-form">
                 @csrf
                 @method('PUT') {{-- PENTING UNTUK EDIT --}}
-                
+
                 <div id="image-data-container"></div>
                 <div id="delete-image-container"></div>
 
@@ -77,10 +77,25 @@
                         <h3 class="text-xl font-bold text-gray-800">Informasi Umum</h3>
                     </div>
                     <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
-                            <input type="text" name="location" value="{{ old('location', $maintenance->location) }}" required class="w-full border-gray-300 rounded-lg">
-                        </div>
+                       <div>
+    <label class="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
+    <select name="location" id="location-select-edit" required
+        class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+        <option value="">-- Pilih Location --</option>
+        @foreach($centralsByArea as $area => $centrals)
+            <optgroup label="AREA {{ $area }}">
+                @foreach($centrals as $central)
+                    <!-- VALUE = ID dari tabel central -->
+                    <option value="{{ $central->id }}"
+                        {{ old('location', $maintenance->location) == $central->id ? 'selected' : '' }}>
+                        {{ $central->id_sentral }} - {{ $central->nama }}
+                    </option>
+                @endforeach
+            </optgroup>
+        @endforeach
+    </select>
+    <p class="mt-1 text-xs text-gray-600">Pilih lokasi central dari daftar</p>
+</div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Date / Time *</label>
                             <input type="datetime-local" name="maintenance_date" value="{{ old('maintenance_date', $maintenance->maintenance_date->format('Y-m-d\TH:i')) }}" required class="w-full border-gray-300 rounded-lg">
@@ -101,7 +116,7 @@
                     <div class="p-6 bg-gray-50 border-b border-gray-200">
                         <h3 class="text-xl font-bold text-gray-800">1. Visual Check</h3>
                     </div>
-                    
+
                     <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                         @php
                         $visualChecks = [
@@ -121,12 +136,12 @@
                         <div class="p-4 border rounded-lg flex flex-col h-full image-upload-section" data-field-name="{{ $fieldName }}">
                             <label class="block text-sm font-semibold text-gray-700">{{ $check['label'] }}</label>
                             <p class="text-xs text-gray-500 mb-2">Standard: {{ $check['std'] }}</p>
-                            
+
                             <div class="space-y-2 flex-grow">
                                 <input type="text" name="{{ $fieldName }}_result" value="{{ old($fieldName.'_result', $maintenance->{$fieldName.'_result'}) }}" class="w-full text-sm border-gray-300 rounded-md" placeholder="Result...">
                                 <textarea name="{{ $fieldName }}_comment" rows="2" class="w-full text-sm border-gray-300 rounded-md" placeholder="Comment...">{{ old($fieldName.'_comment', $maintenance->{$fieldName.'_comment'}) }}</textarea>
                             </div>
-                            
+
                             <div class="mt-2 space-y-2">
                                 <div class="flex gap-2">
                                     <button type="button" class="upload-local-btn px-3 py-1.5 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload</button>
@@ -156,7 +171,7 @@
                     {{-- I. No Load Test --}}
                     <div class="p-6 border-b border-gray-200">
                         <h4 class="font-bold text-lg text-gray-700 mb-4">I. No Load Test (30 minute)</h4>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {{-- No Load: AC Output Voltage --}}
                             <div class="p-4 border rounded-lg flex flex-col h-full">
@@ -188,7 +203,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {{-- Other No Load Tests --}}
                             @php
                             $noLoadTests = [
@@ -229,7 +244,7 @@
                     {{-- II. Load Test --}}
                     <div class="p-6">
                         <h4 class="font-bold text-lg text-gray-700 mb-4">II. Load Test (30 minute)</h4>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {{-- Load: AC Output Voltage --}}
                             <div class="p-4 border rounded-lg flex flex-col h-full">
@@ -261,7 +276,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {{-- Load: AC Output Current --}}
                             <div class="p-4 border rounded-lg flex flex-col h-full">
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">b. AC Output Current</label>
@@ -386,7 +401,7 @@
                 </div>
                 </div>
 
-                
+
             </form>
         </div>
     </div>

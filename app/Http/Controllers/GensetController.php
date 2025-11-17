@@ -4,26 +4,45 @@ namespace App\Http\Controllers;
 
 use App\Models\GensetMaintenance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-use Illuminate\Support\Arr; // <-- Tambahkan Arr
+use Illuminate\Support\Arr;
 
 class GensetController extends Controller
 {
     public function index()
     {
-        $maintenances = GensetMaintenance::with('user') // Opsi: sama seperti UPS
-            ->where('user_id', auth()->id())               // <--- INI BAGIAN PENTING
-            ->latest('maintenance_date')                  // <--- Sortir berdasarkan tanggal
+        $maintenances = GensetMaintenance::with('user')
+            ->where('user_id', auth()->id())
+            ->latest('maintenance_date')
             ->paginate(10);
-        return view('genset.index', compact('maintenances'));
+
+        // Ambil data central untuk filter
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+
+        return view('genset.index', compact('maintenances', 'centralsByArea'));
     }
 
     public function create()
     {
-        return view('genset.create');
+        // Ambil data central dari database
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        // Group by area untuk tampilan yang lebih rapi
+        $centralsByArea = $centrals->groupBy('area');
+
+        return view('genset.create', compact('centralsByArea'));
     }
 
     public function store(Request $request)
@@ -84,9 +103,6 @@ class GensetController extends Controller
         }
     }
 
-    /**
-     * [BARU] FUNGSI UPDATE LENGKAP
-     */
     public function update(Request $request, $id)
     {
         try {
@@ -121,13 +137,13 @@ class GensetController extends Controller
             if (!empty($newImagesData) && is_array($newImagesData)) {
                 foreach ($newImagesData as $imgJson) {
                     $imgInfo = json_decode($imgJson, true);
-                    
+
                     // Hanya proses jika ini data base64 baru
                     if ($imgInfo && isset($imgInfo['data']) && preg_match('/^data:image/', $imgInfo['data'])) {
                         $savedPath = $this->saveBase64Image($imgInfo['data']);
                         if ($savedPath) {
                             $category = $imgInfo['category'] ?? 'unknown';
-                            
+
                             // Hapus file lama dari kategori yang sama
                             foreach ($existingImages as $index => $existingImg) {
                                 if (isset($existingImg['category']) && $existingImg['category'] === $category) {
@@ -139,7 +155,7 @@ class GensetController extends Controller
                                     unset($existingImages[$index]);
                                 }
                             }
-                            
+
                             // Tambahkan gambar baru
                             $newSavedImages[] = [
                                 'path' => $savedPath,
@@ -164,7 +180,7 @@ class GensetController extends Controller
             $maintenance->update($validatedData);
 
             return redirect()->route('genset.index')->with('success', 'Data maintenance genset berhasil diperbarui.');
-        
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput()->with('error', 'Validasi gagal.');
         } catch (\Exception $e) {
@@ -173,10 +189,6 @@ class GensetController extends Controller
         }
     }
 
-
-    /**
-     * [BARU] FUNGSI DESTROY LENGKAP
-     */
     public function destroy($id)
     {
         try {
@@ -191,7 +203,7 @@ class GensetController extends Controller
                     }
                 }
             }
-            
+
             // Hapus record dari database
             $maintenance->delete();
 
@@ -202,12 +214,45 @@ class GensetController extends Controller
         }
     }
 
-    
-    // --- Helper & Fungsi Lainnya ---
-    
+    public function show($id)
+    {
+        $maintenance = GensetMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
+        return view('genset.show', compact('maintenance'));
+    }
+
+    public function edit($id)
+    {
+        $maintenance = GensetMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
+
+        // Ambil data central untuk dropdown
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+
+        return view('genset.edit', compact('maintenance', 'centralsByArea'));
+    }
+
+    public function pdf($id)
+    {
+        $maintenance = GensetMaintenance::where('user_id', auth()->id())
+                                               ->findOrFail($id);
+        $pdf = PDF::loadView('genset.pdf_template', compact('maintenance'));
+        $pdf->setPaper('letter', 'portrait');
+
+        $safeDocNumber = str_replace('/', '-', $maintenance->doc_number);
+        $fileName = 'genset-maintenance-' . $safeDocNumber . '.pdf';
+        return $pdf->stream($fileName);
+    }
+
+    // --- Helper Methods ---
+
     private function validateRequest(Request $request)
     {
-        // Daftar semua field non-gambar
         $rules = [
             'location' => 'required|string|max:255',
             'maintenance_date' => 'required|date',
@@ -223,16 +268,13 @@ class GensetController extends Controller
             'approver_name' => 'nullable|string',
             'approver_department' => 'nullable|string',
             'approver_nik' => 'nullable|string',
-            
-            // Gambar
             'images' => 'nullable|array',
             'images.*' => 'nullable|json',
             'delete_images' => 'nullable|array',
             'delete_images.*' => 'nullable|string',
         ];
 
-        // Tambahkan aturan untuk semua field dinamis (result, comment, phase)
-        // Ambil semua key dari request kecuali token, method, dan gambar
+        // Tambahkan aturan untuk semua field dinamis
         $dynamicKeys = array_keys($request->except('_token', '_method', 'images', 'delete_images'));
         foreach ($dynamicKeys as $key) {
             if (!isset($rules[$key])) {
@@ -242,62 +284,39 @@ class GensetController extends Controller
 
         return $request->validate($rules);
     }
-    
+
     private function saveBase64Image($imageData)
     {
         if (empty($imageData)) return null;
         if (!preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
-            Log::error('Invalid image format'); return null;
+            Log::error('Invalid image format');
+            return null;
         }
+
         $imageData = substr($imageData, strpos($imageData, ',') + 1);
         $type = strtolower($type[1]);
         if (!in_array($type, ['jpg', 'jpeg', 'png'])) $type = 'jpg';
+
         $decodedImage = base64_decode($imageData);
         if ($decodedImage === false) {
-            Log::error('Failed to decode base64'); return null;
+            Log::error('Failed to decode base64');
+            return null;
         }
+
         $directory = 'genset_images/' . date('Y/m/d');
         $filename = uniqid('genset_', true) . '.' . $type;
         $path = $directory . '/' . $filename;
+
         if (!Storage::disk('public')->exists($directory)) {
             Storage::disk('public')->makeDirectory($directory, 0755, true);
         }
+
         if (Storage::disk('public')->put($path, $decodedImage)) {
             Log::info('Image saved successfully: ' . $path);
             return $path;
         }
+
         Log::error('Failed to save image');
         return null;
-    }
-
-    // Stub untuk show dan pdf, Anda harus membuatnya nanti
-    public function show($id)
-    {
-        $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
-        // Anda perlu membuat view: resources/views/genset/show.blade.php
-        return view('genset.show', compact('maintenance'));
-    }
-
-    public function edit($id)
-    {
-        $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
-        // Ini akan memuat file 'edit.blade.php' yang baru saja Anda buat
-        return view('genset.edit', compact('maintenance'));
-    }
-
-    public function pdf($id)
-    {
-        $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
-        $pdf = PDF::loadView('genset.pdf_template', compact('maintenance'));
-
-        // [PERUBAHAN] Ganti 'a4' menjadi 'letter'
-        $pdf->setPaper('letter', 'portrait');
-
-        $safeDocNumber = str_replace('/', '-', $maintenance->doc_number);
-        $fileName = 'genset-maintenance-' . $safeDocNumber . '.pdf';
-        return $pdf->stream($fileName);
     }
 }

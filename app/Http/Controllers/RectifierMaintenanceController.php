@@ -20,36 +20,40 @@ class RectifierMaintenanceController extends Controller
         $this->maxImageSizeBytes = $this->maxImageSizeKB * 1024;
     }
 
-    public function index(Request $request)
-    {
-        $query = RectifierMaintenance::query();
-        $query->where('user_id', auth()->id());
+    // Update method index() di RectifierMaintenanceController
 
-        if ($request->filled('location')) {
-            $query->where('location', 'like', "%{$request->location}%");
-        }
+public function index(Request $request)
+{
+    $query = RectifierMaintenance::query();
+    $query->where('user_id', auth()->id());
 
-        if ($request->filled('date_from')) {
-            $query->whereDate('date_time', '>=', $request->date_from);
-        }
-
-        if ($request->filled('date_to')) {
-            $query->whereDate('date_time', '<=', $request->date_to);
-        }
-
-        $query->orderBy('date_time', 'desc');
-        $maintenances = $query->paginate(15);
-
-        // Ambil data central untuk filter
-        $centrals = DB::table('central')
-            ->orderBy('area')
-            ->orderBy('nama')
-            ->get();
-
-        $centralsByArea = $centrals->groupBy('area');
-
-        return view('rectifier.index', compact('maintenances', 'centralsByArea'));
+    if ($request->filled('location')) {
+        $query->where('location', $request->location);
     }
+
+    if ($request->filled('date_from')) {
+        $query->whereDate('date_time', '>=', $request->date_from);
+    }
+
+    if ($request->filled('date_to')) {
+        $query->whereDate('date_time', '<=', $request->date_to);
+    }
+
+    $query->orderBy('date_time', 'desc');
+
+    // Load relasi 'central' saja, TIDAK ADA 'readings'
+    $maintenances = $query->with('central')->paginate(15);
+
+    // Ambil data central untuk filter
+    $centrals = DB::table('central')
+        ->orderBy('area')
+        ->orderBy('nama')
+        ->get();
+
+    $centralsByArea = $centrals->groupBy('area');
+
+    return view('rectifier.index', compact('maintenances', 'centralsByArea'));
+}
 
     public function create()
     {
@@ -123,13 +127,15 @@ class RectifierMaintenanceController extends Controller
     }
 
     public function show($id)
-    {
-        $maintenance = RectifierMaintenance::where('id', $id)
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
+{
+    $maintenance = RectifierMaintenance::with('central') // Load relasi central
+        ->where('id', $id)
+        ->where('user_id', auth()->id())
+        ->firstOrFail();
 
-        return view('rectifier.show', compact('maintenance'));
-    }
+    return view('rectifier.show', compact('maintenance'));
+}
+
 
     public function edit($id)
     {

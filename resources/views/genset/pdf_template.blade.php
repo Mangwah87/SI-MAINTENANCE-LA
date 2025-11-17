@@ -11,21 +11,21 @@
         .main-table th { text-align: center; font-weight: bold; }
         .info-table td { border: none; padding: 1px 2px; }
         /* DENGAN INI: (perhatikan titiknya menempel pada 'th' dan 'td') */
-th.pelaksana-table, td.pelaksana-table { 
-    border: 1px solid #000; 
-    padding: 8px 6px; 
-    vertical-align: top; 
-    text-align: left; 
-    background-color: #fff !important; 
-    font-weight: normal !important; 
+th.pelaksana-table, td.pelaksana-table {
+    border: 1px solid #000;
+    padding: 8px 6px;
+    vertical-align: top;
+    text-align: left;
+    background-color: #fff !important;
+    font-weight: normal !important;
 }
 
-th.pelaksana-table { 
-    text-align: center; 
+th.pelaksana-table {
+    text-align: center;
 }
 
-td.pelaksana-table.center { 
-    text-align: center; 
+td.pelaksana-table.center {
+    text-align: center;
 }
         .mengetahui-section { width: 35%; float: right; text-align: center; margin-top: 15px; }
         .mengetahui-box { border: 1px solid #000; height: 68px; margin-top: 5px; margin-bottom: 2px; position: relative; padding-bottom: 15px; }
@@ -101,7 +101,7 @@ td.pelaksana-table.center {
     </div>
     <div style="height: 5px;"></div>
     <table class="info-table avoid-break">
-        <tr><td width="15%">Location</td><td width="35%">: {{ $maintenance->location }}</td><td width="15%">Brand / Type</td><td width="35%">: {{ $maintenance->brand_type ?? '-' }}</td></tr>
+        <tr><td width="15%">Location</td><td width="35%">:  {{ $maintenance->central->nama ?? $maintenance->location }}</td><td width="15%">Brand / Type</td><td width="35%">: {{ $maintenance->brand_type ?? '-' }}</td></tr>
         <tr><td>Date / time</td><td>: {{ $maintenance->maintenance_date->format('d M Y / H:i') }}</td><td>Capacity</td><td>: {{ $maintenance->capacity ?? '-' }}</td></tr>
     </table>
     <table class="main-table">
@@ -152,7 +152,7 @@ td.pelaksana-table.center {
                 <td>180 – 230 VAC</td> {{-- Tambah standar RSN --}}
                 {{-- Comment kosong --}}
             </tr>
-            
+
         </tbody>
     </table>
     {{-- [PERUBAHAN] Paksa Page Break Sebelum Notes HANYA jika diperlukan (jika ada notes/pelaksana) --}}
@@ -220,20 +220,20 @@ td.pelaksana-table.center {
                     <td colspan="4" style="vertical-align: top; border: none; padding: 0 0 3px 0;">
                         <div class="text-bold" style="margin-bottom: 3px;">Pelaksana</div>
                     </td>
-                    
-                    <td style="width: 5%; border: none;">&nbsp;</td> 
-                    
+
+                    <td style="width: 5%; border: none;">&nbsp;</td>
+
                     <td style="width: 35%; vertical-align: top; text-align: center; border: none; padding: 0 0 3px 0;">
                          <span class="text-bold">Mengetahui</span>
                     </td>
                 </tr>
-                
+
                 <tr>
                     <th class="pelaksana-table" style="width: 5%;">No</th>
                     <th class="pelaksana-table" style="width: 18%;">Nama</th>
                     <th class="pelaksana-table" style="width: 17%;">Departement</th>
                     <th class="pelaksana-table" style="width: 20%;">Sub Departement</th>
-                    
+
                     <td rowspan="4" style="border: none; width: 5%;">&nbsp;</td> <td rowspan="4" style="border: 1px solid #000; text-align: center; vertical-align: bottom; width: 35%;">
                         <div style="padding-bottom: 5px;">
                             <div class="mengetahui-name-line">({{ $maintenance->approver_name ?? '..................' }})</div>
@@ -241,21 +241,21 @@ td.pelaksana-table.center {
                         </div>
                     </td>
                 </tr>
-                
+
                 <tr>
                     <td class="pelaksana-table center">1</td>
                     <td class="pelaksana-table">{{ $maintenance->technician_1_name }}</td>
                     <td class="pelaksana-table">{{ $maintenance->technician_1_department }}</td>
                     <td class="pelaksana-table"></td>
                 </tr>
-                
+
                 <tr>
                     <td class="pelaksana-table center">2</td>
                     <td class="pelaksana-table">{{ $maintenance->technician_2_name ?? '-' }}</td>
                     <td class="pelaksana-table">{{ $maintenance->technician_2_department ?? '-' }}</td>
                     <td class="pelaksana-table"></td>
                 </tr>
-                
+
                 <tr>
                     <td class="pelaksana-table center">3</td>
                     <td class="pelaksana-table">{{ $maintenance->technician_3_name ?? '-' }}</td>

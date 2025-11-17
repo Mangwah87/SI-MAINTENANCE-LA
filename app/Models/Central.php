@@ -16,5 +16,22 @@ class Central extends Model
         'nama',
         'area',
     ];
+    // Relasi ke Battery Maintenances
+    public function batteryMaintenances()
+    {
+        return $this->hasMany(BatteryMaintenance::class, 'location', 'id');
+    }
+
+    // Relasi ke Rectifier Maintenances
+    public function rectifierMaintenances()
+    {
+        return $this->hasMany(RectifierMaintenance::class, 'location', 'id');
+    }
+
+    // Relasi ke Genset Maintenances
+    public function gensetMaintenances()
+    {
+        return $this->hasMany(GensetMaintenance::class, 'location', 'id');
+    }
 
 }

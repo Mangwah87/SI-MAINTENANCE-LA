@@ -253,7 +253,7 @@
         <table class="info-table" style="margin-top: 0.1px;">
             <tr>
                 <td width="15%"><strong>Location</strong></td>
-                <td width="35%">: {{ $maintenance->location }}</td>
+                <td width="35%">: {{ $maintenance->central->nama ?? $maintenance->location }}</td>
                 <td width="15%"><strong>Power Module</strong></td>
                 <td width="35%">
                     :

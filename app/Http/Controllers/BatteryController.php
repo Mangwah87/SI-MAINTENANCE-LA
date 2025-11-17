@@ -177,6 +177,7 @@ class BatteryController extends Controller
     public function show(string $id)
     {
         $maintenance = BatteryMaintenance::with([
+             'central',
             'readings' => function ($query) {
                 $query->orderBy('bank_number')->orderBy('battery_number');
             },
