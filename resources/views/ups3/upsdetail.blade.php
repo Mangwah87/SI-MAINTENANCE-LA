@@ -32,8 +32,15 @@
                 <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Informasi Lokasi dan Perangkat</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="border-l-4 border-blue-500 pl-3 rounded-md">
-                        <p class="text-sm text-gray-600">Location</p>
-                        <p class="font-semibold">{{ $maintenance->location }}</p>
+                        <p class="text-sm text-gray-600">Lokasi Sentral</p>
+                        <p class="font-semibold">
+                            @if($maintenance->central)
+                                {{ $maintenance->central->nama }}
+                                <span class="text-sm text-gray-600 font-normal">- {{ $maintenance->central->area }} ({{ $maintenance->central->id_sentral }})</span>
+                            @else
+                                -
+                            @endif
+                        </p>
                     </div>
                     <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Date / Time</p>

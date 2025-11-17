@@ -15,7 +15,7 @@ class UpsMaintenance1Controller extends Controller
      */
     public function index()
     {
-        $maintenances = UpsMaintenance1::with('user')
+        $maintenances = UpsMaintenance1::with(['user', 'central'])
             ->where('user_id', auth()->id())
             ->latest('date_time')
             ->paginate(10);
@@ -36,7 +36,8 @@ class UpsMaintenance1Controller extends Controller
      */
     public function create()
     {
-        return view('ups1.upsform_1');
+        $centrals = \App\Models\Central::orderBy('area')->orderBy('id_sentral')->get();
+        return view('ups1.upsform_1', compact('centrals'));
     }
 
     /**
@@ -108,7 +109,9 @@ class UpsMaintenance1Controller extends Controller
      */
     public function show(UpsMaintenance1 $upsMaintenance1)
     {
-        return view('ups1.upsdetail_1', ['maintenance' => $upsMaintenance1]);
+        $upsMaintenance1->load('central');
+        $maintenance = $upsMaintenance1;
+        return view('ups1.upsdetail_1', compact('maintenance'));
     }
 
     /**
@@ -116,7 +119,9 @@ class UpsMaintenance1Controller extends Controller
      */
     public function edit(UpsMaintenance1 $upsMaintenance1)
     {
-        return view('ups1.upsform_1', ['maintenance' => $upsMaintenance1]);
+        $centrals = \App\Models\Central::orderBy('area')->orderBy('id_sentral')->get();
+        $maintenance = $upsMaintenance1;
+        return view('ups1.upsform_1', compact('maintenance', 'centrals'));
     }
 
     /**
@@ -328,7 +333,7 @@ class UpsMaintenance1Controller extends Controller
     private function validateRequest(Request $request)
     {
         return $request->validate([
-            'location' => 'required|string|max:255',
+            'central_id' => 'required|exists:central,id',
             'date_time' => 'required|date',
             'brand_type' => 'required|string|max:255',
             'capacity' => 'required|string|max:255',
@@ -452,6 +457,7 @@ class UpsMaintenance1Controller extends Controller
     public function print(UpsMaintenance1 $upsMaintenance1)
     {
         try {
+            $upsMaintenance1->load('central');
             $maintenance = $upsMaintenance1;
 
             // Load view and generate PDF

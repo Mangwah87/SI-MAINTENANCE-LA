@@ -18,7 +18,7 @@ class UpsMaintenance1 extends Model
         'images', // Field JSON untuk menyimpan semua gambar
 
         // Informasi Lokasi dan Perangkat
-        'location',
+        'central_id',
         'date_time',
         'brand_type',
         'capacity',
@@ -191,5 +191,13 @@ class UpsMaintenance1 extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the central location.
+     */
+    public function central()
+    {
+        return $this->belongsTo(Central::class);
     }
 }

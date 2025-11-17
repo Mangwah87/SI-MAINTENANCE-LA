@@ -32,7 +32,13 @@
                                         </div>
                                         <h3 class="font-semibold text-gray-900 mb-1">
                                             <i data-lucide="map-pin" class="w-4 h-4 inline text-red-500"></i>
-                                            {{ $maintenance->location }}
+                                            <span>
+                                                @if($maintenance->central)
+                                                    {{ $maintenance->central->nama }} - {{ $maintenance->central->area }} ({{ $maintenance->central->id_sentral }})
+                                                @else
+                                                    -
+                                                @endif
+                                            </span>
                                         </h3>
                                         <p class="text-sm text-gray-600 flex items-center">
                                             <i data-lucide="calendar" class="w-4 h-4 inline text-gray-400 mr-1"></i>
@@ -142,7 +148,12 @@
                                         <td class="px-6 py-4 text-sm text-gray-900">
                                             <div class="flex items-start">
                                                 <i data-lucide="map-pin" class="w-4 h-4 mr-2 mt-0.5 text-red-500 flex-shrink-0"></i>
-                                                <span>{{ $maintenance->location }}</span>
+                                                <span>@if($maintenance->central)
+                                                            {{ $maintenance->central->nama }} - {{ $maintenance->central->area }} ({{ $maintenance->central->id_sentral }})
+                                                        @else
+                                                            -
+                                                        @endif
+                                                </span>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

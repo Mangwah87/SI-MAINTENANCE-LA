@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\GroundingMaintenance; // Use the correct model
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -29,7 +30,15 @@ class GroundingController extends Controller
      */
     public function create()
     {
-        return view('grounding.create'); // View path: grounding.create
+        // Ambil data central dari database
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        // Group by area untuk tampilan yang lebih rapi
+        $centralsByArea = $centrals->groupBy('area');
+        return view('grounding.create',compact('centralsByArea')); // View path: grounding.create
     }
 
     /**
@@ -96,7 +105,14 @@ class GroundingController extends Controller
     {
         $maintenance = GroundingMaintenance::where('user_id', auth()->id())
                                                ->findOrFail($id);
-        return view('grounding.edit', compact('maintenance')); // View path: grounding.edit
+        // Ambil data central untuk dropdown
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+        return view('grounding.edit', compact('maintenance','centralsByArea')); // View path: grounding.edit
     }
 
     /**
