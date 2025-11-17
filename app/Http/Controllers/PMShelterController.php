@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PmShelter;
+use App\Models\PMShelter;
 use App\Models\Central;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
