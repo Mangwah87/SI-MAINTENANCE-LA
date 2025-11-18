@@ -418,15 +418,14 @@
 
       const ctx = canvas.getContext('2d');
 
-      // Draw video (mirror only for front camera)
+      // Mirror only for front camera (selfie)
       if (currentFacingMode === 'user') {
-        // Front camera - apply mirror
         ctx.save();
         ctx.scale(-1, 1);
         ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
         ctx.restore();
       } else {
-        // Back camera - no mirror
+        // Back camera - natural view
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       }
 

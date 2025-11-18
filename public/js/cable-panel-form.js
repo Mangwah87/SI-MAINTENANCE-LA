@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
     const closeModalBtn = document.getElementById('closeModalBtn');
-    
+
     // Info Geolocation
     const geoInfo = {
         lat: document.getElementById('lat'),
@@ -128,13 +128,14 @@ document.addEventListener('DOMContentLoaded', () => {
             yStart = 0;
         }
 
-        // Handle mirror selfie
+        // Mirror only for front camera (selfie)
         if (source === video && currentFacingMode === 'user') {
             context.save();
-            context.scale(-1, 1); // Balik horizontal
+            context.scale(-1, 1);
             context.drawImage(source, -xStart - renderWidth, yStart, renderWidth, renderHeight);
             context.restore();
         } else {
+            // Back camera - natural view
             context.drawImage(source, xStart, yStart, renderWidth, renderHeight);
         }
     }
@@ -170,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const maxWidth = Math.max(dateWidth, dayWidth, locationWidth, gpsWidth, (timeWidth + witaWidth + (basePadding * 0.5))); // <-- Tambahkan gpsWidth
         const bgWidth = maxWidth + (basePadding * 2);
-        
+
         // [PERUBAHAN] Hitung ulang Latar Belakang berdasarkan yPosGps
         const bgHeight = (yPosTime + basePadding) - (yPosGps - smallFontSize - (basePadding * 0.5));
         const bgYPos = yPosGps - smallFontSize - (basePadding * 0.5);
@@ -197,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Baris 4: Hari
         context.font = `bold ${mediumFontSize}px ${font}`;
         context.fillText(timestamp.day, basePadding, yPosDay);
-        
+
         // Baris 5: Waktu (Besar)
         context.font = `bold ${largeFontSize}px ${font}`;
         context.fillText(timestamp.time, basePadding, yPosTime);
@@ -269,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. Gambar video (di-letterbox)
         drawLetterboxedImage(context, video);
-        
+
         // 3. Gambar watermark di atas
         drawWatermark(context, canvas);
 
@@ -345,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 2. Gambar file (di-letterbox)
             drawLetterboxedImage(context, img);
-            
+
             const watermarkedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
             callback(watermarkedDataUrl);
         };
@@ -385,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Inisialisasi Event Listeners ---
-    
+
     // [PERBAIKAN] Mencari class yang benar (dari Genset)
     document.querySelectorAll('.camera-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
