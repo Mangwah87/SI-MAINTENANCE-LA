@@ -12,7 +12,7 @@ use App\Models\GensetMaintenance;
 use App\Models\GroundingMaintenance;
 use App\Models\Inverter;
 use App\Models\PMPermohonan;
-use App\Models\PmShelter;
+use App\Models\PMShelter;
 use App\Models\RectifierMaintenance;
 use App\Models\ScheduleMaintenance;
 use App\Models\TindakLanjut;
@@ -408,7 +408,7 @@ class ReportController extends Controller
 
         // 12. PM Shelter
         if ($formType == 'all' || $formType == 'shelter') {
-            $shelters = PmShelter::with('user')
+            $shelters = PMShelter::with('user')
                 ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('date', '=', $dateFrom))
                 ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('date', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('date', '<=', $dateTo))
