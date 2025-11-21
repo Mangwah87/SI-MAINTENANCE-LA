@@ -44,7 +44,7 @@
                                 </div>
 
                                 <div id="videoSection" class="flex-1 flex bg-black relative mx-4 mt-2 rounded">
-                                    <video id="video" class="w-full" playsinline autoplay muted style="transform: scaleX(-1);"></video>
+                                    <video id="video" class="w-full" playsinline autoplay muted></video>
                                 </div>
 
                                 <div id="capturedImage" class="hidden mx-4 mt-2">
