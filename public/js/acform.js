@@ -418,11 +418,8 @@
 
       const ctx = canvas.getContext('2d');
 
-      // Draw video (mirrored for front camera)
-      ctx.save();
-      ctx.scale(-1, 1);
-      ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-      ctx.restore();
+      // Always draw without mirror - natural view
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       // Add watermark
       addWatermarkToCanvas(ctx, canvas.width, canvas.height);

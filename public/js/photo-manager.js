@@ -19,7 +19,7 @@ class PhotoManager {
         this.container.innerHTML = `
             <div class="photo-upload-section">
                 <div class="flex flex-wrap gap-2 mb-3">
-                    <button type="button" onclick="photoManagers['${this.fieldName}'].openCamera()" 
+                    <button type="button" onclick="photoManagers['${this.fieldName}'].openCamera()"
                             class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm flex items-center gap-1">
                         <i data-lucide="camera" class="w-4 h-4"></i> Ambil Foto
                     </button>
@@ -30,56 +30,65 @@ class PhotoManager {
                 </div>
 
                 <div id="${this.fieldName}_preview" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
-                
+
                 <!-- Camera Modal -->
-                <div id="${this.fieldName}_camera_modal" 
-                     class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-                    <div class="w-full h-full max-w-4xl flex flex-col">
-                        <div class="flex justify-between items-center mb-3 px-2">
+                <div id="${this.fieldName}_camera_modal"
+                     class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 overflow-y-auto">
+                    <div class="min-h-screen flex flex-col p-4 pb-safe">
+                        <!-- Header - Fixed at top -->
+                        <div class="flex justify-between items-center mb-3 flex-shrink-0">
                             <h3 class="text-lg font-semibold text-white">Ambil Foto</h3>
-                            <button type="button" onclick="photoManagers['${this.fieldName}'].closeCamera()" 
-                                    class="text-white hover:text-gray-300">
+                            <button type="button" onclick="photoManagers['${this.fieldName}'].closeCamera()"
+                                    class="text-white hover:text-gray-300 p-2">
                                 <i data-lucide="x" class="w-6 h-6"></i>
                             </button>
                         </div>
 
-                        <div id="${this.fieldName}_video_section" class="relative flex-1 flex items-center justify-center mb-3">
-                            <video id="${this.fieldName}_video" 
-                                   class="w-full h-full object-contain rounded-lg" 
-                                   autoplay playsinline></video>
-                            <canvas id="${this.fieldName}_canvas" class="hidden"></canvas>
+                        <!-- Video/Captured Section - Scrollable -->
+                        <div class="flex-1 flex items-center justify-center mb-3 min-h-0">
+                            <div id="${this.fieldName}_video_section" class="relative w-full max-w-4xl">
+                                <video id="${this.fieldName}_video"
+                                       class="w-full h-auto max-h-[60vh] object-contain rounded-lg"
+                                       autoplay playsinline></video>
+                                <canvas id="${this.fieldName}_canvas" class="hidden"></canvas>
+                            </div>
+
+                            <div id="${this.fieldName}_captured_section" class="hidden relative w-full max-w-4xl">
+                                <img id="${this.fieldName}_captured_img"
+                                     class="w-full h-auto max-h-[60vh] object-contain rounded-lg"
+                                     alt="Captured photo">
+                            </div>
                         </div>
 
-                        <div id="${this.fieldName}_captured_section" class="hidden relative flex-1 flex items-center justify-center mb-3">
-                            <img id="${this.fieldName}_captured_img" 
-                                 class="w-full h-full object-contain rounded-lg" 
-                                 alt="Captured photo">
-                        </div>
-
-                        <div class="mb-3 text-xs text-white bg-black bg-opacity-50 p-3 rounded" id="${this.fieldName}_location_info">
+                        <!-- Location Info -->
+                        <div class="mb-3 text-xs text-white bg-black bg-opacity-50 p-3 rounded flex-shrink-0"
+                             id="${this.fieldName}_location_info">
                             <i data-lucide="loader" class="w-4 h-4 inline animate-spin"></i> Memuat informasi lokasi...
                         </div>
 
-                        <div id="${this.fieldName}_capture_controls" class="flex gap-2">
-                            <button type="button" onclick="photoManagers['${this.fieldName}'].capturePhoto()" 
-                                    class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg font-medium">
-                                <i data-lucide="camera" class="w-5 h-5 inline mr-1"></i> Ambil Foto
-                            </button>
-                            <button type="button" onclick="photoManagers['${this.fieldName}'].switchCamera()" 
-                                    class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-lg">
-                                <i data-lucide="repeat" class="w-5 h-5"></i>
-                            </button>
-                        </div>
+                        <!-- Controls - Always visible at bottom -->
+                        <div class="flex-shrink-0 space-y-3">
+                            <div id="${this.fieldName}_capture_controls" class="flex gap-2">
+                                <button type="button" onclick="photoManagers['${this.fieldName}'].capturePhoto()"
+                                        class="flex-1 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium">
+                                    <i data-lucide="camera" class="w-5 h-5 inline mr-1"></i> Ambil Foto
+                                </button>
+                                <button type="button" onclick="photoManagers['${this.fieldName}'].switchCamera()"
+                                        class="bg-gray-700 hover:bg-gray-600 active:bg-gray-800 text-white px-4 py-3 rounded-lg">
+                                    <i data-lucide="repeat" class="w-5 h-5"></i>
+                                </button>
+                            </div>
 
-                        <div id="${this.fieldName}_retake_controls" class="hidden flex gap-2">
-                            <button type="button" onclick="photoManagers['${this.fieldName}'].retakePhoto()" 
-                                    class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-3 rounded-lg font-medium">
-                                <i data-lucide="refresh-cw" class="w-5 h-5 inline mr-1"></i> Ulangi
-                            </button>
-                            <button type="button" onclick="photoManagers['${this.fieldName}'].usePhoto()" 
-                                    class="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-lg font-medium">
-                                <i data-lucide="check" class="w-5 h-5 inline mr-1"></i> Gunakan Foto
-                            </button>
+                            <div id="${this.fieldName}_retake_controls" class="hidden gap-2">
+                                <button type="button" onclick="photoManagers['${this.fieldName}'].retakePhoto()"
+                                        class="flex-1 bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 text-white px-4 py-3 rounded-lg font-medium">
+                                    <i data-lucide="refresh-cw" class="w-5 h-5 inline mr-1"></i> Ulangi
+                                </button>
+                                <button type="button" onclick="photoManagers['${this.fieldName}'].usePhoto()"
+                                        class="flex-1 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white px-4 py-3 rounded-lg font-medium">
+                                    <i data-lucide="check" class="w-5 h-5 inline mr-1"></i> Gunakan Foto
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -131,6 +140,7 @@ class PhotoManager {
         capturedSection.classList.add("hidden");
         captureControls.classList.remove("hidden");
         retakeControls.classList.add("hidden");
+        retakeControls.style.display = "none";
 
         modal.classList.remove("hidden");
         this.currentFacingMode = "environment";
@@ -480,6 +490,7 @@ class PhotoManager {
         capturedSection.classList.remove("hidden");
         captureControls.classList.add("hidden");
         retakeControls.classList.remove("hidden");
+        retakeControls.style.display = "flex";
 
         if (this.stream) {
             this.stream.getTracks().forEach((track) => track.stop());
@@ -608,6 +619,7 @@ class PhotoManager {
         capturedSection.classList.add("hidden");
         videoSection.classList.remove("hidden");
         retakeControls.classList.add("hidden");
+        retakeControls.style.display = "none";
         captureControls.classList.remove("hidden");
 
         await this.startCamera();
@@ -701,13 +713,13 @@ class PhotoManager {
                 <div class="relative border rounded-lg overflow-hidden bg-gray-50 group">
                     <img src="${
                         photo.preview
-                    }" class="w-full h-32 object-cover cursor-pointer" 
+                    }" class="w-full h-32 object-cover cursor-pointer"
                          onclick="photoManagers['${
                              this.fieldName
                          }'].viewPhoto('${photo.id}')">
                     <button type="button" onclick="photoManagers['${
                         this.fieldName
-                    }'].removePhoto('${photo.id}')" 
+                    }'].removePhoto('${photo.id}')"
                             class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </button>
@@ -734,7 +746,7 @@ class PhotoManager {
                                    </div>`
                                     : ""
                             }
-                            
+
                         </div>`
                             : ""
                     }
