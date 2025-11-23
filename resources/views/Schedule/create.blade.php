@@ -181,7 +181,7 @@
                     @endforeach
                 </div>
 
-                <div class="flex justify-start mb-8">
+                <div class="flex justify-start mb-8 items-center">
                     <button type="button" id="add-location-btn" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors duration-200">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -205,6 +205,7 @@
         let locationIndex = initialLocationCount;
 
         const addLocationBtn = document.getElementById('add-location-btn');
+        const MAX_LOCATIONS = 10; // Batas maksimal lokasi
         
         const generateDateCheckboxes = (name, isRencana = true) => {
             const colorClass = isRencana ? 'indigo' : 'green';
@@ -284,6 +285,51 @@
             locationIndex = locationItems.length;
         };
 
+        // Fungsi untuk update status tombol dan tampilkan pesan
+        const updateAddButtonState = () => {
+            const currentCount = locationsContainer.querySelectorAll('.location-item').length;
+            
+            if (currentCount >= MAX_LOCATIONS) {
+                addLocationBtn.disabled = true;
+                addLocationBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                addLocationBtn.classList.remove('hover:bg-green-700');
+                
+                // Tambahkan pesan jika belum ada
+                if (!document.getElementById('max-location-message')) {
+                    const message = document.createElement('p');
+                    message.id = 'max-location-message';
+                    message.className = 'text-sm text-red-600 mt-2 font-medium';
+                    message.textContent = `Maksimal ${MAX_LOCATIONS} lokasi telah tercapai`;
+                    addLocationBtn.parentElement.appendChild(message);
+                }
+            } else {
+                addLocationBtn.disabled = false;
+                addLocationBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                addLocationBtn.classList.add('hover:bg-green-700');
+                
+                // Hapus pesan jika ada
+                const message = document.getElementById('max-location-message');
+                if (message) {
+                    message.remove();
+                }
+            }
+            
+            // Update info counter
+            updateLocationCounter(currentCount);
+        };
+
+        // Fungsi untuk menampilkan counter lokasi
+        const updateLocationCounter = (count) => {
+            let counter = document.getElementById('location-counter');
+            if (!counter) {
+                counter = document.createElement('span');
+                counter.id = 'location-counter';
+                counter.className = 'text-sm text-gray-600 ml-3';
+                addLocationBtn.parentElement.appendChild(counter);
+            }
+            counter.textContent = `(${count}/${MAX_LOCATIONS} lokasi)`;
+        };
+
         const locationTemplate = (index) => {
             const displayNum = index + 1;
             const isPermanent = index === 0;
@@ -354,6 +400,14 @@
         };
         
         function addLocation() {
+            const currentCount = locationsContainer.querySelectorAll('.location-item').length;
+            
+            // Cek apakah sudah mencapai batas maksimal
+            if (currentCount >= MAX_LOCATIONS) {
+                alert(`Maksimal ${MAX_LOCATIONS} lokasi. Tidak dapat menambah lokasi lagi.`);
+                return;
+            }
+            
             const newIndex = locationIndex;
             const newLocation = document.createElement('div');
             newLocation.innerHTML = locationTemplate(newIndex).trim();
@@ -361,6 +415,7 @@
             
             locationIndex++;
             reindexLocations();
+            updateAddButtonState(); // Update status tombol setelah menambah
         }
 
         addLocationBtn.addEventListener('click', addLocation);
@@ -372,6 +427,7 @@
                 if (item && item.getAttribute('data-permanent') !== 'true') {
                     item.remove();
                     reindexLocations();
+                    updateAddButtonState(); // Update status tombol setelah menghapus
                 }
             }
         });
@@ -381,6 +437,8 @@
 
         // Tambahkan fungsi untuk inisialisasi status "PILIH SEMUA" pada load
         document.addEventListener('DOMContentLoaded', () => {
+            updateAddButtonState(); // Cek status awal
+            
             locationsContainer.querySelectorAll('.location-item').forEach(item => {
                 const index = item.getAttribute('data-index');
                 if (index !== null) {

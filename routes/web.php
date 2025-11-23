@@ -151,6 +151,17 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [CablePanelMaintenanceController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [CablePanelMaintenanceController::class, 'pdf'])->name('pdf');
     });
+     // Schedule Routes (Jadwal Preventive Maintenance Sentral)
+    Route::prefix('schedule')->name('schedule.')->group(function () {
+        Route::get('/', [ScheduleController::class, 'index'])->name('index');
+        Route::get('/create', [ScheduleController::class, 'create'])->name('create');
+        Route::post('/', [ScheduleController::class, 'store'])->name('store');
+        Route::get('/{id}', [ScheduleController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [ScheduleController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [ScheduleController::class, 'update'])->name('update');
+        Route::delete('/{id}', [ScheduleController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [ScheduleController::class, 'pdf'])->name('pdf');
+    });
 });
 
 require __DIR__ . '/auth.php';

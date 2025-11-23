@@ -1,6 +1,6 @@
 @php
     // Langkah 1: PHP Script untuk mengambil logo dan mengubahnya ke Base64
-    $logoPath = public_path('images/Lintasarta_Logo_Logogram.png'); 
+    $logoPath = public_path('assets/images/Lintasarta_Logo_Logogram.png'); 
     $logoBase64 = null;
     
     if (file_exists($logoPath)) {

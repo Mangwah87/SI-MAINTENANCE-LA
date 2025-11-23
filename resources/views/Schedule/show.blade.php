@@ -32,13 +32,9 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <p class="text-sm text-gray-600">Nomor Dokumen</p>
-                            <p class="text-lg font-semibold text-gray-900">{{ $schedule->doc_number }}</p>
-                        </div>
-                        <div>
                             <p class="text-sm text-gray-600">Tanggal Pembuatan</p>
                             <p class="text-lg font-semibold text-gray-900">
-                                {{ \Carbon\Carbon::parse($schedule->tanggal_pembuatan ?? $schedule->bulan)->format('d/m (F)/Y') }}
+                                {{ \Carbon\Carbon::parse($schedule->tanggal_pembuatan ?? $schedule->bulan)->format('d/F/Y') }}
                             </p>
                         </div>
                         <div>

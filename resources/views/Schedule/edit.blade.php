@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-<h2 class="font-semibold text-lg sm:text-xl text-gray-800 leading-tight">
-    {{ __('Edit Jadwal PM Sentral') }}: {{ \Carbon\Carbon::parse($schedule->tanggal_pembuatan)->isoFormat('D MMMM Y') }}
-</h2>
+            <h2 class="font-semibold text-lg sm:text-xl text-gray-800 leading-tight">
+                {{ __('Edit Jadwal PM Sentral') }}: {{ \Carbon\Carbon::parse($schedule->tanggal_pembuatan)->isoFormat('D MMMM Y') }}
+            </h2>
             <a href="{{ route('schedule.index') }}"
                 class="inline-flex items-center px-3 sm:px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm sm:text-base font-semibold rounded-lg transition-colors duration-200 w-full sm:w-auto justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -50,12 +50,11 @@
                     
                     {{-- BARIS 1 --}}
                     
-                    {{-- Kolom 1 di baris 2: Tanggal Pembuatan --}}
+                    {{-- Kolom 1: Tanggal Pembuatan --}}
                     <div>
                         <x-input-label for="tanggal_pembuatan" :value="__('Tanggal Pembuatan')" />
                         <x-text-input id="tanggal_pembuatan" name="tanggal_pembuatan" type="date" class="mt-1 block w-full" :value="old('tanggal_pembuatan', $schedule->tanggal_pembuatan ? \Carbon\Carbon::parse($schedule->tanggal_pembuatan)->format('Y-m-d') : \Carbon\Carbon::now()->format('Y-m-d'))" required />
                         <x-input-error class="mt-2" :messages="$errors->get('tanggal_pembuatan')" />
-                        <div class="text-xs text-gray-500 mt-1">Nomor: {{ $schedule->doc_number }}</div>
                     </div>
 
                     {{-- Kolom 2: Dibuat Oleh (Nama Petugas) --}}
@@ -74,19 +73,22 @@
                     
                     {{-- BARIS 2 --}}
                     
-                    {{-- Kolom 2 di baris 2: NIK Dibuat Oleh --}}
+                    {{-- Kolom 1: NIK Petugas --}}
                     <div class="md:col-span-1">
                         <x-input-label for="dibuat_oleh_nik" :value="__('NIK Petugas')" />
                         <x-text-input id="dibuat_oleh_nik" name="dibuat_oleh_nik" type="text" class="mt-1 block w-full" :value="old('dibuat_oleh_nik', $dibuatOleh['nik'])" placeholder="NIK Petugas" />
                         <x-input-error class="mt-2" :messages="$errors->get('dibuat_oleh_nik')" />
                     </div>
 
-                    {{-- Kolom 3 di baris 2: NIK Mengetahui --}}
+                    {{-- Kolom 2: NIK Manajer --}}
                     <div class="md:col-span-1">
                         <x-input-label for="mengetahui_nik" :value="__('NIK Manajer')" />
                         <x-text-input id="mengetahui_nik" name="mengetahui_nik" type="text" class="mt-1 block w-full" :value="old('mengetahui_nik', $mengetahui['nik'])" placeholder="NIK Manajer" />
                         <x-input-error class="mt-2" :messages="$errors->get('mengetahui_nik')" />
                     </div>
+                    
+                    {{-- Kolom 3: Kosong --}}
+                    <div></div>
                     
                 </div>
                 
@@ -207,10 +209,10 @@
                                 </div>
                             </div>
                         </div>
-                    @endforeach {{-- <--- PENUTUP YANG HILANG DITAMBAHKAN DI SINI --}}
+                    @endforeach
                 </div>
 
-                <div class="flex justify-start mb-8">
+                <div class="flex justify-start mb-8 items-center">
                     <button type="button" id="add-location-btn" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors duration-200">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -234,6 +236,7 @@
         let locationIndex = initialLocationCount;
 
         const addLocationBtn = document.getElementById('add-location-btn');
+        const MAX_LOCATIONS = 10; // Batas maksimal lokasi
         
         const generateDateCheckboxes = (name, isRencana = true) => {
             const colorClass = isRencana ? 'indigo' : 'green';
@@ -313,6 +316,51 @@
             locationIndex = locationItems.length;
         };
 
+        // Fungsi untuk update status tombol dan tampilkan pesan
+        const updateAddButtonState = () => {
+            const currentCount = locationsContainer.querySelectorAll('.location-item').length;
+            
+            if (currentCount >= MAX_LOCATIONS) {
+                addLocationBtn.disabled = true;
+                addLocationBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                addLocationBtn.classList.remove('hover:bg-green-700');
+                
+                // Tambahkan pesan jika belum ada
+                if (!document.getElementById('max-location-message')) {
+                    const message = document.createElement('p');
+                    message.id = 'max-location-message';
+                    message.className = 'text-sm text-red-600 mt-2 font-medium';
+                    message.textContent = `Maksimal ${MAX_LOCATIONS} lokasi telah tercapai`;
+                    addLocationBtn.parentElement.appendChild(message);
+                }
+            } else {
+                addLocationBtn.disabled = false;
+                addLocationBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                addLocationBtn.classList.add('hover:bg-green-700');
+                
+                // Hapus pesan jika ada
+                const message = document.getElementById('max-location-message');
+                if (message) {
+                    message.remove();
+                }
+            }
+            
+            // Update info counter
+            updateLocationCounter(currentCount);
+        };
+
+        // Fungsi untuk menampilkan counter lokasi
+        const updateLocationCounter = (count) => {
+            let counter = document.getElementById('location-counter');
+            if (!counter) {
+                counter = document.createElement('span');
+                counter.id = 'location-counter';
+                counter.className = 'text-sm text-gray-600 ml-3';
+                addLocationBtn.parentElement.appendChild(counter);
+            }
+            counter.textContent = `(${count}/${MAX_LOCATIONS} lokasi)`;
+        };
+
         const locationTemplate = (index) => {
             const displayNum = index + 1;
             const isPermanent = index === 0;
@@ -384,6 +432,14 @@
         };
         
         function addLocation() {
+            const currentCount = locationsContainer.querySelectorAll('.location-item').length;
+            
+            // Cek apakah sudah mencapai batas maksimal
+            if (currentCount >= MAX_LOCATIONS) {
+                alert(`Maksimal ${MAX_LOCATIONS} lokasi. Tidak dapat menambah lokasi lagi.`);
+                return;
+            }
+            
             const newIndex = locationIndex;
             const newLocation = document.createElement('div');
             newLocation.innerHTML = locationTemplate(newIndex).trim();
@@ -391,6 +447,7 @@
             
             locationIndex++;
             reindexLocations();
+            updateAddButtonState(); // Update status tombol setelah menambah
         }
 
         addLocationBtn.addEventListener('click', addLocation);
@@ -399,25 +456,41 @@
             const button = e.target.closest('.remove-location-btn');
             if (button) {
                 const item = button.closest('.location-item');
-                if (item) {
-                    if (item.getAttribute('data-permanent') !== 'true' || locationsContainer.querySelectorAll('.location-item').length > 1) {
-                        item.remove();
-                        reindexLocations();
-                    } else {
-                         alert('Minimal harus ada satu Lokasi PM. Silakan edit isinya.');
-                         const inputs = item.querySelectorAll('input[type="text"]');
-                         inputs.forEach(input => input.value = '');
-                         const checkboxes = item.querySelectorAll('input[type="checkbox"]');
-                         checkboxes.forEach(cb => cb.checked = false);
-                    }
+                if (item && item.getAttribute('data-permanent') !== 'true') {
+                    item.remove();
+                    reindexLocations();
+                    updateAddButtonState(); // Update status tombol setelah menghapus
                 }
             }
         });
-        
-        document.querySelectorAll('.location-item').forEach(item => {
-            const index = item.getAttribute('data-index');
-            handleCheckboxClick(item.querySelector(`input[name="locations[${index}][rencana][]"]`));
-            handleCheckboxClick(item.querySelector(`input[name="locations[${index}][realisasi][]"]`));
+
+        reindexLocations();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAddButtonState(); // Cek status awal
+            
+            locationsContainer.querySelectorAll('.location-item').forEach(item => {
+                const index = item.getAttribute('data-index');
+                if (index !== null) {
+                    const rencanaName = `locations[${index}][rencana]`;
+                    const realisasiName = `locations[${index}][realisasi]`;
+                    
+                    const rencanaCheckboxes = item.querySelectorAll(`input[name="${rencanaName}[]"]`);
+                    const realisasiCheckboxes = item.querySelectorAll(`input[name="${realisasiName}[]"]`);
+
+                    const rencanaAll = item.querySelector(`input[id="${rencanaName}_all"]`);
+                    const realisasiAll = item.querySelector(`input[id="${realisasiName}_all"]`);
+
+                    if (rencanaAll && rencanaCheckboxes.length > 0) {
+                        const checkedRencana = Array.from(rencanaCheckboxes).filter(cb => cb.checked).length;
+                        rencanaAll.checked = checkedRencana === rencanaCheckboxes.length;
+                    }
+                    if (realisasiAll && realisasiCheckboxes.length > 0) {
+                        const checkedRealisasi = Array.from(realisasiCheckboxes).filter(cb => cb.checked).length;
+                        realisasiAll.checked = checkedRealisasi === realisasiCheckboxes.length;
+                    }
+                }
+            });
         });
     </script>
     
@@ -429,7 +502,13 @@
         .grid-cols-6 > div:not(.col-span-6) {
             display: flex;
             align-items: center;
-            justify-content: center
-}
+            justify-content: center;
+            width: 100%;
+            height: 2rem;
+            padding: 0.25rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.125rem;
+            transition: background-color 0.15s;
+        }
     </style>
 </x-app-layout>
