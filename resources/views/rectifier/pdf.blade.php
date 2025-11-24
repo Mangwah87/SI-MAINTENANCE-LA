@@ -621,59 +621,135 @@
             </div>
 
             <table style="width: 100%; border-collapse: collapse;">
-                @foreach(array_chunk($imageChunk, 3) as $rowIndex => $rowImages)
-                <tr>
-                    @foreach($rowImages as $colIndex => $imageData)
-                    @php
-                    $globalIndex = ($chunkIndex * $imagesPerPage) + ($rowIndex * 3) + $colIndex;
+    @foreach(array_chunk($imageChunk, 3) as $rowIndex => $rowImages)
+    <tr>
+        @foreach($rowImages as $colIndex => $imageData)
+        @php
+        $globalIndex = ($chunkIndex * $imagesPerPage) + ($rowIndex * 3) + $colIndex;
 
-                    // Extract path
-                    $imagePath = null;
-                    $imageCategory = 'unknown';
+        // Extract path and category
+        $imagePath = null;
+        $imageCategory = 'unknown';
+        $imageInfo = null;
 
-                    if (is_array($imageData)) {
-                        $imagePath = $imageData['path'] ?? null;
-                        $imageCategory = $imageData['category'] ?? 'unknown';
-                    } elseif (is_string($imageData)) {
-                        $imagePath = $imageData;
-                    }
+        if (is_array($imageData)) {
+            $imagePath = $imageData['path'] ?? null;
+            $imageCategory = $imageData['category'] ?? 'unknown';
 
-                    // Convert to base64
-                    $imageBase64 = null;
-                    if ($imagePath) {
-                        $imageBase64 = imageToBase64($imagePath);
-                    }
-                    @endphp
+            // Extract GPS info if available
+            if (isset($imageData['lat']) && isset($imageData['lng'])) {
+                $imageInfo = [
+                    'lat' => $imageData['lat'],
+                    'lng' => $imageData['lng'],
+                    'timestamp' => $imageData['timestamp'] ?? null,
+                    'address' => $imageData['address'] ?? null,
+                ];
+            }
+        } elseif (is_string($imageData)) {
+            $imagePath = $imageData;
+        }
 
-                    <td style="width: 33.33%; padding: 2px; text-align: center; border: none; vertical-align: top;">
-                        @if($imageBase64)
-                        <div style="width: 100%; background: #f9f9f9; margin-bottom: 2px; border-radius: 2px; overflow: hidden; font-size: 0;">
-                            <div style="width: 100%; height: 280px; display: flex; align-items: center; justify-content: center; font-size: 0; line-height: 0;">
-                                <img src="{{ $imageBase64 }}" alt="{{ ucwords(str_replace('_', ' ', $imageCategory)) }}"
-                                    style="max-width: 100%; max-height: 100%; object-fit: contain; display: block; margin: 0; padding: 0;">
-                            </div>
-                            <div style="font-size: 8pt; font-weight: bold; color: #000; padding: 4px 2px; background: #f5f5f5; text-align: center; line-height: 1.2; margin: 0;">
-                                {{ ucwords(str_replace('_', ' ', $imageCategory)) }}
-                            </div>
-                        </div>
-                        @else
-                        <div style="width: 100%; height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 8pt; border: 1px solid #ddd;">
-                            Image not found
-                            @if($imagePath)
-                            <br><span style="font-size: 6pt;">{{ basename($imagePath) }}</span>
-                            @endif
-                        </div>
-                        @endif
-                    </td>
-                    @endforeach
+        // Convert to base64
+        $imageBase64 = null;
+        if ($imagePath) {
+            $imageBase64 = imageToBase64($imagePath);
+        }
 
-                    {{-- Fill remaining cells --}}
-                    @for($i = count($rowImages); $i < 3; $i++)
-                    <td style="width: 33.33%; padding: 2px; border: none;"></td>
-                    @endfor
-                </tr>
-                @endforeach
-            </table>
+        // Get descriptive label for category
+        $categoryLabels = [
+            'env_condition' => 'Environmental Condition',
+            'led_display' => 'LED/Display',
+            'battery_connection' => 'Battery Connection',
+            'ac_voltage' => 'AC Input Voltage',
+            'ac_current' => 'AC Current Input',
+            'dc_current' => 'DC Current Output',
+            'battery_temp' => 'Battery Temperature',
+            'charging_voltage' => 'Charging Voltage DC',
+            'charging_current' => 'Charging Current DC',
+            'rectifier_test' => 'Rectifier Switching Test',
+            'battery_voltage_m1' => 'Battery Voltage - Measurement I',
+            'battery_voltage_m2' => 'Battery Voltage - Measurement II',
+            'alarm' => 'Power Alarm Monitoring Test',
+            'visual_check' => 'Visual Check',
+            'performance' => 'Performance Check',
+            'backup' => 'Backup Test',
+        ];
+
+        $categoryLabel = $categoryLabels[$imageCategory] ?? ucwords(str_replace('_', ' ', $imageCategory));
+        @endphp
+
+        <td style="width: 33.33%; padding: 2px; text-align: center; border: none; vertical-align: top;">
+            @if($imageBase64)
+            <div style="width: 100%; background: #ffffff; margin-bottom: 2px; border: 1px solid #ddd; border-radius: 2px; overflow: hidden;">
+                {{-- Image Container --}}
+                <div style="width: 100%; height: 260px; display: flex; align-items: center; justify-content: center; background: #fafafa; padding: 2px;">
+                    <img src="{{ $imageBase64 }}"
+                         alt="{{ $categoryLabel }}"
+                         style="max-width: 100%; max-height: 100%; object-fit: contain; display: block;">
+                </div>
+
+                {{-- Category Label --}}
+                <div style="font-size: 7.5pt; font-weight: bold; color: #000; padding: 5px 4px; background: #e8f4f8; text-align: center; line-height: 1.3; border-top: 1px solid #ddd;">
+                    {{ $categoryLabel }}
+                </div>
+
+                {{-- GPS and Timestamp Info --}}
+                @if($imageInfo)
+                <div style="font-size: 6pt; color: #555; padding: 4px; background: #f9f9f9; text-align: left; line-height: 1.5; border-top: 1px solid #e0e0e0;">
+                    @if(isset($imageInfo['timestamp']))
+                    <div style="margin-bottom: 2px;">
+                        <strong style="color: #000;">📅 Time:</strong>
+                        {{ \Carbon\Carbon::parse($imageInfo['timestamp'])->format('d M Y H:i:s') }}
+                    </div>
+                    @endif
+
+                    @if(isset($imageInfo['lat']) && isset($imageInfo['lng']))
+                    <div style="margin-bottom: 2px;">
+                        <strong style="color: #000;">📍 GPS:</strong>
+                        {{ number_format($imageInfo['lat'], 6) }}, {{ number_format($imageInfo['lng'], 6) }}
+                    </div>
+                    @endif
+
+                    @if(isset($imageInfo['address']))
+                    <div style="font-size: 5.5pt; line-height: 1.3;">
+                        <strong style="color: #000;">📌 Location:</strong><br>
+                        {{ Str::limit($imageInfo['address'], 70) }}
+                    </div>
+                    @endif
+                </div>
+                @endif
+            </div>
+            @else
+            {{-- Image Not Found Placeholder --}}
+            <div style="width: 100%; height: 260px; background-color: #f5f5f5; border: 1px dashed #ccc; border-radius: 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #999;">
+                {{-- Icon SVG --}}
+                <div style="margin-bottom: 8px;">
+                    <svg style="width: 40px; height: 40px; fill: #ccc;" viewBox="0 0 24 24">
+                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                        <path d="M2 2L22 22" stroke="#999" stroke-width="1"/>
+                    </svg>
+                </div>
+                <div style="font-size: 8pt; font-weight: bold;">Image not found</div>
+                @if($imagePath)
+                <div style="font-size: 6pt; color: #bbb; margin-top: 4px; padding: 0 8px; text-align: center; word-break: break-all;">
+                    {{ basename($imagePath) }}
+                </div>
+                @endif
+                <div style="font-size: 6.5pt; color: #aaa; margin-top: 6px; padding: 4px 8px; background: #f0f0f0; border-radius: 3px;">
+                    {{ $categoryLabel }}
+                </div>
+            </div>
+            @endif
+        </td>
+        @endforeach
+
+        {{-- Fill remaining cells if row has less than 3 images --}}
+        @for($i = count($rowImages); $i < 3; $i++)
+        <td style="width: 33.33%; padding: 2px; border: none;"></td>
+        @endfor
+    </tr>
+    @endforeach
+</table>
         </div>
     </div>
 
