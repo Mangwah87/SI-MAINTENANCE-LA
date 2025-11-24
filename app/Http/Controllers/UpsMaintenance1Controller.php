@@ -335,70 +335,70 @@ class UpsMaintenance1Controller extends Controller
         return $request->validate([
             'central_id' => 'required|exists:central,id',
             'date_time' => 'required|date',
-            'brand_type' => 'required|string|max:255',
-            'capacity' => 'required|string|max:255',
+            'brand_type' => 'nullable|string|max:255',
+            'capacity' => 'nullable|string|max:255',
             'reg_number' => 'nullable|string|max:255',
             'sn' => 'nullable|string|max:255',
 
             // Visual Check
-            'env_condition' => 'required|string|max:255',
-            'status_env_condition' => 'required|in:OK,NOK',
-            'led_display' => 'required|string|max:255',
-            'status_led_display' => 'required|in:OK,NOK',
-            'battery_connection' => 'required|string|max:255',
-            'status_battery_connection' => 'required|in:OK,NOK',
+            'env_condition' => 'nullable|string|max:255',
+            'status_env_condition' => 'nullable|in:OK,NOK',
+            'led_display' => 'nullable|string|max:255',
+            'status_led_display' => 'nullable|in:OK,NOK',
+            'battery_connection' => 'nullable|string|max:255',
+            'status_battery_connection' => 'nullable|in:OK,NOK',
 
             // Performance and Capacity Check
-            'ac_input_voltage' => 'required|numeric',
-            'status_ac_input_voltage' => 'required|in:OK,NOK',
+            'ac_input_voltage' => 'nullable|numeric',
+            'status_ac_input_voltage' => 'nullable|in:OK,NOK',
 
-            'ac_output_voltage' => 'required|numeric',
-            'status_ac_output_voltage' => 'required|in:OK,NOK',
+            'ac_output_voltage' => 'nullable|numeric',
+            'status_ac_output_voltage' => 'nullable|in:OK,NOK',
 
-            'neutral_ground_voltage' => 'required|numeric',
-            'status_neutral_ground_voltage' => 'required|in:OK,NOK',
+            'neutral_ground_voltage' => 'nullable|numeric',
+            'status_neutral_ground_voltage' => 'nullable|in:OK,NOK',
 
-            'ac_current_input' => 'required|numeric',
-            'status_ac_current_input' => 'required|in:OK,NOK',
+            'ac_current_input' => 'nullable|numeric',
+            'status_ac_current_input' => 'nullable|in:OK,NOK',
 
-            'ac_current_output' => 'required|numeric',
-            'status_ac_current_output' => 'required|in:OK,NOK',
+            'ac_current_output' => 'nullable|numeric',
+            'status_ac_current_output' => 'nullable|in:OK,NOK',
 
-            'ups_temperature' => 'required|numeric',
-            'status_ups_temperature' => 'required|in:OK,NOK',
+            'ups_temperature' => 'nullable|numeric',
+            'status_ups_temperature' => 'nullable|in:OK,NOK',
 
-            'output_frequency' => 'required|numeric',
-            'status_output_frequency' => 'required|in:OK,NOK',
+            'output_frequency' => 'nullable|numeric',
+            'status_output_frequency' => 'nullable|in:OK,NOK',
 
-            'charging_voltage' => 'required|numeric',
-            'status_charging_voltage' => 'required|in:OK,NOK',
+            'charging_voltage' => 'nullable|numeric',
+            'status_charging_voltage' => 'nullable|in:OK,NOK',
 
-            'charging_current' => 'required|numeric',
-            'status_charging_current' => 'required|in:OK,NOK',
+            'charging_current' => 'nullable|numeric',
+            'status_charging_current' => 'nullable|in:OK,NOK',
 
-            'fan' => 'required|string|max:255',
-            'status_fan' => 'required|in:OK,NOK',
+            'fan' => 'nullable|string|max:255',
+            'status_fan' => 'nullable|in:OK,NOK',
 
             // Backup Tests
-            'ups_switching_test' => 'required|string|max:255',
-            'status_ups_switching_test' => 'required|in:OK,NOK',
+            'ups_switching_test' => 'nullable|string|max:255',
+            'status_ups_switching_test' => 'nullable|in:OK,NOK',
 
-            'battery_voltage_measurement_1' => 'required|numeric',
-            'status_battery_voltage_measurement_1' => 'required|in:OK,NOK',
+            'battery_voltage_measurement_1' => 'nullable|numeric',
+            'status_battery_voltage_measurement_1' => 'nullable|in:OK,NOK',
 
-            'battery_voltage_measurement_2' => 'required|numeric',
-            'status_battery_voltage_measurement_2' => 'required|in:OK,NOK',
+            'battery_voltage_measurement_2' => 'nullable|numeric',
+            'status_battery_voltage_measurement_2' => 'nullable|in:OK,NOK',
 
             // Power Alarm Monitoring Test
-            'simonica_alarm_test' => 'required|string|max:255',
-            'status_simonica_alarm_test' => 'required|in:OK,NOK',
+            'simonica_alarm_test' => 'nullable|string|max:255',
+            'status_simonica_alarm_test' => 'nullable|in:OK,NOK',
 
             // Notes and Personnel
             'notes' => 'nullable|string',
 
-            'executor_1' => 'required|string|max:255',
+            'executor_1' => 'nullable|string|max:255',
             'executor_2' => 'nullable|string|max:255',
-            'supervisor' => 'required|string|max:255',
+            'supervisor' => 'nullable|string|max:255',
             'supervisor_id_number' => 'nullable|string|max:255',
 
             'department' => 'nullable|string|max:255',

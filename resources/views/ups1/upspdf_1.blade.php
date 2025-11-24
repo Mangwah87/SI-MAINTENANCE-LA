@@ -252,21 +252,21 @@
                 <td>a. Environment Condition</td>
                 <td>{{ $maintenance->env_condition }}</td>
                 <td>Clean, No dust</td>
-                <td class="center">{{ $maintenance->status_env_condition ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_env_condition ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>b. LED / display *)</td>
                 <td>{{ $maintenance->led_display }}</td>
                 <td>Normal</td>
-                <td class="center">{{ $maintenance->status_led_display ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_led_display ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>c. Battery Connection</td>
                 <td>{{ $maintenance->battery_connection }}</td>
                 <td>Tighten, No Corrosion</td>
-                <td class="center">{{ $maintenance->status_battery_connection ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_battery_connection ?? '-' }}</td>
             </tr>
 
             {{-- Performance and Capacity Check --}}
@@ -279,21 +279,21 @@
                 <td>a. AC input voltage</td>
                 <td>{{ $maintenance->ac_input_voltage }} V</td>
                 <td>180-240 VAC</td>
-                <td class="center">{{ $maintenance->status_ac_input_voltage ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_ac_input_voltage ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>b. AC output voltage</td>
                 <td>{{ $maintenance->ac_output_voltage }} V</td>
                 <td>210-240 VAC</td>
-                <td class="center">{{ $maintenance->status_ac_output_voltage ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_ac_output_voltage ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>c. Neutral – Ground Output Voltage</td>
                 <td>{{ $maintenance->neutral_ground_voltage }} V</td>
                 <td><span class="unicode-symbol">&lt;</span> 1 VAC</td>
-                <td class="center">{{ $maintenance->status_neutral_ground_voltage ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_neutral_ground_voltage ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
@@ -305,7 +305,7 @@
                     <span class="unicode-symbol">≤</span> 27 A (UPS 6 KVA)<br>
                     <span class="unicode-symbol">≤</span> 37 A (UPS 8 KVA)
                 </td>
-                <td class="center">{{ $maintenance->status_ac_current_input ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_ac_current_input ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
@@ -317,42 +317,42 @@
                     <span class="unicode-symbol">≤</span> 27 A (UPS 6 KVA)<br>
                     <span class="unicode-symbol">≤</span> 22 A (UPS 8 KVA)
                 </td>
-                <td class="center">{{ $maintenance->status_ac_current_output ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_ac_current_output ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>f. UPS temperature</td>
                 <td>{{ $maintenance->ups_temperature }} °C</td>
                 <td>0-40 °C</td>
-                <td class="center">{{ $maintenance->status_ups_temperature ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_ups_temperature ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>g. Output frequency</td>
                 <td>{{ $maintenance->output_frequency }} Hz</td>
                 <td>49.75-50.25 Hz</td>
-                <td class="center">{{ $maintenance->status_output_frequency ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_output_frequency ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>h. Charging voltage</td>
                 <td>{{ $maintenance->charging_voltage }} V</td>
                 <td>See Battery Performance table</td>
-                <td class="center">{{ $maintenance->status_charging_voltage ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_charging_voltage ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>i. Charging current</td>
                 <td>{{ $maintenance->charging_current }} A</td>
                 <td>0 Ampere, on-line mode</td>
-                <td class="center">{{ $maintenance->status_charging_current ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_charging_current ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>j. FAN</td>
                 <td>{{ $maintenance->fan }}</td>
                 <td>Berputar</td>
-                <td class="center">{{ $maintenance->status_fan ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_fan ?? '-' }}</td>
             </tr>
 
             {{-- Backup Tests --}}
@@ -365,7 +365,7 @@
                 <td>a. UPS Switching test, from the main source (PLN) to back up mode, by turning off UPS input MCB</td>
                 <td>{{ $maintenance->ups_switching_test }}</td>
                 <td>UPS Normal Operations</td>
-                <td class="center">{{ $maintenance->status_ups_switching_test ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_ups_switching_test ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
@@ -379,14 +379,14 @@
                 <td style="padding-left: 15px;">- Measurement I (at the beginning)</td>
                 <td>{{ $maintenance->battery_voltage_measurement_1 }} V</td>
                 <td>See Battery Performance table</td>
-                <td class="center">{{ $maintenance->status_battery_voltage_measurement_1 ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_battery_voltage_measurement_1 ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td style="padding-left: 15px;">- Measurement II (+/- 15 minutes)</td>
                 <td>{{ $maintenance->battery_voltage_measurement_2 }} V</td>
                 <td>See Battery Performance table</td>
-                <td class="center">{{ $maintenance->status_battery_voltage_measurement_2 ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_battery_voltage_measurement_2 ?? '-' }}</td>
             </tr>
 
             {{-- Power Alarm Monitoring Test --}}
@@ -399,7 +399,7 @@
                 <td>Makesure the Simonica alarm monitor, by turn off UPS power input MCB during UPS backup test operation</td>
                 <td>{{ $maintenance->simonica_alarm_test }}</td>
                 <td>Simonica Alarm</td>
-                <td class="center">{{ $maintenance->status_simonica_alarm_test ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_simonica_alarm_test ?? '-' }}</td>
             </tr>
         </table>
 
@@ -627,3 +627,4 @@
     @endif
 </body>
 </html>
+

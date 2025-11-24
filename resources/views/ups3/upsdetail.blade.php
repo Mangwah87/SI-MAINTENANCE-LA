@@ -84,8 +84,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->env_condition }}</td>
                                 <td class="border p-2 text-sm text-gray-600">Clean, No dust</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_env_condition ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_env_condition ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_env_condition ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_env_condition ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -94,8 +94,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->led_display }}</td>
                                 <td class="border p-2 text-sm text-gray-600">Normal</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_led_display ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_led_display ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_led_display ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_led_display ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -104,8 +104,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->battery_connection }}</td>
                                 <td class="border p-2 text-sm text-gray-600">Tighten, No Corrosion</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_battery_connection ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_battery_connection ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_battery_connection ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_battery_connection ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -137,8 +137,8 @@
                                 </td>
                                 <td class="border p-2 text-sm text-gray-600">360 - 400 VAC</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ac_input_voltage ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_ac_input_voltage ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ac_input_voltage ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_ac_input_voltage ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -151,8 +151,8 @@
                                 </td>
                                 <td class="border p-2 text-sm text-gray-600">370 - 390 VAC</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ac_output_voltage ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_ac_output_voltage ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ac_output_voltage ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_ac_output_voltage ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -165,8 +165,8 @@
                                 </td>
                                 <td class="border p-2 text-sm text-gray-600">Sesuai kapasitas UPS</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ac_current_input ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_ac_current_input ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ac_current_input ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_ac_current_input ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -179,8 +179,8 @@
                                 </td>
                                 <td class="border p-2 text-sm text-gray-600">Sesuai kapasitas UPS</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ac_current_output ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_ac_current_output ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ac_current_output ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_ac_current_output ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -189,8 +189,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->ups_temperature }} °C</td>
                                 <td class="border p-2 text-sm text-gray-600">0-40 °C</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ups_temperature ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_ups_temperature ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_ups_temperature ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_ups_temperature ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -199,8 +199,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->output_frequency }} Hz</td>
                                 <td class="border p-2 text-sm text-gray-600">48.75-50.25 Hz</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_output_frequency ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_output_frequency ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_output_frequency ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_output_frequency ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -209,8 +209,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->charging_voltage }} V</td>
                                 <td class="border p-2 text-sm text-gray-600">See Battery Performance table</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_charging_voltage ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_charging_voltage ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_charging_voltage ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_charging_voltage ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -219,8 +219,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->charging_current }} A</td>
                                 <td class="border p-2 text-sm text-gray-600">0 Ampere, on-line mode</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_charging_current ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_charging_current ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_charging_current ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_charging_current ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -365,3 +365,4 @@
         });
     </script>
 </x-app-layout>
+

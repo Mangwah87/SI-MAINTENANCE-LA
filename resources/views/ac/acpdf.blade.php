@@ -286,35 +286,35 @@
                 <td>a. Environment Condition</td>
                 <td>{{ $maintenance->environment_condition }}</td>
                 <td>No dust</td>
-                <td class="center">{{ $maintenance->status_environment_condition ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_environment_condition ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>b. Filter</td>
                 <td>{{ $maintenance->filter }}</td>
                 <td>Clean, No dust</td>
-                <td class="center">{{ $maintenance->status_filter ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_filter ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>c. Evaporator</td>
                 <td>{{ $maintenance->evaporator }}</td>
                 <td>Clean, No dust</td>
-                <td class="center">{{ $maintenance->status_evaporator ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_evaporator ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>d. LED & display<br>(include remote control)</td>
                 <td>{{ $maintenance->led_display }}</td>
                 <td>Normal</td>
-                <td class="center">{{ $maintenance->status_led_display ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_led_display ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>e. Air Flow</td>
                 <td>{{ $maintenance->air_flow }}</td>
                 <td>Fan operates normally, cool air flow</td>
-                <td class="center">{{ $maintenance->status_air_flow ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_air_flow ?? '-' }}</td>
             </tr>
 
             {{-- Room Temperature --}}
@@ -327,14 +327,14 @@
                 <td>Shelter/Ruangan (ODC)</td>
                 <td>{{ $maintenance->temp_shelter ?? '-' }} °C</td>
                 <td><span class="unicode-symbol">&le;</span>22 °C Shelter/Ruangan</td>
-                <td class="center">{{ $maintenance->status_temp_shelter ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_temp_shelter ?? '-' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>Outdoor Cabinet (ODC)</td>
                 <td>{{ $maintenance->temp_outdoor_cabinet ?? '-' }} °C</td>
                 <td><span class="unicode-symbol">&le;</span> 28 °C Outdoor Cabinet (ODC)</td>
-                <td class="center">{{ $maintenance->status_temp_outdoor_cabinet ?? 'OK' }}</td>
+                <td class="center">{{ $maintenance->status_temp_outdoor_cabinet ?? '-' }}</td>
             </tr>
 
             {{-- Input Current Air Cond - SHOW ALL 7 AC STANDARDS --}}
@@ -576,3 +576,4 @@
     @endif
 </body>
 </html>
+
