@@ -16,14 +16,24 @@
 
     <div class="py-4 sm:py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            @if(session('success'))
+                <x-alert type="success" message="{{ session('success') }}" />
+            @endif
+            @if(session('error'))
+                <x-alert type="error" message="{{ session('error') }}" />
+            @endif
+            @if ($errors->any())
+                <x-alert type="warning" :errors="$errors" />
+            @endif
+
             <form action="{{ route('schedule.store') }}" method="POST" id="scheduleForm" class="bg-white p-6 sm:p-8 shadow-xl sm:rounded-lg">
                 @csrf
-                
+
                 <h3 class="text-xl font-bold mb-4 border-b pb-2 text-blue-600">Data Utama Jadwal</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"> 
-                    
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
                     {{-- BARIS 1 --}}
-                    
+
                     {{-- Kolom 1: Tanggal Pembuatan (Dipindahkan dari Baris 2) --}}
                     <div>
                         <x-input-label for="tanggal_pembuatan" :value="__('Tanggal Pembuatan')" />
@@ -44,9 +54,9 @@
                         <x-text-input id="mengetahui_nama" name="mengetahui_nama" type="text" class="mt-1 block w-full" :value="old('mengetahui_nama')" placeholder="Nama Manajer" required />
                         <x-input-error class="mt-2" :messages="$errors->get('mengetahui_nama')" />
                     </div>
-                    
+
                     {{-- BARIS 2 --}}
-                    
+
                     {{-- Kolom 1 di baris 2: NIK Petugas (Dipindahkan ke posisi awal di baris ini) --}}
                     <div class="md:col-span-1">
                         <x-input-label for="dibuat_oleh_nik" :value="__('NIK Petugas')" />
@@ -60,17 +70,17 @@
                         <x-text-input id="mengetahui_nik" name="mengetahui_nik" type="text" class="mt-1 block w-full" :value="old('mengetahui_nik')" placeholder="NIK Manajer" required />
                         <x-input-error class="mt-2" :messages="$errors->get('mengetahui_nik')" />
                     </div>
-                    
+
                     {{-- Kolom 3 di baris 2: Dikosongkan (optional) atau ditambahkan field lain jika ada --}}
-                    <div></div> 
-                    
+                    <div></div>
+
                 </div>
 
                 <h3 class="text-xl font-bold mb-4 border-b pb-2 text-blue-600">Detail Lokasi PM</h3>
                 <div id="locations-container" class="space-y-4 mb-6">
-                    
+
                     @php
-                        $locations_data = old('locations', [[]]); 
+                        $locations_data = old('locations', [[]]);
                     @endphp
 
                     @foreach ($locations_data as $index => $location)
@@ -88,7 +98,7 @@
                         <div class="location-item border p-4 rounded-lg shadow-sm bg-gray-50 grid grid-cols-1 gap-4" data-index="{{ $index }}" data-permanent="{{ $is_permanent ? 'true' : 'false' }}">
                             <div class="col-span-1 flex justify-between items-center mb-2">
                                 <h4 class="location-title font-semibold text-gray-700">Lokasi #{{ $index + 1 }}</h4>
-                                
+
                                 @if(!$is_permanent)
                                 <button type="button" class="remove-location-btn text-red-500 hover:text-red-700 transition-colors duration-200" data-index="{{ $index }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -96,12 +106,12 @@
                                     </svg>
                                 </button>
                                 @else
-                                <span></span> 
+                                <span></span>
                                 @endif
                             </div>
-                            
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="md:col-span-1 flex flex-col gap-4"> 
+                                <div class="md:col-span-1 flex flex-col gap-4">
                                     <div>
                                         <x-input-label for="locations[{{ $index }}][nama]" :value="__('Nama Lokasi')" />
                                         <x-text-input id="locations[{{ $index }}][nama]" name="locations[{{ $index }}][nama]" type="text" class="mt-1 block w-full" value="{{ $nama_value }}" required />
@@ -110,21 +120,21 @@
 
                                     <div>
                                         <x-input-label :value="__('Tanggal Rencana')" class="mb-2" />
-                                        <div class="grid grid-cols-6 gap-2 p-3 border border-indigo-200 rounded-md bg-white overflow-y-auto max-h-40"> 
+                                        <div class="grid grid-cols-6 gap-2 p-3 border border-indigo-200 rounded-md bg-white overflow-y-auto max-h-40">
                                             <div class="col-span-6 flex items-center justify-center p-1 border border-indigo-500 rounded-sm w-full h-8 bg-indigo-100 hover:bg-indigo-200 transition duration-150">
-                                                <input id="{{ $rencana_name }}_all" type="checkbox" 
-                                                    class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-indigo-300 rounded" 
+                                                <input id="{{ $rencana_name }}_all" type="checkbox"
+                                                    class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-indigo-300 rounded"
                                                     onclick="handleAllToggle(this, '{{ $rencana_name }}')"
                                                     {{ count($rencana_old) == 31 ? 'checked' : '' }}>
                                                 <label for="{{ $rencana_name }}_all" class="text-xs font-semibold text-indigo-700 ml-1 select-none">PILIH SEMUA</label>
                                             </div>
-                                            
+
                                             @for ($i = 1; $i <= 31; $i++)
                                                 <div class="flex items-center justify-center p-1 border border-gray-300 rounded-sm w-8 h-8 hover:bg-gray-100 transition duration-150">
-                                                    <input id="{{ $rencana_name }}_{{ $i }}" type="checkbox" 
-                                                            name="{{ $rencana_name }}[]" 
-                                                            value="{{ $i }}" 
-                                                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" 
+                                                    <input id="{{ $rencana_name }}_{{ $i }}" type="checkbox"
+                                                            name="{{ $rencana_name }}[]"
+                                                            value="{{ $i }}"
+                                                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
                                                             onclick="handleCheckboxClick(this)"
                                                             {{ in_array($i, $rencana_old) ? 'checked' : '' }}>
                                                     <label for="{{ $rencana_name }}_{{ $i }}" class="text-xs font-medium text-gray-700 ml-1 select-none">{{ $i }}</label>
@@ -133,20 +143,20 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="md:col-span-1 flex flex-col gap-4">
                                     <div>
-                                        <x-input-label for="locations[{{ $index }}][petugas_nama]" :value="__('Petugas Pelaksana')" /> 
+                                        <x-input-label for="locations[{{ $index }}][petugas_nama]" :value="__('Petugas Pelaksana')" />
                                         <x-text-input id="locations[{{ $index }}][petugas_nama]" name="locations[{{ $index }}][petugas_nama]" type="text" class="mt-1 block w-full" value="{{ $petugas_value }}" required />
-                                        <x-input-error class="mt-2" :messages="$errors->get('locations.' . $index . '.petugas_nama')" /> 
+                                        <x-input-error class="mt-2" :messages="$errors->get('locations.' . $index . '.petugas_nama')" />
                                     </div>
 
                                     <div>
                                         <x-input-label :value="__('Tanggal Realisasi')" class="mb-2" />
-                                        <div class="grid grid-cols-6 gap-2 p-3 border border-green-200 rounded-md bg-white overflow-y-auto max-h-40"> 
+                                        <div class="grid grid-cols-6 gap-2 p-3 border border-green-200 rounded-md bg-white overflow-y-auto max-h-40">
                                             <div class="col-span-6 flex items-center justify-center p-1 border border-green-500 rounded-sm w-full h-8 bg-green-100 hover:bg-green-200 transition duration-150">
-                                                <input id="{{ $realisasi_name }}_all" type="checkbox" 
-                                                    class="focus:ring-green-500 h-4 w-4 text-green-600 border-green-300 rounded" 
+                                                <input id="{{ $realisasi_name }}_all" type="checkbox"
+                                                    class="focus:ring-green-500 h-4 w-4 text-green-600 border-green-300 rounded"
                                                     onclick="handleAllToggle(this, '{{ $realisasi_name }}')"
                                                     {{ count($realisasi_old) == 31 ? 'checked' : '' }}>
                                                 <label for="{{ $realisasi_name }}_all" class="text-xs font-semibold text-green-700 ml-1 select-none">PILIH SEMUA</label>
@@ -154,10 +164,10 @@
 
                                             @for ($i = 1; $i <= 31; $i++)
                                                 <div class="flex items-center justify-center p-1 border border-gray-300 rounded-sm w-8 h-8 hover:bg-gray-100 transition duration-150">
-                                                    <input id="{{ $realisasi_name }}_{{ $i }}" type="checkbox" 
-                                                            name="{{ $realisasi_name }}[]" 
-                                                            value="{{ $i }}" 
-                                                            class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded" 
+                                                    <input id="{{ $realisasi_name }}_{{ $i }}" type="checkbox"
+                                                            name="{{ $realisasi_name }}[]"
+                                                            value="{{ $i }}"
+                                                            class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded"
                                                             onclick="handleCheckboxClick(this)"
                                                             {{ in_array($i, $realisasi_old) ? 'checked' : '' }}>
                                                     <label for="{{ $realisasi_name }}_{{ $i }}" class="text-xs font-medium text-gray-700 ml-1 select-none">{{ $i }}</label>
@@ -196,7 +206,7 @@
 
         const addLocationBtn = document.getElementById('add-location-btn');
         const MAX_LOCATIONS = 10; // Batas maksimal lokasi
-        
+
         const generateDateCheckboxes = (name, isRencana = true) => {
             const colorClass = isRencana ? 'indigo' : 'green';
             let html = '';
@@ -223,20 +233,20 @@
         window.handleCheckboxClick = (checkbox) => {
             const container = checkbox.closest('.location-item');
             if (!container) return;
-            
+
             const targetName = checkbox.name.replace(/\[\]$/, '');
 
-            const allCheckbox = container.querySelector(`input[id="${targetName}_all"]`); 
+            const allCheckbox = container.querySelector(`input[id="${targetName}_all"]`);
             const dateCheckboxes = container.querySelectorAll(`input[name="${targetName}[]"]`);
 
             if (!allCheckbox) return;
 
             const totalCheckboxes = dateCheckboxes.length;
             const checkedCheckboxes = Array.from(dateCheckboxes).filter(cb => cb.checked).length;
-            
+
             allCheckbox.checked = totalCheckboxes === checkedCheckboxes;
         };
-        
+
         const reindexLocations = () => {
             const locationItems = locationsContainer.querySelectorAll('.location-item');
             locationItems.forEach((item, index) => {
@@ -262,7 +272,7 @@
                         if (input.id) {
                             input.id = input.id.replace(oldIndexString, newIndexString);
                         }
-                        
+
                         if (input.getAttribute('onclick') && input.getAttribute('onclick').includes('handleAllToggle')) {
                             let onclick = input.getAttribute('onclick');
                             const regex = new RegExp(`locations\\[${oldIndex}\\]\\[(rencana|realisasi)\\]`, 'g');
@@ -278,12 +288,12 @@
         // Fungsi untuk update status tombol dan tampilkan pesan
         const updateAddButtonState = () => {
             const currentCount = locationsContainer.querySelectorAll('.location-item').length;
-            
+
             if (currentCount >= MAX_LOCATIONS) {
                 addLocationBtn.disabled = true;
                 addLocationBtn.classList.add('opacity-50', 'cursor-not-allowed');
                 addLocationBtn.classList.remove('hover:bg-green-700');
-                
+
                 // Tambahkan pesan jika belum ada
                 if (!document.getElementById('max-location-message')) {
                     const message = document.createElement('p');
@@ -296,14 +306,14 @@
                 addLocationBtn.disabled = false;
                 addLocationBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 addLocationBtn.classList.add('hover:bg-green-700');
-                
+
                 // Hapus pesan jika ada
                 const message = document.getElementById('max-location-message');
                 if (message) {
                     message.remove();
                 }
             }
-            
+
             // Update info counter
             updateLocationCounter(currentCount);
         };
@@ -327,13 +337,13 @@
             const realisasiName = `locations[${index}][realisasi]`;
             const colorClassRencana = 'indigo';
             const colorClassRealisasi = 'green';
-            
+
             return `
                 <div class="location-item border p-4 rounded-lg shadow-sm bg-gray-50 grid grid-cols-1 gap-4" data-index="${index}" data-permanent="${isPermanent}">
                     <div class="col-span-1 flex justify-between items-center mb-2">
                         <h4 class="location-title font-semibold text-gray-700">Lokasi #${displayNum}</h4>
-                        ${isPermanent ? 
-                            `<span></span>` : 
+                        ${isPermanent ?
+                            `<span></span>` :
                             `<button type="button" class="remove-location-btn text-red-500 hover:text-red-700 transition-colors duration-200" data-index="${index}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -341,24 +351,24 @@
                             </button>`
                         }
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="md:col-span-1 flex flex-col gap-4"> 
+                        <div class="md:col-span-1 flex flex-col gap-4">
                             <div>
                                 <label for="locations[${index}][nama]" class="block font-medium text-sm text-gray-700">Nama Lokasi</label>
                                 <input id="locations[${index}][nama]" name="locations[${index}][nama]" type="text" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required />
                             </div>
-                            
+
                             <div>
                                 <label class="block font-medium text-sm text-gray-700 mb-2">Tanggal Rencana</label>
-                                <div class="grid grid-cols-6 gap-2 p-3 border border-indigo-200 rounded-md bg-white overflow-y-auto max-h-40"> 
+                                <div class="grid grid-cols-6 gap-2 p-3 border border-indigo-200 rounded-md bg-white overflow-y-auto max-h-40">
                                     <div class="col-span-6 flex items-center justify-center p-1 border border-indigo-500 rounded-sm w-full h-8 bg-indigo-100 hover:bg-indigo-200 transition duration-150">
-                                        <input id="${rencanaName}_all" type="checkbox" 
-                                            class="focus:ring-${colorClassRencana}-500 h-4 w-4 text-${colorClassRencana}-600 border-${colorClassRencana}-300 rounded" 
+                                        <input id="${rencanaName}_all" type="checkbox"
+                                            class="focus:ring-${colorClassRencana}-500 h-4 w-4 text-${colorClassRencana}-600 border-${colorClassRencana}-300 rounded"
                                             onclick="handleAllToggle(this, '${rencanaName}')">
                                         <label for="${rencanaName}_all" class="text-xs font-semibold text-indigo-700 ml-1 select-none">PILIH SEMUA</label>
                                     </div>
-                                    
+
                                     ${generateDateCheckboxes(`${rencanaName}`, true)}
                                 </div>
                             </div>
@@ -369,13 +379,13 @@
                                 <label for="locations[${index}][petugas_nama]" class="block font-medium text-sm text-gray-700">Petugas Pelaksana</label>
                                 <input id="locations[${index}][petugas_nama]" name="locations[${index}][petugas_nama]" type="text" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required />
                             </div>
-                            
+
                             <div>
                                 <label class="block font-medium text-sm text-gray-700 mb-2">Tanggal Realisasi</label>
-                                <div class="grid grid-cols-6 gap-2 p-3 border border-green-200 rounded-md bg-white overflow-y-auto max-h-40"> 
+                                <div class="grid grid-cols-6 gap-2 p-3 border border-green-200 rounded-md bg-white overflow-y-auto max-h-40">
                                     <div class="col-span-6 flex items-center justify-center p-1 border border-green-500 rounded-sm w-full h-8 bg-green-100 hover:bg-green-200 transition duration-150">
-                                        <input id="${realisasiName}_all" type="checkbox" 
-                                            class="focus:ring-${colorClassRealisasi}-500 h-4 w-4 text-${colorClassRealisasi}-600 border-${colorClassRealisasi}-300 rounded" 
+                                        <input id="${realisasiName}_all" type="checkbox"
+                                            class="focus:ring-${colorClassRealisasi}-500 h-4 w-4 text-${colorClassRealisasi}-600 border-${colorClassRealisasi}-300 rounded"
                                             onclick="handleAllToggle(this, '${realisasiName}')">
                                         <label for="${realisasiName}_all" class="text-xs font-semibold text-green-700 ml-1 select-none">PILIH SEMUA</label>
                                     </div>
@@ -388,28 +398,28 @@
                 </div>
             `;
         };
-        
+
         function addLocation() {
             const currentCount = locationsContainer.querySelectorAll('.location-item').length;
-            
+
             // Cek apakah sudah mencapai batas maksimal
             if (currentCount >= MAX_LOCATIONS) {
                 alert(`Maksimal ${MAX_LOCATIONS} lokasi. Tidak dapat menambah lokasi lagi.`);
                 return;
             }
-            
+
             const newIndex = locationIndex;
             const newLocation = document.createElement('div');
             newLocation.innerHTML = locationTemplate(newIndex).trim();
             locationsContainer.appendChild(newLocation.firstChild);
-            
+
             locationIndex++;
             reindexLocations();
             updateAddButtonState(); // Update status tombol setelah menambah
         }
 
         addLocationBtn.addEventListener('click', addLocation);
-        
+
         locationsContainer.addEventListener('click', function(e) {
             const button = e.target.closest('.remove-location-btn');
             if (button) {
@@ -428,13 +438,13 @@
         // Tambahkan fungsi untuk inisialisasi status "PILIH SEMUA" pada load
         document.addEventListener('DOMContentLoaded', () => {
             updateAddButtonState(); // Cek status awal
-            
+
             locationsContainer.querySelectorAll('.location-item').forEach(item => {
                 const index = item.getAttribute('data-index');
                 if (index !== null) {
                     const rencanaName = `locations[${index}][rencana]`;
                     const realisasiName = `locations[${index}][realisasi]`;
-                    
+
                     const rencanaCheckboxes = item.querySelectorAll(`input[name="${rencanaName}[]"]`);
                     const realisasiCheckboxes = item.querySelectorAll(`input[name="${realisasiName}[]"]`);
 
@@ -453,7 +463,7 @@
             });
         });
     </script>
-    
+
     <style>
         .w-8 { width: 2rem; }
         .h-8 { height: 2rem; }
