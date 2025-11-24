@@ -743,5 +743,174 @@ function compressImageTo1MB(canvas, initialQuality = 0.85) {
         if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
             console.warn('WARNING: Camera and Geolocation require HTTPS or localhost!');
         }
+
+        // ============================================
+// AUTO-SAVE SEDERHANA - FORM BATTERY
+// ============================================
+
+// Simpan data setiap 3 detik
+let saveTimer;
+
+function autoSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+        const data = {
+            // Data form
+            location: document.querySelector('[name="location"]')?.value,
+            maintenance_date: document.querySelector('[name="maintenance_date"]')?.value,
+            battery_temperature: document.querySelector('[name="battery_temperature"]')?.value,
+            company: document.querySelector('[name="company"]')?.value,
+            battery_brand: document.getElementById('main_battery_brand')?.value,
+            notes: document.querySelector('[name="notes"]')?.value,
+
+            // Pelaksana
+            technician_1_name: document.querySelector('[name="technician_1_name"]')?.value,
+            technician_1_company: document.querySelector('[name="technician_1_company"]')?.value,
+            technician_2_name: document.querySelector('[name="technician_2_name"]')?.value,
+            technician_2_company: document.querySelector('[name="technician_2_company"]')?.value,
+            technician_3_name: document.querySelector('[name="technician_3_name"]')?.value,
+            technician_3_company: document.querySelector('[name="technician_3_company"]')?.value,
+            supervisor: document.querySelector('[name="supervisor"]')?.value,
+            supervisor_id: document.querySelector('[name="supervisor_id"]')?.value,
+
+            // Config
+            total_banks: document.getElementById('total_banks')?.value,
+            batteries_per_bank: document.getElementById('batteries_per_bank')?.value,
+
+            // Battery readings
+            readings: []
+        };
+
+        // Ambil data battery readings
+        document.querySelectorAll('.battery-item').forEach(item => {
+            const idx = item.getAttribute('data-index');
+            data.readings.push({
+                bank: item.querySelector('[name*="[bank_number]"]')?.value,
+                number: item.querySelector('[name*="[battery_number]"]')?.value,
+                voltage: item.querySelector('[name*="[voltage]"]')?.value,
+                photo: item.querySelector(`[data-photo="${idx}"]`)?.value,
+                lat: item.querySelector(`[data-lat="${idx}"]`)?.value,
+                lng: item.querySelector(`[data-lng="${idx}"]`)?.value,
+                time: item.querySelector(`[data-time="${idx}"]`)?.value
+            });
+        });
+
+        // Simpan ke localStorage
+        localStorage.setItem('battery_draft', JSON.stringify(data));
+
+        // Tampilkan indikator
+        showIndicator('✓ Tersimpan');
+    }, 3000);
+}
+
+// Load data saat halaman dibuka
+function loadDraft() {
+    const draft = localStorage.getItem('battery_draft');
+    if (!draft) return;
+
+    if (confirm('Ada draft yang tersimpan. Muat draft?')) {
+        const data = JSON.parse(draft);
+
+        // Isi form
+        if (data.location) document.querySelector('[name="location"]').value = data.location;
+        if (data.maintenance_date) document.querySelector('[name="maintenance_date"]').value = data.maintenance_date;
+        if (data.battery_temperature) document.querySelector('[name="battery_temperature"]').value = data.battery_temperature;
+        if (data.company) document.querySelector('[name="company"]').value = data.company;
+        if (data.battery_brand) document.getElementById('main_battery_brand').value = data.battery_brand;
+        if (data.notes) document.querySelector('[name="notes"]').value = data.notes;
+
+        // Isi pelaksana
+        if (data.technician_1_name) document.querySelector('[name="technician_1_name"]').value = data.technician_1_name;
+        if (data.technician_1_company) document.querySelector('[name="technician_1_company"]').value = data.technician_1_company;
+        if (data.technician_2_name) document.querySelector('[name="technician_2_name"]').value = data.technician_2_name;
+        if (data.technician_2_company) document.querySelector('[name="technician_2_company"]').value = data.technician_2_company;
+        if (data.technician_3_name) document.querySelector('[name="technician_3_name"]').value = data.technician_3_name;
+        if (data.technician_3_company) document.querySelector('[name="technician_3_company"]').value = data.technician_3_company;
+        if (data.supervisor) document.querySelector('[name="supervisor"]').value = data.supervisor;
+        if (data.supervisor_id) document.querySelector('[name="supervisor_id"]').value = data.supervisor_id;
+
+        // Isi config & generate battery
+        if (data.total_banks) document.getElementById('total_banks').value = data.total_banks;
+        if (data.batteries_per_bank) document.getElementById('batteries_per_bank').value = data.batteries_per_bank;
+
+        // Generate battery items jika ada readings
+        if (data.readings && data.readings.length > 0) {
+            setTimeout(() => {
+                document.getElementById('generate-batteries').click();
+
+                setTimeout(() => {
+                    // Isi data readings
+                    data.readings.forEach((r, i) => {
+                        const item = document.querySelectorAll('.battery-item')[i];
+                        if (!item) return;
+
+                        const idx = item.getAttribute('data-index');
+                        if (r.bank) item.querySelector('[name*="[bank_number]"]').value = r.bank;
+                        if (r.number) item.querySelector('[name*="[battery_number]"]').value = r.number;
+                        if (r.voltage) item.querySelector('[name*="[voltage]"]').value = r.voltage;
+
+                        // Restore foto
+                        if (r.photo) {
+                            item.querySelector(`[data-photo="${idx}"]`).value = r.photo;
+                            if (r.lat) item.querySelector(`[data-lat="${idx}"]`).value = r.lat;
+                            if (r.lng) item.querySelector(`[data-lng="${idx}"]`).value = r.lng;
+                            if (r.time) item.querySelector(`[data-time="${idx}"]`).value = r.time;
+
+                            // Show preview
+                            const img = item.querySelector('.captured-image');
+                            if (img) {
+                                img.src = r.photo;
+                                img.classList.remove('hidden');
+                            }
+                        }
+                    });
+                }, 1000);
+            }, 500);
+        }
+
+        alert('Draft berhasil dimuat!');
+    } else {
+        localStorage.removeItem('battery_draft');
+    }
+}
+
+// Tampilkan indikator simpan
+function showIndicator(text) {
+    let indicator = document.getElementById('save-indicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'save-indicator';
+        indicator.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#10b981; color:white; padding:10px 20px; border-radius:8px; font-size:14px; z-index:9999; box-shadow:0 4px 6px rgba(0,0,0,0.1)';
+        document.body.appendChild(indicator);
+    }
+    indicator.textContent = text;
+    indicator.style.display = 'block';
+
+    setTimeout(() => {
+        indicator.style.display = 'none';
+    }, 2000);
+}
+
+// Warning sebelum keluar
+window.addEventListener('beforeunload', (e) => {
+    if (localStorage.getItem('battery_draft')) {
+        e.preventDefault();
+        e.returnValue = 'Ada perubahan yang belum tersimpan';
+    }
+});
+
+// Setup auto-save
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('mainForm');
+    if (!form) return;
+
+    // Load draft
+    loadDraft();
+
+    // Auto-save saat input
+    form.addEventListener('input', autoSave);
+    form.addEventListener('change', autoSave);
+
+});
     </script>
 </x-app-layout>

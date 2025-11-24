@@ -79,9 +79,8 @@
                                         @foreach($centralsByArea as $area => $centrals)
                                             <optgroup label="AREA {{ $area }}">
                                                 @foreach($centrals as $central)
-                                                    <!-- VALUE = ID dari tabel central (1, 2, 3, dst) -->
                                                     <option value="{{ $central->id }}"
-                                                        {{ old('location') == $central->id ? 'selected' : '' }}>
+                                                        {{ old('location', isset($maintenance) ? $maintenance->location : '') == $central->id ? 'selected' : '' }}>
                                                         {{ $central->id_sentral }} - {{ $central->nama }}
                                                     </option>
                                                 @endforeach
@@ -140,139 +139,252 @@
 
                             <div class="space-y-6">
                                 <div>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
-                                        <div class="md:col-span-2">
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">a. Environment Condition</label>
-                                            <input type="text" name="env_condition" value="{{ old('env_condition', $maintenance->env_condition ?? '') }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                placeholder="Clean, No dust">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                                            <select name="status_env_condition" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                                <option value="OK" {{ old('status_env_condition', $maintenance->status_env_condition ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
-                                                <option value="NOK" {{ old('status_env_condition', $maintenance->status_env_condition ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
-                                            </select>
-                                        </div>
-                                    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">a. Environment Condition</label>
+            <input type="text" name="env_condition" value="{{ old('env_condition', $maintenance->env_condition ?? '') }}"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Clean, No dust">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+            <select name="status_env_condition" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="OK" {{ old('status_env_condition', $maintenance->status_env_condition ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
+                <option value="NOK" {{ old('status_env_condition', $maintenance->status_env_condition ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
+            </select>
+        </div>
+    </div>
 
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                                            <label class="block text-sm font-medium text-gray-700 mb-3">
-                                                <span class="inline-flex items-center gap-2">
-                                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                    </svg>
-                                                    Foto Environment Condition
-                                                </span>
-                                            </label>
-                                            <div id="camera-container-env-condition" class="space-y-3 mb-3"></div>
-                                            <button type="button" onclick="addCameraSlot('env_condition')"
-                                                class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
-                                                + Tambah Foto
-                                            </button>
-                                        </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+                <span class="inline-flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    Foto Environment Condition
+                </span>
+            </label>
 
-                                        <div class="border border-gray-200 rounded-lg p-4 bg-white">
-                                            <label class="block text-sm font-medium text-gray-700 mb-3">
-                                                <span class="inline-flex items-center gap-2">
-                                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                                    </svg>
-                                                    Upload Gambar (Optional)
-                                                </span>
-                                            </label>
-                                            <input type="file" name="images_env_condition[]" multiple accept="image/jpeg,image/jpg,image/png"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                                onchange="validateImageFiles(this)">
-                                            <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
-
-                                            @if(isset($maintenance))
-                                            <div class="mt-3 grid grid-cols-2 gap-2">
-                                                @foreach($maintenance->getImagesByCategory('env_condition') as $image)
-                                                <div class="relative group" data-image-path="{{ $image['path'] }}">
-                                                    <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
-                                                    <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
-                                                        class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                                @endforeach
-                                            </div>
-                                            @endif
-                                        </div>
-                                    </div>
+            <!-- TAMPILKAN EXISTING CAMERA PHOTOS UNTUK EDIT MODE (HANYA YANG PUNYA GPS) -->
+            @if(isset($maintenance))
+                @php
+                    $existingCameraPhotos = $maintenance->getImagesByCategory('env_condition')->filter(function($img) {
+                        return isset($img['lat']) && isset($img['lng']); // HANYA camera photos dengan GPS
+                    });
+                @endphp
+                @if($existingCameraPhotos->count() > 0)
+                    <div class="mb-3 space-y-2">
+                        <p class="text-xs text-gray-600 font-semibold">Foto yang sudah ada:</p>
+                        @foreach($existingCameraPhotos as $index => $image)
+                            <div class="relative group border border-gray-300 rounded-lg p-2 bg-white">
+                                <img src="{{ Storage::url($image['path']) }}"
+                                     class="w-full rounded border border-gray-200 cursor-pointer hover:opacity-90 transition"
+                                     onclick="openImageModal(this.src, 'Foto {{ $index + 1 }}')"
+                                     title="Klik untuk melihat ukuran penuh">
+                                <div class="mt-1 text-xs text-gray-600">
+                                    <p>📍 Lat: {{ $image['lat'] }}, Lng: {{ $image['lng'] }}</p>
+                                    @if(isset($image['address']))
+                                        <p class="truncate" title="{{ $image['address'] }}">{{ $image['address'] }}</p>
+                                    @endif
+                                    @if(isset($image['timestamp']))
+                                        <p>🕐 {{ date('d M Y H:i', strtotime($image['timestamp'])) }}</p>
+                                    @endif
                                 </div>
+                                <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg hover:bg-red-600"
+                                    title="Hapus foto">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            @endif
 
-                                <div>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
-                                        <div class="md:col-span-2">
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">b. LED/display</label>
-                                            <input type="text" name="led_display" value="{{ old('led_display', $maintenance->led_display ?? '') }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                placeholder="Normal">
-                                        </div>
-                                        <div>
-                                            <select name="status_led_display" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                                <option value="OK" {{ old('status_led_display', $maintenance->status_led_display ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
-                                                <option value="NOK" {{ old('status_led_display', $maintenance->status_led_display ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
-                                            </select>
-                                        </div>
-                                    </div>
+            <div id="camera-container-env-condition" class="space-y-3 mb-3"></div>
+            <button type="button" onclick="addCameraSlot('env_condition')"
+                class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                + Tambah Foto
+            </button>
+        </div>
 
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                                            <label class="block text-sm font-medium text-gray-700 mb-3">
-                                                <span class="inline-flex items-center gap-2">
-                                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                    </svg>
-                                                    Foto LED/Display
-                                                </span>
-                                            </label>
-                                            <div id="camera-container-led-display" class="space-y-3 mb-3"></div>
-                                            <button type="button" onclick="addCameraSlot('led_display')"
-                                                class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
-                                                + Tambah Foto
-                                            </button>
-                                        </div>
+        <div class="border border-gray-200 rounded-lg p-4 bg-white">
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+                <span class="inline-flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    Upload Gambar (Optional)
+                </span>
+            </label>
+            <input type="file" name="images_env_condition[]" multiple accept="image/jpeg,image/jpg,image/png"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                onchange="handleImageUpload(this)">
+            <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
-                                        <div class="border border-gray-200 rounded-lg p-4 bg-white">
-                                            <label class="block text-sm font-medium text-gray-700 mb-3">
-                                                <span class="inline-flex items-center gap-2">
-                                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                                    </svg>
-                                                    Upload Gambar (Optional)
-                                                </span>
-                                            </label>
-                                            <input type="file" name="images_led_display[]" multiple accept="image/jpeg,image/jpg,image/png"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                                onchange="validateImageFiles(this)">
-                                            <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
+            <!-- TAMPILKAN EXISTING UPLOAD IMAGES UNTUK EDIT MODE (HANYA YANG TIDAK PUNYA GPS) -->
+            @if(isset($maintenance))
+                @php
+                    $existingUploadImages = $maintenance->getImagesByCategory('env_condition')->filter(function($img) {
+                        return !isset($img['lat']) && !isset($img['lng']); // HANYA upload images tanpa GPS
+                    });
+                @endphp
+                @if($existingUploadImages->count() > 0)
+                    <div class="mt-3 grid grid-cols-2 gap-2">
+                        @foreach($existingUploadImages as $image)
+                        <div class="relative group" data-image-path="{{ $image['path'] }}">
+                            <img src="{{ Storage::url($image['path']) }}"
+                                 class="w-full h-24 object-cover rounded border border-gray-200 cursor-pointer hover:opacity-90 transition"
+                                 onclick="openImageModal(this.src, '{{ basename($image['path']) }}')"
+                                 title="Klik untuk melihat ukuran penuh">
+                            <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg hover:bg-red-600"
+                                title="Hapus gambar">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        @endforeach
+                    </div>
+                @endif
+            @endif
+        </div>
+    </div>
+</div>
 
-                                            @if(isset($maintenance))
-                                            <div class="mt-3 grid grid-cols-2 gap-2">
-                                                @foreach($maintenance->getImagesByCategory('led_display') as $image)
-                                                <div class="relative group" data-image-path="{{ $image['path'] }}">
-                                                    <img src="{{ Storage::url($image['path']) }}" class="w-full h-24 object-cover rounded border border-gray-200">
-                                                    <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
-                                                        class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                                @endforeach
-                                            </div>
-                                            @endif
-                                            </div>
-                                    </div>
+                                <!-- 2. LED Display -->
+<div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">b. LED/display</label>
+            <input type="text" name="led_display" value="{{ old('led_display', $maintenance->led_display ?? '') }}"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Normal">
+        </div>
+        <div>
+            <select name="status_led_display" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="OK" {{ old('status_led_display', $maintenance->status_led_display ?? 'OK') == 'OK' ? 'selected' : '' }}>OK</option>
+                <option value="NOK" {{ old('status_led_display', $maintenance->status_led_display ?? '') == 'NOK' ? 'selected' : '' }}>NOK</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- FOTO DARI KAMERA (DENGAN GPS) -->
+        <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+                <span class="inline-flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    Foto LED/Display (Kamera dengan GPS)
+                </span>
+            </label>
+
+            <!-- EXISTING CAMERA PHOTOS (HANYA YANG PUNYA GPS) -->
+            @if(isset($maintenance))
+                @php
+                    $existingCameraPhotos = $maintenance->getImagesByCategory('led_display')->filter(function($img) {
+                        return isset($img['lat']) && isset($img['lng']); // HANYA yang ada GPS
+                    });
+                @endphp
+                @if($existingCameraPhotos->count() > 0)
+                    <div class="mb-3 space-y-2">
+                        <p class="text-xs text-gray-600 font-semibold">Foto yang sudah ada ({{ $existingCameraPhotos->count() }}):</p>
+                        @foreach($existingCameraPhotos as $index => $image)
+                            <div class="relative group border border-gray-300 rounded-lg p-2 bg-white">
+                                <img src="{{ Storage::url($image['path']) }}"
+                                    class="w-full rounded border border-gray-200 cursor-pointer hover:opacity-90 transition"
+                                    onclick="openImageModal(this.src, 'Foto {{ $index + 1 }}')"
+                                    title="Klik untuk melihat ukuran penuh">
+                                <div class="mt-1 text-xs text-gray-600">
+                                    <p>📍 Lat: {{ $image['lat'] }}, Lng: {{ $image['lng'] }}</p>
+                                    @if(isset($image['address']))
+                                        <p class="truncate" title="{{ $image['address'] }}">{{ $image['address'] }}</p>
+                                    @endif
+                                    @if(isset($image['timestamp']))
+                                        <p>🕐 {{ date('d M Y H:i', strtotime($image['timestamp'])) }}</p>
+                                    @endif
                                 </div>
+                                <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg hover:bg-red-600"
+                                    title="Hapus foto">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            @endif
+
+            <!-- NEW CAMERA SLOTS -->
+            <div id="camera-container-led-display" class="space-y-3 mb-3"></div>
+            <button type="button" onclick="addCameraSlot('led_display')"
+                class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium">
+                + Tambah Foto Kamera
+            </button>
+            <!-- <p class="text-xs text-gray-500 mt-2">
+                <span class="inline-block mr-1">ℹ️</span>
+                Foto akan otomatis menyimpan lokasi GPS
+            </p> -->
+        </div>
+
+        <!-- UPLOAD GAMBAR (TANPA GPS) -->
+        <div class="border border-gray-200 rounded-lg p-4 bg-white">
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+                <span class="inline-flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    Upload Gambar dari File (Optional)
+                </span>
+            </label>
+            <input type="file" name="images_led_display[]" multiple accept="image/jpeg,image/jpg,image/png"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                onchange="handleImageUpload(this)">
+            <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
+
+            <!-- EXISTING UPLOAD IMAGES (HANYA YANG TIDAK PUNYA GPS) -->
+            @if(isset($maintenance))
+                @php
+                    $existingUploadImages = $maintenance->getImagesByCategory('led_display')->filter(function($img) {
+                        return !isset($img['lat']) && !isset($img['lng']); // HANYA yang TIDAK ada GPS
+                    });
+                @endphp
+                @if($existingUploadImages->count() > 0)
+                    <div class="mt-3">
+                        <p class="text-xs text-gray-600 font-semibold mb-2">Gambar yang sudah ada ({{ $existingUploadImages->count() }}):</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            @foreach($existingUploadImages as $image)
+                            <div class="relative group" data-image-path="{{ $image['path'] }}">
+                                <img src="{{ Storage::url($image['path']) }}"
+                                    class="w-full h-24 object-cover rounded border border-gray-200 cursor-pointer hover:opacity-90 transition"
+                                    onclick="openImageModal(this.src, '{{ basename($image['path']) }}')"
+                                    title="Klik untuk melihat ukuran penuh">
+                                <button type="button" onclick="deleteImage(this, '{{ $image['path'] }}')"
+                                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg hover:bg-red-600"
+                                    title="Hapus gambar">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            @endif
+        </div>
+    </div>
+</div>
 
                                 <div>
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
@@ -319,7 +431,7 @@
                                             </label>
                                             <input type="file" name="images_battery_connection[]" multiple accept="image/jpeg,image/jpg,image/png"
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                                onchange="validateImageFiles(this)">
+                                                onchange="handleImageUpload(this)">
                                             <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                             @if(isset($maintenance))
@@ -391,7 +503,7 @@
                                         </label>
                                         <input type="file" name="images_ac_voltage[]" multiple accept="image/jpeg,image/jpg,image/png"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                            onchange="validateImageFiles(this)">
+                                            onchange="handleImageUpload(this)">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
@@ -461,7 +573,7 @@
                                         </label>
                                         <input type="file" name="images_ac_current[]" multiple accept="image/jpeg,image/jpg,image/png"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                            onchange="validateImageFiles(this)">
+                                            onchange="handleImageUpload(this)">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
@@ -531,7 +643,7 @@
                                         </label>
                                         <input type="file" name="images_dc_current[]" multiple accept="image/jpeg,image/jpg,image/png"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                            onchange="validateImageFiles(this)">
+                                            onchange="handleImageUpload(this)">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
@@ -596,7 +708,7 @@
                                         </label>
                                         <input type="file" name="images_battery_temp[]" multiple accept="image/jpeg,image/jpg,image/png"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                            onchange="validateImageFiles(this)">
+                                            onchange="handleImageUpload(this)">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
@@ -661,7 +773,7 @@
                                         </label>
                                         <input type="file" name="images_charging_voltage[]" multiple accept="image/jpeg,image/jpg,image/png"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                            onchange="validateImageFiles(this)">
+                                            onchange="handleImageUpload(this)">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
@@ -726,7 +838,7 @@
                                         </label>
                                         <input type="file" name="images_charging_current[]" multiple accept="image/jpeg,image/jpg,image/png"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                            onchange="validateImageFiles(this)">
+                                            onchange="handleImageUpload(this)">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
@@ -798,7 +910,7 @@
                                         </label>
                                         <input type="file" name="images_rectifier_test[]" multiple accept="image/jpeg,image/jpg,image/png"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                            onchange="validateImageFiles(this)">
+                                            onchange="handleImageUpload(this)">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
@@ -868,7 +980,7 @@
                                                 </label>
                                                 <input type="file" name="images_battery_voltage_m1[]" multiple accept="image/jpeg,image/jpg,image/png"
                                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                                    onchange="validateImageFiles(this)">
+                                                    onchange="handleImageUpload(this)">
                                                 <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                                 @if(isset($maintenance))
@@ -939,7 +1051,7 @@
                                                 </label>
                                                 <input type="file" name="images_battery_voltage_m2[]" multiple accept="image/jpeg,image/jpg,image/png"
                                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                                    onchange="validateImageFiles(this)">
+                                                    onchange="handleImageUpload(this)">
                                                 <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                                 @if(isset($maintenance))
@@ -1017,7 +1129,7 @@
                                         </label>
                                         <input type="file" name="images_alarm[]" multiple accept="image/jpeg,image/jpg,image/png"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                            onchange="validateImageFiles(this)">
+                                            onchange="handleImageUpload(this)">
                                         <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG (Max: 5MB/file)</p>
 
                                         @if(isset($maintenance))
@@ -1205,7 +1317,7 @@
         });
 
         // FUNGSI VALIDASI GAMBAR - TAMBAHAN BARU
-        function validateImageFiles(input) {
+        function handleImageUpload(input) {
             const files = input.files;
             const maxSize = 5 * 1024 * 1024; // 5MB in bytes
             const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
@@ -1796,7 +1908,8 @@
         }
 
        // FUNGSI VALIDASI DAN PREVIEW GAMBAR UPLOAD - UPDATED
-async function validateImageFiles(input) {
+// FUNGSI VALIDASI GAMBAR UPLOAD - SIMPLIFIED
+function validateImageFiles(input) {
     const files = input.files;
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     const allowedExtensions = ['jpg', 'jpeg', 'png'];
@@ -1818,101 +1931,6 @@ async function validateImageFiles(input) {
         return false;
     }
 
-    // Hapus preview container lama jika ada
-    const oldPreviewContainer = input.parentElement.querySelector('.upload-preview-container');
-    if (oldPreviewContainer) {
-        oldPreviewContainer.remove();
-    }
-
-    // Buat preview container
-    const previewContainer = document.createElement('div');
-    previewContainer.className = 'upload-preview-container mt-3 grid grid-cols-2 md:grid-cols-3 gap-2';
-
-    // Status div untuk kompresi
-    const statusDiv = document.createElement('div');
-    statusDiv.className = 'col-span-full mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm';
-    statusDiv.innerHTML = '<p class="text-blue-600">⏳ Memproses gambar...</p>';
-
-    input.parentElement.appendChild(previewContainer);
-    input.parentElement.appendChild(statusDiv);
-
-    // Kompresi dan preview semua gambar
-    const compressedFiles = [];
-
-    for (let i = 0; i < files.length; i++) {
-        try {
-            statusDiv.innerHTML = `<p class="text-blue-600">⏳ Memproses ${files[i].name} (${i + 1}/${files.length})...</p>`;
-
-            const compressed = await compressImage(files[i]);
-            compressedFiles.push({
-                name: files[i].name,
-                base64: compressed.base64,
-                size: compressed.size,
-                originalSize: compressed.originalSize
-            });
-
-            // Buat preview item
-            const previewItem = document.createElement('div');
-            previewItem.className = 'relative group';
-            previewItem.innerHTML = `
-                <img src="${compressed.base64}"
-                     class="w-full h-24 object-cover rounded border border-gray-200 cursor-pointer hover:opacity-90 transition"
-                     onclick="openImageModal(this.src, '${files[i].name}')"
-                     title="Klik untuk melihat ukuran penuh">
-                <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-xs p-1 rounded-b">
-                    <p class="truncate" title="${files[i].name}">${files[i].name}</p>
-                    <p>${formatFileSize(compressed.size)}</p>
-                </div>
-                <button type="button"
-                        onclick="removeUploadPreview(this, ${i})"
-                        class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg hover:bg-red-600"
-                        title="Hapus gambar">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            `;
-            previewContainer.appendChild(previewItem);
-
-        } catch (error) {
-            console.error('Error processing image:', error);
-            alert(`Gagal memproses ${files[i].name}`);
-            statusDiv.remove();
-            previewContainer.remove();
-            return false;
-        }
-    }
-
-    // Simpan data compressed ke hidden input
-    const oldHiddenInput = input.parentElement.querySelector(`input[name="${input.name}_compressed"]`);
-    if (oldHiddenInput) {
-        oldHiddenInput.remove();
-    }
-
-    const hiddenInput = document.createElement('input');
-    hiddenInput.type = 'hidden';
-    hiddenInput.name = input.name + '_compressed';
-    hiddenInput.value = JSON.stringify(compressedFiles);
-    input.parentElement.appendChild(hiddenInput);
-
-    // Show success message
-    const totalOriginal = compressedFiles.reduce((sum, f) => sum + f.originalSize, 0);
-    const totalCompressed = compressedFiles.reduce((sum, f) => sum + f.size, 0);
-    const savedPercent = ((1 - totalCompressed/totalOriginal) * 100).toFixed(1);
-
-    statusDiv.innerHTML = `
-        <p class="text-green-600 font-semibold">✓ ${compressedFiles.length} gambar berhasil diproses!</p>
-        <p class="text-gray-600 text-xs mt-1">
-            Ukuran asli: ${formatFileSize(totalOriginal)} → Setelah kompresi: ${formatFileSize(totalCompressed)}
-            (hemat ${savedPercent}%)
-        </p>
-    `;
-
-    setTimeout(() => {
-        statusDiv.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-        setTimeout(() => statusDiv.remove(), 500);
-    }, 4000);
-
     return true;
 }
 
@@ -1926,12 +1944,13 @@ function formatFileSize(bytes) {
 }
 
 // Fungsi untuk hapus preview gambar upload
-function removeUploadPreview(button, index) {
+// Fungsi untuk hapus preview gambar upload - UPDATED
+function removeUploadPreview(button, index, inputName) {
     if (confirm('Hapus gambar ini?')) {
         const previewItem = button.closest('.relative');
         const previewContainer = previewItem.parentElement;
-        const uploadInput = previewContainer.closest('.border').querySelector('input[type="file"]');
-        const hiddenInput = previewContainer.parentElement.querySelector(`input[name="${uploadInput.name}_compressed"]`);
+        const uploadInput = previewContainer.closest('.border').querySelector(`input[name="${inputName}"]`);
+        const hiddenInput = previewContainer.parentElement.querySelector(`input[name="${inputName}_compressed"]`);
 
         // Hapus dari preview
         previewItem.remove();
@@ -1947,12 +1966,12 @@ function removeUploadPreview(button, index) {
             remainingItems.forEach((item, newIndex) => {
                 const removeBtn = item.querySelector('button[onclick^="removeUploadPreview"]');
                 if (removeBtn) {
-                    removeBtn.setAttribute('onclick', `removeUploadPreview(this, ${newIndex})`);
+                    removeBtn.setAttribute('onclick', `removeUploadPreview(this, ${newIndex}, '${inputName}')`);
                 }
             });
         }
 
-        // Clear file input jika tidak ada gambar tersisa
+        // Clear file input dan hapus container jika tidak ada gambar tersisa
         if (previewContainer.children.length === 0) {
             uploadInput.value = '';
             previewContainer.remove();
@@ -2059,5 +2078,119 @@ async function compressImage(file, maxSizeMB = 1) {
         reader.readAsDataURL(file);
     });
 }
+
+async function handleImageUpload(input) {
+    // Validasi dulu
+    const isValid = await validateImageFiles(input);
+    if (!isValid) {
+        return;
+    }
+
+    // Jika valid, tampilkan preview
+    await createUploadPreview(input);
+}
+// Fungsi untuk membuat preview upload images
+async function createUploadPreview(input) {
+    const files = input.files;
+    if (files.length === 0) return;
+
+    // Hapus preview container lama jika ada
+    const oldPreviewContainer = input.parentElement.querySelector('.upload-preview-container');
+    if (oldPreviewContainer) {
+        oldPreviewContainer.remove();
+    }
+
+    // Hapus hidden input lama
+    const oldHiddenInput = input.parentElement.querySelector(`input[name="${input.name}_compressed"]`);
+    if (oldHiddenInput) {
+        oldHiddenInput.remove();
+    }
+
+    // Buat preview container
+    const previewContainer = document.createElement('div');
+    previewContainer.className = 'upload-preview-container mt-3 grid grid-cols-2 md:grid-cols-3 gap-2';
+
+    // Status div untuk kompresi
+    const statusDiv = document.createElement('div');
+    statusDiv.className = 'col-span-full mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm';
+    statusDiv.innerHTML = '<p class="text-blue-600">⏳ Memproses gambar...</p>';
+
+    input.parentElement.appendChild(previewContainer);
+    input.parentElement.appendChild(statusDiv);
+
+    // Kompresi dan preview semua gambar
+    const compressedFiles = [];
+
+    for (let i = 0; i < files.length; i++) {
+        try {
+            statusDiv.innerHTML = `<p class="text-blue-600">⏳ Memproses ${files[i].name} (${i + 1}/${files.length})...</p>`;
+
+            const compressed = await compressImage(files[i]);
+            compressedFiles.push({
+                name: files[i].name,
+                base64: compressed.base64,
+                size: compressed.size,
+                originalSize: compressed.originalSize
+            });
+
+            // Buat preview item
+            const previewItem = document.createElement('div');
+            previewItem.className = 'relative group';
+            previewItem.innerHTML = `
+                <img src="${compressed.base64}"
+                     class="w-full h-24 object-cover rounded border border-gray-200 cursor-pointer hover:opacity-90 transition"
+                     onclick="openImageModal(this.src, '${files[i].name}')"
+                     title="Klik untuk melihat ukuran penuh">
+                <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-xs p-1 rounded-b">
+                    <p class="truncate" title="${files[i].name}">${files[i].name}</p>
+                    <p>${formatFileSize(compressed.size)}</p>
+                </div>
+                <button type="button"
+                        onclick="removeUploadPreview(this, ${i}, '${input.name}')"
+                        class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg hover:bg-red-600"
+                        title="Hapus gambar">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            `;
+            previewContainer.appendChild(previewItem);
+
+        } catch (error) {
+            console.error('Error processing image:', error);
+            alert(`Gagal memproses ${files[i].name}`);
+            statusDiv.remove();
+            previewContainer.remove();
+            return false;
+        }
+    }
+
+    // Simpan data compressed ke hidden input
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = input.name + '_compressed';
+    hiddenInput.value = JSON.stringify(compressedFiles);
+    input.parentElement.appendChild(hiddenInput);
+
+    // Show success message
+    const totalOriginal = compressedFiles.reduce((sum, f) => sum + f.originalSize, 0);
+    const totalCompressed = compressedFiles.reduce((sum, f) => sum + f.size, 0);
+    const savedPercent = ((1 - totalCompressed/totalOriginal) * 100).toFixed(1);
+
+    statusDiv.innerHTML = `
+        <p class="text-green-600 font-semibold">✓ ${compressedFiles.length} gambar berhasil diproses!</p>
+        <p class="text-gray-600 text-xs mt-1">
+            Ukuran asli: ${formatFileSize(totalOriginal)} → Setelah kompresi: ${formatFileSize(totalCompressed)}
+            (hemat ${savedPercent}%)
+        </p>
+    `;
+
+    setTimeout(() => {
+        statusDiv.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+        setTimeout(() => statusDiv.remove(), 500);
+    }, 4000);
+}
+
+
     </script>
 </x-app-layout>
