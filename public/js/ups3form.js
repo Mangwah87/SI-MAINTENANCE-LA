@@ -286,6 +286,13 @@
       currentStream = await navigator.mediaDevices.getUserMedia(constraints);
       video.srcObject = currentStream;
       await video.play();
+
+      // Mirror video preview only for front camera
+      if (currentFacingMode === 'user') {
+        video.style.transform = 'scaleX(-1)';
+      } else {
+        video.style.transform = 'none';
+      }
     } catch (err) {
       throw new Error('Tidak dapat mengakses kamera: ' + err.message);
     }
