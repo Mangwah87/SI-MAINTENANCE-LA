@@ -228,21 +228,21 @@
             <td>a. Environmental Condition</td>
             <td>{{ $maintenance->env_condition }}</td>
             <td>Clean, No dust</td>
-            <td class="center">{{ $maintenance->status_env_condition ?? $maintenance->status_visual_check ?? 'OK' }}</td>
+            <td class="center">{{ $maintenance->status_env_condition ?? $maintenance->status_visual_check ?? '-' }}</td>
         </tr>
         <tr>
             <td></td>
             <td>b. LED / display *)</td>
             <td>{{ $maintenance->led_display }}</td>
             <td>Normal</td>
-            <td class="center">{{ $maintenance->status_led_display ?? $maintenance->status_visual_check ?? 'OK' }}</td>
+            <td class="center">{{ $maintenance->status_led_display ?? $maintenance->status_visual_check ?? '-' }}</td>
         </tr>
         <tr>
             <td></td>
             <td>c. Battery Connection</td>
             <td>{{ $maintenance->battery_connection }}</td>
             <td>Tighten, No Corrosion</td>
-            <td class="center">{{ $maintenance->status_battery_connection ?? $maintenance->status_visual_check ?? 'OK' }}</td>
+            <td class="center">{{ $maintenance->status_battery_connection ?? $maintenance->status_visual_check ?? '-' }}</td>
         </tr>
         <!-- Performance and Capacity Check -->
         <tr>
@@ -258,7 +258,7 @@
                 TR = {{ $maintenance->ac_input_voltage_tr }} Volt
             </td>
             <td>360 - 400 VAC</td>
-            <td class="center">{{ $maintenance->status_ac_input_voltage ?? 'OK' }}</td>
+            <td class="center">{{ $maintenance->status_ac_input_voltage ?? '-' }}</td>
         </tr>
         <tr>
             <td></td>
@@ -269,7 +269,7 @@
                 TR = {{ $maintenance->ac_output_voltage_tr }} Volt
             </td>
             <td>370 - 390 VAC</td>
-            <td class="center">{{ $maintenance->status_ac_output_voltage ?? 'OK' }}</td>
+            <td class="center">{{ $maintenance->status_ac_output_voltage ?? '-' }}</td>
         </tr>
         <tr>
             <td></td>
@@ -286,7 +286,7 @@
                 <span class="unicode-symbol">≤</span> 89,3 A ( UPS 80 KVA )<br>
                 <span class="unicode-symbol">≤</span> 134,3 A ( UPS 120 KVA )
             </td>
-            <td class="center">{{ $maintenance->status_ac_current_input ?? 'OK' }}</td>
+            <td class="center">{{ $maintenance->status_ac_current_input ?? '-' }}</td>
         </tr>
         <tr>
             <td></td>
@@ -303,35 +303,35 @@
                 <span class="unicode-symbol">≤</span> 77,8 A ( UPS 80 KVA )<br>
                 <span class="unicode-symbol">≤</span> 116,8 A ( UPS 120 KVA )
             </td>
-            <td class="center">{{ $maintenance->status_ac_current_output ?? 'OK' }}</td>
+            <td class="center">{{ $maintenance->status_ac_current_output ?? '-' }}</td>
         </tr>
         <tr>
             <td></td>
             <td>e. UPS temperature</td>
             <td>{{ $maintenance->ups_temperature }} °C</td>
             <td>0-40 °C</td>
-            <td class="center">{{ $maintenance->status_ups_temperature ?? 'OK' }}</td>
+            <td class="center">{{ $maintenance->status_ups_temperature ?? '-' }}</td>
         </tr>
         <tr>
             <td></td>
             <td>f. Output frequency</td>
             <td>{{ $maintenance->output_frequency }} Hz</td>
             <td>48.75-50.25 Hz</td>
-            <td class="center">{{ $maintenance->status_output_frequency ?? 'OK' }}</td>
+            <td class="center">{{ $maintenance->status_output_frequency ?? '-' }}</td>
         </tr>
         <tr>
             <td></td>
             <td>g. Charging voltage</td>
             <td>{{ $maintenance->charging_voltage }} Volt</td>
             <td>See Battery Performance table</td>
-            <td class="center">{{ $maintenance->status_charging_voltage ?? 'OK' }}</td>
+            <td class="center">{{ $maintenance->status_charging_voltage ?? '-' }}</td>
         </tr>
         <tr>
             <td></td>
             <td>h. Charging current</td>
             <td>{{ $maintenance->charging_current }} Ampere</td>
             <td>0 Ampere, on-line mode</td>
-            <td class="center">{{ $maintenance->status_charging_current ?? 'OK' }}</td>
+            <td class="center">{{ $maintenance->status_charging_current ?? '-' }}</td>
         </tr>
     </table>
 
@@ -522,3 +522,4 @@
     @endif
 </body>
 </html>
+
