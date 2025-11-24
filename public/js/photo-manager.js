@@ -1,4 +1,5 @@
 // Photo Manager Component untuk PM Shelter - FIXED VERSION
+//test123456
 class PhotoManager {
     constructor(containerId, fieldName, existingPhotos = []) {
         this.container = document.getElementById(containerId);
