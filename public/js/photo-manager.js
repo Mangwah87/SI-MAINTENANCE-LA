@@ -476,10 +476,7 @@ class PhotoManager {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
-        context.save();
-        context.scale(-1, 1);
-        context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-        context.restore();
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         this.addWatermarkToCanvas(context, canvas.width, canvas.height);
 
@@ -552,14 +549,12 @@ class PhotoManager {
         ctx.fillStyle = "#FFFFFF";
         ctx.lineJoin = "round";
 
-        // 1️⃣ Hari dan tanggal
         const dateFontSize = Math.floor(width / 32);
         ctx.font = `bold ${dateFontSize}px Arial, sans-serif`;
         ctx.lineWidth = 6;
         ctx.strokeText(formattedDate, startX, baseY);
         ctx.fillText(formattedDate, startX, baseY);
 
-        // 2️⃣ Waktu besar
         const timeFontSize = Math.floor(width / 13);
         const timeText = `${hours}:${minutes}`;
         const timeY = baseY + dateFontSize + 12;

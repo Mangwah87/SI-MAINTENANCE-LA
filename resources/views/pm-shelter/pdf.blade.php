@@ -253,10 +253,9 @@
             }
         }
 
-        // Hitung total halaman: 1 halaman utama + halaman foto (9 foto per halaman)
         $totalPages = 1;
         if (count($allPhotos) > 0) {
-            $totalPages += ceil(count($allPhotos) / 9);
+            $totalPages += ceil(count($allPhotos) / 6);
         }
 
         $currentPage = 1;
@@ -479,7 +478,7 @@
     <!-- PHOTO PAGES -->
     @if (count($allPhotos) > 0)
         @php
-            $photoChunks = array_chunk($allPhotos, 9);
+            $photoChunks = array_chunk($allPhotos, 6);
         @endphp
 
         @foreach ($photoChunks as $chunkIndex => $photoChunk)
