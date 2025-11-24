@@ -671,6 +671,11 @@ class PhotoManager {
                 isExisting: false,
             });
             this.renderPhotos();
+
+            // Trigger auto-save if function exists
+            if (typeof triggerAutoSave === 'function') {
+                triggerAutoSave();
+            }
         };
         reader.readAsDataURL(file);
     }
@@ -682,6 +687,11 @@ class PhotoManager {
         }
         this.photos = this.photos.filter((p) => p.id !== photoId);
         this.renderPhotos();
+
+        // Trigger auto-save if function exists
+        if (typeof triggerAutoSave === 'function') {
+            triggerAutoSave();
+        }
     }
 
     renderPhotos() {
