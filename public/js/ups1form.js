@@ -25,6 +25,39 @@
     datetime: '-'
   };
 
+  // IndexedDB for storing images
+  let dbInstance = null;
+  const DB_NAME = 'UPS1FormDB';
+  const DB_VERSION = 1;
+  const STORE_NAME = 'formDrafts';
+
+  // Auto-save trigger function (global scope)
+  function triggerAutoSave() {
+    const event = new CustomEvent('formImageChanged');
+    document.dispatchEvent(event);
+  }
+
+  // Simple encryption for client-side storage (obfuscation)
+  function encryptData(data) {
+    try {
+      const str = JSON.stringify(data);
+      return btoa(unescape(encodeURIComponent(str)));
+    } catch (e) {
+      console.error('Encryption failed:', e);
+      return data;
+    }
+  }
+
+  function decryptData(encryptedData) {
+    try {
+      const str = decodeURIComponent(escape(atob(encryptedData)));
+      return JSON.parse(str);
+    } catch (e) {
+      console.error('Decryption failed:', e);
+      return null;
+    }
+  }
+
   // --------------------------------------------------------------------------
   // MAIN INITIALIZATION
   // --------------------------------------------------------------------------
@@ -40,7 +73,10 @@
   function init() {
     console.log('Initializing UPS1 Form Handler...');
 
-    // Initialize DateTime Handler FIRST
+    // Initialize Auto-Save FIRST
+    initAutoSave();
+
+    // Initialize DateTime Handler
     initDateTimeHandler();
 
     // DOM ELEMENTS
@@ -120,6 +156,9 @@
           document.getElementById('mainForm').appendChild(hiddenInput);
 
           imageDiv.remove();
+
+          // Trigger auto-save after deletion
+          triggerAutoSave();
         });
       });
 
@@ -163,6 +202,402 @@
     });
 
     console.log('UPS1 Form Handler initialized successfully');
+
+    // ========================================================================
+    // INDEXEDDB INITIALIZATION
+    // ========================================================================
+    function initIndexedDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onerror = () => {
+          console.error('IndexedDB: Failed to open database');
+          reject(request.error);
+        };
+
+        request.onsuccess = () => {
+          dbInstance = request.result;
+          console.log('✅ IndexedDB: Connected');
+          resolve(dbInstance);
+        };
+
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            console.log('✅ IndexedDB: Object store created');
+          }
+        };
+      });
+    }
+
+    async function saveToIndexedDB(key, data) {
+      if (!dbInstance) {
+        await initIndexedDB();
+      }
+
+      return new Promise((resolve, reject) => {
+        const transaction = dbInstance.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+
+        // Encrypt data before storing
+        const encryptedData = encryptData(data);
+        const request = store.put({ id: key, data: encryptedData, timestamp: new Date().toISOString() });
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function getFromIndexedDB(key) {
+      if (!dbInstance) {
+        await initIndexedDB();
+      }
+
+      return new Promise((resolve, reject) => {
+        const transaction = dbInstance.transaction([STORE_NAME], 'readonly');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.get(key);
+
+        request.onsuccess = () => {
+          const result = request.result;
+          if (result && result.data) {
+            // Decrypt data after retrieving
+            const decryptedData = decryptData(result.data);
+            resolve(decryptedData ? { ...result, data: decryptedData } : null);
+          } else {
+            resolve(result);
+          }
+        };
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function deleteFromIndexedDB(key) {
+      if (!dbInstance) {
+        await initIndexedDB();
+      }
+
+      return new Promise((resolve, reject) => {
+        const transaction = dbInstance.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.delete(key);
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    // ========================================================================
+    // AUTO-SAVE TO INDEXEDDB WITH IMAGES
+    // ========================================================================
+    async function initAutoSave() {
+      console.log('Initializing Auto-Save...');
+
+      // Initialize IndexedDB first
+      try {
+        await initIndexedDB();
+      } catch (error) {
+        console.error('Auto-Save: Failed to initialize IndexedDB', error);
+        return;
+      }
+
+      const form = document.getElementById('mainForm');
+      if (!form) {
+        console.warn('Auto-Save: Form not found');
+        return;
+      }
+
+      const STORAGE_KEY = 'ups1_form_draft';
+      const isEditMode = form.action.includes('/update/');
+
+      // Don't auto-save in edit mode (to avoid overwriting existing data)
+      if (isEditMode) {
+        console.log('Auto-Save: Skipped (edit mode)');
+        return;
+      }
+
+      // Restore saved data on page load
+      await restoreFormData();
+
+      // Save form data on input change (debounced)
+      let saveTimeout;
+      const saveDelay = 1000; // 1 second delay
+
+      const fieldsToSave = form.querySelectorAll('input, select, textarea');
+      fieldsToSave.forEach(field => {
+        // Skip hidden fields, file inputs, and submit buttons
+        if (field.type === 'hidden' || field.type === 'file' || field.type === 'submit') {
+          return;
+        }
+
+        field.addEventListener('input', () => {
+          clearTimeout(saveTimeout);
+          saveTimeout = setTimeout(() => saveFormData(), saveDelay);
+        });
+
+        field.addEventListener('change', () => {
+          clearTimeout(saveTimeout);
+          saveTimeout = setTimeout(() => saveFormData(), saveDelay);
+        });
+      });
+
+      // Listen for image changes
+      document.addEventListener('formImageChanged', () => {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => saveFormData(), saveDelay);
+      });
+
+      // Clear saved data on successful form submission
+      form.addEventListener('submit', async function() {
+        setTimeout(async () => {
+          await deleteFromIndexedDB(STORAGE_KEY);
+          console.log('✅ Auto-Save: Cleared after submission');
+        }, 500);
+      });
+
+      async function saveFormData() {
+        const formData = {};
+        const fields = form.querySelectorAll('input, select, textarea');
+
+        fields.forEach(field => {
+          // Skip certain fields
+          if (field.type === 'hidden' ||
+              field.type === 'file' ||
+              field.type === 'submit' ||
+              field.name === '_token' ||
+              field.name === '_method' ||
+              field.name.startsWith('delete_')) {
+            return;
+          }
+
+          if (field.type === 'radio' || field.type === 'checkbox') {
+            if (field.checked) {
+              formData[field.name] = field.value;
+            }
+          } else {
+            if (field.value) {
+              formData[field.name] = field.value;
+            }
+          }
+        });
+
+        // Collect all images from preview containers
+        const images = [];
+        document.querySelectorAll('.image-upload-section').forEach(section => {
+          const category = section.dataset.fieldName;
+          const previewContainer = section.querySelector('.preview-container');
+
+          if (previewContainer) {
+            previewContainer.querySelectorAll('img').forEach(img => {
+              // Get image data (base64 or URL)
+              const imageData = img.src;
+
+              // Check if it's a new image (base64) or existing (storage path)
+              if (imageData.startsWith('data:image')) {
+                images.push({
+                  category: category,
+                  data: imageData,
+                  isNew: true
+                });
+              } else if (imageData.includes('/storage/')) {
+                // Existing image - save the path
+                const imageDiv = img.closest('.existing-image');
+                const path = imageDiv ? imageDiv.dataset.path : null;
+                if (path) {
+                  images.push({
+                    category: category,
+                    path: path,
+                    url: imageData,
+                    isNew: false
+                  });
+                }
+              }
+            });
+          }
+        });
+
+        const draftData = {
+          formFields: formData,
+          images: images,
+          timestamp: new Date().toISOString()
+        };
+
+        try {
+          await saveToIndexedDB(STORAGE_KEY, draftData);
+          console.log('💾 Auto-Save: Data + Images saved', {
+            fields: Object.keys(formData).length,
+            images: images.length
+          });
+        } catch (error) {
+          console.error('Auto-Save: Failed to save', error);
+        }
+      }
+
+      async function restoreFormData() {
+        try {
+          const savedDraft = await getFromIndexedDB(STORAGE_KEY);
+          if (!savedDraft) {
+            console.log('Auto-Save: No saved data found');
+            return;
+          }
+
+          const { data, timestamp } = savedDraft;
+          const savedDate = new Date(timestamp);
+          const minutesSince = (new Date() - savedDate) / (1000 * 60);
+
+          // Auto-delete data older than 5 minutes
+          if (minutesSince > 5) {
+            await deleteFromIndexedDB(STORAGE_KEY);
+            console.log('Auto-Save: Data expired (>5 minutes), cleared');
+            return;
+          }
+
+          // Show restore notification
+          showRestoreNotification(async () => {
+            // Restore form fields
+            if (data.formFields) {
+              Object.keys(data.formFields).forEach(name => {
+                const fields = form.querySelectorAll(`[name="${name}"]`);
+                fields.forEach(field => {
+                  if (field.type === 'radio' || field.type === 'checkbox') {
+                    if (field.value === data.formFields[name]) {
+                      field.checked = true;
+                    }
+                  } else {
+                    field.value = data.formFields[name];
+                  }
+                });
+              });
+            }
+
+            // Restore images
+            if (data.images && data.images.length > 0) {
+              data.images.forEach(imageInfo => {
+                const section = document.querySelector(`.image-upload-section[data-field-name="${imageInfo.category}"]`);
+                if (section) {
+                  const previewContainer = section.querySelector('.preview-container');
+                  if (previewContainer) {
+                    if (imageInfo.isNew) {
+                      // Restore new images (base64)
+                      const imageDiv = document.createElement('div');
+                      imageDiv.className = 'relative group';
+                      imageDiv.dataset.category = imageInfo.category;
+
+                      const img = document.createElement('img');
+                      img.src = imageInfo.data;
+                      img.className = 'w-full h-20 object-cover rounded border';
+
+                      const deleteBtn = document.createElement('button');
+                      deleteBtn.type = 'button';
+                      deleteBtn.innerHTML = '×';
+                      deleteBtn.className = 'absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition';
+                      deleteBtn.addEventListener('click', () => {
+                        imageDiv.remove();
+                        triggerAutoSave();
+                      });
+
+                      const mainForm = document.getElementById('mainForm');
+                      const hiddenInput = document.createElement('input');
+                      hiddenInput.type = 'hidden';
+                      hiddenInput.name = 'images[]';
+                      hiddenInput.value = JSON.stringify({
+                        data: imageInfo.data,
+                        category: imageInfo.category,
+                        timestamp: new Date().toISOString()
+                      });
+
+                      imageDiv.append(img, deleteBtn);
+                      mainForm.appendChild(hiddenInput);
+                      previewContainer.appendChild(imageDiv);
+                    } else {
+                      // Restore existing images (from storage)
+                      const imageDiv = document.createElement('div');
+                      imageDiv.className = 'relative group existing-image';
+                      imageDiv.dataset.path = imageInfo.path;
+                      imageDiv.dataset.category = imageInfo.category;
+
+                      const img = document.createElement('img');
+                      img.src = imageInfo.url;
+                      img.className = 'w-full h-20 object-cover rounded border';
+
+                      const deleteBtn = document.createElement('button');
+                      deleteBtn.type = 'button';
+                      deleteBtn.innerHTML = '×';
+                      deleteBtn.className = 'absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition';
+                      deleteBtn.addEventListener('click', () => {
+                        const imagePath = imageDiv.dataset.path;
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'delete_images[]';
+                        hiddenInput.value = imagePath;
+                        document.getElementById('mainForm').appendChild(hiddenInput);
+                        imageDiv.remove();
+                        triggerAutoSave();
+                      });
+
+                      imageDiv.append(img, deleteBtn);
+                      previewContainer.appendChild(imageDiv);
+                    }
+                  }
+                }
+              });
+            }
+
+            console.log('✅ Auto-Save: Data + Images restored', {
+              fields: data.formFields ? Object.keys(data.formFields).length : 0,
+              images: data.images ? data.images.length : 0
+            });
+            showNotification(`✔ Draft dipulihkan! (${data.images ? data.images.length : 0} gambar)`);
+          }, async () => {
+            await deleteFromIndexedDB(STORAGE_KEY);
+            console.log('Auto-Save: User declined restore, data cleared');
+          });
+
+        } catch (error) {
+          console.error('Auto-Save: Error restoring data', error);
+          await deleteFromIndexedDB(STORAGE_KEY);
+        }
+      }
+
+      function showRestoreNotification(onRestore, onDecline) {
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-4 rounded-lg shadow-2xl z-[9999] max-w-md';
+        notification.innerHTML = `
+          <div class="flex items-start gap-3">
+            <svg class="w-6 h-6 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            <div class="flex-1">
+              <p class="font-semibold mb-2">📦 Data draft ditemukan</p>
+              <p class="text-sm mb-3 opacity-90">Ada data dan gambar yang belum tersimpan. Pulihkan?</p>
+              <div class="flex gap-2">
+                <button id="restoreBtn" class="px-4 py-2 bg-white text-blue-600 rounded font-medium text-sm hover:bg-blue-50 transition">
+                  Pulihkan
+                </button>
+                <button id="declineBtn" class="px-4 py-2 bg-blue-700 text-white rounded font-medium text-sm hover:bg-blue-800 transition">
+                  Abaikan
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.body.appendChild(notification);
+
+        notification.querySelector('#restoreBtn').addEventListener('click', () => {
+          notification.remove();
+          onRestore();
+        });
+
+        notification.querySelector('#declineBtn').addEventListener('click', () => {
+          notification.remove();
+          onDecline();
+        });
+      }
+
+      console.log('✅ Auto-Save initialized');
+    }
 
     // ========================================================================
     // DATE TIME HANDLER - FIXED VERSION
@@ -742,7 +1177,11 @@
       deleteBtn.innerHTML = '×';
       deleteBtn.className =
         'absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition';
-      deleteBtn.addEventListener('click', () => imageDiv.remove());
+      deleteBtn.addEventListener('click', () => {
+        imageDiv.remove();
+        // Trigger auto-save after image deletion
+        triggerAutoSave();
+      });
 
       // NO EDIT BUTTON - images auto-replace when adding new one
 
@@ -759,6 +1198,9 @@
       imageDiv.append(img, deleteBtn);
       mainForm.appendChild(hiddenInput);
       previewContainer.appendChild(imageDiv);
+
+      // Trigger auto-save after image added
+      triggerAutoSave();
     }
 
     function addEditButtonToExisting(imageDiv, section, category, index) {
