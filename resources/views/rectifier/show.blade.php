@@ -46,8 +46,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Location</p>
-                        <p class="text-lg text-gray-800">
-                            {{ $maintenance->central->nama ?? $maintenance->location }}
+                        <p class="text-gray-900">
+                            @if($maintenance->central)
+                                {{ $maintenance->central->id_sentral }} - {{ $maintenance->central->nama }}
+                            @else
+                                {{ $maintenance->location }}
+                            @endif
                         </p>
                     </div>
                     <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-2 rounded">

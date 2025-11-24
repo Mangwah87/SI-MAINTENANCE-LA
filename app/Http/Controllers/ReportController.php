@@ -87,7 +87,9 @@ class ReportController extends Controller
                         'type' => 'Maintenance Battery',
                         'icon' => 'battery-charging',
                         'tanggal' => $item->maintenance_date,
-                        'lokasi' => $item->location ?? '-',
+                        'lokasi' => $item->central
+                                ? $item->central->id_sentral . ' - ' . $item->central->nama
+                                : $item->location,
                         'teknisi' => $item->technician_name ?? '-',
                         'status' => 'Completed',
                         'created_by' => $item->user->name ?? '-',
@@ -113,7 +115,9 @@ class ReportController extends Controller
                         'type' => 'Maintenance Rectifier',
                         'icon' => 'git-compare-arrows',
                         'tanggal' => $item->date_time,
-                        'lokasi' => $item->location ?? '-',
+                        'lokasi' => $item->central
+                                ? $item->central->id_sentral . ' - ' . $item->central->nama
+                                : $item->location,
                         'teknisi' => $item->executor_1 ?? '-',
                         'status' => 'Completed',
                         'created_by' => $item->user->name ?? '-',
