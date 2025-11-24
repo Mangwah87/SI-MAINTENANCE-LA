@@ -18,7 +18,7 @@
             <div class="sticky top-0 bg-white border-b p-4 flex justify-between items-center"><h2 class="text-lg font-bold">Ambil Foto</h2><button id="closeModalBtn" type="button" class="text-gray-500 hover:text-gray-700 text-2xl">×</button></div>
             <div class="flex-1 flex flex-col overflow-y-auto">
                 <div id="geoInfo" class="m-4 p-3 bg-blue-50 rounded border border-blue-200 text-xs space-y-1"><p><strong>Latitude:</strong> <span id="lat">-</span></p><p><strong>Longitude:</strong> <span id="lon">-</span></p><p><strong>Tanggal & Waktu:</strong> <span id="datetime">-</span></p><p><strong>Lokasi:</strong> <span id="location">-</span></p></div>
-                <div id="videoSection" class="flex-1 flex bg-black relative mx-4 mt-2 rounded"><video id="video" class="w-full" playsinline autoplay muted style="transform: scaleX(-1);"></video></div>
+                <div id="videoSection" class="flex-1 flex bg-black relative mx-4 mt-2 rounded"><video id="video" class="w-full" playsinline autoplay muted></video></div>
                 <div id="capturedImage" class="hidden mx-4 mt-2"><img id="capturedImg" class="w-full rounded" alt="Captured"></div>
                 <div class="m-4 space-y-2">
                     <div id="captureControls" class="flex gap-2">
@@ -79,7 +79,7 @@
                                             <option value="{{ $valueString }}"
                                                 {{-- Logika Selected: Bandingkan String DB vs String Option --}}
                                                 {{ old('location', $maintenance->location) == $valueString ? 'selected' : '' }}>
-                                                
+
                                                 {{-- Tampilan di layar --}}
                                                 {{ $central->id_sentral }} - {{ $central->nama }}
                                             </option>
@@ -216,7 +216,7 @@
                             </div>
                         </div>
                         @endforeach
-                        
+
                         {{-- II. Cable Temperature --}}
                         <h4 class="text-md font-semibold text-gray-700 -mb-2 pt-4">II. Cable Temperature</h4>
                         @php
@@ -357,7 +357,7 @@
                 </div>
                 </div>
 
-                
+
             </form>
         </div>
     </div>

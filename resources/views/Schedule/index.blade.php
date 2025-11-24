@@ -18,6 +18,16 @@
 
     <div class="py-4 sm:py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            @if(session('success'))
+                <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    {{ session('error') }}
+                </div>
+            @endif
 
             {{-- Search Bar --}}
             <div class="mb-6 relative">
@@ -68,7 +78,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            <i data-lucide="calendar" class="w-4 h-4 inline text-gray-400 mr-1"></i>    
+                                            <i data-lucide="calendar" class="w-4 h-4 inline text-gray-400 mr-1"></i>
                                             {{ \Carbon\Carbon::parse($schedule->tanggal_pembuatan)->format('d F Y') }}
                                         </td>
                                         {{-- KOLOM JUMLAH LOKASI --}}
@@ -85,14 +95,14 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex items-center justify-center gap-2">
                                                 {{-- Tombol Detail --}}
-                                                <a href="{{ route('schedule.show', $schedule->id) }}" 
+                                                <a href="{{ route('schedule.show', $schedule->id) }}"
                                                     class="inline-flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 rounded-lg transition"
                                                     title="Lihat Detail">
                                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                                 </a>
-                                                
+
                                                 {{-- Tombol Edit --}}
-                                                <a href="{{ route('schedule.edit', $schedule->id) }}" 
+                                                <a href="{{ route('schedule.edit', $schedule->id) }}"
                                                     class="inline-flex items-center justify-center w-8 h-8 text-yellow-600 hover:bg-yellow-50 rounded-lg transition"
                                                     title="Edit">
                                                     <i data-lucide="edit" class="w-4 h-4"></i>
@@ -105,7 +115,7 @@
                                                     title="Download PDF">
                                                     <i data-lucide="file-down" class="w-4 h-4"></i>
                                                 </a>
-                                                
+
                                                 {{-- Tombol Hapus --}}
                                                 <button type="button" onclick="deleteRecord({{ $schedule->id }})"
                                                         class="inline-flex items-center justify-center w-8 h-8 text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -120,7 +130,7 @@
                                         <td colspan="6" class="px-6 py-12 text-center">
                                             <i data-lucide="folder-open" class="w-16 h-16 mx-auto text-gray-300 mb-4"></i>
                                             <p class="text-gray-500 mb-4">Tidak ada data</p>
-                                            <a href="{{ route('schedule.create') }}" 
+                                            <a href="{{ route('schedule.create') }}"
                                                class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
                                                 <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
                                                 Tambah Data Pertama
@@ -228,7 +238,7 @@
                 if (tableNoResults) {
                     tableNoResults.classList.toggle('hidden', tableFound > 0 || tableRows.length === 0);
                 }
-                
+
                 if (tableNoData) {
                     tableNoData.style.display = (searchTerm && tableRows.length > 0) ? 'none' : (tableRows.length > 0 ? 'none' : '');
                 }

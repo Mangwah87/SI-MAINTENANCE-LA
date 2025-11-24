@@ -16,7 +16,6 @@ use App\Http\Controllers\InverterController;
 use App\Http\Controllers\DokumentasiController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\CentralController;
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RectifierMaintenanceController;
 
