@@ -877,3 +877,336 @@ class PhotoManager {
 
 // Global object untuk menyimpan semua photo managers
 const photoManagers = {};
+
+// ========== AUTO-SAVE FUNCTIONALITY FOR PM SHELTER ==========
+let dbInstance = null;
+const DB_NAME = 'PMShelterFormDB';
+const STORE_NAME = 'formDrafts';
+const STORAGE_KEY = 'pm_shelter_form_draft';
+const AUTO_DELETE_MINUTES = 5;
+
+// Encryption functions
+function encryptData(data) {
+    try {
+        const str = JSON.stringify(data);
+        return btoa(unescape(encodeURIComponent(str)));
+    } catch (e) {
+        console.error('Encryption error:', e);
+        return null;
+    }
+}
+
+function decryptData(encryptedData) {
+    try {
+        const str = decodeURIComponent(escape(atob(encryptedData)));
+        return JSON.parse(str);
+    } catch (e) {
+        console.error('Decryption error:', e);
+        return null;
+    }
+}
+
+// Initialize IndexedDB
+function initDB() {
+    return new Promise((resolve, reject) => {
+        if (dbInstance) {
+            resolve(dbInstance);
+            return;
+        }
+
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            dbInstance = request.result;
+            resolve(dbInstance);
+        };
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            }
+        };
+    });
+}
+
+// Save to IndexedDB
+async function saveToIndexedDB(data) {
+    try {
+        const db = await initDB();
+        const encryptedData = encryptData(data);
+
+        if (!encryptedData) {
+            console.error('Failed to encrypt data');
+            return;
+        }
+
+        const transaction = db.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+
+        store.put({
+            id: STORAGE_KEY,
+            data: encryptedData,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Error saving to IndexedDB:', error);
+    }
+}
+
+// Get from IndexedDB
+async function getFromIndexedDB() {
+    try {
+        const db = await initDB();
+        const transaction = db.transaction([STORE_NAME], 'readonly');
+        const store = transaction.objectStore(STORE_NAME);
+
+        return new Promise((resolve, reject) => {
+            const request = store.get(STORAGE_KEY);
+
+            request.onsuccess = () => {
+                if (request.result && request.result.data) {
+                    const decrypted = decryptData(request.result.data);
+                    resolve(decrypted);
+                } else {
+                    resolve(null);
+                }
+            };
+
+            request.onerror = () => reject(request.error);
+        });
+    } catch (error) {
+        console.error('Error getting from IndexedDB:', error);
+        return null;
+    }
+}
+
+// Delete from IndexedDB
+async function deleteFromIndexedDB() {
+    try {
+        const db = await initDB();
+        const transaction = db.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        store.delete(STORAGE_KEY);
+    } catch (error) {
+        console.error('Error deleting from IndexedDB:', error);
+    }
+}
+
+// Save draft
+async function saveDraft() {
+    const form = document.getElementById('pmForm');
+    if (!form) return;
+
+    const formData = {};
+
+    const inputs = form.querySelectorAll('input:not([type="file"]), select, textarea');
+    inputs.forEach(input => {
+        if (input.name && !input.name.startsWith('_') && !input.name.includes('photo')) {
+            if (input.type === 'checkbox') {
+                formData[input.name] = input.checked;
+            } else if (input.type === 'radio') {
+                if (input.checked) {
+                    formData[input.name] = input.value;
+                }
+            } else {
+                formData[input.name] = input.value;
+            }
+        }
+    });
+
+    const images = [];
+    if (typeof photoManagers !== 'undefined') {
+        for (const [fieldName, manager] of Object.entries(photoManagers)) {
+            if (manager && manager.photos) {
+                manager.photos.forEach(photo => {
+                    images.push({
+                        category: fieldName,
+                        preview: photo.preview,
+                        metadata: photo.metadata || {}
+                    });
+                });
+            }
+        }
+    }
+
+    const draftData = {
+        formFields: formData,
+        images: images,
+        timestamp: new Date().toISOString()
+    };
+
+    await saveToIndexedDB(draftData);
+    console.log('PM Shelter draft saved');
+}
+
+// Trigger auto-save
+function triggerAutoSave() {
+    saveDraft();
+}
+
+// Restore draft
+async function restoreDraft() {
+    const savedData = await getFromIndexedDB();
+    if (!savedData || !savedData.formFields) return;
+
+    const form = document.getElementById('pmForm');
+    if (!form) return;
+
+    for (const [name, value] of Object.entries(savedData.formFields)) {
+        const input = form.querySelector(`[name="${name}"]`);
+        if (input) {
+            if (input.type === 'checkbox') {
+                input.checked = value;
+            } else if (input.type === 'radio') {
+                const radio = form.querySelector(`[name="${name}"][value="${value}"]`);
+                if (radio) radio.checked = true;
+            } else {
+                input.value = value;
+            }
+        }
+    }
+
+    if (savedData.images && savedData.images.length > 0) {
+        savedData.images.forEach(img => {
+            const manager = photoManagers[img.category];
+            if (manager && img.preview) {
+                const file = dataURLtoFile(img.preview, `restored_${Date.now()}.jpg`);
+                manager.addPhoto(file, img.metadata || { taken_at: new Date().toISOString() });
+            }
+        });
+    }
+
+    console.log('PM Shelter draft restored');
+}
+
+// Show restore notification
+function showRestoreNotification(onRestore, onDecline) {
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-4 rounded-lg shadow-2xl z-[9999] max-w-md';
+    notification.innerHTML = `
+        <div class="flex items-start gap-3">
+            <svg class="w-6 h-6 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            <div class="flex-1">
+                <p class="font-semibold mb-2">📦 Data draft ditemukan</p>
+                <p class="text-sm mb-3 opacity-90">Ada data dan gambar yang belum tersimpan. Pulihkan?</p>
+                <div class="flex gap-2">
+                    <button id="restoreBtn" class="px-4 py-2 bg-white text-blue-600 rounded font-medium text-sm hover:bg-blue-50 transition">
+                        Pulihkan
+                    </button>
+                    <button id="declineBtn" class="px-4 py-2 bg-blue-700 text-white rounded font-medium text-sm hover:bg-blue-800 transition">
+                        Abaikan
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    notification.querySelector('#restoreBtn').addEventListener('click', () => {
+        notification.remove();
+        onRestore();
+    });
+
+    notification.querySelector('#declineBtn').addEventListener('click', () => {
+        notification.remove();
+        onDecline();
+    });
+}
+
+// Delete draft
+async function deleteDraft() {
+    await deleteFromIndexedDB();
+    document.querySelectorAll('.fixed.top-4.right-4').forEach(n => n.remove());
+    console.log('PM Shelter draft deleted');
+}
+
+// Helper function
+function dataURLtoFile(dataurl, filename) {
+    const arr = dataurl.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+}
+
+// Initialize auto-save
+async function initAutoSave() {
+    const form = document.getElementById('pmForm');
+    if (!form) return;
+
+    // Check if we're in edit mode
+    const isEditMode = form.action.includes('/update/') || form.querySelector('input[name="_method"]');
+
+    if (isEditMode) {
+        console.log('Edit mode detected, auto-save disabled');
+        return;
+    }
+
+    const savedData = await getFromIndexedDB();
+
+    if (savedData && savedData.formFields) {
+        const savedDate = new Date(savedData.timestamp);
+        const minutesSince = (new Date() - savedDate) / (1000 * 60);
+
+        // Auto-delete data older than 5 minutes
+        if (minutesSince > AUTO_DELETE_MINUTES) {
+            await deleteFromIndexedDB();
+            console.log('Auto-Save: Data expired (>5 minutes), cleared');
+        } else {
+            // Show restore notification with Pulihkan/Abaikan buttons
+            showRestoreNotification(async () => {
+                // Restore without showing success notification
+                await restoreDraft();
+                console.log('✅ Auto-Save: Data + Images restored', {
+                    fields: savedData.formFields ? Object.keys(savedData.formFields).length : 0,
+                    images: savedData.images ? savedData.images.length : 0
+                });
+            }, async () => {
+                await deleteFromIndexedDB();
+                console.log('Auto-Save: User declined restore, data cleared');
+            });
+        }
+    }
+
+    let saveTimeout;
+    const inputs = form.querySelectorAll('input:not([type="file"]), select, textarea');
+
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => saveDraft(), 1000);
+        });
+    });
+
+    // Set auto-delete timer
+    if (savedData && savedData.timestamp) {
+        const savedTime = new Date(savedData.timestamp);
+        const now = new Date();
+        const diffMinutes = (now - savedTime) / (1000 * 60);
+
+        if (diffMinutes < AUTO_DELETE_MINUTES) {
+            const remainingMs = (AUTO_DELETE_MINUTES * 60 * 1000) - (now - savedTime);
+            setTimeout(async () => {
+                await deleteFromIndexedDB();
+                console.log('Draft auto-deleted after ' + AUTO_DELETE_MINUTES + ' minutes');
+            }, remainingMs);
+        }
+    }
+
+    // Clear draft on successful submit
+    form.addEventListener('submit', async (e) => {
+        setTimeout(async () => {
+            await deleteFromIndexedDB();
+            console.log('Draft cleared after successful submit');
+        }, 100);
+    });
+}
+// ========== END AUTO-SAVE ==========
