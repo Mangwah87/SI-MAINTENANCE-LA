@@ -89,10 +89,10 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                 <div class="sm:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Lokasi Sentral <span class="text-red-500">*</span>
+                                        Lokasi Sentral
                                     </label>
                                     <select name="central_id" id="central_id"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                         <option value="">-- Pilih Lokasi Sentral --</option>
                                         @foreach($centrals as $central)
                                             <option value="{{ $central->id }}"
@@ -106,7 +106,7 @@
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Tanggal <span class="text-red-500">*</span>
+                                        Tanggal
                                     </label>
                                     @php
                                         $dateValue = '';
@@ -124,13 +124,13 @@
                                     @endphp
                                     <input type="date" id="ups1_date_input" name="date"
                                         value="{{ $dateValue }}"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                     @error('date') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Waktu <span class="text-red-500">*</span>
+                                        Waktu
                                     </label>
                                     @php
                                         $timeValue = '';
@@ -148,7 +148,7 @@
                                     @endphp
                                     <input type="time" id="ups1_time_input" name="time"
                                         value="{{ $timeValue }}"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                     @error('time') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
@@ -157,23 +157,23 @@
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Brand / Type <span class="text-red-500">*</span>
+                                        Brand / Type
                                     </label>
                                     <input type="text" name="brand_type"
                                         value="{{ old('brand_type', safeGetValue($maintenance ?? null, 'brand_type')) }}"
                                         placeholder="Contoh: APC Smart-UPS 3KVA"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                     @error('brand_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Kapasitas <span class="text-red-500">*</span>
+                                        Kapasitas
                                     </label>
                                     <input type="text" name="capacity"
                                         value="{{ old('capacity', safeGetValue($maintenance ?? null, 'capacity')) }}"
                                         placeholder="Contoh: 3 KVA"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                     @error('capacity') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
@@ -223,19 +223,19 @@
                                                 <input type="text" name="{{ $check[0] }}"
                                                        value="{{ old($check[0], safeGetValue($maintenance ?? null, $check[0])) }}"
                                                        placeholder="{{ $check[2] }}"
-                                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base">
                                             </div>
 
                                             <div>
                                                 <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Status <span class="text-red-500">*</span>
+                                                    Status
                                                 </label>
                                                 <div class="flex flex-wrap gap-4">
                                                     @foreach(['OK', 'NOK'] as $status)
                                                         <label class="inline-flex items-center cursor-pointer">
                                                             <input type="radio" name="status_{{ $check[0] }}" value="{{ $status }}"
-                                                                   {{ old("status_{$check[0]}", safeGetValue($maintenance ?? null, "status_{$check[0]}", 'OK')) == $status ? 'checked' : '' }}
-                                                                   class="form-radio {{ $status === 'OK' ? 'text-blue-600 focus:ring-blue-500' : 'text-blue-600 focus:ring-blue-500' }}" required>
+                                                                   {{ old("status_{$check[0]}", safeGetValue($maintenance ?? null, "status_{$check[0]}")) == $status ? 'checked' : '' }}
+                                                                   class="form-radio text-blue-600 focus:ring-blue-500">
                                                             <span class="ml-2 text-sm sm:text-base text-gray-700">{{ $status }}</span>
                                                         </label>
                                                     @endforeach
@@ -302,25 +302,25 @@
                                                     <input type="text" name="{{ $measure[1] }}"
                                                         value="{{ old($measure[1], safeGetValue($maintenance ?? null, $measure[1])) }}"
                                                         placeholder="{{ $measure[3] }}"
-                                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base">
                                                 @else
                                                     <input type="number" step="0.01" name="{{ $measure[1] }}"
                                                         value="{{ old($measure[1], safeGetValue($maintenance ?? null, $measure[1])) }}"
                                                         placeholder="{{ $measure[3] }}"
-                                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base">
                                                 @endif
                                             </div>
 
                                             <div>
                                                 <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Status <span class="text-red-500">*</span>
+                                                    Status
                                                 </label>
                                                 <div class="flex flex-wrap gap-4">
                                                     @foreach(['OK', 'NOK'] as $status)
                                                         <label class="inline-flex items-center cursor-pointer">
                                                             <input type="radio" name="status_{{ $measure[1] }}" value="{{ $status }}"
-                                                                {{ old("status_{$measure[1]}", safeGetValue($maintenance ?? null, "status_{$measure[1]}", 'OK')) == $status ? 'checked' : '' }}
-                                                                class="form-radio {{ $status === 'OK' ? 'text-blue-600 focus:ring-blue-500' : 'text-blue-600 focus:ring-blue-500' }}" required>
+                                                                {{ old("status_{$measure[1]}", safeGetValue($maintenance ?? null, "status_{$measure[1]}")) == $status ? 'checked' : '' }}
+                                                                class="form-radio text-blue-600 focus:ring-blue-500">
                                                             <span class="ml-2 text-sm sm:text-base text-gray-700">{{ $status }}</span>
                                                         </label>
                                                     @endforeach
@@ -380,25 +380,25 @@
                                                     <input type="number" step="0.01" name="{{ $test[1] }}"
                                                         value="{{ old($test[1], safeGetValue($maintenance ?? null, $test[1])) }}"
                                                         placeholder="{{ $test[3] }}"
-                                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base">
                                                 @else
                                                     <input type="text" name="{{ $test[1] }}"
                                                         value="{{ old($test[1], safeGetValue($maintenance ?? null, $test[1])) }}"
                                                         placeholder="{{ $test[3] }}"
-                                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base">
                                                 @endif
                                             </div>
 
                                             <div>
                                                 <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Status <span class="text-red-500">*</span>
+                                                    Status
                                                 </label>
                                                 <div class="flex flex-wrap gap-4">
                                                     @foreach(['OK', 'NOK'] as $status)
                                                         <label class="inline-flex items-center cursor-pointer">
                                                             <input type="radio" name="status_{{ $test[1] }}" value="{{ $status }}"
-                                                                {{ old("status_{$test[1]}", safeGetValue($maintenance ?? null, "status_{$test[1]}", 'OK')) == $status ? 'checked' : '' }}
-                                                                class="form-radio {{ $status === 'OK' ? 'text-blue-600 focus:ring-blue-500' : 'text-blue-600 focus:ring-blue-500' }}" required>
+                                                                {{ old("status_{$test[1]}", safeGetValue($maintenance ?? null, "status_{$test[1]}")) == $status ? 'checked' : '' }}
+                                                                class="form-radio text-blue-600 focus:ring-blue-500">
                                                             <span class="ml-2 text-sm sm:text-base text-gray-700">{{ $status }}</span>
                                                         </label>
                                                     @endforeach
@@ -448,19 +448,19 @@
                                         <input type="text" name="simonica_alarm_test"
                                             value="{{ old('simonica_alarm_test', safeGetValue($maintenance ?? null, 'simonica_alarm_test')) }}"
                                             placeholder="Contoh: Alarm triggered successfully"
-                                            class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                            class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base">
                                     </div>
 
                                     <div>
                                         <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                            Status <span class="text-red-500">*</span>
+                                            Status
                                         </label>
                                         <div class="flex flex-wrap gap-4">
                                             @foreach(['OK', 'NOK'] as $status)
                                                 <label class="inline-flex items-center cursor-pointer">
                                                     <input type="radio" name="status_simonica_alarm_test" value="{{ $status }}"
-                                                        {{ old('status_simonica_alarm_test', safeGetValue($maintenance ?? null, 'status_simonica_alarm_test', 'OK')) == $status ? 'checked' : '' }}
-                                                        class="form-radio {{ $status === 'OK' ? 'text-blue-600 focus:ring-blue-500' : 'text-blue-600 focus:ring-blue-500' }}" required>
+                                                        {{ old('status_simonica_alarm_test', safeGetValue($maintenance ?? null, 'status_simonica_alarm_test')) == $status ? 'checked' : '' }}
+                                                        class="form-radio text-blue-600 focus:ring-blue-500">
                                                     <span class="ml-2 text-sm sm:text-base text-gray-700">{{ $status }}</span>
                                                 </label>
                                             @endforeach
@@ -505,12 +505,12 @@
                             <div class="space-y-3 sm:space-y-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Pelaksana 1 <span class="text-red-500">*</span>
+                                        Pelaksana 1
                                     </label>
                                     <input type="text" name="executor_1"
                                            value="{{ old('executor_1', safeGetValue($maintenance ?? null, 'executor_1')) }}"
                                            placeholder="Nama teknisi pelaksana"
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                 </div>
 
                                 <div>
@@ -545,12 +545,12 @@
                             <div class="space-y-3 sm:space-y-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Nama Supervisor <span class="text-red-500">*</span>
+                                        Nama Supervisor
                                     </label>
                                     <input type="text" name="supervisor"
                                            value="{{ old('supervisor', safeGetValue($maintenance ?? null, 'supervisor')) }}"
                                            placeholder="Nama supervisor"
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                 </div>
 
                                 <div>

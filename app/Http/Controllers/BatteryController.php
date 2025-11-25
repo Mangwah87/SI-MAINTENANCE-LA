@@ -77,7 +77,7 @@ class BatteryController extends Controller
     {
         try {
             $validated = $request->validate([
-                'location' => 'required|string|max:255',
+                'location' => 'required|string|exists:central,id',
                 'maintenance_date' => 'required|date',
                 'battery_temperature' => 'nullable|numeric',
                 'company' => 'nullable|string|max:255',
@@ -176,8 +176,9 @@ class BatteryController extends Controller
 
     public function show(string $id)
     {
+        // ✅ LOAD RELASI CENTRAL
         $maintenance = BatteryMaintenance::with([
-             'central',
+            'central',
             'readings' => function ($query) {
                 $query->orderBy('bank_number')->orderBy('battery_number');
             },
@@ -192,12 +193,12 @@ class BatteryController extends Controller
 
     public function edit(string $id)
     {
-        $maintenance = BatteryMaintenance::with('readings')
+
+        $maintenance = BatteryMaintenance::with(['central', 'readings'])
             ->where('id', $id)
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        // Ambil data central untuk dropdown
         $centrals = DB::table('central')
             ->orderBy('area')
             ->orderBy('nama')
@@ -212,7 +213,7 @@ class BatteryController extends Controller
     {
         try {
             $validated = $request->validate([
-                'location' => 'required|string|max:255',
+                'location' => 'required|string|exists:central,id',
                 'maintenance_date' => 'required|date',
                 'battery_temperature' => 'nullable|numeric',
                 'company' => 'nullable|string|max:255',
@@ -399,7 +400,9 @@ class BatteryController extends Controller
 
     public function pdf(string $id)
     {
+        // ✅ LOAD RELASI CENTRAL
         $maintenance = BatteryMaintenance::with([
+            'central',
             'readings' => function ($query) {
                 $query->orderBy('bank_number')->orderBy('battery_number');
             },
@@ -413,7 +416,8 @@ class BatteryController extends Controller
             ->setPaper('a4', 'portrait');
 
         $formattedDate = date('Y-m-d', strtotime($maintenance->maintenance_date));
-        $filename = 'Battery-Maintenance-' . $maintenance->location . '-' . $formattedDate . '.pdf';
+        $locationName = $maintenance->central ? $maintenance->central->nama : 'Unknown';
+        $filename = 'Battery-Maintenance-' . $locationName . '-' . $formattedDate . '.pdf';
 
         return $pdf->stream($filename);
     }

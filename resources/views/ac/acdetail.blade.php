@@ -83,8 +83,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->environment_condition }}</td>
                                 <td class="border p-2 text-sm text-gray-600">No dust</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_environment_condition ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_environment_condition ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_environment_condition ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_environment_condition ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -93,8 +93,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->filter }}</td>
                                 <td class="border p-2 text-sm text-gray-600">Clean, No dust</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_filter ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_filter ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_filter ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_filter ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -103,8 +103,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->evaporator }}</td>
                                 <td class="border p-2 text-sm text-gray-600">Clean, No dust</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_evaporator ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_evaporator ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_evaporator ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_evaporator ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -113,8 +113,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->led_display }}</td>
                                 <td class="border p-2 text-sm text-gray-600">Normal</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_led_display ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_led_display ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_led_display ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_led_display ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -123,8 +123,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->air_flow }}</td>
                                 <td class="border p-2 text-sm text-gray-600">Fan operates normally, cool air flow</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_air_flow ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_air_flow ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_air_flow ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_air_flow ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -152,8 +152,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->temp_shelter }} °C</td>
                                 <td class="border p-2 text-sm text-gray-600">≤ 22 °C Shelter/Ruangan</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_temp_shelter ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_temp_shelter ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_temp_shelter ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_temp_shelter ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -162,8 +162,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->temp_outdoor_cabinet }} °C</td>
                                 <td class="border p-2 text-sm text-gray-600">≤ 28 °C Outdoor Cabinet (ODC)</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_temp_outdoor_cabinet ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_temp_outdoor_cabinet ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_temp_outdoor_cabinet ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_temp_outdoor_cabinet ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -401,3 +401,4 @@
         });
     </script>
 </x-app-layout>
+

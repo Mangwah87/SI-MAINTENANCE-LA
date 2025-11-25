@@ -346,33 +346,33 @@ class AcMaintenanceConrtoller extends Controller
             // Informasi Lokasi dan Perangkat
             'central_id' => 'required|exists:central,id',
             'date_time' => 'required|date',
-            'brand_type' => 'required|string|max:255',
-            'capacity' => 'required|string|max:255',
+            'brand_type' => 'nullable|string|max:255',
+            'capacity' => 'nullable|string|max:255',
             'reg_number' => 'nullable|string|max:255',
             'sn' => 'nullable|string|max:255',
 
             // 1. Visual Check
-            'environment_condition' => 'required|string|max:255',
-            'status_environment_condition' => 'required|in:OK,NOK',
+            'environment_condition' => 'nullable|string|max:255',
+            'status_environment_condition' => 'nullable|in:OK,NOK',
 
-            'filter' => 'required|string|max:255',
-            'status_filter' => 'required|in:OK,NOK',
+            'filter' => 'nullable|string|max:255',
+            'status_filter' => 'nullable|in:OK,NOK',
 
-            'evaporator' => 'required|string|max:255',
-            'status_evaporator' => 'required|in:OK,NOK',
+            'evaporator' => 'nullable|string|max:255',
+            'status_evaporator' => 'nullable|in:OK,NOK',
 
-            'led_display' => 'required|string|max:255',
-            'status_led_display' => 'required|in:OK,NOK',
+            'led_display' => 'nullable|string|max:255',
+            'status_led_display' => 'nullable|in:OK,NOK',
 
-            'air_flow' => 'required|string|max:255',
-            'status_air_flow' => 'required|in:OK,NOK',
+            'air_flow' => 'nullable|string|max:255',
+            'status_air_flow' => 'nullable|in:OK,NOK',
 
             // 2. Room Temperature - FIXED FIELD NAMES
-            'temp_shelter' => 'required|numeric',
-            'status_temp_shelter' => 'required|in:OK,NOK',
+            'temp_shelter' => 'nullable|numeric',
+            'status_temp_shelter' => 'nullable|in:OK,NOK',
 
-            'temp_outdoor_cabinet' => 'required|numeric',
-            'status_temp_outdoor_cabinet' => 'required|in:OK,NOK',
+            'temp_outdoor_cabinet' => 'nullable|numeric',
+            'status_temp_outdoor_cabinet' => 'nullable|in:OK,NOK',
 
             // 3. Input Current Air Cond (nullable karena tidak semua AC digunakan)
             'ac1_current' => 'nullable|numeric',

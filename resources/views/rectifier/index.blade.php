@@ -52,7 +52,7 @@
 
                         <form method="GET" action="{{ route('rectifier.index') }}" id="filterForm" style="display: none;">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-                                <!-- Location -->
+
                                <!-- Location Filter -->
                                <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">
