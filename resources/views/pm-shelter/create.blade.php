@@ -505,7 +505,6 @@
         <script>
             let executorIndex = 0;
 
-
             function addExecutorField() {
                 const container = document.getElementById('executor-fields');
                 const div = document.createElement('div');
@@ -513,7 +512,7 @@
                 div.innerHTML = `
                 <div class="flex justify-between items-center mb-3">
                     <h4 class="font-medium text-gray-700 text-sm sm:text-base">Pelaksana ${executorIndex + 1}</h4>
-                    <button type="button" onclick="this.closest('.border').remove(); updateExecutorNumbers();" 
+                    <button type="button" onclick="this.closest('.border').remove(); updateExecutorNumbers();"
                             class="text-red-500 hover:text-red-700">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
@@ -523,20 +522,20 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">
                             Nama <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" name="executors[${executorIndex}][name]" 
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" 
+                        <input type="text" name="executors[${executorIndex}][name]"
+                               class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
                                placeholder="Nama pelaksana" required>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
-                        <input type="text" name="executors[${executorIndex}][department]" 
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" 
+                        <input type="text" name="executors[${executorIndex}][department]"
+                               class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
                                placeholder="Nama departemen">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Sub Departemen</label>
-                        <input type="text" name="executors[${executorIndex}][sub_department]" 
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" 
+                        <input type="text" name="executors[${executorIndex}][sub_department]"
+                               class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
                                placeholder="Nama sub departemen">
                     </div>
                 </div>
@@ -569,6 +568,9 @@
                 'kontrol_keamanan_photos');
             photoManagers['aksesibilitas_photos'] = new PhotoManager('aksesibilitas_photos_container', 'aksesibilitas_photos');
             photoManagers['aspek_teknis_photos'] = new PhotoManager('aspek_teknis_photos_container', 'aspek_teknis_photos');
+
+            // Initialize auto-save
+            initAutoSave();
 
             // Initialize Lucide icons
             lucide.createIcons();

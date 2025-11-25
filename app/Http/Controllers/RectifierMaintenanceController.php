@@ -22,38 +22,38 @@ class RectifierMaintenanceController extends Controller
 
     // Update method index() di RectifierMaintenanceController
 
-public function index(Request $request)
-{
-    $query = RectifierMaintenance::query();
-    $query->where('user_id', auth()->id());
+    public function index(Request $request)
+    {
+        $query = RectifierMaintenance::query();
+        $query->where('user_id', auth()->id());
 
-    if ($request->filled('location')) {
-        $query->where('location', $request->location);
+        if ($request->filled('location')) {
+            $query->where('location', $request->location);
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('date_time', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('date_time', '<=', $request->date_to);
+        }
+
+        $query->orderBy('date_time', 'desc');
+
+        // Load relasi 'central' saja, TIDAK ADA 'readings'
+        $maintenances = $query->with('central')->paginate(15);
+
+        // Ambil data central untuk filter
+        $centrals = DB::table('central')
+            ->orderBy('area')
+            ->orderBy('nama')
+            ->get();
+
+        $centralsByArea = $centrals->groupBy('area');
+
+        return view('rectifier.index', compact('maintenances', 'centralsByArea'));
     }
-
-    if ($request->filled('date_from')) {
-        $query->whereDate('date_time', '>=', $request->date_from);
-    }
-
-    if ($request->filled('date_to')) {
-        $query->whereDate('date_time', '<=', $request->date_to);
-    }
-
-    $query->orderBy('date_time', 'desc');
-
-    // Load relasi 'central' saja, TIDAK ADA 'readings'
-    $maintenances = $query->with('central')->paginate(15);
-
-    // Ambil data central untuk filter
-    $centrals = DB::table('central')
-        ->orderBy('area')
-        ->orderBy('nama')
-        ->get();
-
-    $centralsByArea = $centrals->groupBy('area');
-
-    return view('rectifier.index', compact('maintenances', 'centralsByArea'));
-}
 
     public function create()
     {
@@ -127,14 +127,14 @@ public function index(Request $request)
     }
 
     public function show($id)
-{
-    $maintenance = RectifierMaintenance::with('central') // Load relasi central
-        ->where('id', $id)
-        ->where('user_id', auth()->id())
-        ->firstOrFail();
+    {
+        $maintenance = RectifierMaintenance::with('central') // Load relasi central
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
-    return view('rectifier.show', compact('maintenance'));
-}
+        return view('rectifier.show', compact('maintenance'));
+    }
 
 
     public function edit($id)
@@ -262,7 +262,6 @@ public function index(Request $request)
     public function exportPdf($id)
     {
         $maintenance = RectifierMaintenance::where('id', $id)
-            ->where('user_id', auth()->id())
             ->firstOrFail();
 
         ini_set('memory_limit', '512M');
@@ -315,19 +314,25 @@ public function index(Request $request)
             if ($originalWidth > $maxDimension || $originalHeight > $maxDimension) {
                 if ($originalWidth > $originalHeight) {
                     $newWidth = $maxDimension;
-                    $newHeight = (int)(($originalHeight / $originalWidth) * $maxDimension);
+                    $newHeight = (int) (($originalHeight / $originalWidth) * $maxDimension);
                 } else {
                     $newHeight = $maxDimension;
-                    $newWidth = (int)(($originalWidth / $originalHeight) * $maxDimension);
+                    $newWidth = (int) (($originalWidth / $originalHeight) * $maxDimension);
                 }
 
                 // Create resized image
                 $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
                 imagecopyresampled(
-                    $resizedImage, $image,
-                    0, 0, 0, 0,
-                    $newWidth, $newHeight,
-                    $originalWidth, $originalHeight
+                    $resizedImage,
+                    $image,
+                    0,
+                    0,
+                    0,
+                    0,
+                    $newWidth,
+                    $newHeight,
+                    $originalWidth,
+                    $originalHeight
                 );
                 imagedestroy($image);
                 $image = $resizedImage;
@@ -411,11 +416,23 @@ public function index(Request $request)
 
         // Handle camera photos dengan kompresi
         $cameraCategories = [
-            'visual_check', 'performance', 'backup', 'alarm',
-            'ac_voltage', 'ac_current', 'dc_current', 'battery_temp',
-            'charging_voltage', 'charging_current', 'rectifier_test', 'battery_voltage',
-            'env_condition', 'led_display', 'battery_connection',
-            'battery_voltage_m1', 'battery_voltage_m2'
+            'visual_check',
+            'performance',
+            'backup',
+            'alarm',
+            'ac_voltage',
+            'ac_current',
+            'dc_current',
+            'battery_temp',
+            'charging_voltage',
+            'charging_current',
+            'rectifier_test',
+            'battery_voltage',
+            'env_condition',
+            'led_display',
+            'battery_connection',
+            'battery_voltage_m1',
+            'battery_voltage_m2'
         ];
 
         foreach ($cameraCategories as $category) {
