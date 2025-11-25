@@ -666,6 +666,7 @@ class PhotoManager {
                 isExisting: false,
             });
             this.renderPhotos();
+            document.dispatchEvent(new CustomEvent("photoChanged"));
         };
         reader.readAsDataURL(file);
     }
@@ -677,6 +678,7 @@ class PhotoManager {
         }
         this.photos = this.photos.filter((p) => p.id !== photoId);
         this.renderPhotos();
+        document.dispatchEvent(new CustomEvent("photoChanged"));
     }
 
     renderPhotos() {

@@ -502,6 +502,7 @@
 
     @push('scripts')
         <script src="{{ asset('js/photo-manager.js') }}"></script>
+        <script src="{{ asset('js/form-autosave.js') }}"></script>
         <script>
             let executorIndex = 0;
 
