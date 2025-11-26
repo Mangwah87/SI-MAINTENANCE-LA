@@ -19,9 +19,6 @@ class GensetController extends Controller
             ->where('user_id', auth()->id())
             ->latest('maintenance_date')
             ->paginate(10);
-
-       
-
         return view('genset.index', compact('maintenances'));
     }
 
@@ -35,7 +32,6 @@ class GensetController extends Controller
 
         // Group by area untuk tampilan yang lebih rapi
         $centralsByArea = $centrals->groupBy('area');
-
         return view('genset.create', compact('centralsByArea'));
     }
 
