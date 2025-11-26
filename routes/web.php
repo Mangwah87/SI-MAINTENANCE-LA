@@ -222,7 +222,7 @@ Route::middleware('auth')->group(function () {
 
         // Hanya superadmin yang bisa create, edit, delete
         Route::middleware('superadmin')->group(function () {
-            Route::get('/create', [CentralController::class, 'create'])->name('create'); // ✅ PINDAH KE ATAS
+            Route::get('/create', [CentralController::class, 'create'])->name('create'); 
             Route::post('/', [CentralController::class, 'store'])->name('store');
             Route::get('/{central}/edit', [CentralController::class, 'edit'])->name('edit');
             Route::put('/{central}', [CentralController::class, 'update'])->name('update');
