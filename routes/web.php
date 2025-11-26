@@ -133,9 +133,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [RectifierMaintenanceController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/export-pdf', [RectifierMaintenanceController::class, 'exportPdf'])->name('export-pdf');
 
-        Route::get('/rectifier/{id}/debug-images', [RectifierMaintenanceController::class, 'debugImages'])
-            ->name('rectifier.debug-images')
-            ->middleware('auth');
+        Route::get('/{id}/debug-images', [RectifierMaintenanceController::class, 'debugImages'])->name('debug-images');
     });
     // PMPermohonan Routes
     Route::prefix('pm-permohonan')->name('pm-permohonan.')->group(function () {
@@ -217,20 +215,19 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('central')->name('central.')->group(function () {
-        // Semua user bisa lihat list
+
         Route::get('/', [CentralController::class, 'index'])->name('index');
 
-        // Hanya superadmin yang bisa create, edit, delete
         Route::middleware('superadmin')->group(function () {
-            Route::get('/create', [CentralController::class, 'create'])->name('create'); 
+            Route::get('/create', [CentralController::class, 'create'])->name('create');
             Route::post('/', [CentralController::class, 'store'])->name('store');
             Route::get('/{central}/edit', [CentralController::class, 'edit'])->name('edit');
             Route::put('/{central}', [CentralController::class, 'update'])->name('update');
             Route::delete('/{central}', [CentralController::class, 'destroy'])->name('destroy');
         });
 
-        // Route dengan parameter dinamis di AKHIR
-        Route::get('/{central}', [CentralController::class, 'show'])->name('show'); // ✅ PINDAH KE BAWAH
+
+        Route::get('/{central}', [CentralController::class, 'show'])->name('show');
     });
 
     Route::get('/reports/all-forms', [ReportController::class, 'index'])->name('reports.all-forms');

@@ -88,8 +88,8 @@ class ReportController extends Controller
                         'icon' => 'battery-charging',
                         'tanggal' => $item->maintenance_date,
                         'lokasi' => $item->central
-                                ? $item->central->id_sentral . ' - ' . $item->central->nama
-                                : $item->location,
+                            ? $item->central->id_sentral . ' - ' . $item->central->nama
+                            : $item->location,
                         'teknisi' => $item->technician_name ?? '-',
                         'status' => 'Completed',
                         'created_by' => $item->user->name ?? '-',
@@ -116,8 +116,8 @@ class ReportController extends Controller
                         'icon' => 'git-compare-arrows',
                         'tanggal' => $item->date_time,
                         'lokasi' => $item->central
-                                ? $item->central->id_sentral . ' - ' . $item->central->nama
-                                : $item->location,
+                            ? $item->central->id_sentral . ' - ' . $item->central->nama
+                            : $item->location,
                         'teknisi' => $item->executor_1 ?? '-',
                         'status' => 'Completed',
                         'created_by' => $item->user->name ?? '-',
