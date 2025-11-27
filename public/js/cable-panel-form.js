@@ -441,4 +441,360 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     initializeExistingDeleteButtons();
+
+    // ========================================
+    // AUTO-SAVE FUNCTIONALITY
+    // ========================================
+
+    let dbInstance = null;
+    const DB_NAME = 'CablePanelFormDB';
+    const STORE_NAME = 'formDrafts';
+    const STORAGE_KEY = 'cable_panel_form_draft';
+    const AUTO_DELETE_MINUTES = 5;
+
+    // Encryption helpers
+    function encryptData(data) {
+        try {
+            return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+        } catch (e) {
+            console.error('Encryption error:', e);
+            return null;
+        }
+    }
+
+    function decryptData(encryptedData) {
+        try {
+            return JSON.parse(decodeURIComponent(escape(atob(encryptedData))));
+        } catch (e) {
+            console.error('Decryption error:', e);
+            return null;
+        }
+    }
+
+    // IndexedDB functions
+    async function initDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, 1);
+
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => resolve(request.result);
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME);
+                }
+            };
+        });
+    }
+
+    async function saveToIndexedDB(data) {
+        try {
+            if (!dbInstance) {
+                dbInstance = await initDB();
+            }
+
+            const encrypted = encryptData(data);
+            if (!encrypted) return false;
+
+            const transaction = dbInstance.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const dataToStore = {
+                encrypted: encrypted,
+                timestamp: Date.now()
+            };
+
+            store.put(dataToStore, STORAGE_KEY);
+
+            return new Promise((resolve, reject) => {
+                transaction.oncomplete = () => resolve(true);
+                transaction.onerror = () => reject(transaction.error);
+            });
+        } catch (error) {
+            console.error('Error saving to IndexedDB:', error);
+            return false;
+        }
+    }
+
+    async function getFromIndexedDB() {
+        try {
+            if (!dbInstance) {
+                dbInstance = await initDB();
+            }
+
+            const transaction = dbInstance.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.get(STORAGE_KEY);
+
+            return new Promise((resolve, reject) => {
+                request.onsuccess = () => {
+                    if (request.result && request.result.encrypted) {
+                        const decrypted = decryptData(request.result.encrypted);
+                        resolve({
+                            data: decrypted,
+                            timestamp: request.result.timestamp
+                        });
+                    } else {
+                        resolve(null);
+                    }
+                };
+                request.onerror = () => reject(request.error);
+            });
+        } catch (error) {
+            console.error('Error reading from IndexedDB:', error);
+            return null;
+        }
+    }
+
+    async function deleteFromIndexedDB() {
+        try {
+            if (!dbInstance) {
+                dbInstance = await initDB();
+            }
+
+            const transaction = dbInstance.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            store.delete(STORAGE_KEY);
+
+            return new Promise((resolve, reject) => {
+                transaction.oncomplete = () => resolve(true);
+                transaction.onerror = () => reject(transaction.error);
+            });
+        } catch (error) {
+            console.error('Error deleting from IndexedDB:', error);
+            return false;
+        }
+    }
+
+    // Save draft function
+    async function saveDraft() {
+        const form = document.getElementById('cable-panel-form');
+        if (!form) return;
+
+        const formData = {};
+        const inputs = form.querySelectorAll('input, select, textarea');
+
+        inputs.forEach(input => {
+            if (input.type === 'file' || input.type === 'hidden' || input.name === '_token' || input.name === '') {
+                return;
+            }
+
+            if (input.type === 'checkbox') {
+                formData[input.name] = input.checked;
+            } else if (input.type === 'radio') {
+                if (input.checked) {
+                    formData[input.name] = input.value;
+                }
+            } else {
+                formData[input.name] = input.value;
+            }
+        });
+
+        // Collect camera photos from hidden inputs
+        const cameraPhotos = {};
+        const imageInputs = document.querySelectorAll('#image-data-container input[type="hidden"]');
+        imageInputs.forEach(input => {
+            try {
+                const imageData = JSON.parse(input.value);
+                if (imageData.category) {
+                    cameraPhotos[imageData.category] = imageData;
+                }
+            } catch (e) {
+                console.error('Error parsing image data:', e);
+            }
+        });
+
+        const draftData = {
+            formFields: formData,
+            cameraPhotos: cameraPhotos,
+            timestamp: Date.now()
+        };
+
+        await saveToIndexedDB(draftData);
+    }
+
+    let saveTimeout;
+    function triggerAutoSave() {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+            saveDraft();
+        }, 1000);
+    }
+
+    // Show restore notification
+    function showRestoreNotification(onRestore, onDecline) {
+        const notification = document.createElement('div');
+        notification.id = 'restore-notification';
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            max-width: 500px;
+            border-left: 4px solid #3b82f6;
+        `;
+
+        notification.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <svg style="width: 24px; height: 24px; color: #3b82f6; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div style="flex: 1;">
+                    <p style="margin: 0; font-weight: 600; color: #1f2937;">📦 Data draft ditemukan</p>
+                    <p style="margin: 5px 0 0 0; font-size: 14px; color: #6b7280;">Ada data dan foto yang belum tersimpan. Pulihkan?</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button id="restore-btn" style="flex: 1; padding: 8px 16px; background: white; border: 1px solid #d1d5db; color: #374151; border-radius: 6px; cursor: pointer; font-weight: 500;">
+                    Pulihkan
+                </button>
+                <button id="decline-btn" style="flex: 1; padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">
+                    Abaikan
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(notification);
+
+        document.getElementById('restore-btn').onclick = () => {
+            notification.remove();
+            onRestore();
+        };
+
+        document.getElementById('decline-btn').onclick = () => {
+            notification.remove();
+            onDecline();
+        };
+    }
+
+    // Restore draft function
+    async function restoreDraft() {
+        const result = await getFromIndexedDB();
+        if (!result || !result.data) return;
+
+        const { formFields, cameraPhotos } = result.data;
+        const form = document.getElementById('cable-panel-form');
+        if (!form) return;
+
+        // Restore form fields
+        if (formFields) {
+            Object.keys(formFields).forEach(name => {
+                const elements = form.querySelectorAll(`[name="${name}"]`);
+                elements.forEach(element => {
+                    if (element.type === 'checkbox') {
+                        element.checked = formFields[name];
+                    } else if (element.type === 'radio') {
+                        if (element.value === formFields[name]) {
+                            element.checked = true;
+                        }
+                    } else {
+                        element.value = formFields[name];
+                    }
+                });
+            });
+        }
+
+        // Restore camera photos
+        if (cameraPhotos) {
+            Object.keys(cameraPhotos).forEach(category => {
+                const imageData = cameraPhotos[category];
+                const section = document.querySelector(`.image-upload-section[data-field-name="${category}"]`);
+
+                if (section && imageData.data) {
+                    // Create hidden input
+                    createHiddenImageInput(imageData, category);
+                    // Create preview
+                    createPreview(section, imageData.data, category);
+                }
+            });
+        }
+    }
+
+    // Initialize auto-save
+    async function initAutoSave() {
+        const form = document.getElementById('cable-panel-form');
+        if (!form) return;
+
+        // Check if we're in edit mode
+        const isEditMode = form.action.includes('/update/') || form.querySelector('input[name="_method"]');
+        if (isEditMode) {
+            console.log('Edit mode detected, auto-save disabled');
+            return;
+        }
+
+        // Check for existing draft
+        const result = await getFromIndexedDB();
+
+        if (result && result.data) {
+            const age = Date.now() - result.timestamp;
+            const ageMinutes = age / (1000 * 60);
+
+            if (ageMinutes > AUTO_DELETE_MINUTES) {
+                // Draft expired, delete it
+                await deleteFromIndexedDB();
+            } else {
+                // Show restore notification
+                showRestoreNotification(
+                    async () => {
+                        await restoreDraft();
+                    },
+                    async () => {
+                        await deleteFromIndexedDB();
+                    }
+                );
+            }
+        }
+
+        // Attach auto-save listeners
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            if (input.type !== 'file' && input.type !== 'submit' && input.type !== 'button') {
+                input.addEventListener('input', triggerAutoSave);
+                input.addEventListener('change', triggerAutoSave);
+            }
+        });
+
+        // Monitor camera photos changes
+        const imageContainer = document.getElementById('image-data-container');
+        if (imageContainer) {
+            const observer = new MutationObserver(() => {
+                triggerAutoSave();
+            });
+            observer.observe(imageContainer, { childList: true, subtree: true });
+        }
+
+        // Set auto-delete timer
+        if (result && result.timestamp) {
+            const age = Date.now() - result.timestamp;
+            const remainingMs = (AUTO_DELETE_MINUTES * 60 * 1000) - age;
+
+            if (remainingMs > 0) {
+                setTimeout(async () => {
+                    const currentResult = await getFromIndexedDB();
+                    if (currentResult) {
+                        const currentAge = Date.now() - currentResult.timestamp;
+                        if (currentAge >= AUTO_DELETE_MINUTES * 60 * 1000) {
+                            await deleteFromIndexedDB();
+                            console.log('Draft auto-deleted after 5 minutes');
+                        }
+                    }
+                }, remainingMs);
+            }
+        }
+
+        // Clear draft on successful submit
+        form.addEventListener('submit', () => {
+            setTimeout(async () => {
+                await deleteFromIndexedDB();
+            }, 100);
+        });
+    }
+
+    // Initialize auto-save when DOM is ready
+    initAutoSave();
 });

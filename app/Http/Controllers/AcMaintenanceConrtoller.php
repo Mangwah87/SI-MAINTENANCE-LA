@@ -464,7 +464,12 @@ class AcMaintenanceConrtoller extends Controller
     public function print($id)
     {
         $maintenance = AcMaintenance::with('central')->findOrFail($id);
+
+        // Format date and time for filename
+        $date_time = date('Y-m-d', strtotime($maintenance->date_time));
+        $centralId = $maintenance->central->id_sentral ?? 'unknown';
+
         $pdf = PDF::loadView('ac.acpdf', compact('maintenance'));
-        return $pdf->stream('preventive_maintenance_ac_'.$maintenance->id.'.pdf');
+        return $pdf->stream("FM-LAP-D2-SOP-003-003-{$date_time}-{$centralId}.pdf");
     }
 }
