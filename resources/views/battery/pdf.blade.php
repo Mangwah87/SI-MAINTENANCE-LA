@@ -281,8 +281,8 @@
         {{-- Info Table --}}
         <table class="info-table" style="margin-top: 5px;">
             <tr>
-                <td width="20%"><strong>Location</strong></td>
-                <td width="35%">: {{ $maintenance->central->nama ?? $maintenance->location }}</td>
+                <td width="15%"><strong>Location</strong></td>
+                <td width="70%">: {{ $maintenance->central->nama ?? $maintenance->location }}</td>
             </tr>
             <tr>
                 <td><strong>Date / Time</strong></td>
@@ -406,7 +406,7 @@
         <div style="border: 1px solid #000; text-align: center; padding: 5px; height: 100px;">
             <div style="height: 65px;"></div>
             <div style="border-bottom: 1px solid #000; padding-bottom: 3px; margin: 0 5px;">
-                {{ $maintenance->supervisor ?? '' }}
+                {{ $maintenance->supervisor ?? '____________________' }}
             </div>
             @if($maintenance->supervisor_id)
             <div style="font-size: 7pt; color: #000000ff; margin-top: 2px;">
