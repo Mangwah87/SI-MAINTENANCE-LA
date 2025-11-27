@@ -101,7 +101,8 @@
                     {{-- Data Container --}}
                     <div id="dataContainer">
                         <div class="mb-4">
-                            <p class="text-gray-600">Total Data: <span class="font-semibold" id="totalData">{{ $total }}</span></p>
+                            <p class="text-gray-600">Total Data: <span class="font-semibold"
+                                    id="totalData">{{ $total }}</span></p>
                         </div>
 
                         <div id="tableContainer">
@@ -110,12 +111,24 @@
                                     <table class="min-w-full divide-y divide-gray-200">
                                         <thead class="bg-gray-50">
                                             <tr>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Form</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lokasi</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pelaksana</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    No</th>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Jenis Form</th>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Tanggal</th>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Lokasi</th>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Pelaksana</th>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody class="bg-white divide-y divide-gray-200">
@@ -126,8 +139,10 @@
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         <div class="flex items-center gap-2">
-                                                            <i data-lucide="{{ $item['icon'] }}" class="w-5 h-5 text-blue-600"></i>
-                                                            <span class="text-sm font-medium text-gray-900">{{ $item['type'] }}</span>
+                                                            <i data-lucide="{{ $item['icon'] }}"
+                                                                class="w-5 h-5 text-blue-600"></i>
+                                                            <span
+                                                                class="text-sm font-medium text-gray-900">{{ $item['type'] }}</span>
                                                         </div>
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -158,8 +173,10 @@
                                 @if ($total > $perPage)
                                     <div class="mt-4 flex items-center justify-between">
                                         <div class="text-sm text-gray-700">
-                                            Menampilkan <span class="font-medium">{{ ($currentPage - 1) * $perPage + 1 }}</span>
-                                            sampai <span class="font-medium">{{ min($currentPage * $perPage, $total) }}</span>
+                                            Menampilkan <span
+                                                class="font-medium">{{ ($currentPage - 1) * $perPage + 1 }}</span>
+                                            sampai <span
+                                                class="font-medium">{{ min($currentPage * $perPage, $total) }}</span>
                                             dari <span class="font-medium">{{ $total }}</span> hasil
                                         </div>
                                         <div class="flex gap-2">
@@ -170,7 +187,8 @@
                                                 </a>
                                             @endif
 
-                                            <span class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md">
+                                            <span
+                                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md">
                                                 Page {{ $currentPage }} of {{ ceil($total / $perPage) }}
                                             </span>
 
@@ -259,12 +277,9 @@
                             attachPaginationHandlers();
                         }
 
-                        // Update URL without refresh
-                        const newUrl = `{{ route('reports.all-forms') }}?${params}`;
-                        window.history.pushState({}, '', newUrl);
-
                     } catch (error) {
                         console.error('Error loading data:', error);
+                        alert('Terjadi kesalahan saat memuat data. Silakan refresh halaman.');
                     } finally {
                         // Hide loading
                         loadingIndicator.classList.add('hidden');

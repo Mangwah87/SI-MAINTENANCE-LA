@@ -203,8 +203,7 @@ class GroundingController extends Controller
      */
     public function pdf($id) // Use $id directly
     {
-        $maintenance = GroundingMaintenance::where('user_id', auth()->id())
-                                           ->findOrFail($id);
+        $maintenance = GroundingMaintenance::findOrFail($id);
         $pdf = PDF::loadView('grounding.pdf_template', compact('maintenance')); // View path: grounding.pdf_template
         $pdf->setPaper('a4', 'portrait');
         $safeDocNumber = str_replace(['/', '\\'], '-', $maintenance->doc_number); // Sanitize filename

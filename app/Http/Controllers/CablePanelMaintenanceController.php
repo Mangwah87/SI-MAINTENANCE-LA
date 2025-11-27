@@ -201,8 +201,7 @@ class CablePanelMaintenanceController extends Controller
      */
     public function pdf($id)
     {
-        $maintenance = CablePanelMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
+        $maintenance = CablePanelMaintenance::findOrFail($id);
         $pdf = PDF::loadView('cable-panel.pdf_template', compact('maintenance')); // Path view baru
         $pdf->setPaper('a4', 'portrait');
         $safeDocNumber = str_replace(['/', '\\'], '-', $maintenance->doc_number); // Sanitize filename
