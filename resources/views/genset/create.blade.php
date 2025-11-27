@@ -67,9 +67,9 @@
                                         <optgroup label="{{ $area }}">
                                             @foreach($centrals as $central)
                                                 {{-- Perbaikan: value hanya mengirimkan ID murni --}}
-<option value="{{ $central->id }}" {{ old('location') == $central->id ? 'selected' : '' }}>
-    {{ $central->id_sentral }} - {{ $central->nama }}
-</option>
+                                <option value="{{ $central->id }}" {{ old('location') == $central->id ? 'selected' : '' }}>
+                                    {{ $central->id_sentral }} - {{ $central->nama }}
+                                </option>
                                             @endforeach
                                         </optgroup>
                                     @endforeach

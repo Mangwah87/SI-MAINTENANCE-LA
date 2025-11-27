@@ -210,7 +210,7 @@ class PhotoManager {
                     console.log("  Longitude:", lon.toFixed(6));
                     console.log("  Accuracy:", accuracy, "meters");
 
-                    // 🔥 FIX: Coba API alternatif yang lebih reliable
+                    //  FIX: Coba API alternatif yang lebih reliable
                     let locationName = null;
 
                     try {
@@ -574,8 +574,7 @@ class PhotoManager {
         ctx.lineWidth = 5;
         ctx.strokeText("WITA", witaX, witaY);
         ctx.fillText("WITA", witaX, witaY);
-
-        // 3️⃣ Koordinat (hanya jika ada latitude/longitude)
+        
         let currentY = timeY + timeFontSize + 25;
         const coordFontSize = Math.floor(width / 38);
         ctx.font = `bold ${coordFontSize}px Arial, sans-serif`;
@@ -590,7 +589,6 @@ class PhotoManager {
             currentY += coordFontSize + 10;
         }
 
-        // 4️⃣ Nama lokasi (hanya jika ada nama lokasi sebenarnya)
         if (location_name) {
             ctx.strokeText(location_name, startX, currentY);
             ctx.fillText(location_name, startX, currentY);

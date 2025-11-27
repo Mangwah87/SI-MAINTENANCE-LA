@@ -409,7 +409,6 @@ class BatteryController extends Controller
             'user'
         ])
             ->where('id', $id)
-
             ->firstOrFail();
 
         $pdf = Pdf::loadView('battery.pdf', compact('maintenance'))

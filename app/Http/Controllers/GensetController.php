@@ -20,7 +20,7 @@ class GensetController extends Controller
             ->latest('maintenance_date')
             ->paginate(10);
 
-       
+
 
         return view('genset.index', compact('maintenances'));
     }
@@ -35,7 +35,6 @@ class GensetController extends Controller
 
         // Group by area untuk tampilan yang lebih rapi
         $centralsByArea = $centrals->groupBy('area');
-
         return view('genset.create', compact('centralsByArea'));
     }
 
@@ -79,7 +78,9 @@ class GensetController extends Controller
             $location = strtoupper(substr(str_replace(' ', '', $validatedData['location']), 0, 5));
             $validatedData['doc_number'] = sprintf(
                 'FM-LAP/%s/%s/%s/%s',
-                $location, 'GENSET', $date->format('Y'),
+                $location,
+                'GENSET',
+                $date->format('Y'),
                 GensetMaintenance::whereYear('maintenance_date', $date->year)->count() + 1
             );
 
@@ -101,17 +102,18 @@ class GensetController extends Controller
     {
         try {
             $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
+                ->findOrFail($id);
             $validatedData = $this->validateRequest($request);
 
             // 1. Ambil gambar yang ada di DB
             $existingImages = $maintenance->images ?? [];
-            if (!is_array($existingImages)) $existingImages = [];
+            if (!is_array($existingImages))
+                $existingImages = [];
 
             // 2. Hapus gambar yang ditandai untuk dihapus
             $imagesToDelete = $request->input('delete_images', []);
             if (!empty($imagesToDelete) && is_array($imagesToDelete)) {
-                $existingImages = array_filter($existingImages, function($img) use ($imagesToDelete) {
+                $existingImages = array_filter($existingImages, function ($img) use ($imagesToDelete) {
                     if (isset($img['path']) && in_array($img['path'], $imagesToDelete)) {
                         if (Storage::disk('public')->exists($img['path'])) {
                             Storage::disk('public')->delete($img['path']);
@@ -187,7 +189,7 @@ class GensetController extends Controller
     {
         try {
             $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
+                ->findOrFail($id);
 
             // Hapus semua gambar terkait dari storage
             if ($maintenance->images && is_array($maintenance->images)) {
@@ -211,14 +213,14 @@ class GensetController extends Controller
     public function show($id)
     {
         $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
+            ->findOrFail($id);
         return view('genset.show', compact('maintenance'));
     }
 
     public function edit($id)
     {
         $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
+            ->findOrFail($id);
 
         // Ambil data central untuk dropdown
         $centrals = DB::table('central')
@@ -233,13 +235,14 @@ class GensetController extends Controller
 
     public function pdf($id)
     {
-        $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
+        $maintenance = GensetMaintenance::findOrFail($id);
+
         $pdf = PDF::loadView('genset.pdf_template', compact('maintenance'));
         $pdf->setPaper('letter', 'portrait');
 
         $safeDocNumber = str_replace('/', '-', $maintenance->doc_number);
         $fileName = 'genset-maintenance-' . $safeDocNumber . '.pdf';
+
         return $pdf->stream($fileName);
     }
 
@@ -281,7 +284,8 @@ class GensetController extends Controller
 
     private function saveBase64Image($imageData)
     {
-        if (empty($imageData)) return null;
+        if (empty($imageData))
+            return null;
         if (!preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
             Log::error('Invalid image format');
             return null;
@@ -289,7 +293,8 @@ class GensetController extends Controller
 
         $imageData = substr($imageData, strpos($imageData, ',') + 1);
         $type = strtolower($type[1]);
-        if (!in_array($type, ['jpg', 'jpeg', 'png'])) $type = 'jpg';
+        if (!in_array($type, ['jpg', 'jpeg', 'png']))
+            $type = 'jpg';
 
         $decodedImage = base64_decode($imageData);
         if ($decodedImage === false) {
