@@ -291,7 +291,7 @@
                          <tr>
                             <td width="15%" style="font-size: 8pt; vertical-align: top;">No. Dok.</td><td width="25%" style="font-size: 8pt; vertical-align: top;">: FM-LAP-D2-SOP-003-011</td>
                             <td width="35%" rowspan="4" class="text-center" style="vertical-align: middle;"><div style="font-size: 14pt; font-weight: bold;">Formulir</div><div style="font-size: 14pt; font-weight: bold;">Preventive Maintenance</div><div style="font-size: 14pt; font-weight: bold;">Petir dan Grounding</div></td>
-                            <td width="25%" rowspan="4" class="text-center" style="vertical-align: middle;"><img src="{{ public_path('assets/images/Lintasarta_Logo_Logogram.png') }}" style="width: 70px;"></td>
+                            <td width="25%" rowspan="4" class="text-center" style="vertical-align: middle;"><img src="{{ public_path('assets/images/logo2.jpg') }}" style="width: 70px;"></td>
                         </tr>
                         <tr><td style="font-size: 8pt; vertical-align: top;">Versi</td><td style="font-size: 8pt; vertical-align: top;">: 1.0</td></tr>
                         <tr><td style="font-size: 8pt; vertical-align: top;">Hal</td><td style="font-size: 8pt; vertical-align: top;">: {{ $currentPage }} dari {{ $totalPages }}</td></tr>

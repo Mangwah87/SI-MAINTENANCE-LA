@@ -13,6 +13,15 @@ use Illuminate\Support\Arr;
 
 class CablePanelMaintenanceController extends Controller
 {
+    // --- TAMBAHKAN BAGIAN INI ---
+    public function __construct()
+    {
+        // Naikkan limit memori ke 512MB (atau -1 untuk unlimited jika perlu)
+        ini_set('memory_limit', '512M');
+        
+        // Naikkan waktu eksekusi agar tidak timeout saat memproses gambar/PDF
+        ini_set('max_execution_time', 300); // 300 detik = 5 menit
+    }
     /**
      * Display a listing of the resource.
      */
