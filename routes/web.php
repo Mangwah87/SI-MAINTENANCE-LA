@@ -13,6 +13,7 @@ use App\Http\Controllers\GroundingController;
 use App\Http\Controllers\CablePanelMaintenanceController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\InverterController;
+use App\Http\Controllers\PoleController;
 use App\Http\Controllers\DokumentasiController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\CentralController;
@@ -153,6 +154,11 @@ Route::middleware('auth')->group(function () {
     Route::get('tindak-lanjut/{tindakLanjut}/pdf', [TindakLanjutController::class, 'generatePdf'])
         ->name('tindak-lanjut.pdf');
 
+    // Inventory Device Routes
+    Route::resource('inventory-device', \App\Http\Controllers\InventoryDeviceController::class);
+    Route::get('inventory-device/{inventoryDevice}/pdf', [\App\Http\Controllers\InventoryDeviceController::class, 'generatePdf'])
+        ->name('inventory-device.pdf');
+
     // AC Maintenance Routes (Grouped under 'ac' prefix)
     Route::prefix('ac')->name('ac.')->group(function () {
         Route::get('/', [AcMaintenanceConrtoller::class, 'index'])->name('index');
@@ -199,6 +205,18 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}', [InverterController::class, 'update'])->name('update');
         Route::delete('/{id}', [InverterController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [InverterController::class, 'generatePdf'])->name('pdf');
+    });
+
+    // Pole Routes
+    Route::prefix('pole')->name('pole.')->group(function () {
+        Route::get('/', [PoleController::class, 'index'])->name('index');
+        Route::get('/create', [PoleController::class, 'create'])->name('create');
+        Route::post('/', [PoleController::class, 'store'])->name('store');
+        Route::get('/{id}', [PoleController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [PoleController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [PoleController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PoleController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [PoleController::class, 'pdf'])->name('pdf');
     });
 
 

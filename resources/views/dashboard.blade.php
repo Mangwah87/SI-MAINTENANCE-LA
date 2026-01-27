@@ -220,6 +220,18 @@
                     </div>
                 </a>
 
+                <!-- PM Pole -->
+                <a href="{{ route('pole.index') }}" class="block h-full">
+                    <div
+                        class="bg-white rounded-2xl p-6 shadow-lg border-2 h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
+                        <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                            <i data-lucide="tower-control" class="w-12 h-12 text-blue-600"></i>
+                        </div>
+                        <span class="text-sm sm:text-base font-semibold text-black text-center leading-tight">PM
+                            Pole/Tower</span>
+                    </div>
+                </a>
+
                 <!-- Preventive Maintenance Ruang Shelter -->
                 <a href="{{ route('pm-shelter.index') }}" class="block h-full">
                     <div
@@ -254,6 +266,18 @@
                         </div>
                         <span class="text-sm sm:text-base font-semibold text-black text-center leading-tight">PM
                             Instalasi Kabel dan Panel Distribusi</span>
+                    </div>
+                </a>
+
+                <!-- Inventory Device -->
+                <a href="{{ route('inventory-device.index') }}" class="block h-full">
+                    <div
+                        class="bg-white rounded-2xl p-6 shadow-lg border-2  h-full min-h-[180px] flex flex-col items-center justify-center hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group">
+                        <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                            <i data-lucide="package-search" class="w-12 h-12 text-blue-600"></i>
+                        </div>
+                        <span class="text-sm sm:text-base font-semibold text-black text-center leading-tight">Inventory
+                            Device</span>
                     </div>
                 </a>
 

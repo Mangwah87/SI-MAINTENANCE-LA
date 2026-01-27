@@ -301,11 +301,30 @@ td.pelaksana-table.center {
                         @foreach($rowImages as $image)
                             @if(is_array($image) && isset($image['path']) && !empty($image['path']))
                                 <td class="image-cell">
-                                    @php $imagePath = $image['path']; $fullPath = public_path('storage/' . $imagePath); $fileExists = is_file($fullPath); @endphp
-                                    @if($fileExists)
-                                        <img src="{{ $fullPath }}" alt="{{ $image['category'] ?? 'Genset Image' }}">
+                                    @php
+                                        $imagePath = $image['path'];
+                                        $fullPath = public_path('storage/' . $imagePath);
+                                        $fileExists = is_file($fullPath);
+
+                                        // Optimize image data
+                                        $imageData = null;
+                                        if ($fileExists) {
+                                            try {
+                                                // Get image info
+                                                $imageInfo = @getimagesize($fullPath);
+                                                if ($imageInfo !== false) {
+                                                    // Convert to base64 with reduced quality for PDF
+                                                    $imageData = 'data:' . $imageInfo['mime'] . ';base64,' . base64_encode(file_get_contents($fullPath));
+                                                }
+                                            } catch (\Exception $e) {
+                                                $fileExists = false;
+                                            }
+                                        }
+                                    @endphp
+                                    @if($fileExists && $imageData)
+                                        <img src="{{ $imageData }}" alt="{{ $image['category'] ?? 'Genset Image' }}" style="max-width: 100%; max-height: 180px; object-fit: contain;">
                                     @else
-                                        <div style="height: 180px; background: #f0f0f0; display: table-cell; vertical-align: middle; color: #999; padding: 5px;"><p class="error-message">Image Not Found!</p><p class="error-message">Checked Path:<br>{{ $fullPath }}</p></div>
+                                        <div style="height: 180px; background: #f0f0f0; display: table-cell; vertical-align: middle; color: #999; padding: 5px;"><p class="error-message">Image Not Found!</p></div>
                                     @endif
                                     <div class="image-label">{{ ucwords(str_replace(['_result', '_'], ['', ' '], $image['category'] ?? 'Image')) }}</div>
                                 </td>

@@ -17,7 +17,7 @@ class InverterController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        
+
         $inverter = Inverter::query()
             ->with('user')
             ->where('user_id', Auth::id())
@@ -31,7 +31,7 @@ class InverterController extends Controller
                       ->orWhere('reg_num', 'like', "%{$search}%")
                       ->orWhere('serial_num', 'like', "%{$search}%")
                       ->orWhere('boss', 'like', "%{$search}%");
-                    
+
                     // Pencarian berdasarkan tanggal (format: dd/mm/yyyy atau yyyy-mm-dd)
                     if (preg_match('/^\d{1,2}\/\d{1,2}\/\d{4}$/', $search)) {
                         // Format: dd/mm/yyyy
@@ -44,21 +44,21 @@ class InverterController extends Controller
                         // Format: yyyy-mm-dd
                         $q->orWhereDate('tanggal_dokumentasi', $search);
                     }
-                    
+
                     // Pencarian berdasarkan waktu (format: HH:mm)
                     if (preg_match('/^\d{1,2}:\d{2}$/', $search)) {
                         $q->orWhereTime('tanggal_dokumentasi', 'like', "%{$search}%");
                     }
-                    
+
                     // Pencarian dalam JSON field 'pelaksana' (nama dan perusahaan)
                     $q->orWhereRaw("JSON_SEARCH(pelaksana, 'one', ?) IS NOT NULL", ["%{$search}%"]);
-                    
+
                     // Pencarian untuk field numeric (jika input adalah angka)
                     if (is_numeric($search)) {
                         $q->orWhere('dc_input_voltage', 'like', "%{$search}%")
                           ->orWhere('dc_current_input', 'like', "%{$search}%")
                           ->orWhere('ac_current_output', 'like', "%{$search}%")
-                          ->orWhere('neutral_ground_output_voltage', 'like', "%{$search}%")
+                          ->orWhere('ac_output_voltage', 'like', "%{$search}%")
                           ->orWhere('equipment_temperature', 'like', "%{$search}%");
                     }
                 });
@@ -66,7 +66,7 @@ class InverterController extends Controller
             ->latest()
             ->paginate(10)
             ->appends(['search' => $search]);
-        
+
         return view('inverter.index', compact('inverter'));
     }
 
@@ -92,73 +92,58 @@ class InverterController extends Controller
     {
         // Debug: Lihat data yang dikirim
         // dd($request->all());
-        
+
         // --- VALIDASI ---
         $validated = $request->validate([
             // Info Umum
             'nomor_dokumen' => 'required|string',
             'lokasi' => 'required|string|max:255',
             'tanggal_dokumentasi' => 'required|date',
-            'perusahaan' => 'nullable|string|max:255',
+            'waktu' => 'required|date_format:H:i',
             'keterangan' => 'nullable|string',
             'brand' => 'nullable|string|max:255',
             'reg_num' => 'nullable|string|max:255',
             'serial_num' => 'nullable|string|max:255',
-            'boss' => 'nullable|string|max:255',
 
             // Performance Terukur
-            'dc_current_inverter_type' => 'nullable|string',
-            'ac_current_inverter_type' => 'nullable|string',
             'dc_input_voltage' => 'nullable|numeric',
             'dc_current_input' => 'nullable|numeric',
             'ac_current_output' => 'nullable|numeric',
-            'neutral_ground_output_voltage' => 'nullable|numeric',
+            'ac_output_voltage' => 'nullable|numeric',
             'equipment_temperature' => 'nullable|numeric',
 
-            // Pelaksana (minimal 1 wajib)
-            'pelaksana' => 'required|array|min:1',
-            'pelaksana.*.nama' => 'nullable|string|max:255',
-            'pelaksana.*.perusahaan' => 'nullable|string|max:255',
-            
-            // Pengawas (opsional)
-            'pengawas' => 'nullable|array',
-            'pengawas.*.nama' => 'nullable|string|max:255',
-            'pengawas.*.perusahaan' => 'nullable|string|max:255',
-            
+            // Personnel
+            'executor_1' => 'nullable|string|max:255',
+            'mitra_internal_1' => 'nullable|in:Mitra,Internal',
+            'executor_2' => 'nullable|string|max:255',
+            'mitra_internal_2' => 'nullable|in:Mitra,Internal',
+            'executor_3' => 'nullable|string|max:255',
+            'mitra_internal_3' => 'nullable|in:Mitra,Internal',
+            'executor_4' => 'nullable|string|max:255',
+            'mitra_internal_4' => 'nullable|in:Mitra,Internal',
+            'verifikator' => 'nullable|string|max:255',
+            'verifikator_nik' => 'nullable|string|max:50',
+            'head_of_sub_department' => 'nullable|string|max:255',
+            'head_of_sub_department_nik' => 'nullable|string|max:50',
+
             // Data Checklist
             'data_inverter' => 'nullable|array',
         ]);
 
         DB::beginTransaction();
         try {
-            // --- Filter Pelaksana (hapus yang kosong) ---
-            $pelaksanaFiltered = [];
-            if ($request->has('pelaksana')) {
-                $pelaksanaFiltered = array_values(array_filter($request->pelaksana, function($p) {
-                    return !empty($p['nama']) && !empty($p['perusahaan']);
-                }));
-            }
-
-            // --- Filter Pengawas (hapus yang kosong) ---
-            $pengawasFiltered = [];
-            if ($request->has('pengawas')) {
-                $pengawasFiltered = array_values(array_filter($request->pengawas, function($p) {
-                    return !empty($p['nama']) && !empty($p['perusahaan']);
-                }));
-            }
-
             // --- Proses Data Checklist & Foto ---
             $inverterProcessed = [];
             if ($request->has('data_inverter')) {
                 foreach ($request->data_inverter as $index => $item) {
                     $photos = [];
-                    
+
                     // Proses array foto jika ada
                     if (isset($item['photos']) && is_array($item['photos'])) {
                         foreach ($item['photos'] as $photoIndex => $photo) {
                             if (!empty($photo['photo_data'])) {
                                 $photoPath = $this->saveBase64Photo($photo['photo_data'], 'inverter');
-                                
+
                                 $photos[] = [
                                     'photo_path' => $photoPath,
                                     'photo_latitude' => $photo['photo_latitude'] ?? null,
@@ -171,8 +156,8 @@ class InverterController extends Controller
 
                     $inverterProcessed[] = [
                         'nama' => $item['nama'] ?? '',
-                        'status' => $item['status'] ?? '', 
-                        'tegangan' => $item['tegangan'] ?? '', 
+                        'status' => $item['status'] ?? '',
+                        'tegangan' => $item['tegangan'] ?? '',
                         'photos' => $photos,
                     ];
                 }
@@ -184,23 +169,33 @@ class InverterController extends Controller
                 'nomor_dokumen' => $validated['nomor_dokumen'],
                 'lokasi' => $validated['lokasi'],
                 'tanggal_dokumentasi' => $validated['tanggal_dokumentasi'],
-                'perusahaan' => $request->perusahaan ?? 'PT. Aplikanusa Lintasarta',
+                'waktu' => $validated['waktu'],
                 'keterangan' => $request->keterangan,
                 'brand' => $request->brand,
                 'reg_num' => $request->reg_num,
                 'serial_num' => $request->serial_num,
-                'boss' => $request->boss,
-                'dc_current_inverter_type' => $request->dc_current_inverter_type,
-                'ac_current_inverter_type' => $request->ac_current_inverter_type,
                 'dc_input_voltage' => $request->dc_input_voltage,
                 'dc_current_input' => $request->dc_current_input,
                 'ac_current_output' => $request->ac_current_output,
-                'neutral_ground_output_voltage' => $request->neutral_ground_output_voltage,
+                'ac_output_voltage' => $request->ac_output_voltage,
                 'equipment_temperature' => $request->equipment_temperature,
-                'pelaksana' => $pelaksanaFiltered,
-                'pengawas' => $pengawasFiltered,
+
+                // Personnel
+                'executor_1' => $request->executor_1,
+                'mitra_internal_1' => $request->mitra_internal_1,
+                'executor_2' => $request->executor_2,
+                'mitra_internal_2' => $request->mitra_internal_2,
+                'executor_3' => $request->executor_3,
+                'mitra_internal_3' => $request->mitra_internal_3,
+                'executor_4' => $request->executor_4,
+                'mitra_internal_4' => $request->mitra_internal_4,
+                'verifikator' => $request->verifikator,
+                'verifikator_nik' => $request->verifikator_nik,
+                'head_of_sub_department' => $request->head_of_sub_department,
+                'head_of_sub_department_nik' => $request->head_of_sub_department_nik,
+
                 'data_checklist' => $inverterProcessed,
-                
+
             ]);
 
             DB::commit();
@@ -220,7 +215,7 @@ class InverterController extends Controller
     public function show($id)
     {
         $inverter = Inverter::where('user_id', Auth::id())->findOrFail($id);
-        
+
         // Model sudah auto-cast ke array
         if (!is_array($inverter->data_checklist)) {
             $inverter->data_checklist = [];
@@ -275,23 +270,31 @@ class InverterController extends Controller
             'nomor_dokumen' => 'required|string',
             'lokasi' => 'required|string|max:255',
             'tanggal_dokumentasi' => 'required|date',
-            'perusahaan' => 'nullable|string|max:255',
+            'waktu' => 'required|date_format:H:i',
             'keterangan' => 'nullable|string',
             'brand' => 'nullable|string|max:255',
             'reg_num' => 'nullable|string|max:255',
             'serial_num' => 'nullable|string|max:255',
-            'boss' => 'nullable|string|max:255',
-            'dc_current_inverter_type' => 'nullable|string',
-            'ac_current_inverter_type' => 'nullable|string',
             'dc_input_voltage' => 'nullable|numeric',
             'dc_current_input' => 'nullable|numeric',
             'ac_current_output' => 'nullable|numeric',
-            'neutral_ground_output_voltage' => 'nullable|numeric',
+            'ac_output_voltage' => 'nullable|numeric',
             'equipment_temperature' => 'nullable|numeric',
-            'pelaksana' => 'required|array|min:1',
-            'pelaksana.*.nama' => 'nullable|string|max:255',
-            'pelaksana.*.perusahaan' => 'nullable|string|max:255',
-            'pengawas' => 'nullable|array',
+
+            // Personnel
+            'executor_1' => 'nullable|string|max:255',
+            'mitra_internal_1' => 'nullable|in:Mitra,Internal',
+            'executor_2' => 'nullable|string|max:255',
+            'mitra_internal_2' => 'nullable|in:Mitra,Internal',
+            'executor_3' => 'nullable|string|max:255',
+            'mitra_internal_3' => 'nullable|in:Mitra,Internal',
+            'executor_4' => 'nullable|string|max:255',
+            'mitra_internal_4' => 'nullable|in:Mitra,Internal',
+            'verifikator' => 'nullable|string|max:255',
+            'verifikator_nik' => 'nullable|string|max:50',
+            'head_of_sub_department' => 'nullable|string|max:255',
+            'head_of_sub_department_nik' => 'nullable|string|max:50',
+
             'data_inverter' => 'nullable|array',
             'delete_photos' => 'nullable|array',
             'delete_photos.*' => 'string',
@@ -310,28 +313,12 @@ class InverterController extends Controller
                 }
             }
 
-            // --- Filter Pelaksana ---
-            $pelaksanaFiltered = [];
-            if ($request->has('pelaksana')) {
-                $pelaksanaFiltered = array_values(array_filter($request->pelaksana, function($p) {
-                    return !empty($p['nama']) && !empty($p['perusahaan']);
-                }));
-            }
-
-            // --- Filter Pengawas ---
-            $pengawasFiltered = [];
-            if ($request->has('pengawas')) {
-                $pengawasFiltered = array_values(array_filter($request->pengawas, function($p) {
-                    return !empty($p['nama']) && !empty($p['perusahaan']);
-                }));
-            }
-
             // --- Proses Data Checklist ---
             $inverterProcessed = [];
             if ($request->has('data_inverter')) {
                 foreach ($request->data_inverter as $index => $item) {
                     $photos = [];
-                    
+
                     // Proses array foto
                     if (isset($item['photos']) && is_array($item['photos'])) {
                         foreach ($item['photos'] as $photoIndex => $photo) {
@@ -353,14 +340,14 @@ class InverterController extends Controller
                                     Storage::disk('public')->delete($photo['existing_photo']);
                                 }
                                 $photoPath = $this->saveBase64Photo($photo['photo_data'], 'inverter');
-                                
+
                                 $photos[] = [
                                     'photo_path' => $photoPath,
                                     'photo_latitude' => $photo['photo_latitude'] ?? null,
                                     'photo_longitude' => $photo['photo_longitude'] ?? null,
                                     'photo_timestamp' => $photo['photo_timestamp'] ?? null,
                                 ];
-                            } 
+                            }
                             // Pertahankan foto lama jika tidak ada upload baru
                             elseif (!empty($photo['existing_photo'])) {
                                 $photos[] = [
@@ -375,8 +362,8 @@ class InverterController extends Controller
 
                     $inverterProcessed[] = [
                         'nama' => $item['nama'] ?? '',
-                        'status' => $item['status'] ?? '', 
-                        'tegangan' => $item['tegangan'] ?? '', 
+                        'status' => $item['status'] ?? '',
+                        'tegangan' => $item['tegangan'] ?? '',
                         'photos' => $photos,
                     ];
                 }
@@ -387,21 +374,31 @@ class InverterController extends Controller
                 'nomor_dokumen' => $validated['nomor_dokumen'],
                 'lokasi' => $validated['lokasi'],
                 'tanggal_dokumentasi' => $validated['tanggal_dokumentasi'],
-                'perusahaan' => $request->perusahaan ?? 'PT. Aplikanusa Lintasarta',
+                'waktu' => $validated['waktu'],
                 'keterangan' => $request->keterangan,
                 'brand' => $request->brand,
                 'reg_num' => $request->reg_num,
                 'serial_num' => $request->serial_num,
-                'boss' => $request->boss,
-                'dc_current_inverter_type' => $request->dc_current_inverter_type,
-                'ac_current_inverter_type' => $request->ac_current_inverter_type,
                 'dc_input_voltage' => $request->dc_input_voltage,
                 'dc_current_input' => $request->dc_current_input,
                 'ac_current_output' => $request->ac_current_output,
-                'neutral_ground_output_voltage' => $request->neutral_ground_output_voltage,
+                'ac_output_voltage' => $request->ac_output_voltage,
                 'equipment_temperature' => $request->equipment_temperature,
-                'pelaksana' => $pelaksanaFiltered,
-                'pengawas' => $pengawasFiltered,
+
+                // Personnel
+                'executor_1' => $request->executor_1,
+                'mitra_internal_1' => $request->mitra_internal_1,
+                'executor_2' => $request->executor_2,
+                'mitra_internal_2' => $request->mitra_internal_2,
+                'executor_3' => $request->executor_3,
+                'mitra_internal_3' => $request->mitra_internal_3,
+                'executor_4' => $request->executor_4,
+                'mitra_internal_4' => $request->mitra_internal_4,
+                'verifikator' => $request->verifikator,
+                'verifikator_nik' => $request->verifikator_nik,
+                'head_of_sub_department' => $request->head_of_sub_department,
+                'head_of_sub_department_nik' => $request->head_of_sub_department_nik,
+
                 'data_checklist' => $inverterProcessed,
             ]);
 

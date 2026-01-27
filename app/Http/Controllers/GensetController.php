@@ -235,15 +235,42 @@ class GensetController extends Controller
 
     public function pdf($id)
     {
-        $maintenance = GensetMaintenance::findOrFail($id);
+        try {
+            $maintenance = GensetMaintenance::findOrFail($id);
 
-        $pdf = PDF::loadView('genset.pdf_template', compact('maintenance'));
-        $pdf->setPaper('letter', 'portrait');
+            // Increase memory limit for PDF generation
+            ini_set('memory_limit', '512M');
+            ini_set('max_execution_time', '300');
 
-        $safeDocNumber = str_replace('/', '-', $maintenance->doc_number);
-        $fileName = 'genset-maintenance-' . $safeDocNumber . '.pdf';
+            // Format date and time for filename
+            $date_time = date('Y-m-d_H-i-s', strtotime($maintenance->maintenance_date));
+            $location = str_replace(' ', '-', substr($maintenance->location, 0, 10));
 
-        return $pdf->stream($fileName);
+            $pdf = PDF::loadView('genset.pdf_template', compact('maintenance'));
+            
+            // Set PDF options for better performance
+            $pdf->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => false,
+                'defaultFont' => 'Arial',
+                'enable_css_float' => true,
+                'debugCss' => false,
+                'debugLayout' => false,
+                'chroot' => public_path(),
+            ]);
+            
+            $pdf->setPaper('letter', 'portrait');
+
+            $fileName = "FM-LAP-D2-SOP-003-006--{$date_time}-{$location}.pdf";
+
+            return $pdf->stream($fileName);
+        } catch (\Exception $e) {
+            Log::error('Genset PDF Generation Error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
+            return redirect()->back()
+                ->with('error', 'Gagal membuat PDF: ' . $e->getMessage());
+        }
     }
 
     // --- Helper Methods ---

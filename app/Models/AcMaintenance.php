@@ -26,7 +26,7 @@ class AcMaintenance extends Model
         'reg_number',
         'sn',
 
-        // 1. Visual Check
+        // 1. Physical Check
         'environment_condition',
         'status_environment_condition',
         'filter',
@@ -38,39 +38,36 @@ class AcMaintenance extends Model
         'air_flow',
         'status_air_flow',
 
-        // 2. Room Temperature - FIXED: Removed _odc suffix
-        'temp_shelter',
-        'status_temp_shelter',
-        'temp_outdoor_cabinet',
-        'status_temp_outdoor_cabinet',
+        // 2. PSI Pressure
+        'psi_pressure',
+        'status_psi_pressure',
 
         // 3. Input Current Air Cond
-        'ac1_current',
-        'status_ac1',
-        'ac2_current',
-        'status_ac2',
-        'ac3_current',
-        'status_ac3',
-        'ac4_current',
-        'status_ac4',
-        'ac5_current',
-        'status_ac5',
-        'ac6_current',
-        'status_ac6',
-        'ac7_current',
-        'status_ac7',
+        'input_current_ac',
+        'status_input_current_ac',
+
+        // 4. Output Temperature AC
+        'output_temperature_ac',
+        'status_output_temperature_ac',
 
         // Notes
         'notes',
 
         // Personnel
         'executor_1',
+        'mitra_internal_1',
         'executor_2',
+        'mitra_internal_2',
         'executor_3',
-        'supervisor',
-        'supervisor_id_number',
-        'department',
-        'sub_department',
+        'mitra_internal_3',
+        'executor_4',
+        'mitra_internal_4',
+
+        // Mengetahui
+        'verifikator',
+        'verifikator_nik',
+        'head_of_sub_department',
+        'head_of_sub_department_nik',
 
         // Images
         'images',
@@ -82,15 +79,9 @@ class AcMaintenance extends Model
     protected $casts = [
         'date_time' => 'datetime',
         'images' => 'array',  // Cast JSON to array automatically
-        'temp_shelter' => 'decimal:2',
-        'temp_outdoor_cabinet' => 'decimal:2',
-        'ac1_current' => 'decimal:2',
-        'ac2_current' => 'decimal:2',
-        'ac3_current' => 'decimal:2',
-        'ac4_current' => 'decimal:2',
-        'ac5_current' => 'decimal:2',
-        'ac6_current' => 'decimal:2',
-        'ac7_current' => 'decimal:2',
+        'psi_pressure' => 'decimal:2',
+        'input_current_ac' => 'decimal:2',
+        'output_temperature_ac' => 'decimal:2',
     ];
 
     /**
