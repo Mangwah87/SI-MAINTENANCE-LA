@@ -17,6 +17,10 @@ class BatteryReading extends Model
         'photo_latitude',
         'photo_longitude',
         'photo_timestamp',
+        'soh',
+        'battery_brand',
+        'battery_type',
+        'end_device_batt',
     ];
 
     protected $casts = [

@@ -129,6 +129,26 @@
                         </span>
                     </td>
                 </tr>
+                <tr>
+                    <td class="border p-2">d. Rectifier Module Installed</td>
+                    <td class="border p-2 font-semibold">{{ $maintenance->rectifier_module_installed ?? '-' }}</td>
+                    <td class="border p-2 text-xs md:text-sm text-gray-600">Properly Installed</td>
+                    <td class="border p-2 text-center">
+                        <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_rectifier_module_installed == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $maintenance->status_rectifier_module_installed }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="border p-2">e. Alarm Module Rectifier</td>
+                    <td class="border p-2 font-semibold">{{ $maintenance->alarm_modul_rectifier ?? '-' }}</td>
+                    <td class="border p-2 text-xs md:text-sm text-gray-600">Normal Condition</td>
+                    <td class="border p-2 text-center">
+                        <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_alarm_modul_rectifier == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $maintenance->status_alarm_modul_rectifier }}
+                        </span>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -271,19 +291,9 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">d. Battery Temperature</td>
-                                <td class="border p-2 font-semibold">{{ $maintenance->battery_temperature ?? '-' }} °C</td>
-                                <td class="border p-2 text-xs md:text-sm text-gray-600">0-30 °C</td>
-                                <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_battery_temperature == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_battery_temperature }}
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="border p-2">e. Charging Voltage DC</td>
+                                <td class="border p-2">d. Charging Voltage DC</td>
                                 <td class="border p-2 font-semibold">{{ $maintenance->charging_voltage_dc ?? '-' }} VDC</td>
-                                <td class="border p-2 text-xs md:text-sm text-gray-600">48 ~ 55.3 VDC</td>
+                                <td class="border p-2 text-xs md:text-sm text-gray-600">54-58 VDC</td>
                                 <td class="border p-2 text-center">
                                     <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_charging_voltage_dc == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                         {{ $maintenance->status_charging_voltage_dc }}
@@ -291,7 +301,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">f. Charging Current DC</td>
+                                <td class="border p-2">e. Charging Current DC</td>
                                 <td class="border p-2 font-semibold">{{ $maintenance->charging_current_dc ?? '-' }} A</td>
                                 <td class="border p-2 text-xs md:text-sm text-gray-600">Max 10% Battery Capacity (AH)</td>
                                 <td class="border p-2 text-center">
@@ -353,36 +363,12 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="border p-2">a. Rectifier (turnoff test)</td>
+                    <td class="border p-2">Rectifier Switching test, from the main source (PLN) to back up mode, by turning off Rectifier input MCB</td>
                     <td class="border p-2 font-semibold">{{ $maintenance->backup_test_rectifier ?? '-' }}</td>
-                    <td class="border p-2 text-xs md:text-sm text-gray-600">Rectifier Normal Operations</td>
+                    <td class="border p-2 text-xs md:text-sm text-gray-600">-</td>
                     <td class="border p-2 text-center">
                         <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_backup_test_rectifier == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                             {{ $maintenance->status_backup_test_rectifier }}
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="border p-2">b. Battery Voltage (Backup Mode)
-                        <div class="text-xs text-gray-600 mt-1">
-                            - Measurement I ( at the beginning ) Min 48 VDC
-                        </div>
-                        <div class="text-xs text-gray-600">
-                            - Measurement II ( 15th minutes )
-                        </div>
-                    </td>
-
-                    <td class="border p-2 font-semibold">
-                        <div>Measurement I: {{ $maintenance->backup_test_voltage_measurement1 ?? '-' }} VDC</div>
-                        <div class="mt-1">Measurement II: {{ $maintenance->backup_test_voltage_measurement2 ?? '-' }} VDC</div>
-                    </td>
-                    <td class="border p-2 text-xs md:text-sm text-gray-600">
-                        <div>Min 48 VDC</div>
-                        <div class="mt-1">Min 42 VDC</div>
-                    </td>
-                    <td class="border p-2 text-center">
-                        <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_backup_test_voltage == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                            {{ $maintenance->status_backup_test_voltage }}
                         </span>
                     </td>
                 </tr>
