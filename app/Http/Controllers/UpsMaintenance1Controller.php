@@ -460,6 +460,10 @@ class UpsMaintenance1Controller extends Controller
             $upsMaintenance1->load('central');
             $maintenance = $upsMaintenance1;
 
+            // Format date and time for filename
+            $date_time = date('Y-m-d', strtotime($maintenance->date_time));
+            $centralId = $maintenance->central->id_sentral ?? 'unknown';
+
             // Load view and generate PDF
             $pdf = PDF::loadView('ups1.upspdf_1', compact('maintenance'));
 
@@ -481,7 +485,7 @@ class UpsMaintenance1Controller extends Controller
             // Set paper size
             $pdf->setPaper('A4', 'portrait');
 
-            return $pdf->stream('preventive_maintenance_ups1phase_'.$maintenance->id.'.pdf');
+            return $pdf->stream("FM-LAP-D2-SOP-003-001-{$date_time}-{$centralId}.pdf");
         } catch (\Exception $e) {
             Log::error('UPS1 PDF Generation Error: ' . $e->getMessage());
             Log::error('Stack trace: ' . $e->getTraceAsString());

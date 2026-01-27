@@ -364,7 +364,11 @@ class UpsMaintenanceController extends Controller
     {
         $upsMaintenance->load('central');
         $maintenance = $upsMaintenance;
+        // Format date and time for filename
+            $date_time = date('Y-m-d', strtotime($maintenance->date_time));
+            $centralId = $maintenance->central->id_sentral ?? 'unknown';
+
         $pdf = PDF::loadView('ups3.upsdetail_pdf', compact('maintenance'));
-        return $pdf->stream('preventive_maintenance_ups_'.$maintenance->id.'.pdf');
+        return $pdf->stream("FM-LAP-D2-SOP-003-002-{$date_time}-{$centralId}.pdf");
     }
 }
