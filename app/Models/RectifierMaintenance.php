@@ -18,28 +18,25 @@ class RectifierMaintenance extends Model
         'brand_type',
         'power_module',
 
-        // Visual Check
+        // Visual Check (Physical Check)
         'env_condition',
         'status_env_condition',
         'led_display',
         'status_led_display',
         'battery_connection',
         'status_battery_connection',
+        'rectifier_module_installed', // NEW
+        'status_rectifier_module_installed', // NEW
+        'alarm_modul_rectifier', // NEW
+        'status_alarm_modul_rectifier', // NEW
 
         // Performance and Capacity Check
         'ac_input_voltage',
         'status_ac_input_voltage',
-
-        // FIELD BARU - Single field untuk AC Current Input
         'ac_current_input',
         'status_ac_current_input',
-
-        // FIELD BARU - Single field untuk DC Current Output
         'dc_current_output',
         'status_dc_current_output',
-
-        'battery_temperature',
-        'status_battery_temperature',
         'charging_voltage_dc',
         'status_charging_voltage_dc',
         'charging_current_dc',
@@ -60,27 +57,37 @@ class RectifierMaintenance extends Model
         'notes',
         'images',
 
-        // Personnel
+        // Personnel - Executor
         'executor_1',
-        'executor_2',
-        'executor_3',
         'executor_1_department',
+        'executor_1_type', // NEW
+        'executor_2',
         'executor_2_department',
+        'executor_2_type', // NEW
+        'executor_3',
         'executor_3_department',
-        'departement',
+        'executor_3_type', // NEW
+
+        // Personnel - Supervisor
         'supervisor',
         'supervisor_id_number',
         'department',
-        'sub_department',
+
+        // Personnel - Verifikator (NEW)
+        'verifikator_name',
+        'verifikator_id_number',
+
+        // Personnel - Head of Sub Department (NEW)
+        'head_of_sub_dept_name',
+        'head_of_sub_dept_id',
     ];
 
     protected $casts = [
         'date_time' => 'datetime',
         'images' => 'array',
         'ac_input_voltage' => 'decimal:2',
-        'ac_current_input' => 'decimal:2',  // BARU
-        'dc_current_output' => 'decimal:2',  // BARU
-        'battery_temperature' => 'decimal:2',
+        'ac_current_input' => 'decimal:2',
+        'dc_current_output' => 'decimal:2',
         'charging_voltage_dc' => 'decimal:2',
         'charging_current_dc' => 'decimal:2',
         'backup_test_voltage_measurement1' => 'decimal:2',
@@ -88,7 +95,7 @@ class RectifierMaintenance extends Model
     ];
 
     /**
-     * Accessor - Return Collection untuk kemudahan manipulasi
+     * Accessor - Return Collection
      */
     public function getImagesAttribute($value)
     {
@@ -125,7 +132,7 @@ class RectifierMaintenance extends Model
     }
 
     /**
-     * Helper method untuk get images by category
+     * Get images by category
      */
     public function getImagesByCategory($category)
     {
@@ -135,25 +142,30 @@ class RectifierMaintenance extends Model
     }
 
     /**
-     * Helper method untuk get images as array (for backward compatibility)
+     * Get images as array
      */
     public function getImagesArray()
     {
         return $this->images->toArray();
     }
+
+    /**
+     * Relationships
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-    public function central()
-{
-    return $this->belongsTo(Central::class, 'location', 'id');
-}
 
-public function getLocationNameAttribute()
-{
-    return $this->central
-        ? "{$this->central->id_sentral} - {$this->central->nama}"
-        : 'Unknown Location';
-}
+    public function central()
+    {
+        return $this->belongsTo(Central::class, 'location', 'id');
+    }
+
+    public function getLocationNameAttribute()
+    {
+        return $this->central
+            ? "{$this->central->id_sentral} - {$this->central->nama}"
+            : 'Unknown Location';
+    }
 }

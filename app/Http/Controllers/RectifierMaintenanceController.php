@@ -70,61 +70,85 @@ class RectifierMaintenanceController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'location' => 'required|string|max:255',
-            'date_time' => 'required|date',
-            'brand_type' => 'required|string|max:255',
-            'power_module' => 'required|in:Single,Dual,Three',
-            'reg_number' => 'nullable|string|max:255',
-            'sn' => 'nullable|string|max:255',
-            'env_condition' => 'nullable|string',
-            'status_env_condition' => 'required|in:OK,NOK',
-            'led_display' => 'nullable|string',
-            'status_led_display' => 'required|in:OK,NOK',
-            'battery_connection' => 'nullable|string',
-            'status_battery_connection' => 'required|in:OK,NOK',
-            'ac_input_voltage' => 'nullable|numeric',
-            'status_ac_input_voltage' => 'required|in:OK,NOK',
-            'ac_current_input' => 'nullable|numeric',
-            'status_ac_current_input' => 'required|in:OK,NOK',
-            'dc_current_output' => 'nullable|numeric',
-            'status_dc_current_output' => 'required|in:OK,NOK',
-            'battery_temperature' => 'nullable|numeric',
-            'status_battery_temperature' => 'required|in:OK,NOK',
-            'charging_voltage_dc' => 'nullable|numeric',
-            'status_charging_voltage_dc' => 'required|in:OK,NOK',
-            'charging_current_dc' => 'nullable|numeric',
-            'status_charging_current_dc' => 'required|in:OK,NOK',
-            'backup_test_rectifier' => 'nullable|string',
-            'status_backup_test_rectifier' => 'required|in:OK,NOK',
-            'backup_test_voltage_measurement1' => 'nullable|numeric',
-            'backup_test_voltage_measurement2' => 'nullable|numeric',
-            'status_backup_test_voltage' => 'required|in:OK,NOK',
-            'power_alarm_test' => 'nullable|string',
-            'status_power_alarm_test' => 'required|in:OK,NOK',
-            'notes' => 'nullable|string',
-            'executor_1' => 'required|string|max:255',
-            'executor_2' => 'nullable|string|max:255',
-            'executor_3' => 'nullable|string|max:255',
-            'executor_1_department' => 'nullable|string|max:255',
-            'executor_2_department' => 'nullable|string|max:255',
-            'executor_3_department' => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
-            'supervisor' => 'required|string|max:255',
-            'supervisor_id_number' => 'nullable|string|max:255',
-            'sub_department' => 'nullable|string|max:255',
-        ]);
+{
+    $validated = $request->validate([
+        'location' => 'required|string|max:255',
+        'date_time' => 'required|date',
+        'brand_type' => 'required|string|max:255',
+        'power_module' => 'required|in:Single,Dual,Three',
+        'reg_number' => 'nullable|string|max:255',
+        'sn' => 'nullable|string|max:255',
 
-        $images = $this->handleAllImages($request);
-        $validated['images'] = $images;
-        $validated['user_id'] = auth()->id();
+        // Visual Check (Physical Check)
+        'env_condition' => 'nullable|string',
+        'status_env_condition' => 'required|in:OK,NOK',
+        'led_display' => 'nullable|string',
+        'status_led_display' => 'required|in:OK,NOK',
+        'battery_connection' => 'nullable|string',
+        'status_battery_connection' => 'required|in:OK,NOK',
+        'rectifier_module_installed' => 'nullable|string', // NEW
+        'status_rectifier_module_installed' => 'required|in:OK,NOK', // NEW
+        'alarm_modul_rectifier' => 'nullable|string', // NEW
+        'status_alarm_modul_rectifier' => 'required|in:OK,NOK', // NEW
 
-        $maintenance = RectifierMaintenance::create($validated);
+        // Performance and Capacity Check
+        'ac_input_voltage' => 'nullable|numeric',
+        'status_ac_input_voltage' => 'required|in:OK,NOK',
+        'ac_current_input' => 'nullable|numeric',
+        'status_ac_current_input' => 'required|in:OK,NOK',
+        'dc_current_output' => 'nullable|numeric',
+        'status_dc_current_output' => 'required|in:OK,NOK',
+        'charging_voltage_dc' => 'nullable|numeric',
+        'status_charging_voltage_dc' => 'required|in:OK,NOK',
+        'charging_current_dc' => 'nullable|numeric',
+        'status_charging_current_dc' => 'required|in:OK,NOK',
 
-        return redirect()->route('rectifier.show', $maintenance->id)
-            ->with('success', 'Data preventive maintenance berhasil disimpan!');
-    }
+        // Backup Tests
+        'backup_test_rectifier' => 'nullable|string',
+        'status_backup_test_rectifier' => 'required|in:OK,NOK',
+
+        // Power Alarm Monitoring Test
+        'power_alarm_test' => 'nullable|string',
+        'status_power_alarm_test' => 'required|in:OK,NOK',
+
+        // Notes
+        'notes' => 'nullable|string',
+
+        // Personnel - Executor
+        'executor_1' => 'required|string|max:255',
+        'executor_1_department' => 'nullable|string|max:255',
+        'executor_1_type' => 'nullable|in:Mitra,Internal', // NEW
+        'executor_2' => 'nullable|string|max:255',
+        'executor_2_department' => 'nullable|string|max:255',
+        'executor_2_type' => 'nullable|in:Mitra,Internal', // NEW
+        'executor_3' => 'nullable|string|max:255',
+        'executor_3_department' => 'nullable|string|max:255',
+        'executor_3_type' => 'nullable|in:Mitra,Internal', // NEW
+
+        // Personnel - Supervisor
+        'supervisor' => 'required|string|max:255',
+        'supervisor_id_number' => 'nullable|string|max:255',
+        'department' => 'nullable|string|max:255',
+
+        // Personnel - Verifikator (NEW)
+        'verifikator_name' => 'nullable|string|max:255',
+        'verifikator_id_number' => 'nullable|string|max:255',
+
+        // Personnel - Head of Sub Department (NEW)
+        'head_of_sub_dept_name' => 'nullable|string|max:255',
+        'head_of_sub_dept_id' => 'nullable|string|max:255',
+    ]);
+
+    $images = $this->handleAllImages($request);
+    $validated['images'] = $images;
+    $validated['user_id'] = auth()->id();
+
+    $maintenance = RectifierMaintenance::create($validated);
+
+    return redirect()->route('rectifier.show', $maintenance->id)
+        ->with('success', 'Data preventive maintenance berhasil disimpan!');
+}
+
 
     public function show($id)
     {
@@ -156,87 +180,109 @@ class RectifierMaintenanceController extends Controller
 
     public function update(Request $request, $id)
     {
-        $maintenance = RectifierMaintenance::where('id', $id)
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
+            $maintenance = RectifierMaintenance::where('id', $id)
+        ->where('user_id', auth()->id())
+        ->firstOrFail();
 
         $validated = $request->validate([
-            'location' => 'required|string|max:255',
-            'date_time' => 'required|date',
-            'brand_type' => 'required|string|max:255',
-            'power_module' => 'required|in:Single,Dual,Three',
-            'reg_number' => 'nullable|string|max:255',
-            'sn' => 'nullable|string|max:255',
-            'env_condition' => 'nullable|string',
-            'status_env_condition' => 'required|in:OK,NOK',
-            'led_display' => 'nullable|string',
-            'status_led_display' => 'required|in:OK,NOK',
-            'battery_connection' => 'nullable|string',
-            'status_battery_connection' => 'required|in:OK,NOK',
-            'ac_input_voltage' => 'nullable|numeric',
-            'status_ac_input_voltage' => 'required|in:OK,NOK',
-            'ac_current_input' => 'nullable|numeric',
-            'status_ac_current_input' => 'required|in:OK,NOK',
-            'dc_current_output' => 'nullable|numeric',
-            'status_dc_current_output' => 'required|in:OK,NOK',
-            'battery_temperature' => 'nullable|numeric',
-            'status_battery_temperature' => 'required|in:OK,NOK',
-            'charging_voltage_dc' => 'nullable|numeric',
-            'status_charging_voltage_dc' => 'required|in:OK,NOK',
-            'charging_current_dc' => 'nullable|numeric',
-            'status_charging_current_dc' => 'required|in:OK,NOK',
-            'backup_test_rectifier' => 'nullable|string',
-            'status_backup_test_rectifier' => 'required|in:OK,NOK',
-            'backup_test_voltage_measurement1' => 'nullable|numeric',
-            'backup_test_voltage_measurement2' => 'nullable|numeric',
-            'status_backup_test_voltage' => 'required|in:OK,NOK',
-            'power_alarm_test' => 'nullable|string',
-            'status_power_alarm_test' => 'required|in:OK,NOK',
-            'notes' => 'nullable|string',
-            'executor_1' => 'required|string|max:255',
-            'executor_2' => 'nullable|string|max:255',
-            'executor_3' => 'nullable|string|max:255',
-            'executor_1_department' => 'nullable|string|max:255',
-            'executor_2_department' => 'nullable|string|max:255',
-            'executor_3_department' => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
-            'supervisor' => 'required|string|max:255',
-            'supervisor_id_number' => 'nullable|string|max:255',
-            'sub_department' => 'nullable|string|max:255',
-            'deleted_images' => 'nullable|json',
-        ]);
+        'location' => 'required|string|max:255',
+        'date_time' => 'required|date',
+        'brand_type' => 'required|string|max:255',
+        'power_module' => 'required|in:Single,Dual,Three',
+        'reg_number' => 'nullable|string|max:255',
+        'sn' => 'nullable|string|max:255',
+
+        // Visual Check (Physical Check)
+        'env_condition' => 'nullable|string',
+        'status_env_condition' => 'required|in:OK,NOK',
+        'led_display' => 'nullable|string',
+        'status_led_display' => 'required|in:OK,NOK',
+        'battery_connection' => 'nullable|string',
+        'status_battery_connection' => 'required|in:OK,NOK',
+        'rectifier_module_installed' => 'nullable|string', // NEW
+        'status_rectifier_module_installed' => 'required|in:OK,NOK', // NEW
+        'alarm_modul_rectifier' => 'nullable|string', // NEW
+        'status_alarm_modul_rectifier' => 'required|in:OK,NOK', // NEW
+
+        // Performance and Capacity Check
+        'ac_input_voltage' => 'nullable|numeric',
+        'status_ac_input_voltage' => 'required|in:OK,NOK',
+        'ac_current_input' => 'nullable|numeric',
+        'status_ac_current_input' => 'required|in:OK,NOK',
+        'dc_current_output' => 'nullable|numeric',
+        'status_dc_current_output' => 'required|in:OK,NOK',
+        'charging_voltage_dc' => 'nullable|numeric',
+        'status_charging_voltage_dc' => 'required|in:OK,NOK',
+        'charging_current_dc' => 'nullable|numeric',
+        'status_charging_current_dc' => 'required|in:OK,NOK',
+
+        // Backup Tests
+        'backup_test_rectifier' => 'nullable|string',
+        'status_backup_test_rectifier' => 'required|in:OK,NOK',
+
+        // Power Alarm Monitoring Test
+        'power_alarm_test' => 'nullable|string',
+        'status_power_alarm_test' => 'required|in:OK,NOK',
+
+        // Notes
+        'notes' => 'nullable|string',
+
+        // Personnel - Executor
+        'executor_1' => 'required|string|max:255',
+        'executor_1_department' => 'nullable|string|max:255',
+        'executor_1_type' => 'nullable|in:Mitra,Internal', // NEW
+        'executor_2' => 'nullable|string|max:255',
+        'executor_2_department' => 'nullable|string|max:255',
+        'executor_2_type' => 'nullable|in:Mitra,Internal', // NEW
+        'executor_3' => 'nullable|string|max:255',
+        'executor_3_department' => 'nullable|string|max:255',
+        'executor_3_type' => 'nullable|in:Mitra,Internal', // NEW
+
+        // Personnel - Supervisor
+        'supervisor' => 'required|string|max:255',
+        'supervisor_id_number' => 'nullable|string|max:255',
+        'department' => 'nullable|string|max:255',
+
+        // Personnel - Verifikator (NEW)
+        'verifikator_name' => 'nullable|string|max:255',
+        'verifikator_id_number' => 'nullable|string|max:255',
+
+        // Personnel - Head of Sub Department (NEW)
+        'head_of_sub_dept_name' => 'nullable|string|max:255',
+        'head_of_sub_dept_id' => 'nullable|string|max:255',
+    ]);
 
         // Handle deleted images
-        if ($request->has('deleted_images')) {
-            $deletedImages = json_decode($request->deleted_images, true);
-            if (is_array($deletedImages)) {
-                foreach ($deletedImages as $imagePath) {
-                    Storage::disk('public')->delete($imagePath);
-                }
+    if ($request->has('deleted_images')) {
+        $deletedImages = json_decode($request->deleted_images, true);
+        if (is_array($deletedImages)) {
+            foreach ($deletedImages as $imagePath) {
+                Storage::disk('public')->delete($imagePath);
             }
         }
-
-        // Get existing images and merge with new ones
-        $existingImages = collect($maintenance->images ?? []);
-        $newImages = collect($this->handleAllImages($request));
-        $allImages = $existingImages->merge($newImages);
-
-        // Filter out deleted images
-        if ($request->has('deleted_images')) {
-            $deletedImages = json_decode($request->deleted_images, true);
-            if (is_array($deletedImages)) {
-                $allImages = $allImages->filter(function ($img) use ($deletedImages) {
-                    return !in_array($img['path'] ?? '', $deletedImages);
-                })->values();
-            }
-        }
-
-        $validated['images'] = $allImages->toArray();
-        $maintenance->update($validated);
-
-        return redirect()->route('rectifier.show', $maintenance->id)
-            ->with('success', 'Data berhasil diupdate!');
     }
+
+    // Get existing images and merge with new ones
+    $existingImages = collect($maintenance->images ?? []);
+    $newImages = collect($this->handleAllImages($request));
+    $allImages = $existingImages->merge($newImages);
+
+    // Filter out deleted images
+    if ($request->has('deleted_images')) {
+        $deletedImages = json_decode($request->deleted_images, true);
+        if (is_array($deletedImages)) {
+            $allImages = $allImages->filter(function ($img) use ($deletedImages) {
+                return !in_array($img['path'] ?? '', $deletedImages);
+            })->values();
+        }
+    }
+
+    $validated['images'] = $allImages->toArray();
+    $maintenance->update($validated);
+
+    return redirect()->route('rectifier.show', $maintenance->id)
+        ->with('success', 'Data berhasil diupdate!');
+}
 
     public function destroy($id)
     {
@@ -431,6 +477,8 @@ class RectifierMaintenanceController extends Controller
             'env_condition',
             'led_display',
             'battery_connection',
+            'rectifier_module',
+            'alarm_modul',
             'battery_voltage_m1',
             'battery_voltage_m2'
         ];
