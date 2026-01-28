@@ -5,39 +5,11 @@
     <title>Genset Maintenance Report</title>
     <style>
         @page { size: letter; margin: 18mm; }
-        body { font-family: Arial, sans-serif; font-size: 10pt; color: #000; margin: 0; padding: 0; } /* Hapus flexbox */
+        body { font-family: Arial, sans-serif; font-size: 10pt; color: #000; margin: 0; padding: 0; }
         table { border-collapse: collapse; width: 100%; }
         .header-table td, .main-table th, .main-table td { border: 1px solid #000; padding: 2px 4px; vertical-align: top; }
         .main-table th { text-align: center; font-weight: bold; }
         .info-table td { border: none; padding: 1px 2px; }
-        /* DENGAN INI: (perhatikan titiknya menempel pada 'th' dan 'td') */
-th.pelaksana-table, td.pelaksana-table {
-    border: 1px solid #000;
-    padding: 8px 6px;
-    vertical-align: top;
-    text-align: left;
-    background-color: #fff !important;
-    font-weight: normal !important;
-}
-
-th.pelaksana-table {
-    text-align: center;
-}
-
-td.pelaksana-table.center {
-    text-align: center;
-}
-        .mengetahui-section { width: 35%; float: right; text-align: center; margin-top: 15px; }
-        .mengetahui-box { border: 1px solid #000; height: 68px; margin-top: 5px; margin-bottom: 2px; position: relative; padding-bottom: 15px; }
-        .mengetahui-name-line {
-    font-size: 10pt;
-    text-align: center;
-    padding-bottom: 2px; /* Hapus 'position', 'bottom', 'left', 'right' */
-}
-.mengetahui-nik-line {
-    font-size: 9pt;
-    text-align: center; /* Hapus 'position', 'bottom', 'left', 'right' */
-}
         .text-center { text-align: center; }
         .text-bold { font-weight: bold; }
         .sub-item { padding-left: 10px; }
@@ -47,6 +19,7 @@ td.pelaksana-table.center {
         .page-break { page-break-after: always; clear: both; }
         .page-break-before { page-break-before: always; clear: both; }
         .avoid-break { page-break-inside: avoid; }
+        .keep-together { page-break-inside: avoid; }
         .page-footer {
             /* Hapus margin-top */
             /* margin-top: 15px; */
@@ -79,7 +52,7 @@ td.pelaksana-table.center {
 
         // [PERBAIKAN] Logika Total Halaman
         // Cek apakah halaman kedua (Notes/Pelaksana) akan dibuat
-        $notesPageExists = ($maintenance->notes || $maintenance->technician_1_name || $maintenance->approver_name || $totalImagePages > 0);
+        $notesPageExists = ($maintenance->notes || $maintenance->executor_1 || $maintenance->verifikator || $maintenance->head_of_sub_department || $totalImagePages > 0);
 
         if ($notesPageExists) {
             // Jika halaman kedua ada, total = 1 (Data) + 1 (Notes) + Jumlah Halaman Gambar
@@ -212,57 +185,64 @@ td.pelaksana-table.center {
     {{-- Notes dan Pelaksana (selalu setelah potensi page break) --}}
     <div class="notes-heading avoid-break">Notes / additional informations :</div>
     <div class="notes-box avoid-break"> {!! nl2br(e($maintenance->notes ?? 'Tidak ada catatan.')) !!} </div><br>
+
+    {{-- Signature Table - Following AC form structure --}}
     <div class="signature-section avoid-break">
-        {{-- [PERBAIKAN] Menggunakan 1 tabel + 1 kolom pemisah (gutter) --}}
-        <table style="width: 100%; border-collapse: collapse;">
-            <tbody>
-                <tr>
-                    <td colspan="4" style="vertical-align: top; border: none; padding: 0 0 3px 0;">
-                        <div class="text-bold" style="margin-bottom: 3px;">Pelaksana</div>
-                    </td>
-
-                    <td style="width: 5%; border: none;">&nbsp;</td>
-
-                    <td style="width: 35%; vertical-align: top; text-align: center; border: none; padding: 0 0 3px 0;">
-                         <span class="text-bold">Mengetahui</span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <th class="pelaksana-table" style="width: 5%;">No</th>
-                    <th class="pelaksana-table" style="width: 18%;">Nama</th>
-                    <th class="pelaksana-table" style="width: 17%;">Departement</th>
-                    <th class="pelaksana-table" style="width: 20%;">Sub Departement</th>
-
-                    <td rowspan="4" style="border: none; width: 5%;">&nbsp;</td> <td rowspan="4" style="border: 1px solid #000; text-align: center; vertical-align: bottom; width: 35%;">
-                        <div style="padding-bottom: 5px;">
-                            <div class="mengetahui-name-line">({{ $maintenance->approver_name ?? '..................' }})</div>
-                            <div class="mengetahui-nik-line">(NIK: {{ $maintenance->approver_nik ?? '..................' }})</div>
+        <table style="border-collapse: collapse; width: 100%; page-break-inside: avoid;">
+            <tr>
+                {{-- Header Row --}}
+                <th colspan="4" style="border: 1px solid #000; text-align: center; padding: 3px; font-size: 9pt; font-weight: bold;">Executor</th>
+                <th style="border: 1px solid #000; text-align: center; padding: 3px; font-size: 9pt; font-weight: bold;">Verifikator</th>
+                <th style="border: 1px solid #000; text-align: center; padding: 3px; font-size: 9pt; font-weight: bold;">Head Of Sub<br>Departement</th>
+            </tr>
+            <tr>
+                {{-- Sub Header for Executor --}}
+                <th style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8pt; width: 5%; font-weight: bold;">No</th>
+                <th style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8pt; width: 25%; font-weight: bold;">Nama</th>
+                <th style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8pt; width: 15%; font-weight: bold;">Mitra / Internal</th>
+                <th style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8pt; width: 15%; font-weight: bold;">Signature</th>
+                <td rowspan="5" style="border: 1px solid #000; padding: 10px; vertical-align: bottom; text-align: center; width: 20%;">
+                    @if($maintenance->verifikator)
+                        <div style="margin-bottom: 40px;"></div>
+                        <div style="border-top: 1px solid #000; padding-top: 2px; font-size: 8pt;">
+                            ( {{ $maintenance->verifikator }} )
+                            @if($maintenance->verifikator_nik)
+                                <div style="font-size: 7pt; margin-top: 2px;">NIK: {{ $maintenance->verifikator_nik }}</div>
+                            @endif
                         </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="pelaksana-table center">1</td>
-                    <td class="pelaksana-table">{{ $maintenance->technician_1_name }}</td>
-                    <td class="pelaksana-table">{{ $maintenance->technician_1_department }}</td>
-                    <td class="pelaksana-table"></td>
-                </tr>
-
-                <tr>
-                    <td class="pelaksana-table center">2</td>
-                    <td class="pelaksana-table">{{ $maintenance->technician_2_name ?? '-' }}</td>
-                    <td class="pelaksana-table">{{ $maintenance->technician_2_department ?? '-' }}</td>
-                    <td class="pelaksana-table"></td>
-                </tr>
-
-                <tr>
-                    <td class="pelaksana-table center">3</td>
-                    <td class="pelaksana-table">{{ $maintenance->technician_3_name ?? '-' }}</td>
-                    <td class="pelaksana-table">{{ $maintenance->technician_3_department ?? '-' }}</td>
-                    <td class="pelaksana-table"></td>
-                </tr>
-            </tbody>
+                    @else
+                        <div style="margin-bottom: 40px;"></div>
+                        <div style="border-top: 1px solid #000; padding-top: 2px; font-size: 8pt;">
+                            ( _________________ )
+                        </div>
+                    @endif
+                </td>
+                <td rowspan="5" style="border: 1px solid #000; padding: 10px; vertical-align: bottom; text-align: center; width: 20%;">
+                    @if($maintenance->head_of_sub_department)
+                        <div style="margin-bottom: 40px;"></div>
+                        <div style="border-top: 1px solid #000; padding-top: 2px; font-size: 8pt;">
+                            ( {{ $maintenance->head_of_sub_department }} )
+                            @if($maintenance->head_of_sub_department_nik)
+                                <div style="font-size: 7pt; margin-top: 2px;">NIK: {{ $maintenance->head_of_sub_department_nik }}</div>
+                            @endif
+                        </div>
+                    @else
+                        <div style="margin-bottom: 40px;"></div>
+                        <div style="border-top: 1px solid #000; padding-top: 2px; font-size: 8pt;">
+                            ( _________________ )
+                        </div>
+                    @endif
+                </td>
+            </tr>
+            {{-- Executor Rows (4 rows) --}}
+            @for($i = 1; $i <= 4; $i++)
+            <tr>
+                <td style="border: 1px solid #000; text-align: center; padding: 3px; font-size: 8pt;">{{ $i }}</td>
+                <td style="border: 1px solid #000; padding: 3px; font-size: 8pt;">{{ $maintenance->{'executor_'.$i} ?? '' }}</td>
+                <td style="border: 1px solid #000; padding: 3px; text-align: center; font-size: 8pt;">{{ $maintenance->{'mitra_internal_'.$i} ?? '' }}</td>
+                <td style="border: 1px solid #000; padding: 3px; text-align: center; height: 25px;"></td>
+            </tr>
+            @endfor
         </table>
     </div>
 
@@ -301,11 +281,80 @@ td.pelaksana-table.center {
                         @foreach($rowImages as $image)
                             @if(is_array($image) && isset($image['path']) && !empty($image['path']))
                                 <td class="image-cell">
-                                    @php $imagePath = $image['path']; $fullPath = public_path('storage/' . $imagePath); $fileExists = is_file($fullPath); @endphp
-                                    @if($fileExists)
-                                        <img src="{{ $fullPath }}" alt="{{ $image['category'] ?? 'Genset Image' }}">
+                                    @php
+                                        $imagePath = $image['path'];
+                                        $fullPath = public_path('storage/' . $imagePath);
+                                        $fileExists = is_file($fullPath);
+
+                                        // Optimize image data with aggressive compression
+                                        $imageData = null;
+                                        if ($fileExists) {
+                                            try {
+                                                // Check file size first - skip if too large (>2MB)
+                                                $fileSize = @filesize($fullPath);
+                                                if ($fileSize > 2097152) { // 2MB limit
+                                                    $fileExists = false;
+                                                } else {
+                                                    $imageInfo = @getimagesize($fullPath);
+                                                    if ($imageInfo !== false) {
+                                                        $width = $imageInfo[0];
+                                                        $height = $imageInfo[1];
+
+                                                        // Resize image to max 800px width for PDF
+                                                        $maxWidth = 800;
+                                                        $maxHeight = 600;
+
+                                                        if ($width > $maxWidth || $height > $maxHeight) {
+                                                            $ratio = min($maxWidth / $width, $maxHeight / $height);
+                                                            $newWidth = round($width * $ratio);
+                                                            $newHeight = round($height * $ratio);
+                                                        } else {
+                                                            $newWidth = $width;
+                                                            $newHeight = $height;
+                                                        }
+
+                                                        // Create resized image
+                                                        $mime = $imageInfo['mime'];
+                                                        if ($mime === 'image/jpeg' || $mime === 'image/jpg') {
+                                                            $source = @imagecreatefromjpeg($fullPath);
+                                                        } elseif ($mime === 'image/png') {
+                                                            $source = @imagecreatefrompng($fullPath);
+                                                        } elseif ($mime === 'image/gif') {
+                                                            $source = @imagecreatefromgif($fullPath);
+                                                        } else {
+                                                            $source = false;
+                                                        }
+
+                                                        if ($source !== false) {
+                                                            // Create new resized image
+                                                            $thumb = imagecreatetruecolor($newWidth, $newHeight);
+                                                            imagecopyresampled($thumb, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+                                                            // Output to buffer with compression
+                                                            ob_start();
+                                                            imagejpeg($thumb, null, 65); // 65% quality for smaller size
+                                                            $imageContent = ob_get_clean();
+
+                                                            $imageData = 'data:image/jpeg;base64,' . base64_encode($imageContent);
+
+                                                            // Free memory immediately
+                                                            imagedestroy($thumb);
+                                                            imagedestroy($source);
+                                                            unset($imageContent);
+                                                        } else {
+                                                            $fileExists = false;
+                                                        }
+                                                    }
+                                                }
+                                            } catch (\Exception $e) {
+                                                $fileExists = false;
+                                            }
+                                        }
+                                    @endphp
+                                    @if($fileExists && $imageData)
+                                        <img src="{{ $imageData }}" alt="{{ $image['category'] ?? 'Genset Image' }}" style="max-width: 100%; max-height: 180px; object-fit: contain;">
                                     @else
-                                        <div style="height: 180px; background: #f0f0f0; display: table-cell; vertical-align: middle; color: #999; padding: 5px;"><p class="error-message">Image Not Found!</p><p class="error-message">Checked Path:<br>{{ $fullPath }}</p></div>
+                                        <div style="height: 180px; background: #f0f0f0; display: table-cell; vertical-align: middle; color: #999; padding: 5px;"><p class="error-message">Image Not Found!</p></div>
                                     @endif
                                     <div class="image-label">{{ ucwords(str_replace(['_result', '_'], ['', ' '], $image['category'] ?? 'Image')) }}</div>
                                 </td>

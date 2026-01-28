@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6 text-gray-900">
-                    
+
                     @if($errors->any())
                         <div class="bg-red-100 border border-red-400 text-red-700 px-3 py-2 sm:px-4 sm:py-3 rounded mb-4 text-sm">
                             <ul class="list-disc list-inside">
@@ -19,7 +19,7 @@
                             </ul>
                         </div>
                     @endif
-                    
+
                     <form action="{{ route('inverter.store') }}" method="POST" enctype="multipart/form-data" id="inverter-form">
                         @csrf
 
@@ -35,7 +35,7 @@
                                 <div>
                                 <label for="lokasi" class="block text-sm font-medium text-gray-700">Lokasi</label>
                                 <div>
-                            
+
                             <select name="lokasi"
                                 class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                                 <option value="">-- Pilih Lokasi --</option>
@@ -68,6 +68,11 @@
     <p class="text-xs text-gray-500 mt-1">Waktu akan diatur otomatis saat submit</p>
 </div>
                                 <div>
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Waktu <span class="text-red-500">*</span></label>
+                                    <input type="time" name="waktu" value="{{ old('waktu', date('H:i')) }}" required
+                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2" placeholder="HH:MM">
+                                </div>
+                                <div>
                                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Brand / Type</label>
                                     <input type="text" name="brand" value="{{ old('brand') }}"
                                            class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2" placeholder="Contoh: ABB / Delta">
@@ -82,20 +87,7 @@
                                     <input type="text" name="serial_num" value="{{ old('serial_num') }}"
                                            class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2" placeholder="Serial number">
                                 </div>
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Perusahaan</label>
-                                    <input type="text" name="perusahaan" value="{{ old('perusahaan', 'PT. Aplikanusa Lintasarta') }}"
-                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2">
-                                </div>
-                                
-                                <!-- TAMBAHAN FIELD BOSS -->
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Pengawas</label>
-                                    <input type="text" name="boss" value="{{ old('boss') }}"
-                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2" 
-                                           placeholder="Nama Pengawas">
-                                </div>
-                                
+
                                 <div class="md:col-span-2">
                                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Notes / Additional Info</label>
                                     <textarea name="keterangan" rows="3" class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2"
@@ -107,7 +99,7 @@
                         <!-- Performance and Capacity Check -->
                         <div class="mb-6 sm:mb-8">
                             <h4 class="text-sm sm:text-md font-bold text-gray-700 border-b pb-2 mb-3 sm:mb-4">Performance and Capacity Check</h4>
-                            
+
                             <!-- Desktop: Table -->
                             <div class="hidden lg:block overflow-x-auto">
                                 <table class="min-w-full border-collapse border border-gray-300">
@@ -126,7 +118,7 @@
                                             <td class="border border-gray-300 px-4 py-2 font-semibold">1.</td>
                                             <td class="border border-gray-300 px-4 py-2 font-semibold" colspan="4">Visual Check</td>
                                         </tr>
-                                        
+
                                         <!-- Environment Condition -->
                                         <tr>
                                             <td class="border border-gray-300 px-4 py-2"></td>
@@ -137,14 +129,14 @@
                                                        class="w-full px-2 py-1 border border-gray-300 rounded text-sm mb-3"
                                                        placeholder="Contoh: Clean, No Dust" oninput="syncValue('environment_status')">
                                                 <div id="environment-photos-container" class="space-y-3"></div>
-                                                <button type="button" onclick="addEnvironmentPhoto()" 
+                                                <button type="button" onclick="addEnvironmentPhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
                                                     + Tambah Foto Environment
                                                 </button>
                                             </td>
                                             <td class="border border-gray-300 px-4 py-2 text-sm">Clean, No dust</td>
                                             <td class="border border-gray-300 px-4 py-2">
-                                                <select name="data_inverter[0][tegangan]" id="environment_tegangan" 
+                                                <select name="data_inverter[0][tegangan]" id="environment_tegangan"
                                                         class="w-full px-2 py-1 border border-gray-300 rounded text-sm" onchange="syncValue('environment_tegangan')">
                                                     <option value="">-</option>
                                                     <option value="OK">OK</option>
@@ -152,7 +144,7 @@
                                                 </select>
                                             </td>
                                         </tr>
-                                        
+
                                         <!-- LED Display -->
                                         <tr>
                                             <td class="border border-gray-300 px-4 py-2"></td>
@@ -163,7 +155,7 @@
                                                        class="w-full px-2 py-1 border border-gray-300 rounded text-sm mb-3"
                                                        placeholder="Contoh: Normal" oninput="syncValue('led_status')">
                                                 <div id="led-photos-container" class="space-y-3"></div>
-                                                <button type="button" onclick="addLedPhoto()" 
+                                                <button type="button" onclick="addLedPhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
                                                     + Tambah Foto LED
                                                 </button>
@@ -184,7 +176,7 @@
                                             <td class="border border-gray-300 px-4 py-2 font-semibold">2.</td>
                                             <td class="border border-gray-300 px-4 py-2 font-semibold" colspan="4">Performance and Capacity Check</td>
                                         </tr>
-                                        
+
                                         <!-- DC Input Voltage -->
                                         <tr>
                                             <td class="border border-gray-300 px-4 py-2"></td>
@@ -195,7 +187,7 @@
                                                        placeholder="48.00" oninput="validateDcInputVoltage(); syncValue('dc_input_voltage')">
                                                 <input type="hidden" name="data_inverter[2][nama]" value="DC Input Voltage">
                                                 <div id="dc-voltage-photos-container" class="space-y-3"></div>
-                                                <button type="button" onclick="addDcVoltagePhoto()" 
+                                                <button type="button" onclick="addDcVoltagePhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
                                                     + Tambah Foto DC Input Voltage
                                                 </button>
@@ -214,22 +206,14 @@
                                         <!-- DC Current Input -->
                                         <tr>
                                             <td class="border border-gray-300 px-4 py-2"></td>
-                                            <td class="border border-gray-300 px-4 py-2">b. DC Current Input *)</td>
+                                            <td class="border border-gray-300 px-4 py-2">b. DC Current Input</td>
                                             <td class="border border-gray-300 px-4 py-2">
-                                                <label class="block text-xs text-gray-600 mb-1">Select Inverter Type:</label>
-                                                <select id="dc_current_type" class="w-full px-2 py-1 border border-gray-300 rounded text-sm mb-2" 
-                                                        onchange="saveDcCurrentType(); validateDcCurrentInput(); syncValue('dc_current_type');">
-                                                    <option value="">-- Select Type --</option>
-                                                    <option value="500">500 VA</option>
-                                                    <option value="1000">1000 VA</option>
-                                                </select>
                                                 <input type="number" step="0.01" name="dc_current_input" id="dc_current_input"
                                                        class="w-full px-2 py-1 border border-gray-300 rounded text-sm mb-3"
                                                        placeholder="Enter value" oninput="validateDcCurrentInput(); syncValue('dc_current_input')">
-                                                <input type="hidden" name="dc_current_inverter_type" id="dc_current_inverter_type">
                                                 <input type="hidden" name="data_inverter[3][nama]" value="DC Current Input">
                                                 <div id="dc-current-photos-container" class="space-y-3"></div>
-                                                <button type="button" onclick="addDcCurrentPhoto()" 
+                                                <button type="button" onclick="addDcCurrentPhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
                                                     + Tambah Foto DC Current Input
                                                 </button>
@@ -248,22 +232,14 @@
                                         <!-- AC Current Output -->
                                         <tr>
                                             <td class="border border-gray-300 px-4 py-2"></td>
-                                            <td class="border border-gray-300 px-4 py-2">c. AC Current Output *)</td>
+                                            <td class="border border-gray-300 px-4 py-2">c. AC Current Output</td>
                                             <td class="border border-gray-300 px-4 py-2">
-                                                <label class="block text-xs text-gray-600 mb-1">Select Inverter Type:</label>
-                                                <select id="ac_current_type" class="w-full px-2 py-1 border border-gray-300 rounded text-sm mb-2" 
-                                                        onchange="saveAcCurrentType(); validateAcCurrentOutput(); syncValue('ac_current_type');">
-                                                    <option value="">-- Select Type --</option>
-                                                    <option value="500">500 VA</option>
-                                                    <option value="1000">1000 VA</option>
-                                                </select>
                                                 <input type="number" step="0.01" name="ac_current_output" id="ac_current_output"
                                                        class="w-full px-2 py-1 border border-gray-300 rounded text-sm mb-3"
                                                        placeholder="Enter value" oninput="validateAcCurrentOutput(); syncValue('ac_current_output')">
-                                                <input type="hidden" name="ac_current_inverter_type" id="ac_current_inverter_type">
                                                 <input type="hidden" name="data_inverter[4][nama]" value="AC Current Output">
                                                 <div id="ac-current-photos-container" class="space-y-3"></div>
-                                                <button type="button" onclick="addAcCurrentPhoto()" 
+                                                <button type="button" onclick="addAcCurrentPhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
                                                     + Tambah Foto AC Current Output
                                                 </button>
@@ -279,24 +255,24 @@
                                             </td>
                                         </tr>
 
-                                        <!-- Neutral Ground -->
+                                        <!-- AC Output Voltage -->
                                         <tr>
                                             <td class="border border-gray-300 px-4 py-2"></td>
-                                            <td class="border border-gray-300 px-4 py-2">d. Neutral - Ground Output Voltage</td>
+                                            <td class="border border-gray-300 px-4 py-2">d. AC Output Voltage</td>
                                             <td class="border border-gray-300 px-4 py-2">
-                                                <input type="number" step="0.01" name="neutral_ground_output_voltage" id="neutral_ground_output_voltage"
+                                                <input type="number" step="0.01" name="ac_output_voltage" id="ac_output_voltage"
                                                        class="w-full px-2 py-1 border border-gray-300 rounded text-sm mb-3"
-                                                       placeholder="1.00" oninput="validateNeutralGround(); syncValue('neutral_ground_output_voltage')">
-                                                <input type="hidden" name="data_inverter[5][nama]" value="Neutral - Ground Output Voltage">
-                                                <div id="neutral-ground-photos-container" class="space-y-3"></div>
-                                                <button type="button" onclick="addNeutralGroundPhoto()" 
+                                                       placeholder="1.00" oninput="validateAcOutput(); syncValue('ac_output_voltage')">
+                                                <input type="hidden" name="data_inverter[5][nama]" value="AC Output Voltage">
+                                                <div id="ac-output-photos-container" class="space-y-3"></div>
+                                                <button type="button" onclick="addAcOutputPhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
-                                                    + Tambah Foto Neutral - Ground
+                                                    + Tambah Foto AC Output Voltage
                                                 </button>
                                             </td>
                                             <td class="border border-gray-300 px-4 py-2 text-sm">≤ 1 Volt AC</td>
                                             <td class="border border-gray-300 px-4 py-2">
-                                                <select name="data_inverter[5][status]" id="status_neutral_ground" disabled
+                                                <select name="data_inverter[5][status]" id="status_ac_output" disabled
                                                         class="w-full px-2 py-1 border border-gray-300 rounded text-sm bg-gray-100">
                                                     <option value="">-</option>
                                                     <option value="OK">OK</option>
@@ -315,7 +291,7 @@
                                                        placeholder="30.00" oninput="validateTemperature(); syncValue('equipment_temperature')">
                                                 <input type="hidden" name="data_inverter[6][nama]" value="Equipment Temperature">
                                                 <div id="temperature-photos-container" class="space-y-3"></div>
-                                                <button type="button" onclick="addTemperaturePhoto()" 
+                                                <button type="button" onclick="addTemperaturePhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
                                                     + Tambah Foto Equipment Temperature
                                                 </button>
@@ -353,7 +329,7 @@
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Photo:</label>
                                         <div id="environment-photos-container-mobile" class="space-y-3"></div>
-                                        <button type="button" onclick="addEnvironmentPhoto('mobile')" 
+                                        <button type="button" onclick="addEnvironmentPhoto('mobile')"
                                                 class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
                                             + Tambah Foto Environment
                                         </button>
@@ -383,7 +359,7 @@
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Photo:</label>
                                         <div id="led-photos-container-mobile" class="space-y-3"></div>
-                                        <button type="button" onclick="addLedPhoto('mobile')" 
+                                        <button type="button" onclick="addLedPhoto('mobile')"
                                                 class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
                                             + Tambah Foto LED
                                         </button>
@@ -418,7 +394,7 @@
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Photo:</label>
                                         <div id="dc-voltage-photos-container-mobile" class="space-y-3"></div>
-                                        <button type="button" onclick="addDcVoltagePhoto('mobile')" 
+                                        <button type="button" onclick="addDcVoltagePhoto('mobile')"
                                                 class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
                                             + Tambah Foto DC Input Voltage
                                         </button>
@@ -439,16 +415,7 @@
 
                                 <!-- DC Current Input Card -->
                                 <div class="border border-gray-300 rounded-lg p-3 space-y-3">
-                                    <h6 class="font-semibold text-sm">b. DC Current Input *)</h6>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">Select Inverter Type:</label>
-                                        <select id="dc_current_type_mobile" class="w-full px-2 py-2 border border-gray-300 rounded text-sm" 
-                                                onchange="syncFromMobile('dc_current_type'); saveDcCurrentType(); validateDcCurrentInput();">
-                                            <option value="">-- Select Type --</option>
-                                            <option value="500">500 VA</option>
-                                            <option value="1000">1000 VA</option>
-                                        </select>
-                                    </div>
+                                    <h6 class="font-semibold text-sm">b. DC Current Input</h6>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Value (A):</label>
                                         <input type="number" step="0.01" id="dc_current_input_mobile"
@@ -458,7 +425,7 @@
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Photo:</label>
                                         <div id="dc-current-photos-container-mobile" class="space-y-3"></div>
-                                        <button type="button" onclick="addDcCurrentPhoto('mobile')" 
+                                        <button type="button" onclick="addDcCurrentPhoto('mobile')"
                                                 class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
                                             + Tambah Foto DC Current Input
                                         </button>
@@ -479,16 +446,7 @@
 
                                 <!-- AC Current Output Card -->
                                 <div class="border border-gray-300 rounded-lg p-3 space-y-3">
-                                    <h6 class="font-semibold text-sm">c. AC Current Output *)</h6>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">Select Inverter Type:</label>
-                                        <select id="ac_current_type_mobile" class="w-full px-2 py-2 border border-gray-300 rounded text-sm" 
-                                                onchange="syncFromMobile('ac_current_type'); saveAcCurrentType(); validateAcCurrentOutput();">
-                                            <option value="">-- Select Type --</option>
-                                            <option value="500">500 VA</option>
-                                            <option value="1000">1000 VA</option>
-                                        </select>
-                                    </div>
+                                    <h6 class="font-semibold text-sm">c. AC Current Output</h6>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Value (A):</label>
                                         <input type="number" step="0.01" id="ac_current_output_mobile"
@@ -498,7 +456,7 @@
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Photo:</label>
                                         <div id="ac-current-photos-container-mobile" class="space-y-3"></div>
-                                        <button type="button" onclick="addAcCurrentPhoto('mobile')" 
+                                        <button type="button" onclick="addAcCurrentPhoto('mobile')"
                                                 class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
                                             + Tambah Foto AC Current Output
                                         </button>
@@ -517,21 +475,21 @@
                                     </div>
                                 </div>
 
-                                <!-- Neutral Ground Card -->
+                                <!-- AC Output Voltage Card -->
                                 <div class="border border-gray-300 rounded-lg p-3 space-y-3">
-                                    <h6 class="font-semibold text-sm">d. Neutral - Ground Output Voltage</h6>
+                                    <h6 class="font-semibold text-sm">d. AC Output Voltage</h6>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Value (V AC):</label>
-                                        <input type="number" step="0.01" id="neutral_ground_output_voltage_mobile"
+                                        <input type="number" step="0.01" id="ac_output_voltage_mobile"
                                                class="w-full px-2 py-2 border border-gray-300 rounded text-sm"
-                                               placeholder="1.00" oninput="syncFromMobile('neutral_ground_output_voltage'); validateNeutralGround();">
+                                               placeholder="1.00" oninput="syncFromMobile('ac_output_voltage'); validateAcOutput();">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Photo:</label>
-                                        <div id="neutral-ground-photos-container-mobile" class="space-y-3"></div>
-                                        <button type="button" onclick="addNeutralGroundPhoto('mobile')" 
+                                        <div id="ac-output-photos-container-mobile" class="space-y-3"></div>
+                                        <button type="button" onclick="addAcOutputPhoto('mobile')"
                                                 class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
-                                            + Tambah Foto Neutral - Ground
+                                            + Tambah Foto AC Output Voltage
                                         </button>
                                     </div>
                                     <div>
@@ -539,7 +497,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Status:</label>
-                                        <select id="status_neutral_ground_mobile" disabled
+                                        <select id="status_ac_output_mobile" disabled
                                                 class="w-full px-2 py-2 border border-gray-300 rounded text-sm bg-gray-100">
                                             <option value="">-</option>
                                             <option value="OK">OK</option>
@@ -560,7 +518,7 @@
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Photo:</label>
                                         <div id="temperature-photos-container-mobile" class="space-y-3"></div>
-                                        <button type="button" onclick="addTemperaturePhoto('mobile')" 
+                                        <button type="button" onclick="addTemperaturePhoto('mobile')"
                                                 class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
                                             + Tambah Foto Equipment Temperature
                                         </button>
@@ -579,56 +537,93 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <p class="text-xs text-gray-600 mt-3">*) Choose the appropriate inverter type</p>
                         </div>
 
-                        <!-- Data Pelaksana -->
+                        <!-- Pelaksana -->
                         <div class="mb-6 sm:mb-8">
-                            <h4 class="text-sm sm:text-md font-bold text-gray-700 border-b pb-2 mb-3 sm:mb-4">Data Pelaksana</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Pelaksana 1 - Nama <span class="text-red-500">*</span></label>
-                                    <input type="text" name="pelaksana[0][nama]" value="{{ old('pelaksana.0.nama') }}" required
-                                           placeholder="Nama pelaksana 1"
-                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
+                            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">Pelaksana</h3>
+                            <div class="space-y-4">
+                                @for($i = 1; $i <= 4; $i++)
+                                    <div class="border rounded-lg p-4 bg-gray-50">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Pelaksana {{ $i }}</label>
+
+                                        <div class="space-y-3">
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Nama</label>
+                                                <input type="text" name="executor_{{ $i }}"
+                                                       value="{{ old('executor_'.$i) }}"
+                                                       placeholder="Nama pelaksana (opsional)"
+                                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Mitra/Internal</label>
+                                                <select name="mitra_internal_{{ $i }}"
+                                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                                    <option value="">-- Pilih --</option>
+                                                    <option value="Mitra" {{ old('mitra_internal_'.$i) == 'Mitra' ? 'selected' : '' }}>Mitra</option>
+                                                    <option value="Internal" {{ old('mitra_internal_'.$i) == 'Internal' ? 'selected' : '' }}>Internal</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endfor
+                            </div>
+                        </div>
+
+                        <!-- Mengetahui -->
+                        <div class="mb-6 sm:mb-8">
+                            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">Mengetahui</h3>
+                            <div class="space-y-4">
+                                <!-- Verifikator -->
+                                <div class="border rounded-lg p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Verifikator</label>
+
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">Nama</label>
+                                            <input type="text" name="verifikator"
+                                                   value="{{ old('verifikator') }}"
+                                                   placeholder="Nama verifikator (opsional)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">NIK</label>
+                                            <input type="text" name="verifikator_nik"
+                                                   value="{{ old('verifikator_nik') }}"
+                                                   placeholder="NIK verifikator (opsional)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Pelaksana 1 - Perusahaan <span class="text-red-500">*</span></label>
-                                    <input type="text" name="pelaksana[0][perusahaan]" value="{{ old('pelaksana.0.perusahaan') }}" required
-                                           placeholder="Perusahaan pelaksana 1"
-                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
-                                </div>
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Pelaksana 2 - Nama <span class="text-xs text-gray-500">(Opsional)</span></label>
-                                    <input type="text" name="pelaksana[1][nama]" value="{{ old('pelaksana.1.nama') }}"
-                                           placeholder="Nama pelaksana 2"
-                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
-                                </div>
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Pelaksana 2 - Perusahaan <span class="text-xs text-gray-500">(Opsional)</span></label>
-                                    <input type="text" name="pelaksana[1][perusahaan]" value="{{ old('pelaksana.1.perusahaan') }}"
-                                           placeholder="Perusahaan pelaksana 2"
-                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
-                                </div>
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Pelaksana 3 - Nama <span class="text-xs text-gray-500">(Opsional)</span></label>
-                                    <input type="text" name="pelaksana[2][nama]" value="{{ old('pelaksana.2.nama') }}"
-                                           placeholder="Nama pelaksana 3"
-                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
-                                </div>
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Pelaksana 3 - Perusahaan <span class="text-xs text-gray-500">(Opsional)</span></label>
-                                    <input type="text" name="pelaksana[2][perusahaan]" value="{{ old('pelaksana.2.perusahaan') }}"
-                                           placeholder="Perusahaan pelaksana 3"
-                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
+
+                                <!-- Head of Sub Department -->
+                                <div class="border rounded-lg p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Head of Sub Department</label>
+
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">Nama</label>
+                                            <input type="text" name="head_of_sub_department"
+                                                   value="{{ old('head_of_sub_department') }}"
+                                                   placeholder="Nama Head of Sub Department (opsional)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">NIK</label>
+                                            <input type="text" name="head_of_sub_department_nik"
+                                                   value="{{ old('head_of_sub_department_nik') }}"
+                                                   placeholder="NIK Head of Sub Department (opsional)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
                         <div class="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0 mt-6">
-                            <a href="{{ route('inverter.index') }}" 
+                            <a href="{{ route('inverter.index') }}"
                                class="w-full sm:w-auto px-6 py-2.5 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow text-center text-sm">
                                 Kembali
                             </a>
@@ -649,7 +644,7 @@
 function syncValue(baseId) {
     const desktopEl = document.getElementById(baseId);
     const mobileEl = document.getElementById(baseId + '_mobile');
-    
+
     if (desktopEl && mobileEl) {
         mobileEl.value = desktopEl.value;
     }
@@ -659,7 +654,7 @@ function syncValue(baseId) {
 function syncFromMobile(baseId) {
     const mobileEl = document.getElementById(baseId + '_mobile');
     const desktopEl = document.getElementById(baseId);
-    
+
     if (mobileEl && desktopEl) {
         desktopEl.value = mobileEl.value;
     }
@@ -677,7 +672,7 @@ let ledPhotoIndex = 0;
 let dcVoltagePhotoIndex = 0;
 let dcCurrentPhotoIndex = 0;
 let acCurrentPhotoIndex = 0;
-let neutralGroundPhotoIndex = 0;
+let acOutputPhotoIndex = 0;
 let temperaturePhotoIndex = 0;
 
 // ==================== UTILITY: CROP TO SQUARE ====================
@@ -685,18 +680,18 @@ function cropToSquare(sourceCanvas) {
     const size = Math.min(sourceCanvas.width, sourceCanvas.height);
     const x = (sourceCanvas.width - size) / 2;
     const y = (sourceCanvas.height - size) / 2;
-    
+
     const squareCanvas = document.createElement('canvas');
     squareCanvas.width = PHOTO_CONFIG.size;
     squareCanvas.height = PHOTO_CONFIG.size;
     const ctx = squareCanvas.getContext('2d');
-    
+
     ctx.drawImage(
         sourceCanvas,
         x, y, size, size,
         0, 0, PHOTO_CONFIG.size, PHOTO_CONFIG.size
     );
-    
+
     return squareCanvas;
 }
 
@@ -704,7 +699,7 @@ function cropToSquare(sourceCanvas) {
 async function addWatermarkToCanvas(canvas) {
     const ctx = canvas.getContext('2d');
     const timestamp = new Date();
-    
+
     // Format waktu tanpa detik
     const formattedTime = timestamp.toLocaleString('id-ID', {
         year: 'numeric',
@@ -728,31 +723,31 @@ async function addWatermarkToCanvas(canvas) {
                 try {
                     const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
                     const data = await response.json();
-                    
+
                     // Extract lokasi ringkas: nama jalan, kabupaten, provinsi
                     const address = data.address || {};
                     const parts = [];
-                    
+
                     // Nama jalan/lokasi
                     if (address.road) parts.push(address.road);
                     else if (address.neighbourhood) parts.push(address.neighbourhood);
                     else if (address.suburb) parts.push(address.suburb);
-                    
+
                     // Nomor rumah jika ada
                     if (address.house_number) {
                         parts[parts.length - 1] = `${parts[parts.length - 1]} No.${address.house_number}`;
                     }
-                    
+
                     // Kabupaten/Kota
                     if (address.city) parts.push(address.city);
                     else if (address.county) parts.push(address.county);
                     else if (address.state_district) parts.push(address.state_district);
-                    
+
                     // Provinsi
                     if (address.state) parts.push(address.state);
-                    
+
                     lokasiText = parts.length > 0 ? parts.join(', ') : 'Lokasi tidak diketahui';
-                    
+
                     // Batasi panjang teks max 60 karakter
                     if (lokasiText.length > 60) {
                         lokasiText = lokasiText.substring(0, 57) + '...';
@@ -774,29 +769,29 @@ async function addWatermarkToCanvas(canvas) {
     const padding = 15;  // ← SIZING #1: Ubah dari 20 menjadi 15 (lebih kecil)
     const fontSize = Math.max(32, canvas.width / 25);  // ← SIZING #2: Ubah dari 48 & /15 menjadi 32 & /25 (LEBIH KECIL)
     const lineHeight = fontSize * 1.4;  // ← SIZING #3: Ubah dari 1.6 menjadi 1.4 (lebih rapat)
-    
+
     ctx.font = `bold ${fontSize}px Arial`;
     ctx.textBaseline = 'bottom';
-    
+
     // Teks dengan outline untuk keterbacaan
     const texts = [
         `📍 ${lokasiText}`,
         `🕓 ${hari}, ${formattedTime}`,
         `🌐 ${latitude?.toFixed(5) || '-'}, ${longitude?.toFixed(5) || '-'}`
     ];
-    
+
     let yPosition = canvas.height - padding;
-    
+
     texts.reverse().forEach(text => {
         // Outline hitam lebih tebal untuk keterbacaan
         ctx.strokeStyle = 'rgba(0,0,0,0.9)';
         ctx.lineWidth = 4;  // ← SIZING #4: Ubah dari 6 menjadi 4 (lebih tipis)
         ctx.strokeText(text, padding, yPosition);
-        
+
         // Teks putih di atas
         ctx.fillStyle = 'white';
         ctx.fillText(text, padding, yPosition);
-        
+
         yPosition -= lineHeight;
     });
 
@@ -821,10 +816,10 @@ function getExifData(file) {
                 resolve(null);
                 return;
             }
-            
+
             const length = view.byteLength;
             let offset = 2;
-            
+
             while (offset < length) {
                 if (view.getUint16(offset + 2, false) <= 8) {
                     resolve(null);
@@ -832,19 +827,19 @@ function getExifData(file) {
                 }
                 const marker = view.getUint16(offset, false);
                 offset += 2;
-                
+
                 if (marker == 0xFFE1) {
                     const exifOffset = offset + 10;
                     const little = view.getUint16(exifOffset) == 0x4949;
-                    
+
                     try {
                         let lat = null, lng = null;
                         const tags = view.getUint16(exifOffset + 8, little);
-                        
+
                         for (let i = 0; i < tags; i++) {
                             const tagOffset = exifOffset + 12 + (i * 12);
                             const tag = view.getUint16(tagOffset, little);
-                            
+
                             if (tag === 0x0002) {
                                 const latOffset = exifOffset + view.getUint32(tagOffset + 8, little);
                                 const d = view.getUint32(latOffset, little) / view.getUint32(latOffset + 4, little);
@@ -852,7 +847,7 @@ function getExifData(file) {
                                 const s = view.getUint32(latOffset + 16, little) / view.getUint32(latOffset + 20, little);
                                 lat = d + m / 60 + s / 3600;
                             }
-                            
+
                             if (tag === 0x0004) {
                                 const lngOffset = exifOffset + view.getUint32(tagOffset + 8, little);
                                 const d = view.getUint32(lngOffset, little) / view.getUint32(lngOffset + 4, little);
@@ -861,7 +856,7 @@ function getExifData(file) {
                                 lng = d + m / 60 + s / 3600;
                             }
                         }
-                        
+
                         if (lat && lng) {
                             resolve({ latitude: lat, longitude: lng });
                             return;
@@ -870,10 +865,10 @@ function getExifData(file) {
                         console.log('Error parsing EXIF:', e);
                     }
                 }
-                
+
                 offset += view.getUint16(offset, false);
             }
-            
+
             resolve(null);
         };
         reader.readAsArrayBuffer(file.slice(0, 64 * 1024));
@@ -887,7 +882,7 @@ function createPhotoComponent(description, dataIndex, photoIndex) {
     div.innerHTML = `
         <button type="button" class="remove-photo absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold z-10 shadow-md">×</button>
         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Foto ${description} #${photoIndex + 1}</label>
-        
+
         <!-- Pilihan Metode Input -->
         <div class="method-buttons flex gap-3 mb-4 justify-center">
             <button type="button" class="method-camera px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold rounded-lg">📷 Kamera</button>
@@ -917,7 +912,7 @@ function createPhotoComponent(description, dataIndex, photoIndex) {
         <img class="captured-image w-full aspect-square object-cover rounded-lg mb-2 hidden" alt="Captured">
         <canvas class="hidden"></canvas>
         <button type="button" class="retake-photo hidden px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs sm:text-sm font-semibold rounded-lg block mx-auto">↻ Foto Ulang</button>
-        
+
         <div class="photo-info text-xs text-gray-600 text-center bg-gray-50 p-2 rounded mt-2"></div>
         <input type="hidden" name="data_inverter[${dataIndex}][photos][${photoIndex}][photo_data]">
         <input type="hidden" name="data_inverter[${dataIndex}][photos][${photoIndex}][photo_latitude]">
@@ -973,13 +968,13 @@ function addAcCurrentPhoto(mode = 'desktop') {
     acCurrentPhotoIndex++;
 }
 
-function addNeutralGroundPhoto(mode = 'desktop') {
-    const containerId = mode === 'mobile' ? 'neutral-ground-photos-container-mobile' : 'neutral-ground-photos-container';
+function addAcOutputPhoto(mode = 'desktop') {
+    const containerId = mode === 'mobile' ? 'ac-output-photos-container-mobile' : 'ac-output-photos-container';
     const container = document.getElementById(containerId);
-    const photoDiv = createPhotoComponent('Neutral - Ground Output Voltage', 5, neutralGroundPhotoIndex);
+    const photoDiv = createPhotoComponent('AC Output Voltage', 5, acOutputPhotoIndex);
     container.appendChild(photoDiv);
     setupCameraHandlers(photoDiv);
-    neutralGroundPhotoIndex++;
+    acOutputPhotoIndex++;
 }
 
 function addTemperaturePhoto(mode = 'desktop') {
@@ -1003,7 +998,7 @@ function setupCameraHandlers(container) {
     const methodButtons = container.querySelector('.method-buttons');
     const fileInput = container.querySelector('.file-input');
     const uploadTrigger = container.querySelector('.upload-trigger');
-    
+
     const methodCamera = container.querySelector('.method-camera');
     const methodUpload = container.querySelector('.method-upload');
     const captureBtn = container.querySelector('.capture-photo');
@@ -1011,7 +1006,7 @@ function setupCameraHandlers(container) {
     const cancelUpload = container.querySelector('.cancel-upload');
     const retakeBtn = container.querySelector('.retake-photo');
     const photoInfo = container.querySelector('.photo-info');
-    
+
     const photoDataInput = container.querySelector('input[name$="[photo_data]"]');
     const latInput = container.querySelector('input[name$="[photo_latitude]"]');
     const lngInput = container.querySelector('input[name$="[photo_longitude]"]');
@@ -1130,8 +1125,8 @@ function setupCameraHandlers(container) {
                         latitude: exifData?.latitude || null,
                         longitude: exifData?.longitude || null,
                         timestamp: timestamp.toISOString(),
-                        locationText: exifData?.latitude && exifData?.longitude 
-                            ? `${exifData.latitude.toFixed(5)}, ${exifData.longitude.toFixed(5)}` 
+                        locationText: exifData?.latitude && exifData?.longitude
+                            ? `${exifData.latitude.toFixed(5)}, ${exifData.longitude.toFixed(5)}`
                             : 'Tidak ada data lokasi',
                         formattedTime: timestamp.toLocaleString('id-ID'),
                         hari: timestamp.toLocaleDateString('id-ID', { weekday: 'long' })
@@ -1223,7 +1218,7 @@ function setStatus(selectElement, isValid) {
         selectElement.disabled = true;
         selectElement.classList.add('bg-gray-100');
     }
-    
+
     // Sync ke versi mobile/desktop
     const baseId = selectElement.id.replace('_mobile', '');
     syncStatusFields(baseId);
@@ -1232,7 +1227,7 @@ function setStatus(selectElement, isValid) {
 function syncStatusFields(baseId) {
     const desktopEl = document.getElementById(baseId);
     const mobileEl = document.getElementById(baseId + '_mobile');
-    
+
     if (desktopEl && mobileEl) {
         mobileEl.value = desktopEl.value;
         mobileEl.disabled = desktopEl.disabled;
@@ -1255,35 +1250,25 @@ function validateDcInputVoltage() {
 
 function validateDcCurrentInput() {
     const input = document.getElementById('dc_current_input');
-    const typeSelect = document.getElementById('dc_current_type');
     const statusSelect = document.getElementById('status_dc_current');
     const value = parseFloat(input?.value);
-    const type = typeSelect?.value;
     if (!statusSelect) return;
-    if (isNaN(value) || !type) { setStatus(statusSelect, null); return; }
-    let isValid = false;
-    if (type === '500') isValid = value <= 9;
-    else if (type === '1000') isValid = value <= 18;
-    setStatus(statusSelect, isValid);
+    if (isNaN(value)) { setStatus(statusSelect, null); }
+    else { setStatus(statusSelect, value <= 18); }
 }
 
 function validateAcCurrentOutput() {
     const input = document.getElementById('ac_current_output');
-    const typeSelect = document.getElementById('ac_current_type');
     const statusSelect = document.getElementById('status_ac_current');
     const value = parseFloat(input?.value);
-    const type = typeSelect?.value;
     if (!statusSelect) return;
-    if (isNaN(value) || !type) { setStatus(statusSelect, null); return; }
-    let isValid = false;
-    if (type === '500') isValid = value <= 2;
-    else if (type === '1000') isValid = value <= 4;
-    setStatus(statusSelect, isValid);
+    if (isNaN(value)) { setStatus(statusSelect, null); }
+    else { setStatus(statusSelect, value <= 4); }
 }
 
-function validateNeutralGround() {
-    const input = document.getElementById('neutral_ground_output_voltage');
-    const statusSelect = document.getElementById('status_neutral_ground');
+function validateAcOutput() {
+    const input = document.getElementById('ac_output_voltage');
+    const statusSelect = document.getElementById('status_ac_output');
     const value = parseFloat(input?.value);
     if (!statusSelect) return;
     if (isNaN(value)) { setStatus(statusSelect, null); }
@@ -1299,66 +1284,14 @@ function validateTemperature() {
     else { setStatus(statusSelect, value >= 0 && value <= 35); }
 }
 
-function saveDcCurrentType() {
-    const typeDesktop = document.getElementById('dc_current_type');
-    const typeMobile = document.getElementById('dc_current_type_mobile');
-    const type = typeDesktop?.value || typeMobile?.value;
-    
-    // Sync antar desktop dan mobile
-    if (typeDesktop && typeMobile) {
-        typeDesktop.value = type;
-        typeMobile.value = type;
-    }
-    
-    const hiddenInput = document.getElementById('dc_current_inverter_type');
-    if (hiddenInput) hiddenInput.value = type;
-    localStorage.setItem('dc_current_inverter_type', type);
-}
-
-function saveAcCurrentType() {
-    const typeDesktop = document.getElementById('ac_current_type');
-    const typeMobile = document.getElementById('ac_current_type_mobile');
-    const type = typeDesktop?.value || typeMobile?.value;
-    
-    // Sync antar desktop dan mobile
-    if (typeDesktop && typeMobile) {
-        typeDesktop.value = type;
-        typeMobile.value = type;
-    }
-    
-    const hiddenInput = document.getElementById('ac_current_inverter_type');
-    if (hiddenInput) hiddenInput.value = type;
-    localStorage.setItem('ac_current_inverter_type', type);
-}
-
 // ==================== INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.photo-component').forEach(setupCameraHandlers);
 
-    const savedDcType = localStorage.getItem('dc_current_inverter_type');
-    const savedAcType = localStorage.getItem('ac_current_inverter_type');
-    
-    if (savedDcType) {
-        const dcDesktop = document.getElementById('dc_current_type');
-        const dcMobile = document.getElementById('dc_current_type_mobile');
-        if (dcDesktop) dcDesktop.value = savedDcType;
-        if (dcMobile) dcMobile.value = savedDcType;
-        const hiddenDc = document.getElementById('dc_current_inverter_type');
-        if (hiddenDc) hiddenDc.value = savedDcType;
-    }
-    if (savedAcType) {
-        const acDesktop = document.getElementById('ac_current_type');
-        const acMobile = document.getElementById('ac_current_type_mobile');
-        if (acDesktop) acDesktop.value = savedAcType;
-        if (acMobile) acMobile.value = savedAcType;
-        const hiddenAc = document.getElementById('ac_current_inverter_type');
-        if (hiddenAc) hiddenAc.value = savedAcType;
-    }
-
     validateDcInputVoltage();
     validateDcCurrentInput();
     validateAcCurrentOutput();
-    validateNeutralGround();
+    validateAcOutput();
     validateTemperature();
 });
 
@@ -1366,21 +1299,21 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('inverter-form').addEventListener('submit', function(e) {
     const dateInput = document.getElementById('tanggal_dokumentasi_date');
     const datetimeInput = document.getElementById('tanggal_dokumentasi');
-    
+
     if (dateInput && datetimeInput) {
         const selectedDate = dateInput.value; // Format: YYYY-MM-DD
         const now = new Date();
-        
+
         // Ambil waktu saat ini
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
-        
+
         // Gabungkan tanggal yang dipilih dengan waktu real-time
         const datetime = `${selectedDate} ${hours}:${minutes}:${seconds}`;
-        
+
         datetimeInput.value = datetime;
-        
+
         console.log('Date set:', selectedDate);
         console.log('Time set:', `${hours}:${minutes}:${seconds}`);
         console.log('Full datetime:', datetime);

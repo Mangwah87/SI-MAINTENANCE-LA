@@ -353,42 +353,80 @@
                         <textarea name="notes" rows="4" class="w-full border-gray-300 rounded-lg" placeholder="Catatan tambahan...">{{ old('notes', $maintenance->notes) }}</textarea>
                     </div>
                     <div class="p-6 border-t border-gray-200">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Pelaksana</h3>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Pelaksana (Executor)</h3>
                         <div class="space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded-md">
-                                <span class="md:col-span-1 font-semibold self-center">Pelaksana #1 *</span>
-                                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                     <input type="text" name="technician_1_name" value="{{ old('technician_1_name', $maintenance->technician_1_name) }}" class="w-full text-sm border-gray-300 rounded-md" required>
-                                     <input type="text" name="technician_1_department" value="{{ old('technician_1_department', $maintenance->technician_1_department) }}" class="w-full text-sm border-gray-300 rounded-md">
+                            @for($i = 1; $i <= 4; $i++)
+                                <div class="border rounded-lg p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Pelaksana {{ $i }}{{ $i === 1 ? ' *' : ' (Opsional)' }}</label>
+
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">Nama</label>
+                                            <input type="text" name="executor_{{ $i }}"
+                                                   value="{{ old('executor_'.$i, $maintenance->{'executor_'.$i} ?? '') }}"
+                                                   placeholder="Nama pelaksana {{ $i === 1 ? '(wajib diisi)' : '(opsional)' }}"
+                                                   {{ $i === 1 ? 'required' : '' }}
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">Mitra/Internal</label>
+                                            <select name="mitra_internal_{{ $i }}"
+                                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                                <option value="">-- Pilih --</option>
+                                                <option value="Mitra" {{ old('mitra_internal_'.$i, $maintenance->{'mitra_internal_'.$i} ?? '') == 'Mitra' ? 'selected' : '' }}>Mitra</option>
+                                                <option value="Internal" {{ old('mitra_internal_'.$i, $maintenance->{'mitra_internal_'.$i} ?? '') == 'Internal' ? 'selected' : '' }}>Internal</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded-md">
-                                <span class="md-col-span-1 font-semibold self-center">Pelaksana #2 (Opsional)</span>
-                                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                     <input type="text" name="technician_2_name" value="{{ old('technician_2_name', $maintenance->technician_2_name) }}" class="w-full text-sm border-gray-300 rounded-md">
-                                     <input type="text" name="technician_2_department" value="{{ old('technician_2_department', $maintenance->technician_2_department) }}" class="w-full text-sm border-gray-300 rounded-md">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded-md">
-                                <span class="md-col-span-1 font-semibold self-center">Pelaksana #3 (Opsional)</span>
-                                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                     <input type="text" name="technician_3_name" value="{{ old('technician_3_name', $maintenance->technician_3_name) }}" class="w-full text-sm border-gray-300 rounded-md">
-                                     <input type="text" name="technician_3_department" value="{{ old('technician_3_department', $maintenance->technician_3_department) }}" class="w-full text-sm border-gray-300 rounded-md">
-                                </div>
-                            </div>
+                            @endfor
                         </div>
                     </div>
                     <div class="p-6 border-t border-gray-200">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Mengetahui (Approver)</h3>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Mengetahui</h3>
                         <div class="space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded-md">
-                                <span class="md:col-span-1 font-semibold self-center">Approver (Opsional)</span>
-                                {{-- [PERUBAHAN] Ubah grid jadi 3 kolom --}}
-                                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                     <input type="text" name="approver_name" placeholder="Nama Atasan" value="{{ old('approver_name', $maintenance->approver_name) }}" class="sm:col-span-1 w-full text-sm border-gray-300 rounded-md">
-                                     {{-- [BARU] Input NIK --}}
-                                     <input type="text" name="approver_nik" placeholder="NIK Atasan" value="{{ old('approver_nik', $maintenance->approver_nik) }}" class="sm:col-span-1 w-full text-sm border-gray-300 rounded-md">
-                                     <input type="text" name="approver_department" placeholder="Departemen" value="{{ old('approver_department', $maintenance->approver_department) }}" class="sm:col-span-1 w-full text-sm border-gray-300 rounded-md">
+                            <!-- Verifikator -->
+                            <div class="border rounded-lg p-4 bg-gray-50">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Verifikator</label>
+
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">Nama</label>
+                                        <input type="text" name="verifikator"
+                                               value="{{ old('verifikator', $maintenance->verifikator ?? '') }}"
+                                               placeholder="Nama verifikator (opsional)"
+                                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">NIK</label>
+                                        <input type="text" name="verifikator_nik"
+                                               value="{{ old('verifikator_nik', $maintenance->verifikator_nik ?? '') }}"
+                                               placeholder="NIK verifikator (opsional)"
+                                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Head of Sub Department -->
+                            <div class="border rounded-lg p-4 bg-gray-50">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Head of Sub Department</label>
+
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">Nama</label>
+                                        <input type="text" name="head_of_sub_department"
+                                               value="{{ old('head_of_sub_department', $maintenance->head_of_sub_department ?? '') }}"
+                                               placeholder="Nama head of sub department (opsional)"
+                                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">NIK</label>
+                                        <input type="text" name="head_of_sub_department_nik"
+                                               value="{{ old('head_of_sub_department_nik', $maintenance->head_of_sub_department_nik ?? '') }}"
+                                               placeholder="NIK head of sub department (opsional)"
+                                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                    </div>
                                 </div>
                             </div>
                         </div>

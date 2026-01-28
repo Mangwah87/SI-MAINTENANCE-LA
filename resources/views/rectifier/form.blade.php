@@ -568,8 +568,9 @@
     </div>
 </div>
 
-                        <!-- 2. Performance and Capacity Check - UPDATED (REMOVED battery_temp & charging_voltage) -->
-<div class="mb-8">
+<!-- 2. Performance and Capacity Check - UPDATED (REMOVED battery_temp & charging_voltage) -->
+<div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+<div class="mb-8 p-6">
     <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">2. Performance and Capacity Check</h3>
 
     <div class="space-y-4">
@@ -928,9 +929,11 @@
         </div>
     </div>
 </div>
+</div>
 
-                        <!-- 3. Backup Tests -->
-                        <div class="mb-8 ">
+<!-- 3. Backup Tests -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="mb-8 p-6">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">3. Backup Tests</h3>
 
                             <div class="space-y-4">
@@ -1001,9 +1004,10 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- 4. Power Alarm Monitoring Test -->
-                        <div class="mb-8">
+                    </div>
+<!-- 4. Power Alarm Monitoring Test -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="mb-8 p-6">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">4. Power Alarm Monitoring Test</h3>
 
                             <div class="space-y-4">
@@ -1079,14 +1083,16 @@
                         </div>
 
                         <!-- Notes -->
+                        <div class="p-6">
                         <div class="mb-8">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Notes / Additional Information</h3>
                             <textarea name="notes" rows="4"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="Enter any additional notes or observations...">{{ old('notes', $maintenance->notes ?? '') }}</textarea>
                         </div>
+                        </div>
                         <!-- Personnel Information - UPDATED with Mitra/Internal, Verifikator, Head of Sub Dept -->
-<div class="mb-8">
+<div class="mb-8 p-6">
     <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Personnel Information</h3>
 
     <!-- Executor 1 -->
@@ -1095,7 +1101,7 @@
             <span class="bg-gray-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">1</span>
             Pelaksana 1 (Executor 1) <span class="text-gray-500">*</span>
         </h4>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
                 <input type="text" name="executor_1" value="{{ old('executor_1', $maintenance->executor_1 ?? '') }}"
@@ -1103,18 +1109,13 @@
                     placeholder="Nama Pelaksana 1"
                     required>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                <input type="text" name="executor_1_department" value="{{ old('executor_1_department', $maintenance->executor_1_department ?? '') }}"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Departemen Pelaksana 1">
-            </div>
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Mitra / Internal
-                    <span class="text-yellow-500 font-semibold ml-1">⚠ NEW</span>
+
                 </label>
-                <select name="executor_1_type" class="w-full px-3 py-2 border border-yellow-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                <select name="executor_1_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400">
                     <option value="">-- Pilih --</option>
                     <option value="Mitra" {{ old('executor_1_type', $maintenance->executor_1_type ?? '') == 'Mitra' ? 'selected' : '' }}>Mitra</option>
                     <option value="Internal" {{ old('executor_1_type', $maintenance->executor_1_type ?? '') == 'Internal' ? 'selected' : '' }}>Internal</option>
@@ -1129,25 +1130,20 @@
             <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span>
             Pelaksana 2 (Executor 2)
         </h4>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
                 <input type="text" name="executor_2" value="{{ old('executor_2', $maintenance->executor_2 ?? '') }}"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Nama Pelaksana 2 (Optional)">
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                <input type="text" name="executor_2_department" value="{{ old('executor_2_department', $maintenance->executor_2_department ?? '') }}"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Departemen Pelaksana 2 (Optional)">
-            </div>
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Mitra / Internal
-                    <span class="text-yellow-500 font-semibold ml-1">⚠ NEW</span>
+
                 </label>
-                <select name="executor_2_type" class="w-full px-3 py-2 border border-yellow-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                <select name="executor_2_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400">
                     <option value="">-- Pilih --</option>
                     <option value="Mitra" {{ old('executor_2_type', $maintenance->executor_2_type ?? '') == 'Mitra' ? 'selected' : '' }}>Mitra</option>
                     <option value="Internal" {{ old('executor_2_type', $maintenance->executor_2_type ?? '') == 'Internal' ? 'selected' : '' }}>Internal</option>
@@ -1162,25 +1158,20 @@
             <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">3</span>
             Pelaksana 3 (Executor 3)
         </h4>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
                 <input type="text" name="executor_3" value="{{ old('executor_3', $maintenance->executor_3 ?? '') }}"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Nama Pelaksana 3 (Optional)">
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                <input type="text" name="executor_3_department" value="{{ old('executor_3_department', $maintenance->executor_3_department ?? '') }}"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Departemen Pelaksana 3 (Optional)">
-            </div>
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Mitra / Internal
-                    <span class="text-yellow-500 font-semibold ml-1">⚠ NEW</span>
+
                 </label>
-                <select name="executor_3_type" class="w-full px-3 py-2 border border-yellow-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                <select name="executor_3_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400">
                     <option value="">-- Pilih --</option>
                     <option value="Mitra" {{ old('executor_3_type', $maintenance->executor_3_type ?? '') == 'Mitra' ? 'selected' : '' }}>Mitra</option>
                     <option value="Internal" {{ old('executor_3_type', $maintenance->executor_3_type ?? '') == 'Internal' ? 'selected' : '' }}>Internal</option>
@@ -1190,56 +1181,56 @@
     </div>
 
     <!-- Verifikator Section (NEW) -->
-    <div class="mb-6 p-4 bg-yellow-50 rounded-lg border-2 border-yellow-300">
+
+    <div class="mb-6 p-4 bg-gray-50 rounded-lg border-2 border-gray-300">
         <h4 class="text-md font-semibold text-gray-700 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             Verifikator
-            <span class="text-yellow-600 font-semibold ml-1">⚠ NEW FIELD</span>
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nama Verifikator</label>
                 <input type="text" name="verifikator_name" value="{{ old('verifikator_name', $maintenance->verifikator_name ?? '') }}"
-                    class="w-full px-3 py-2 border border-yellow-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white"
                     placeholder="Nama Verifikator">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">ID Number / NIK Verifikator</label>
                 <input type="text" name="verifikator_id_number" value="{{ old('verifikator_id_number', $maintenance->verifikator_id_number ?? '') }}"
-                    class="w-full px-3 py-2 border border-yellow-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white"
                     placeholder="ID Number / NIK Verifikator">
             </div>
         </div>
     </div>
 
     <!-- Head of Sub Department Section (NEW) -->
-    <div class="mb-6 p-4 bg-yellow-50 rounded-lg border-2 border-yellow-300">
+    <div class="mb-6 p-4 bg-gray-50 rounded-lg border-2 border-gray-300">
         <h4 class="text-md font-semibold text-gray-700 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
             </svg>
             Head Of Sub Departement
-            <span class="text-yellow-600 font-semibold ml-1">⚠ NEW FIELD</span>
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nama Head of Sub Dept</label>
                 <input type="text" name="head_of_sub_dept_name" value="{{ old('head_of_sub_dept_name', $maintenance->head_of_sub_dept_name ?? '') }}"
-                    class="w-full px-3 py-2 border border-yellow-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white"
                     placeholder="Nama Head of Sub Department">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">ID Number / NIK Head of Sub Dept</label>
                 <input type="text" name="head_of_sub_dept_id" value="{{ old('head_of_sub_dept_id', $maintenance->head_of_sub_dept_id ?? '') }}"
-                    class="w-full px-3 py-2 border border-yellow-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white"
                     placeholder="ID Number / NIK Head of Sub Dept">
             </div>
         </div>
     </div>
+    </div>
 
-    <!-- Supervisor Information (existing, unchanged) -->
+    {{-- <!-- Supervisor Information (existing, unchanged) -->
     <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
         <h4 class="text-md font-semibold text-gray-700 mb-4 flex items-center gap-2">
             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1270,7 +1261,7 @@
                     placeholder="Department Supervisor">
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>
 
                         <!-- Action Buttons -->

@@ -259,7 +259,7 @@
                 <td style="font-size: 9pt;">Brand / Type</td>
                 <td style="font-size: 9pt;">: {{ $maintenance->brand_type }}</td>
                 <td style="font-size: 9pt;">Kapasitas</td>
-                <td style="font-size: 9pt;">: {{ $maintenance->capacity }}</td>
+                <td style="font-size: 9pt;">: {{ $maintenance->capacity }} PK</td>
             </tr>
         </table>
 
@@ -276,10 +276,10 @@
             </thead>
             <tbody>
 
-            {{-- Visual Check --}}
+            {{-- Physical Check --}}
             <tr>
                 <td class="center bold">1.</td>
-                <td class="bold" colspan="4">Visual Check</td>
+                <td class="bold" colspan="4">Physical Check</td>
             </tr>
             <tr>
                 <td></td>
@@ -317,73 +317,44 @@
                 <td class="center">{{ $maintenance->status_air_flow ?? '-' }}</td>
             </tr>
 
-            {{-- Room Temperature --}}
+            {{-- PSI Pressure --}}
             <tr>
                 <td class="center bold">2.</td>
-                <td class="bold" colspan="4">Room Temperature Shelter/ODC *)</td>
+                <td class="bold" colspan="4">PSI Pressure *)</td>
             </tr>
             <tr>
                 <td></td>
-                <td>Shelter/Ruangan (ODC)</td>
-                <td>{{ $maintenance->temp_shelter ?? '-' }} °C</td>
-                <td><span class="unicode-symbol">&le;</span>22 °C Shelter/Ruangan</td>
-                <td class="center">{{ $maintenance->status_temp_shelter ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>Outdoor Cabinet (ODC)</td>
-                <td>{{ $maintenance->temp_outdoor_cabinet ?? '-' }} °C</td>
-                <td><span class="unicode-symbol">&le;</span> 28 °C Outdoor Cabinet (ODC)</td>
-                <td class="center">{{ $maintenance->status_temp_outdoor_cabinet ?? '-' }}</td>
+                <td>Standard PSI Pressure Form Type Freon</td>
+                <td>{{ $maintenance->psi_pressure ?? '-' }} psi</td>
+                <td>R32: 140 psi - 150 psi / R410: 140 psi - 150 psi</td>
+                <td class="center">{{ $maintenance->status_psi_pressure ?? '-' }}</td>
             </tr>
 
-            {{-- Input Current Air Cond - SHOW ALL 7 AC STANDARDS --}}
+            {{-- Input Current Air Cond --}}
             <tr>
                 <td class="center bold">3.</td>
                 <td class="bold" colspan="4">Input Current Air Cond *)</td>
             </tr>
+            <tr>
+                <td></td>
+                <td>Input Current AC</td>
+                <td>{{ $maintenance->input_current_ac ?? '-' }} A</td>
+                <td><span class="unicode-symbol">&frac34;</span>-1 PK <span class="unicode-symbol">&le;</span> 4 A | 2 PK <span class="unicode-symbol">&le;</span> 10 A</td>
+                <td class="center">{{ $maintenance->status_input_current_ac ?? '-' }}</td>
+            </tr>
 
-            @php
-                // Define all AC standards
-                $acStandards = [
-                    1 => ['label' => '', 'standard' => '<span class="unicode-symbol">&frac34;</span>-1 PK <span class="unicode-symbol">&le;</span> 4 A'],
-                    2 => ['label' => '', 'standard' => '2 PK <span class="unicode-symbol">&le;</span> 10 A'],
-                    3 => ['label' => '', 'standard' => '2.5 PK <span class="unicode-symbol">&le;</span> 13.5 A'],
-                    4 => ['label' => '', 'standard' => '5-7 PK <span class="unicode-symbol">&le;</span> 8 A / Phase'],
-                    5 => ['label' => '', 'standard' => '10 PK <span class="unicode-symbol">&le;</span> 15 A / Phase'],
-                    6 => ['label' => '', 'standard' => '15 PK <span class="unicode-symbol">&le;</span> 25 A / Phase'],
-                    7 => ['label' => '', 'standard' => '']
-                ];
-            @endphp
-
-            {{-- Loop through all 7 AC standards --}}
-            @foreach($acStandards as $acNum => $acInfo)
-                @php
-                    $currentField = "ac{$acNum}_current";
-                    $statusField = "status_ac{$acNum}";
-                    $currentValue = $maintenance->{$currentField} ?? null;
-                    $statusValue = $maintenance->{$statusField} ?? '-';
-
-                    // Determine if this is the last row
-                    $isLast = ($acNum === 7);
-
-                    // All rows have no bottom border except the last one
-                    if ($isLast) {
-                        $borderStyle = 'border-top: none; border-bottom: 1px solid #000;';
-                    } else {
-                        $borderStyle = 'border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none;';
-                    }
-                @endphp
-                <tr>
-                    <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 8.5pt;"></td>
-                    <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 8.5pt;">AC {{ $acNum }} = {{ $acInfo['label'] }}</td>
-                    <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 8.5pt;">{{ $currentValue ? $currentValue . ' Amp' : '-' }}</td>
-                    <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 7.5pt; line-height: 1.2;">
-                        {!! $acInfo['standard'] !!}
-                    </td>
-                    <td style="{{ $borderStyle }} padding: 3px 5px; font-size: 8.5pt; text-align: center;">{{ $currentValue ? $statusValue : '-' }}</td>
-                </tr>
-            @endforeach
+            {{-- Output Temperature AC --}}
+            <tr>
+                <td class="center bold">4.</td>
+                <td class="bold" colspan="4">Output Temperature AC *)</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>Output Temperature AC</td>
+                <td>{{ $maintenance->output_temperature_ac ?? '-' }} °C</td>
+                <td>16 - 20°C</td>
+                <td class="center">{{ $maintenance->status_output_temperature_ac ?? '-' }}</td>
+            </tr>
 
 
             </tbody>
@@ -399,50 +370,61 @@
 
         {{-- Signature Table --}}
         <div class="signature-section keep-together" style="margin-top: 3px;">
-            <table style="border-collapse: collapse; page-break-inside: avoid;">
+            <table style="border-collapse: collapse; width: 100%; page-break-inside: avoid;">
                 <tr>
-                    <td width="65%" style="vertical-align: top; border: none; padding-right: 6px;">
-                        <div class="bold" style="margin-bottom: 2px; font-size: 9pt;">Pelaksana</div>
-                        <table style="border-collapse: collapse;">
-                            <tr>
-                                <th style="border: 1px solid #000; background: #eee; text-align: center; padding: 2px; font-size: 8.5pt;">No</th>
-                                <th style="border: 1px solid #000; background: #eee; text-align: center; padding: 2px; font-size: 8.5pt;">Nama</th>
-                                <th style="border: 1px solid #000; background: #eee; text-align: center; padding: 2px; font-size: 8.5pt;">Departement</th>
-                                <th style="border: 1px solid #000; background: #eee; text-align: center; padding: 2px; font-size: 8.5pt;">Sub Departement</th>
-                            </tr>
-                            <tr>
-                                <td style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8.5pt;">1</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ $maintenance->executor_1 ?? '-' }}</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ !empty($maintenance->executor_1) && $maintenance->executor_1 !== '-' ? ($maintenance->department ?? '-') : '-' }}</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ !empty($maintenance->executor_1) && $maintenance->executor_1 !== '-' ? ($maintenance->sub_department ?? '-') : '-' }}</td>
-                            </tr>
-                            <tr>
-                                <td style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8.5pt;">2</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ $maintenance->executor_2 ?? '-' }}</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ !empty($maintenance->executor_2) && $maintenance->executor_2 !== '-' ? ($maintenance->department ?? '-') : '-' }}</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ !empty($maintenance->executor_2) && $maintenance->executor_2 !== '-' ? ($maintenance->sub_department ?? '-') : '-' }}</td>
-                            </tr>
-                            <tr>
-                                <td style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8.5pt;">3</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ $maintenance->executor_3 ?? '-' }}</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ !empty($maintenance->executor_3) && $maintenance->executor_3 !== '-' ? ($maintenance->department ?? '-') : '-' }}</td>
-                                <td style="border: 1px solid #000; padding: 2px 4px; font-size: 8.5pt;">{{ !empty($maintenance->executor_3) && $maintenance->executor_3 !== '-' ? ($maintenance->sub_department ?? '-') : '-' }}</td>
-                            </tr>
-                        </table>
+                    {{-- Header Row --}}
+                    <th colspan="4" style="border: 1px solid #000; text-align: center; padding: 3px; font-size: 9pt; font-weight: bold;">Executor</th>
+                    <th style="border: 1px solid #000; text-align: center; padding: 3px; font-size: 9pt; font-weight: bold;">Verifikator</th>
+                    <th style="border: 1px solid #000; text-align: center; padding: 3px; font-size: 9pt; font-weight: bold;">Head Of Sub<br>Departement</th>
+                </tr>
+                <tr>
+                    {{-- Sub Header for Executor --}}
+                    <th style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8pt; width: 5%; font-weight: bold;">No</th>
+                    <th style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8pt; width: 25%; font-weight: bold;">Nama</th>
+                    <th style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8pt; width: 15%; font-weight: bold;">Mitra / Internal</th>
+                    <th style="border: 1px solid #000; text-align: center; padding: 2px; font-size: 8pt; width: 15%; font-weight: bold;">Signature</th>
+                    <td rowspan="5" style="border: 1px solid #000; padding: 10px; vertical-align: bottom; text-align: center; width: 20%;">
+                        @if($maintenance->verifikator)
+                            <div style="margin-bottom: 40px;"></div>
+                            <div style="border-top: 1px solid #000; padding-top: 2px; font-size: 8pt;">
+                                ( {{ $maintenance->verifikator }} )
+                                @if($maintenance->verifikator_nik)
+                                    <div style="font-size: 7pt; margin-top: 2px;">NIK: {{ $maintenance->verifikator_nik }}</div>
+                                @endif
+                            </div>
+                        @else
+                            <div style="margin-bottom: 40px;"></div>
+                            <div style="border-top: 1px solid #000; padding-top: 2px; font-size: 8pt;">
+                                ( _________________ )
+                            </div>
+                        @endif
                     </td>
-                    <td width="35%" style="vertical-align: top; border: none; padding-left: 6px;">
-                        <div class="bold" style="margin-bottom: 2px; font-size: 9pt;">Mengetahui</div>
-                        <table style="border-collapse: collapse;">
-                            <tr>
-                                <td style="border: 1px solid #000; height: 78px; vertical-align: bottom; text-align: center; padding: 4px;">
-                                    <div style="font-size: 8.5pt;">{{ $maintenance->supervisor ?? '-' }}</div>
-                                    <div style="border-top: 1px solid #000; width: 60%; margin: 0 auto 2px auto;"></div>
-                                    <div style="font-size: 7.5pt; color: #444;">{{ $maintenance->supervisor_id_number ?? '' }}</div>
-                                </td>
-                            </tr>
-                        </table>
+                    <td rowspan="5" style="border: 1px solid #000; padding: 10px; vertical-align: bottom; text-align: center; width: 20%;">
+                        @if($maintenance->head_of_sub_department)
+                            <div style="margin-bottom: 40px;"></div>
+                            <div style="border-top: 1px solid #000; padding-top: 2px; font-size: 8pt;">
+                                ( {{ $maintenance->head_of_sub_department }} )
+                                @if($maintenance->head_of_sub_department_nik)
+                                    <div style="font-size: 7pt; margin-top: 2px;">NIK: {{ $maintenance->head_of_sub_department_nik }}</div>
+                                @endif
+                            </div>
+                        @else
+                            <div style="margin-bottom: 40px;"></div>
+                            <div style="border-top: 1px solid #000; padding-top: 2px; font-size: 8pt;">
+                                ( _________________ )
+                            </div>
+                        @endif
                     </td>
                 </tr>
+                {{-- Executor Rows (4 rows) --}}
+                @for($i = 1; $i <= 4; $i++)
+                <tr>
+                    <td style="border: 1px solid #000; text-align: center; padding: 3px; font-size: 8pt;">{{ $i }}</td>
+                    <td style="border: 1px solid #000; padding: 3px; font-size: 8pt;">{{ $maintenance->{'executor_'.$i} ?? '' }}</td>
+                    <td style="border: 1px solid #000; padding: 3px; text-align: center; font-size: 8pt;">{{ $maintenance->{'mitra_internal_'.$i} ?? '' }}</td>
+                    <td style="border: 1px solid #000; padding: 3px; text-align: center; height: 25px;"></td>
+                </tr>
+                @endfor
             </table>
         </div>
     </div>

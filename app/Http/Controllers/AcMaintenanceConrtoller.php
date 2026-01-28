@@ -351,7 +351,7 @@ class AcMaintenanceConrtoller extends Controller
             'reg_number' => 'nullable|string|max:255',
             'sn' => 'nullable|string|max:255',
 
-            // 1. Visual Check
+            // 1. Physical Check
             'environment_condition' => 'nullable|string|max:255',
             'status_environment_condition' => 'nullable|in:OK,NOK',
 
@@ -367,47 +367,37 @@ class AcMaintenanceConrtoller extends Controller
             'air_flow' => 'nullable|string|max:255',
             'status_air_flow' => 'nullable|in:OK,NOK',
 
-            // 2. Room Temperature - FIXED FIELD NAMES
-            'temp_shelter' => 'nullable|numeric',
-            'status_temp_shelter' => 'nullable|in:OK,NOK',
+            // 2. PSI Pressure
+            'psi_pressure' => 'nullable|numeric',
+            'status_psi_pressure' => 'nullable|in:OK,NOK',
 
-            'temp_outdoor_cabinet' => 'nullable|numeric',
-            'status_temp_outdoor_cabinet' => 'nullable|in:OK,NOK',
+            // 3. Input Current Air Cond
+            'input_current_ac' => 'nullable|numeric',
+            'status_input_current_ac' => 'nullable|in:OK,NOK',
 
-            // 3. Input Current Air Cond (nullable karena tidak semua AC digunakan)
-            'ac1_current' => 'nullable|numeric',
-            'status_ac1' => 'nullable|in:OK,NOK',
-
-            'ac2_current' => 'nullable|numeric',
-            'status_ac2' => 'nullable|in:OK,NOK',
-
-            'ac3_current' => 'nullable|numeric',
-            'status_ac3' => 'nullable|in:OK,NOK',
-
-            'ac4_current' => 'nullable|numeric',
-            'status_ac4' => 'nullable|in:OK,NOK',
-
-            'ac5_current' => 'nullable|numeric',
-            'status_ac5' => 'nullable|in:OK,NOK',
-
-            'ac6_current' => 'nullable|numeric',
-            'status_ac6' => 'nullable|in:OK,NOK',
-
-            'ac7_current' => 'nullable|numeric',
-            'status_ac7' => 'nullable|in:OK,NOK',
+            // 4. Output Temperature AC
+            'output_temperature_ac' => 'nullable|numeric',
+            'status_output_temperature_ac' => 'nullable|in:OK,NOK',
 
             // Notes and Personnel
             'notes' => 'nullable|string',
 
             'executor_1' => 'nullable|string|max:255',
+            'mitra_internal_1' => 'nullable|in:Mitra,Internal',
+
             'executor_2' => 'nullable|string|max:255',
+            'mitra_internal_2' => 'nullable|in:Mitra,Internal',
+
             'executor_3' => 'nullable|string|max:255',
+            'mitra_internal_3' => 'nullable|in:Mitra,Internal',
 
-            'supervisor' => 'nullable|string|max:255',
-            'supervisor_id_number' => 'nullable|string|max:255',
+            'executor_4' => 'nullable|string|max:255',
+            'mitra_internal_4' => 'nullable|in:Mitra,Internal',
 
-            'department' => 'nullable|string|max:255',
-            'sub_department' => 'nullable|string|max:255',
+            'verifikator' => 'nullable|string|max:255',
+            'verifikator_nik' => 'nullable|string|max:50',
+            'head_of_sub_department' => 'nullable|string|max:255',
+            'head_of_sub_department_nik' => 'nullable|string|max:50',
         ];
 
         return $request->validate($rules);

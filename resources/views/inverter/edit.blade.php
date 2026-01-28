@@ -9,10 +9,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6 text-gray-900">
-                    
+
                     <!-- Back Button -->
                     <div class="mb-4 sm:mb-6">
-                        <a href="{{ route('inverter.index') }}" 
+                        <a href="{{ route('inverter.index') }}"
                            class="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 bg-gray-500 hover:bg-gray-600 text-white text-xs sm:text-sm font-medium rounded-lg transition">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -30,7 +30,7 @@
                             </ul>
                         </div>
                     @endif
-                    
+
                     <form action="{{ route('inverter.update', $inverter->id) }}" method="POST" enctype="multipart/form-data" id="inverter-form">
                         @csrf
                         @method('PUT')
@@ -57,12 +57,12 @@
                                             @endphp
 
                                             <option value="{{ $valueString }}"
-                                                {{-- 
-                                                    PERBAIKAN: 
+                                                {{--
+                                                    PERBAIKAN:
                                                     Variabel diubah dari $dokumentasi->lokasi menjadi $inverter->lokasi
                                                 --}}
                                                 {{ old('lokasi', $inverter->lokasi) == $valueString ? 'selected' : '' }}>
-                                                
+
                                                 {{-- Tampilan di layar --}}
                                                 {{ $central->id_sentral }} - {{ $central->nama }}
                                             </option>
@@ -73,10 +73,15 @@
                             <p class="mt-1 text-xs text-gray-600">Pilih lokasi central dari daftar</p>
                         </div>
                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Date / Time <span class="text-red-500">*</span></label>
-                                    <input type="datetime-local" name="tanggal_dokumentasi" 
-                                           value="{{ old('tanggal_dokumentasi', \Carbon\Carbon::parse($inverter->tanggal_dokumentasi)->format('Y-m-d\TH:i')) }}" required
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Date <span class="text-red-500">*</span></label>
+                                    <input type="date" name="tanggal_dokumentasi"
+                                           value="{{ old('tanggal_dokumentasi', \Carbon\Carbon::parse($inverter->tanggal_dokumentasi)->format('Y-m-d')) }}" required
                                            class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Waktu <span class="text-red-500">*</span></label>
+                                    <input type="time" name="waktu" value="{{ old('waktu', $inverter->waktu ?? '') }}" required
+                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500" placeholder="HH:MM">
                                 </div>
                                 <div>
                                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Brand / Type</label>
@@ -96,19 +101,6 @@
                                            class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
                                            placeholder="Serial number">
                                 </div>
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Perusahaan</label>
-                                    <input type="text" name="perusahaan" value="{{ old('perusahaan', $inverter->perusahaan) }}"
-                                           class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500">
-                                </div>
-                                
-                                <!-- TAMBAHAN FIELD BOSS -->
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Pelaksana</label>
-                                    <input type="text" name="boss" value="{{ old('boss', $inverter->boss) }}"
-                                        class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="Pelaksana">
-                                </div>
 
                                 <div class="md:col-span-2">
                                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Notes / Additional Info</label>
@@ -125,14 +117,14 @@
                             $dcVoltageData = $dataChecklist[2] ?? [];
                             $dcCurrentData = $dataChecklist[3] ?? [];
                             $acCurrentData = $dataChecklist[4] ?? [];
-                            $neutralGroundData = $dataChecklist[5] ?? [];
+                            $acOutputData = $dataChecklist[5] ?? [];
                             $temperatureData = $dataChecklist[6] ?? [];
                         @endphp
 
                         <!-- Performance and Capacity Check -->
                         <div class="mb-6 sm:mb-8">
                             <h4 class="text-sm sm:text-md font-bold text-gray-700 border-b pb-2 mb-3 sm:mb-4">Performance and Capacity Check</h4>
-                            
+
                             <!-- Desktop: Table View -->
                             <div class="hidden lg:block overflow-x-auto">
                                 <table class="min-w-full border-collapse border border-gray-300 text-sm">
@@ -151,7 +143,7 @@
                                             <td class="border border-gray-300 px-3 py-2 font-semibold">1.</td>
                                             <td class="border border-gray-300 px-3 py-2 font-semibold" colspan="4">Visual Check</td>
                                         </tr>
-                                        
+
                                         <!-- a. Environment Condition -->
                                         <tr>
                                             <td class="border border-gray-300 px-3 py-2"></td>
@@ -167,7 +159,7 @@
                                                     @if(isset($environmentData['photos']) && is_array($environmentData['photos']))
                                                         @foreach($environmentData['photos'] as $idx => $photo)
                                                             <div class="existing-photo-wrapper border-2 border-dashed border-gray-300 rounded-lg p-3 bg-white relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="0" data-photo-index="{{ $idx }}">
-                                                                <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                                <button type="button" onclick="markPhotoForDeletion(this)"
                                                                         class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold z-10 shadow-md">×</button>
                                                                 <label class="block text-xs font-semibold text-gray-700 mb-2">Foto Environment #{{ $idx + 1 }} (Existing)</label>
                                                                 <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto max-h-64 rounded-lg mb-2" alt="Environment">
@@ -187,14 +179,14 @@
                                                         @endforeach
                                                     @endif
                                                 </div>
-                                                <button type="button" onclick="addEnvironmentPhoto()" 
+                                                <button type="button" onclick="addEnvironmentPhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
                                                     + Tambah Foto Environment
                                                 </button>
                                             </td>
                                             <td class="border border-gray-300 px-3 py-2 text-xs sm:text-sm">Clean, No dust</td>
                                             <td class="border border-gray-300 px-3 py-2">
-                                                <select name="data_inverter[0][tegangan]" id="environment_tegangan" 
+                                                <select name="data_inverter[0][tegangan]" id="environment_tegangan"
                                                         class="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm" onchange="syncValue('environment_tegangan')">
                                                     <option value="">-</option>
                                                     <option value="OK" {{ old('data_inverter.0.tegangan', $environmentData['tegangan'] ?? '') == 'OK' ? 'selected' : '' }}>OK</option>
@@ -202,7 +194,7 @@
                                                 </select>
                                             </td>
                                         </tr>
-                                        
+
                                         <!-- b. LED Display -->
                                         <tr>
                                             <td class="border border-gray-300 px-3 py-2"></td>
@@ -218,7 +210,7 @@
                                                     @if(isset($ledData['photos']) && is_array($ledData['photos']))
                                                         @foreach($ledData['photos'] as $idx => $photo)
                                                             <div class="existing-photo-wrapper border-2 border-dashed border-gray-300 rounded-lg p-3 bg-white relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="1" data-photo-index="{{ $idx }}">
-                                                                <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                                <button type="button" onclick="markPhotoForDeletion(this)"
                                                                         class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold z-10 shadow-md">×</button>
                                                                 <label class="block text-xs font-semibold text-gray-700 mb-2">Foto LED #{{ $idx + 1 }} (Existing)</label>
                                                                 <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto max-h-64 rounded-lg mb-2" alt="LED">
@@ -238,7 +230,7 @@
                                                         @endforeach
                                                     @endif
                                                 </div>
-                                                <button type="button" onclick="addLedPhoto()" 
+                                                <button type="button" onclick="addLedPhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
                                                     + Tambah Foto LED
                                                 </button>
@@ -259,7 +251,7 @@
                                             <td class="border border-gray-300 px-3 py-2 font-semibold">2.</td>
                                             <td class="border border-gray-300 px-3 py-2 font-semibold" colspan="4">Performance and Capacity Check</td>
                                         </tr>
-                                        
+
                                         <!-- a. DC Input Voltage -->
                                         <tr>
                                             <td class="border border-gray-300 px-3 py-2"></td>
@@ -270,12 +262,12 @@
                                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm mb-3"
                                                        placeholder="48.00" oninput="validateDcInputVoltage(); syncValue('dc_input_voltage')">
                                                 <input type="hidden" name="data_inverter[2][nama]" value="DC Input Voltage">
-                                                
+
                                                 <div id="dc-voltage-photos-container" class="space-y-3">
                                                     @if(isset($dcVoltageData['photos']) && is_array($dcVoltageData['photos']))
                                                         @foreach($dcVoltageData['photos'] as $idx => $photo)
                                                             <div class="existing-photo-wrapper border-2 border-dashed border-gray-300 rounded-lg p-3 bg-white relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="2" data-photo-index="{{ $idx }}">
-                                                                <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                                <button type="button" onclick="markPhotoForDeletion(this)"
                                                                         class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold z-10 shadow-md">×</button>
                                                                 <label class="block text-xs font-semibold text-gray-700 mb-2">Foto DC Voltage #{{ $idx + 1 }} (Existing)</label>
                                                                 <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto max-h-64 rounded-lg mb-2" alt="DC Voltage">
@@ -284,7 +276,7 @@
                                                         @endforeach
                                                     @endif
                                                 </div>
-                                                <button type="button" onclick="addDcVoltagePhoto()" 
+                                                <button type="button" onclick="addDcVoltagePhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
                                                     + Tambah Foto DC Input Voltage
                                                 </button>
@@ -299,31 +291,23 @@
                                                 </select>
                                             </td>
                                         </tr>
-                                        
+
                                         <!-- b. DC Current Input -->
                                         <tr>
                                             <td class="border border-gray-300 px-3 py-2"></td>
-                                            <td class="border border-gray-300 px-3 py-2">b. DC Current Input *)</td>
+                                            <td class="border border-gray-300 px-3 py-2">b. DC Current Input</td>
                                             <td class="border border-gray-300 px-3 py-2">
-                                                <label class="block text-xs text-gray-600 mb-1">Select Inverter Type:</label>
-                                                <select id="dc_current_type" class="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm mb-2" 
-                                                        onchange="saveDcCurrentType(); validateDcCurrentInput(); syncValue('dc_current_type');">
-                                                    <option value="">-- Select Type --</option>
-                                                    <option value="500" {{ old('dc_current_inverter_type', $inverter->dc_current_inverter_type ?? '') == '500' ? 'selected' : '' }}>500 VA</option>
-                                                    <option value="1000" {{ old('dc_current_inverter_type', $inverter->dc_current_inverter_type ?? '') == '1000' ? 'selected' : '' }}>1000 VA</option>
-                                                </select>
                                                 <input type="number" step="0.01" name="dc_current_input" id="dc_current_input"
                                                        value="{{ old('dc_current_input', $inverter->dc_current_input ?? '') }}"
                                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm mb-3"
                                                        placeholder="Enter value" oninput="validateDcCurrentInput(); syncValue('dc_current_input')">
-                                                <input type="hidden" name="dc_current_inverter_type" id="dc_current_inverter_type" value="{{ $inverter->dc_current_inverter_type ?? '' }}">
                                                 <input type="hidden" name="data_inverter[3][nama]" value="DC Current Input">
-                                                
+
                                                 <div id="dc-current-photos-container" class="space-y-3">
                                                     @if(isset($dcCurrentData['photos']) && is_array($dcCurrentData['photos']))
                                                         @foreach($dcCurrentData['photos'] as $idx => $photo)
                                                             <div class="existing-photo-wrapper border-2 border-dashed border-gray-300 rounded-lg p-3 bg-white relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="3" data-photo-index="{{ $idx }}">
-                                                                <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                                <button type="button" onclick="markPhotoForDeletion(this)"
                                                                         class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold z-10 shadow-md">×</button>
                                                                 <label class="block text-xs font-semibold text-gray-700 mb-2">Foto DC Current #{{ $idx + 1 }} (Existing)</label>
                                                                 <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto max-h-64 rounded-lg mb-2" alt="DC Current">
@@ -332,7 +316,7 @@
                                                         @endforeach
                                                     @endif
                                                 </div>
-                                                <button type="button" onclick="addDcCurrentPhoto()" 
+                                                <button type="button" onclick="addDcCurrentPhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
                                                     + Tambah Foto DC Current Input
                                                 </button>
@@ -347,31 +331,23 @@
                                                 </select>
                                             </td>
                                         </tr>
-                                        
+
                                         <!-- c. AC Current Output -->
                                         <tr>
                                             <td class="border border-gray-300 px-3 py-2"></td>
-                                            <td class="border border-gray-300 px-3 py-2">c. AC Current Output *)</td>
+                                            <td class="border border-gray-300 px-3 py-2">c. AC Current Output</td>
                                             <td class="border border-gray-300 px-3 py-2">
-                                                <label class="block text-xs text-gray-600 mb-1">Select Inverter Type:</label>
-                                                <select id="ac_current_type" class="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm mb-2" 
-                                                        onchange="saveAcCurrentType(); validateAcCurrentOutput(); syncValue('ac_current_type');">
-                                                    <option value="">-- Select Type --</option>
-                                                    <option value="500" {{ old('ac_current_inverter_type', $inverter->ac_current_inverter_type ?? '') == '500' ? 'selected' : '' }}>500 VA</option>
-                                                    <option value="1000" {{ old('ac_current_inverter_type', $inverter->ac_current_inverter_type ?? '') == '1000' ? 'selected' : '' }}>1000 VA</option>
-                                                </select>
                                                 <input type="number" step="0.01" name="ac_current_output" id="ac_current_output"
                                                        value="{{ old('ac_current_output', $inverter->ac_current_output ?? '') }}"
                                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm mb-3"
                                                        placeholder="Enter value" oninput="validateAcCurrentOutput(); syncValue('ac_current_output')">
-                                                <input type="hidden" name="ac_current_inverter_type" id="ac_current_inverter_type" value="{{ $inverter->ac_current_inverter_type ?? '' }}">
                                                 <input type="hidden" name="data_inverter[4][nama]" value="AC Current Output">
 
                                                 <div id="ac-current-photos-container" class="space-y-3">
                                                     @if(isset($acCurrentData['photos']) && is_array($acCurrentData['photos']))
                                                         @foreach($acCurrentData['photos'] as $idx => $photo)
                                                             <div class="existing-photo-wrapper border-2 border-dashed border-gray-300 rounded-lg p-3 bg-white relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="4" data-photo-index="{{ $idx }}">
-                                                                <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                                <button type="button" onclick="markPhotoForDeletion(this)"
                                                                         class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold z-10 shadow-md">×</button>
                                                                 <label class="block text-xs font-semibold text-gray-700 mb-2">Foto AC Current #{{ $idx + 1 }} (Existing)</label>
                                                                 <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto max-h-64 rounded-lg mb-2" alt="AC Current">
@@ -380,7 +356,7 @@
                                                         @endforeach
                                                     @endif
                                                 </div>
-                                                <button type="button" onclick="addAcCurrentPhoto()" 
+                                                <button type="button" onclick="addAcCurrentPhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
                                                     + Tambah Foto AC Current Output
                                                 </button>
@@ -395,39 +371,39 @@
                                                 </select>
                                             </td>
                                         </tr>
-                                        
-                                        <!-- d. Neutral - Ground Output Voltage -->
+
+                                        <!-- d. AC Output Voltage -->
                                         <tr>
                                             <td class="border border-gray-300 px-3 py-2"></td>
-                                            <td class="border border-gray-300 px-3 py-2">d. Neutral - Ground Output Voltage</td>
+                                            <td class="border border-gray-300 px-3 py-2">d. AC Output Voltage</td>
                                             <td class="border border-gray-300 px-3 py-2">
-                                                <input type="number" step="0.01" name="neutral_ground_output_voltage" id="neutral_ground_output_voltage"
-                                                       value="{{ old('neutral_ground_output_voltage', $inverter->neutral_ground_output_voltage ?? '') }}"
+                                                <input type="number" step="0.01" name="ac_output_voltage" id="ac_output_voltage"
+                                                       value="{{ old('ac_output_voltage', $inverter->ac_output_voltage ?? '') }}"
                                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm mb-3"
-                                                       placeholder="1.00" oninput="validateNeutralGround(); syncValue('neutral_ground_output_voltage')">
-                                                <input type="hidden" name="data_inverter[5][nama]" value="Neutral - Ground Output Voltage">
+                                                       placeholder="1.00" oninput="validateAcOutput(); syncValue('ac_output_voltage')">
+                                                <input type="hidden" name="data_inverter[5][nama]" value="AC Output Voltage">
 
-                                                <div id="neutral-ground-photos-container" class="space-y-3">
-                                                    @if(isset($neutralGroundData['photos']) && is_array($neutralGroundData['photos']))
-                                                        @foreach($neutralGroundData['photos'] as $idx => $photo)
+                                                <div id="ac-output-photos-container" class="space-y-3">
+                                                    @if(isset($acOutputData['photos']) && is_array($acOutputData['photos']))
+                                                        @foreach($acOutputData['photos'] as $idx => $photo)
                                                             <div class="existing-photo-wrapper border-2 border-dashed border-gray-300 rounded-lg p-3 bg-white relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="5" data-photo-index="{{ $idx }}">
-                                                                <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                                <button type="button" onclick="markPhotoForDeletion(this)"
                                                                         class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold z-10 shadow-md">×</button>
-                                                                <label class="block text-xs font-semibold text-gray-700 mb-2">Foto Neutral-Ground #{{ $idx + 1 }} (Existing)</label>
-                                                                <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto max-h-64 rounded-lg mb-2" alt="Neutral Ground">
+                                                                <label class="block text-xs font-semibold text-gray-700 mb-2">Foto AC Output #{{ $idx + 1 }} (Existing)</label>
+                                                                <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto max-h-64 rounded-lg mb-2" alt="AC Output">
                                                                 <input type="hidden" name="data_inverter[5][photos][{{ $idx }}][existing_photo]" value="{{ $photo['photo_path'] }}">
                                                             </div>
                                                         @endforeach
                                                     @endif
                                                 </div>
-                                                <button type="button" onclick="addNeutralGroundPhoto()" 
+                                                <button type="button" onclick="addAcOutputPhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
-                                                    + Tambah Foto Neutral - Ground
+                                                    + Tambah Foto AC Output Voltage
                                                 </button>
                                             </td>
                                             <td class="border border-gray-300 px-3 py-2 text-xs sm:text-sm">≤ 1 Volt AC</td>
                                             <td class="border border-gray-300 px-3 py-2">
-                                                <select name="data_inverter[5][status]" id="status_neutral_ground" disabled
+                                                <select name="data_inverter[5][status]" id="status_ac_output" disabled
                                                         class="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm bg-gray-100">
                                                     <option value="">-</option>
                                                     <option value="OK">OK</option>
@@ -435,7 +411,7 @@
                                                 </select>
                                             </td>
                                         </tr>
-                                        
+
                                         <!-- e. Equipment Temperature -->
                                         <tr>
                                             <td class="border border-gray-300 px-3 py-2"></td>
@@ -451,7 +427,7 @@
                                                     @if(isset($temperatureData['photos']) && is_array($temperatureData['photos']))
                                                         @foreach($temperatureData['photos'] as $idx => $photo)
                                                             <div class="existing-photo-wrapper border-2 border-dashed border-gray-300 rounded-lg p-3 bg-white relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="6" data-photo-index="{{ $idx }}">
-                                                                <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                                <button type="button" onclick="markPhotoForDeletion(this)"
                                                                         class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold z-10 shadow-md">×</button>
                                                                 <label class="block text-xs font-semibold text-gray-700 mb-2">Foto Temperature #{{ $idx + 1 }} (Existing)</label>
                                                                 <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto max-h-64 rounded-lg mb-2" alt="Temperature">
@@ -460,7 +436,7 @@
                                                         @endforeach
                                                     @endif
                                                 </div>
-                                                <button type="button" onclick="addTemperaturePhoto()" 
+                                                <button type="button" onclick="addTemperaturePhoto()"
                                                         class="w-full mt-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
                                                     + Tambah Foto Equipment Temperature
                                                 </button>
@@ -502,7 +478,7 @@
                                             @if(isset($environmentData['photos']) && is_array($environmentData['photos']))
                                                 @foreach($environmentData['photos'] as $idx => $photo)
                                                     <div class="existing-photo-wrapper border border-gray-300 rounded p-2 bg-gray-50 relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="0" data-photo-index="{{ $idx }}">
-                                                        <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                        <button type="button" onclick="markPhotoForDeletion(this)"
                                                                 class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold z-10 shadow-md">×</button>
                                                         <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto rounded mb-1" alt="Environment">
                                                         <p class="text-xs text-gray-600">📷 Foto #{{ $idx + 1 }} (Existing)</p>
@@ -510,7 +486,7 @@
                                                 @endforeach
                                             @endif
                                         </div>
-                                        <button type="button" onclick="addEnvironmentPhoto('mobile')" 
+                                        <button type="button" onclick="addEnvironmentPhoto('mobile')"
                                                 class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
                                             + Tambah Foto Environment
                                         </button>
@@ -544,7 +520,7 @@
                                             @if(isset($ledData['photos']) && is_array($ledData['photos']))
                                                 @foreach($ledData['photos'] as $idx => $photo)
                                                     <div class="existing-photo-wrapper border border-gray-300 rounded p-2 bg-gray-50 relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="1" data-photo-index="{{ $idx }}">
-                                                        <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                        <button type="button" onclick="markPhotoForDeletion(this)"
                                                                 class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold z-10 shadow-md">×</button>
                                                         <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto rounded mb-1" alt="LED">
                                                         <p class="text-xs text-gray-600">📷 Foto #{{ $idx + 1 }} (Existing)</p>
@@ -552,7 +528,7 @@
                                                 @endforeach
                                             @endif
                                         </div>
-                                        <button type="button" onclick="addLedPhoto('mobile')" 
+                                        <button type="button" onclick="addLedPhoto('mobile')"
                                                 class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
                                             + Tambah Foto LED
                                         </button>
@@ -591,7 +567,7 @@
                                             @if(isset($dcVoltageData['photos']) && is_array($dcVoltageData['photos']))
                                                 @foreach($dcVoltageData['photos'] as $idx => $photo)
                                                     <div class="existing-photo-wrapper border border-gray-300 rounded p-2 bg-gray-50 relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="2" data-photo-index="{{ $idx }}">
-                                                        <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                        <button type="button" onclick="markPhotoForDeletion(this)"
                                                                 class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold z-10 shadow-md">×</button>
                                                         <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto rounded mb-1" alt="DC Voltage">
                                                         <p class="text-xs text-gray-600">📷 Foto #{{ $idx + 1 }} (Existing)</p>
@@ -599,7 +575,7 @@
                                                 @endforeach
                                             @endif
                                         </div>
-                                        <button type="button" onclick="addDcVoltagePhoto('mobile')" 
+                                        <button type="button" onclick="addDcVoltagePhoto('mobile')"
                                                 class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
                                             + Tambah Foto DC Input Voltage
                                         </button>
@@ -620,16 +596,7 @@
 
                                 <!-- DC Current Input Card -->
                                 <div class="border border-gray-300 rounded-lg p-3 space-y-3">
-                                    <h6 class="font-semibold text-sm">b. DC Current Input *)</h6>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">Select Inverter Type:</label>
-                                        <select id="dc_current_type_mobile" class="w-full px-2 py-2 border border-gray-300 rounded text-sm" 
-                                                onchange="syncFromMobile('dc_current_type'); saveDcCurrentType(); validateDcCurrentInput();">
-                                            <option value="">-- Select Type --</option>
-                                            <option value="500" {{ old('dc_current_inverter_type', $inverter->dc_current_inverter_type ?? '') == '500' ? 'selected' : '' }}>500 VA</option>
-                                            <option value="1000" {{ old('dc_current_inverter_type', $inverter->dc_current_inverter_type ?? '') == '1000' ? 'selected' : '' }}>1000 VA</option>
-                                        </select>
-                                    </div>
+                                    <h6 class="font-semibold text-sm">b. DC Current Input</h6>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Value (A):</label>
                                         <input type="number" step="0.01" id="dc_current_input_mobile"
@@ -643,7 +610,7 @@
                                             @if(isset($dcCurrentData['photos']) && is_array($dcCurrentData['photos']))
                                                 @foreach($dcCurrentData['photos'] as $idx => $photo)
                                                     <div class="existing-photo-wrapper border border-gray-300 rounded p-2 bg-gray-50 relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="3" data-photo-index="{{ $idx }}">
-                                                        <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                        <button type="button" onclick="markPhotoForDeletion(this)"
                                                                 class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold z-10 shadow-md">×</button>
                                                         <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto rounded mb-1" alt="DC Current">
                                                         <p class="text-xs text-gray-600">📷 Foto #{{ $idx + 1 }} (Existing)</p>
@@ -651,7 +618,7 @@
                                                 @endforeach
                                             @endif
                                         </div>
-                                        <button type="button" onclick="addDcCurrentPhoto('mobile')" 
+                                        <button type="button" onclick="addDcCurrentPhoto('mobile')"
                                                 class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
                                             + Tambah Foto DC Current Input
                                         </button>
@@ -672,16 +639,7 @@
 
                                 <!-- AC Current Output Card -->
                                 <div class="border border-gray-300 rounded-lg p-3 space-y-3">
-                                    <h6 class="font-semibold text-sm">c. AC Current Output *)</h6>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">Select Inverter Type:</label>
-                                        <select id="ac_current_type_mobile" class="w-full px-2 py-2 border border-gray-300 rounded text-sm" 
-                                                onchange="syncFromMobile('ac_current_type'); saveAcCurrentType(); validateAcCurrentOutput();">
-                                            <option value="">-- Select Type --</option>
-                                            <option value="500" {{ old('ac_current_inverter_type', $inverter->ac_current_inverter_type ?? '') == '500' ? 'selected' : '' }}>500 VA</option>
-                                            <option value="1000" {{ old('ac_current_inverter_type', $inverter->ac_current_inverter_type ?? '') == '1000' ? 'selected' : '' }}>1000 VA</option>
-                                        </select>
-                                    </div>
+                                    <h6 class="font-semibold text-sm">c. AC Current Output</h6>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Value (A):</label>
                                         <input type="number" step="0.01" id="ac_current_output_mobile"
@@ -695,7 +653,7 @@
                                             @if(isset($acCurrentData['photos']) && is_array($acCurrentData['photos']))
                                                 @foreach($acCurrentData['photos'] as $idx => $photo)
                                                     <div class="existing-photo-wrapper border border-gray-300 rounded p-2 bg-gray-50 relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="4" data-photo-index="{{ $idx }}">
-                                                        <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                        <button type="button" onclick="markPhotoForDeletion(this)"
                                                                 class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold z-10 shadow-md">×</button>
                                                         <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto rounded mb-1" alt="AC Current">
                                                         <p class="text-xs text-gray-600">📷 Foto #{{ $idx + 1 }} (Existing)</p>
@@ -703,7 +661,7 @@
                                                 @endforeach
                                             @endif
                                         </div>
-                                        <button type="button" onclick="addAcCurrentPhoto('mobile')" 
+                                        <button type="button" onclick="addAcCurrentPhoto('mobile')"
                                                 class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
                                             + Tambah Foto AC Current Output
                                         </button>
@@ -722,33 +680,33 @@
                                     </div>
                                 </div>
 
-                                <!-- Neutral Ground Card -->
+                                <!-- AC Output Voltage Card -->
                                 <div class="border border-gray-300 rounded-lg p-3 space-y-3">
-                                    <h6 class="font-semibold text-sm">d. Neutral - Ground Output Voltage</h6>
+                                    <h6 class="font-semibold text-sm">d. AC Output Voltage</h6>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Value (V AC):</label>
-                                        <input type="number" step="0.01" id="neutral_ground_output_voltage_mobile"
-                                               value="{{ old('neutral_ground_output_voltage', $inverter->neutral_ground_output_voltage ?? '') }}"
+                                        <input type="number" step="0.01" id="ac_output_voltage_mobile"
+                                               value="{{ old('ac_output_voltage', $inverter->ac_output_voltage ?? '') }}"
                                                class="w-full px-2 py-2 border border-gray-300 rounded text-sm"
-                                               placeholder="1.00" oninput="syncFromMobile('neutral_ground_output_voltage'); validateNeutralGround();">
+                                               placeholder="1.00" oninput="syncFromMobile('ac_output_voltage'); validateAcOutput();">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Photos:</label>
-                                        <div id="neutral-ground-photos-container-mobile" class="space-y-3 mb-3">
-                                            @if(isset($neutralGroundData['photos']) && is_array($neutralGroundData['photos']))
-                                                @foreach($neutralGroundData['photos'] as $idx => $photo)
+                                        <div id="ac-output-photos-container-mobile" class="space-y-3 mb-3">
+                                            @if(isset($acOutputData['photos']) && is_array($acOutputData['photos']))
+                                                @foreach($acOutputData['photos'] as $idx => $photo)
                                                     <div class="existing-photo-wrapper border border-gray-300 rounded p-2 bg-gray-50 relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="5" data-photo-index="{{ $idx }}">
-                                                        <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                        <button type="button" onclick="markPhotoForDeletion(this)"
                                                                 class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold z-10 shadow-md">×</button>
-                                                        <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto rounded mb-1" alt="Neutral Ground">
+                                                        <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto rounded mb-1" alt="AC Output">
                                                         <p class="text-xs text-gray-600">📷 Foto #{{ $idx + 1 }} (Existing)</p>
                                                     </div>
                                                 @endforeach
                                             @endif
                                         </div>
-                                        <button type="button" onclick="addNeutralGroundPhoto('mobile')" 
+                                        <button type="button" onclick="addAcOutputPhoto('mobile')"
                                                 class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
-                                            + Tambah Foto Neutral - Ground
+                                            + Tambah Foto AC Output Voltage
                                         </button>
                                     </div>
                                     <div>
@@ -756,7 +714,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">Status:</label>
-                                        <select id="status_neutral_ground_mobile" disabled
+                                        <select id="status_ac_output_mobile" disabled
                                                 class="w-full px-2 py-2 border border-gray-300 rounded text-sm bg-gray-100">
                                             <option value="">-</option>
                                             <option value="OK">OK</option>
@@ -781,7 +739,7 @@
                                             @if(isset($temperatureData['photos']) && is_array($temperatureData['photos']))
                                                 @foreach($temperatureData['photos'] as $idx => $photo)
                                                     <div class="existing-photo-wrapper border border-gray-300 rounded p-2 bg-gray-50 relative" data-photo-path="{{ $photo['photo_path'] }}" data-data-index="6" data-photo-index="{{ $idx }}">
-                                                        <button type="button" onclick="markPhotoForDeletion(this)" 
+                                                        <button type="button" onclick="markPhotoForDeletion(this)"
                                                                 class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold z-10 shadow-md">×</button>
                                                         <img src="{{ asset('storage/' . $photo['photo_path']) }}" class="w-full h-auto rounded mb-1" alt="Temperature">
                                                         <p class="text-xs text-gray-600">📷 Foto #{{ $idx + 1 }} (Existing)</p>
@@ -789,7 +747,7 @@
                                                 @endforeach
                                             @endif
                                         </div>
-                                        <button type="button" onclick="addTemperaturePhoto('mobile')" 
+                                        <button type="button" onclick="addTemperaturePhoto('mobile')"
                                                 class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg">
                                             + Tambah Foto Equipment Temperature
                                         </button>
@@ -808,54 +766,96 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <p class="text-xs text-gray-600 mt-3">*) Choose the appropriate inverter type</p>
                         </div>
 
                         <!-- Hidden input container untuk menyimpan foto yang akan dihapus -->
                         <div id="photos-to-delete-container"></div>
 
-                        <!-- Data Pelaksana -->
+                        <!-- Pelaksana -->
                         <div class="mb-6 sm:mb-8">
-                            <h4 class="text-sm sm:text-md font-bold text-gray-700 border-b pb-2 mb-3 sm:mb-4">Data Pelaksana</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                @php
-                                    $pelaksanaData = $inverter->pelaksana ?? [];
-                                @endphp
-                                
-                                @for($i = 0; $i < 3; $i++)
-                                    @php
-                                        $pelaksana = isset($pelaksanaData[$i]) ? $pelaksanaData[$i] : ['nama' => '', 'perusahaan' => ''];
-                                    @endphp
-                                    <div>
-                                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-                                            Pelaksana {{ $i + 1 }} - Nama 
-                                            @if($i == 0)<span class="text-red-500">*</span>@else<span class="text-xs text-gray-500">(Opsional)</span>@endif
-                                        </label>
-                                        <input type="text" name="pelaksana[{{ $i }}][nama]" 
-                                               value="{{ old('pelaksana.'.$i.'.nama', $pelaksana['nama'] ?? '') }}"
-                                               {{ $i == 0 ? 'required' : '' }}
-                                               placeholder="Nama pelaksana {{ $i + 1 }}"
-                                               class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-                                            Pelaksana {{ $i + 1 }} - Perusahaan 
-                                            @if($i == 0)<span class="text-red-500">*</span>@else<span class="text-xs text-gray-500">(Opsional)</span>@endif
-                                        </label>
-                                        <input type="text" name="pelaksana[{{ $i }}][perusahaan]" 
-                                               value="{{ old('pelaksana.'.$i.'.perusahaan', $pelaksana['perusahaan'] ?? '') }}"
-                                               {{ $i == 0 ? 'required' : '' }}
-                                               placeholder="Perusahaan pelaksana {{ $i + 1 }}"
-                                               class="mt-1 block w-full text-sm rounded-md border-gray-300 shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500">
+                            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">Pelaksana</h3>
+                            <div class="space-y-4">
+                                @for($i = 1; $i <= 4; $i++)
+                                    <div class="border rounded-lg p-4 bg-gray-50">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Pelaksana {{ $i }}</label>
+
+                                        <div class="space-y-3">
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Nama</label>
+                                                <input type="text" name="executor_{{ $i }}"
+                                                       value="{{ old('executor_'.$i, $inverter->{'executor_'.$i} ?? '') }}"
+                                                       placeholder="Nama pelaksana (opsional)"
+                                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Mitra/Internal</label>
+                                                <select name="mitra_internal_{{ $i }}"
+                                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                                    <option value="">-- Pilih --</option>
+                                                    <option value="Mitra" {{ old('mitra_internal_'.$i, $inverter->{'mitra_internal_'.$i} ?? '') == 'Mitra' ? 'selected' : '' }}>Mitra</option>
+                                                    <option value="Internal" {{ old('mitra_internal_'.$i, $inverter->{'mitra_internal_'.$i} ?? '') == 'Internal' ? 'selected' : '' }}>Internal</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                 @endfor
                             </div>
                         </div>
 
+                        <!-- Mengetahui -->
+                        <div class="mb-6 sm:mb-8">
+                            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">Mengetahui</h3>
+                            <div class="space-y-4">
+                                <!-- Verifikator -->
+                                <div class="border rounded-lg p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Verifikator</label>
+
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">Nama</label>
+                                            <input type="text" name="verifikator"
+                                                   value="{{ old('verifikator', $inverter->verifikator ?? '') }}"
+                                                   placeholder="Nama verifikator (opsional)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">NIK</label>
+                                            <input type="text" name="verifikator_nik"
+                                                   value="{{ old('verifikator_nik', $inverter->verifikator_nik ?? '') }}"
+                                                   placeholder="NIK verifikator (opsional)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Head of Sub Department -->
+                                <div class="border rounded-lg p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Head of Sub Department</label>
+
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">Nama</label>
+                                            <input type="text" name="head_of_sub_department"
+                                                   value="{{ old('head_of_sub_department', $inverter->head_of_sub_department ?? '') }}"
+                                                   placeholder="Nama Head of Sub Department (opsional)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">NIK</label>
+                                            <input type="text" name="head_of_sub_department_nik"
+                                                   value="{{ old('head_of_sub_department_nik', $inverter->head_of_sub_department_nik ?? '') }}"
+                                                   placeholder="NIK Head of Sub Department (opsional)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Buttons -->
                         <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6">
-                            <a href="{{ route('inverter.index') }}" 
+                            <a href="{{ route('inverter.index') }}"
                                class="w-full sm:w-auto px-6 py-2.5 bg-gray-500 hover:bg-gray-600 text-white text-sm font-semibold rounded-lg shadow text-center">
                                 Batal
                             </a>
@@ -876,23 +876,23 @@ function markPhotoForDeletion(button) {
     if (!confirm('Hapus foto ini?')) {
         return;
     }
-    
+
     const wrapper = button.closest('.existing-photo-wrapper');
     const photoPath = wrapper.getAttribute('data-photo-path');
-    
+
     // Buat hidden input untuk menandai foto yang akan dihapus
     const deleteInput = document.createElement('input');
     deleteInput.type = 'hidden';
     deleteInput.name = `delete_photos[]`;
     deleteInput.value = photoPath;
-    
+
     // Tambahkan ke container
     document.getElementById('photos-to-delete-container').appendChild(deleteInput);
-    
+
     // Hapus wrapper dari tampilan dengan animasi
     wrapper.style.transition = 'opacity 0.3s ease-out';
     wrapper.style.opacity = '0';
-    
+
     setTimeout(() => {
         wrapper.remove();
     }, 300);
@@ -902,7 +902,7 @@ function markPhotoForDeletion(button) {
 function syncValue(baseId) {
     const desktopEl = document.getElementById(baseId);
     const mobileEl = document.getElementById(baseId + '_mobile');
-    
+
     if (desktopEl && mobileEl) {
         mobileEl.value = desktopEl.value;
     }
@@ -911,7 +911,7 @@ function syncValue(baseId) {
 function syncFromMobile(baseId) {
     const mobileEl = document.getElementById(baseId + '_mobile');
     const desktopEl = document.getElementById(baseId);
-    
+
     if (mobileEl && desktopEl) {
         desktopEl.value = mobileEl.value;
     }
@@ -929,7 +929,7 @@ let ledPhotoIndex = {{ isset($ledData['photos']) ? count($ledData['photos']) : 0
 let dcVoltagePhotoIndex = {{ isset($dcVoltageData['photos']) ? count($dcVoltageData['photos']) : 0 }};
 let dcCurrentPhotoIndex = {{ isset($dcCurrentData['photos']) ? count($dcCurrentData['photos']) : 0 }};
 let acCurrentPhotoIndex = {{ isset($acCurrentData['photos']) ? count($acCurrentData['photos']) : 0 }};
-let neutralGroundPhotoIndex = {{ isset($neutralGroundData['photos']) ? count($neutralGroundData['photos']) : 0 }};
+let acOutputPhotoIndex = {{ isset($acOutputData['photos']) ? count($acOutputData['photos']) : 0 }};
 let temperaturePhotoIndex = {{ isset($temperatureData['photos']) ? count($temperatureData['photos']) : 0 }};
 
 // ==================== UTILITY: CROP TO SQUARE ====================
@@ -937,18 +937,18 @@ function cropToSquare(sourceCanvas) {
     const size = Math.min(sourceCanvas.width, sourceCanvas.height);
     const x = (sourceCanvas.width - size) / 2;
     const y = (sourceCanvas.height - size) / 2;
-    
+
     const squareCanvas = document.createElement('canvas');
     squareCanvas.width = PHOTO_CONFIG.size;
     squareCanvas.height = PHOTO_CONFIG.size;
     const ctx = squareCanvas.getContext('2d');
-    
+
     ctx.drawImage(
         sourceCanvas,
         x, y, size, size,
         0, 0, PHOTO_CONFIG.size, PHOTO_CONFIG.size
     );
-    
+
     return squareCanvas;
 }
 
@@ -956,7 +956,7 @@ function cropToSquare(sourceCanvas) {
 async function addWatermarkToCanvas(canvas) {
     const ctx = canvas.getContext('2d');
     const timestamp = new Date();
-    
+
     // Format waktu tanpa detik
     const formattedTime = timestamp.toLocaleString('id-ID', {
         year: 'numeric',
@@ -980,31 +980,31 @@ async function addWatermarkToCanvas(canvas) {
                 try {
                     const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
                     const data = await response.json();
-                    
+
                     // Extract lokasi ringkas: nama jalan, kabupaten, provinsi
                     const address = data.address || {};
                     const parts = [];
-                    
+
                     // Nama jalan/lokasi
                     if (address.road) parts.push(address.road);
                     else if (address.neighbourhood) parts.push(address.neighbourhood);
                     else if (address.suburb) parts.push(address.suburb);
-                    
+
                     // Nomor rumah jika ada
                     if (address.house_number) {
                         parts[parts.length - 1] = `${parts[parts.length - 1]} No.${address.house_number}`;
                     }
-                    
+
                     // Kabupaten/Kota
                     if (address.city) parts.push(address.city);
                     else if (address.county) parts.push(address.county);
                     else if (address.state_district) parts.push(address.state_district);
-                    
+
                     // Provinsi
                     if (address.state) parts.push(address.state);
-                    
+
                     lokasiText = parts.length > 0 ? parts.join(', ') : 'Lokasi tidak diketahui';
-                    
+
                     // Batasi panjang teks max 60 karakter
                     if (lokasiText.length > 60) {
                         lokasiText = lokasiText.substring(0, 57) + '...';
@@ -1026,29 +1026,29 @@ async function addWatermarkToCanvas(canvas) {
     const padding = 15;  // ← SIZING #1: Ubah dari 20 menjadi 15 (lebih kecil)
     const fontSize = Math.max(32, canvas.width / 25);  // ← SIZING #2: Ubah dari 48 & /15 menjadi 32 & /25 (LEBIH KECIL)
     const lineHeight = fontSize * 1.4;  // ← SIZING #3: Ubah dari 1.6 menjadi 1.4 (lebih rapat)
-    
+
     ctx.font = `bold ${fontSize}px Arial`;
     ctx.textBaseline = 'bottom';
-    
+
     // Teks dengan outline untuk keterbacaan
     const texts = [
         `📍 ${lokasiText}`,
         `🕓 ${hari}, ${formattedTime}`,
         `🌐 ${latitude?.toFixed(5) || '-'}, ${longitude?.toFixed(5) || '-'}`
     ];
-    
+
     let yPosition = canvas.height - padding;
-    
+
     texts.reverse().forEach(text => {
         // Outline hitam lebih tebal untuk keterbacaan
         ctx.strokeStyle = 'rgba(0,0,0,0.9)';
         ctx.lineWidth = 4;  // ← SIZING #4: Ubah dari 6 menjadi 4 (lebih tipis)
         ctx.strokeText(text, padding, yPosition);
-        
+
         // Teks putih di atas
         ctx.fillStyle = 'white';
         ctx.fillText(text, padding, yPosition);
-        
+
         yPosition -= lineHeight;
     });
 
@@ -1072,10 +1072,10 @@ function getExifData(file) {
                 resolve(null);
                 return;
             }
-            
+
             const length = view.byteLength;
             let offset = 2;
-            
+
             while (offset < length) {
                 if (view.getUint16(offset + 2, false) <= 8) {
                     resolve(null);
@@ -1083,19 +1083,19 @@ function getExifData(file) {
                 }
                 const marker = view.getUint16(offset, false);
                 offset += 2;
-                
+
                 if (marker == 0xFFE1) {
                     const exifOffset = offset + 10;
                     const little = view.getUint16(exifOffset) == 0x4949;
-                    
+
                     try {
                         let lat = null, lng = null;
                         const tags = view.getUint16(exifOffset + 8, little);
-                        
+
                         for (let i = 0; i < tags; i++) {
                             const tagOffset = exifOffset + 12 + (i * 12);
                             const tag = view.getUint16(tagOffset, little);
-                            
+
                             if (tag === 0x0002) {
                                 const latOffset = exifOffset + view.getUint32(tagOffset + 8, little);
                                 const d = view.getUint32(latOffset, little) / view.getUint32(latOffset + 4, little);
@@ -1103,7 +1103,7 @@ function getExifData(file) {
                                 const s = view.getUint32(latOffset + 16, little) / view.getUint32(latOffset + 20, little);
                                 lat = d + m / 60 + s / 3600;
                             }
-                            
+
                             if (tag === 0x0004) {
                                 const lngOffset = exifOffset + view.getUint32(tagOffset + 8, little);
                                 const d = view.getUint32(lngOffset, little) / view.getUint32(lngOffset + 4, little);
@@ -1112,7 +1112,7 @@ function getExifData(file) {
                                 lng = d + m / 60 + s / 3600;
                             }
                         }
-                        
+
                         if (lat && lng) {
                             resolve({ latitude: lat, longitude: lng });
                             return;
@@ -1121,10 +1121,10 @@ function getExifData(file) {
                         console.log('Error parsing EXIF:', e);
                     }
                 }
-                
+
                 offset += view.getUint16(offset, false);
             }
-            
+
             resolve(null);
         };
         reader.readAsArrayBuffer(file.slice(0, 64 * 1024));
@@ -1138,7 +1138,7 @@ function createPhotoComponent(description, dataIndex, photoIndex) {
     div.innerHTML = `
         <button type="button" class="remove-photo absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold z-10 shadow-md">×</button>
         <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Foto ${description} #${photoIndex + 1} (New)</label>
-        
+
         <!-- Pilihan Metode Input -->
         <div class="method-buttons flex gap-3 mb-4 justify-center">
             <button type="button" class="method-camera px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold rounded-lg">📷 Kamera</button>
@@ -1168,7 +1168,7 @@ function createPhotoComponent(description, dataIndex, photoIndex) {
         <img class="captured-image w-full aspect-square object-cover rounded-lg mb-2 hidden" alt="Captured">
         <canvas class="hidden"></canvas>
         <button type="button" class="retake-photo hidden px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs sm:text-sm font-semibold rounded-lg block mx-auto">↻ Foto Ulang</button>
-        
+
         <div class="photo-info text-xs text-gray-600 text-center bg-gray-50 p-2 rounded mt-2"></div>
         <input type="hidden" name="data_inverter[${dataIndex}][photos][${photoIndex}][photo_data]">
         <input type="hidden" name="data_inverter[${dataIndex}][photos][${photoIndex}][photo_latitude]">
@@ -1224,13 +1224,13 @@ function addAcCurrentPhoto(mode = 'desktop') {
     acCurrentPhotoIndex++;
 }
 
-function addNeutralGroundPhoto(mode = 'desktop') {
-    const containerId = mode === 'mobile' ? 'neutral-ground-photos-container-mobile' : 'neutral-ground-photos-container';
+function addAcOutputPhoto(mode = 'desktop') {
+    const containerId = mode === 'mobile' ? 'ac-output-photos-container-mobile' : 'ac-output-photos-container';
     const container = document.getElementById(containerId);
-    const photoDiv = createPhotoComponent('Neutral - Ground Output Voltage', 5, neutralGroundPhotoIndex);
+    const photoDiv = createPhotoComponent('AC Output Voltage', 5, acOutputPhotoIndex);
     container.appendChild(photoDiv);
     setupCameraHandlers(photoDiv);
-    neutralGroundPhotoIndex++;
+    acOutputPhotoIndex++;
 }
 
 function addTemperaturePhoto(mode = 'desktop') {
@@ -1254,7 +1254,7 @@ function setupCameraHandlers(container) {
     const methodButtons = container.querySelector('.method-buttons');
     const fileInput = container.querySelector('.file-input');
     const uploadTrigger = container.querySelector('.upload-trigger');
-    
+
     const methodCamera = container.querySelector('.method-camera');
     const methodUpload = container.querySelector('.method-upload');
     const captureBtn = container.querySelector('.capture-photo');
@@ -1262,7 +1262,7 @@ function setupCameraHandlers(container) {
     const cancelUpload = container.querySelector('.cancel-upload');
     const retakeBtn = container.querySelector('.retake-photo');
     const photoInfo = container.querySelector('.photo-info');
-    
+
     const photoDataInput = container.querySelector('input[name$="[photo_data]"]');
     const latInput = container.querySelector('input[name$="[photo_latitude]"]');
     const lngInput = container.querySelector('input[name$="[photo_longitude]"]');
@@ -1381,8 +1381,8 @@ function setupCameraHandlers(container) {
                         latitude: exifData?.latitude || null,
                         longitude: exifData?.longitude || null,
                         timestamp: timestamp.toISOString(),
-                        locationText: exifData?.latitude && exifData?.longitude 
-                            ? `${exifData.latitude.toFixed(5)}, ${exifData.longitude.toFixed(5)}` 
+                        locationText: exifData?.latitude && exifData?.longitude
+                            ? `${exifData.latitude.toFixed(5)}, ${exifData.longitude.toFixed(5)}`
                             : 'Tidak ada data lokasi',
                         formattedTime: timestamp.toLocaleString('id-ID'),
                         hari: timestamp.toLocaleDateString('id-ID', { weekday: 'long' })
@@ -1474,7 +1474,7 @@ function setStatus(selectElement, isValid) {
         selectElement.disabled = true;
         selectElement.classList.add('bg-gray-100');
     }
-    
+
     // Sync ke versi mobile/desktop
     const baseId = selectElement.id.replace('_mobile', '');
     syncStatusFields(baseId);
@@ -1483,7 +1483,7 @@ function setStatus(selectElement, isValid) {
 function syncStatusFields(baseId) {
     const desktopEl = document.getElementById(baseId);
     const mobileEl = document.getElementById(baseId + '_mobile');
-    
+
     if (desktopEl && mobileEl) {
         mobileEl.value = desktopEl.value;
         mobileEl.disabled = desktopEl.disabled;
@@ -1506,35 +1506,25 @@ function validateDcInputVoltage() {
 
 function validateDcCurrentInput() {
     const input = document.getElementById('dc_current_input');
-    const typeSelect = document.getElementById('dc_current_type');
     const statusSelect = document.getElementById('status_dc_current');
     const value = parseFloat(input?.value);
-    const type = typeSelect?.value;
     if (!statusSelect) return;
-    if (isNaN(value) || !type) { setStatus(statusSelect, null); return; }
-    let isValid = false;
-    if (type === '500') isValid = value <= 9;
-    else if (type === '1000') isValid = value <= 18;
-    setStatus(statusSelect, isValid);
+    if (isNaN(value)) { setStatus(statusSelect, null); }
+    else { setStatus(statusSelect, value <= 18); }
 }
 
 function validateAcCurrentOutput() {
     const input = document.getElementById('ac_current_output');
-    const typeSelect = document.getElementById('ac_current_type');
     const statusSelect = document.getElementById('status_ac_current');
     const value = parseFloat(input?.value);
-    const type = typeSelect?.value;
     if (!statusSelect) return;
-    if (isNaN(value) || !type) { setStatus(statusSelect, null); return; }
-    let isValid = false;
-    if (type === '500') isValid = value <= 2;
-    else if (type === '1000') isValid = value <= 4;
-    setStatus(statusSelect, isValid);
+    if (isNaN(value)) { setStatus(statusSelect, null); }
+    else { setStatus(statusSelect, value <= 4); }
 }
 
-function validateNeutralGround() {
-    const input = document.getElementById('neutral_ground_output_voltage');
-    const statusSelect = document.getElementById('status_neutral_ground');
+function validateAcOutput() {
+    const input = document.getElementById('ac_output_voltage');
+    const statusSelect = document.getElementById('status_ac_output');
     const value = parseFloat(input?.value);
     if (!statusSelect) return;
     if (isNaN(value)) { setStatus(statusSelect, null); }
@@ -1550,40 +1540,12 @@ function validateTemperature() {
     else { setStatus(statusSelect, value >= 0 && value <= 35); }
 }
 
-function saveDcCurrentType() {
-    const typeDesktop = document.getElementById('dc_current_type');
-    const typeMobile = document.getElementById('dc_current_type_mobile');
-    const type = typeDesktop?.value || typeMobile?.value;
-    
-    if (typeDesktop && typeMobile) {
-        typeDesktop.value = type;
-        typeMobile.value = type;
-    }
-    
-    const hiddenInput = document.getElementById('dc_current_inverter_type');
-    if (hiddenInput) hiddenInput.value = type;
-}
-
-function saveAcCurrentType() {
-    const typeDesktop = document.getElementById('ac_current_type');
-    const typeMobile = document.getElementById('ac_current_type_mobile');
-    const type = typeDesktop?.value || typeMobile?.value;
-    
-    if (typeDesktop && typeMobile) {
-        typeDesktop.value = type;
-        typeMobile.value = type;
-    }
-    
-    const hiddenInput = document.getElementById('ac_current_inverter_type');
-    if (hiddenInput) hiddenInput.value = type;
-}
-
 // ==================== INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', () => {
     validateDcInputVoltage();
     validateDcCurrentInput();
     validateAcCurrentOutput();
-    validateNeutralGround();
+    validateAcOutput();
     validateTemperature();
 });
 </script>
