@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('location')->nullable();
             $table->date('date')->nullable();
             $table->time('time')->nullable();
+            $table->enum('type', ['shelter', 'outdoor cabinet', 'pole outdoor cabinet'])->nullable();
             $table->string('brand_type')->nullable();
             $table->string('reg_number')->nullable();
             $table->string('serial_number')->nullable();
@@ -36,17 +37,26 @@ return new class extends Migration {
             $table->string('aspek_teknis_result')->nullable();
             $table->enum('aspek_teknis_status', ['OK', 'NOK'])->nullable();
 
+            // Room Temperature (3 fields)
+            $table->string('room_temp_1_result')->nullable();
+            $table->enum('room_temp_1_status', ['OK', 'NOK'])->nullable();
+            $table->string('room_temp_2_result')->nullable();
+            $table->enum('room_temp_2_status', ['OK', 'NOK'])->nullable();
+            $table->string('room_temp_3_result')->nullable();
+            $table->enum('room_temp_3_status', ['OK', 'NOK'])->nullable();
+
             // Notes
             $table->text('notes')->nullable();
 
             // Photos with metadata (stored as JSON)
-            $table->json('photos')->nullable(); // [{path, latitude, longitude, taken_at, location_name}]
+            $table->json('photos')->nullable();
 
             // Executors (stored as JSON)
-            $table->json('executors')->nullable(); // [{name, department, sub_department}]
+            $table->json('executors')->nullable();
 
-            // Approver
-            $table->json('approvers')->nullable(); // [{name,nik}]
+            // Approvers - DIPISAH MENJADI 2 KOLOM
+            $table->json('verifikator')->nullable(); // {name, nik}
+            $table->json('head_of_sub_dept')->nullable(); // {name, nik}
 
             $table->timestamps();
         });

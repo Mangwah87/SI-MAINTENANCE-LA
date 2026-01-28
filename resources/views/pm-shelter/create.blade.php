@@ -19,7 +19,6 @@
                                 Informasi Lokasi & Perangkat
                             </h3>
 
-
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                 <!-- Dropdown Lokasi Central -->
                                 <div class="sm:col-span-2">
@@ -70,10 +69,17 @@
 
                                 <!-- Brand/Type -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Brand / Type</label>
-                                    <input type="text" name="brand_type"
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        Brand / Type <span class="text-red-500">*</span>
+                                    </label>
+                                    <select name="brand_type"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
-                                        value="{{ old('brand_type') }}" placeholder="Masukkan brand/type">
+                                        required>
+                                        <option value="">-- Pilih Type --</option>
+                                        <option value="Shelter" {{ old('brand_type') == 'Shelter' ? 'selected' : '' }}>Shelter</option>
+                                        <option value="Outdoor Cabinet" {{ old('brand_type') == 'Outdoor Cabinet' ? 'selected' : '' }}>Outdoor Cabinet</option>
+                                        <option value="Pole Outdoor Cabinet" {{ old('brand_type') == 'Pole Outdoor Cabinet' ? 'selected' : '' }}>Pole Outdoor Cabinet</option>
+                                    </select>
                                     @error('brand_type')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
@@ -101,399 +107,585 @@
                                     @enderror
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Visual Check -->
-                            <div class="mb-6 sm:mb-8">
-                                <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
-                                    1. Visual Check
-                                </h3>
+                        <!-- Visual Check -->
+                        <div class="mb-6 sm:mb-8">
+                            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
+                                1. Visual Check
+                            </h3>
 
-                                <div class="space-y-3 sm:space-y-4">
-                                    <!-- Kondisi Ruangan -->
-                                    <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">a. Kondisi
-                                            Ruangan</label>
-                                        <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
-                                            <strong>Operational Standard:</strong> Bersih, tidak bocor, tidak kotor
-                                        </div>
-                                        <div class="space-y-3">
-                                            <div>
-                                                <input type="text" name="kondisi_ruangan_result"
-                                                    placeholder="Result / Hasil pemeriksaan"
-                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
-                                                    value="{{ old('kondisi_ruangan_result') }}">
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Status <span class="text-red-500">*</span>
-                                                </label>
-                                                <div class="flex flex-wrap gap-4">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="radio" name="kondisi_ruangan_status"
-                                                            value="OK"
-                                                            class="form-radio text-blue-600 focus:ring-blue-500"
-                                                            {{ old('kondisi_ruangan_status') == 'OK' ? 'checked' : '' }}
-                                                            required>
-                                                        <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
-                                                    </label>
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="radio" name="kondisi_ruangan_status"
-                                                            value="NOK"
-                                                            class="form-radio text-blue-600 focus:ring-blue-500"
-                                                            {{ old('kondisi_ruangan_status') == 'NOK' ? 'checked' : '' }}
-                                                            required>
-                                                        <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
-                                                    </label>
-                                                </div>
-                                                @error('kondisi_ruangan_status')
-                                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Foto (Opsional)
-                                                </label>
-                                                <div id="kondisi_ruangan_photos_container"></div>
-                                            </div>
-                                        </div>
+                            <div class="space-y-3 sm:space-y-4">
+                                <!-- Kondisi Ruangan -->
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">a. Kondisi
+                                        Ruangan</label>
+                                    <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                        <strong>Operational Standard:</strong> Bersih, tidak bocor, tidak kotor
                                     </div>
-
-                                    <!-- Kondisi Kunci -->
-                                    <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">b. Kondisi Kunci
-                                            Ruang/Shelter</label>
-                                        <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
-                                            <strong>Operational Standard:</strong> Kuat, Mudah dibuka
-                                        </div>
-                                        <div class="space-y-3">
-                                            <div>
-                                                <input type="text" name="kondisi_kunci_result"
-                                                    placeholder="Result / Hasil pemeriksaan"
-                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
-                                                    value="{{ old('kondisi_kunci_result') }}">
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Status <span class="text-red-500">*</span>
-                                                </label>
-                                                <div class="flex flex-wrap gap-4">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="radio" name="kondisi_kunci_status"
-                                                            value="OK"
-                                                            class="form-radio text-blue-600 focus:ring-blue-500"
-                                                            {{ old('kondisi_kunci_status') == 'OK' ? 'checked' : '' }}
-                                                            required>
-                                                        <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
-                                                    </label>
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="radio" name="kondisi_kunci_status"
-                                                            value="NOK"
-                                                            class="form-radio text-blue-600 focus:ring-blue-500"
-                                                            {{ old('kondisi_kunci_status') == 'NOK' ? 'checked' : '' }}
-                                                            required>
-                                                        <span
-                                                            class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
-                                                    </label>
-                                                </div>
-                                                @error('kondisi_kunci_status')
-                                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Foto (Opsional)
-                                                </label>
-                                                <div id="kondisi_kunci_photos_container"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Fasilitas Ruangan -->
-                            <div class="mb-6 sm:mb-8">
-                                <h3
-                                    class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
-                                    2. Fasilitas Ruangan
-                                </h3>
-
-                                <div class="space-y-3 sm:space-y-4">
-                                    <!-- Layout Tata Ruang -->
-                                    <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">a. Layout / Tata
-                                            Ruang</label>
-                                        <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
-                                            <strong>Operational Standard:</strong> Sesuai fungsi, kemudahan perawatan,
-                                            kenyamanan penggunaan, keindahan
-                                        </div>
-                                        <div class="space-y-3">
-                                            <div>
-                                                <input type="text" name="layout_tata_ruang_result"
-                                                    placeholder="Result / Hasil pemeriksaan"
-                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
-                                                    value="{{ old('layout_tata_ruang_result') }}">
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Status <span class="text-red-500">*</span>
-                                                </label>
-                                                <div class="flex flex-wrap gap-4">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="radio" name="layout_tata_ruang_status"
-                                                            value="OK"
-                                                            class="form-radio text-blue-600 focus:ring-blue-500"
-                                                            {{ old('layout_tata_ruang_status') == 'OK' ? 'checked' : '' }}
-                                                            required>
-                                                        <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
-                                                    </label>
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="radio" name="layout_tata_ruang_status"
-                                                            value="NOK"
-                                                            class="form-radio text-blue-600 focus:ring-blue-500"
-                                                            {{ old('layout_tata_ruang_status') == 'NOK' ? 'checked' : '' }}
-                                                            required>
-                                                        <span
-                                                            class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
-                                                    </label>
-                                                </div>
-                                                @error('layout_tata_ruang_status')
-                                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Foto (Opsional)
-                                                </label>
-                                                <div id="layout_tata_ruang_photos_container"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Kontrol Keamanan -->
-                                    <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">b. Kontrol
-                                            Keamanan</label>
-                                        <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
-                                            <strong>Operational Standard:</strong> Aman, dan Termonitor
-                                        </div>
-                                        <div class="space-y-3">
-                                            <div>
-                                                <input type="text" name="kontrol_keamanan_result"
-                                                    placeholder="Result / Hasil pemeriksaan"
-                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
-                                                    value="{{ old('kontrol_keamanan_result') }}">
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Status <span class="text-red-500">*</span>
-                                                </label>
-                                                <div class="flex flex-wrap gap-4">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="radio" name="kontrol_keamanan_status"
-                                                            value="OK"
-                                                            class="form-radio text-blue-600 focus:ring-blue-500"
-                                                            {{ old('kontrol_keamanan_status') == 'OK' ? 'checked' : '' }}
-                                                            required>
-                                                        <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
-                                                    </label>
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="radio" name="kontrol_keamanan_status"
-                                                            value="NOK"
-                                                            class="form-radio text-blue-600 focus:ring-blue-500"
-                                                            {{ old('kontrol_keamanan_status') == 'NOK' ? 'checked' : '' }}
-                                                            required>
-                                                        <span
-                                                            class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
-                                                    </label>
-                                                </div>
-                                                @error('kontrol_keamanan_status')
-                                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Foto (Opsional)
-                                                </label>
-                                                <div id="kontrol_keamanan_photos_container"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Aksesibilitas -->
-                                    <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">c.
-                                            Aksesibilitas</label>
-                                        <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
-                                            <strong>Operational Standard:</strong> Alur pergerakan orang mudah dan tidak
-                                            membahayakan, kemudahan akses ke perangkat
-                                        </div>
-                                        <div class="space-y-3">
-                                            <div>
-                                                <input type="text" name="aksesibilitas_result"
-                                                    placeholder="Result / Hasil pemeriksaan"
-                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
-                                                    value="{{ old('aksesibilitas_result') }}">
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Status <span class="text-red-500">*</span>
-                                                </label>
-                                                <div class="flex flex-wrap gap-4">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="radio" name="aksesibilitas_status"
-                                                            value="OK"
-                                                            class="form-radio text-blue-600 focus:ring-blue-500"
-                                                            {{ old('aksesibilitas_status') == 'OK' ? 'checked' : '' }}
-                                                            required>
-                                                        <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
-                                                    </label>
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="radio" name="aksesibilitas_status"
-                                                            value="NOK"
-                                                            class="form-radio text-blue-600 focus:ring-blue-500"
-                                                            {{ old('aksesibilitas_status') == 'NOK' ? 'checked' : '' }}
-                                                            required>
-                                                        <span
-                                                            class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
-                                                    </label>
-                                                </div>
-                                                @error('aksesibilitas_status')
-                                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Foto (Opsional)
-                                                </label>
-                                                <div id="aksesibilitas_photos_container"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Aspek Teknis -->
-                                    <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">d. Aspek
-                                            Teknis</label>
-                                        <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
-                                            <strong>Operational Standard:</strong> Tersedia power, penangkal petir,
-                                            grounding, pencahayaan, AC, Fire Protection, dan Termonitor
-                                        </div>
-                                        <div class="space-y-3">
-                                            <div>
-                                                <input type="text" name="aspek_teknis_result"
-                                                    placeholder="Result / Hasil pemeriksaan"
-                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
-                                                    value="{{ old('aspek_teknis_result') }}">
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Status <span class="text-red-500">*</span>
-                                                </label>
-                                                <div class="flex flex-wrap gap-4">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="radio" name="aspek_teknis_status"
-                                                            value="OK"
-                                                            class="form-radio text-blue-600 focus:ring-blue-500"
-                                                            {{ old('aspek_teknis_status') == 'OK' ? 'checked' : '' }}
-                                                            required>
-                                                        <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
-                                                    </label>
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="radio" name="aspek_teknis_status"
-                                                            value="NOK"
-                                                            class="form-radio text-blue-600 focus:ring-blue-500"
-                                                            {{ old('aspek_teknis_status') == 'NOK' ? 'checked' : '' }}
-                                                            required>
-                                                        <span
-                                                            class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
-                                                    </label>
-                                                </div>
-                                                @error('aspek_teknis_status')
-                                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Foto (Opsional)
-                                                </label>
-                                                <div id="aspek_teknis_photos_container"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Notes -->
-                            <div class="mb-6 sm:mb-8">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Catatan / Additional
-                                    Informations</label>
-                                <textarea name="notes" rows="3"
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
-                                    placeholder="Tambahkan catatan atau informasi tambahan di sini...">{{ old('notes') }}</textarea>
-                            </div>
-
-                            <!-- Executors -->
-                            <div class="mb-6 sm:mb-8">
-                                <h3
-                                    class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
-                                    Pelaksana</h3>
-                                <div id="executors-container">
-                                    <div class="mb-4">
-                                        <button type="button" onclick="addExecutorField()"
-                                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm sm:text-base w-full sm:w-auto">
-                                            <i data-lucide="user-plus" class="w-4 h-4 inline mr-1"></i> Tambah
-                                            Pelaksana
-                                        </button>
-                                    </div>
-                                    <div id="executor-fields" class="space-y-3"></div>
-                                </div>
-                            </div>
-
-                            <!-- Approver -->
-                            <div class="mb-6 sm:mb-8">
-                                <h3
-                                    class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
-                                    Mengetahui</h3>
-                                <div class="border rounded-lg p-4 bg-gray-50">
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="space-y-3">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                                Nama <span class="text-red-500">*</span>
+                                            <input type="text" name="kondisi_ruangan_result"
+                                                placeholder="Result / Hasil pemeriksaan"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
+                                                value="{{ old('kondisi_ruangan_result') }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Status <span class="text-red-500">*</span>
                                             </label>
-                                            <input type="text" name="approvers[0][name]"
-                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
-                                                value="{{ old('approvers.0.name') }}"
-                                                placeholder="Nama yang mengetahui" required>
-                                            @error('approvers.0.name')
+                                            <div class="flex flex-wrap gap-4">
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="kondisi_ruangan_status"
+                                                        value="OK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('kondisi_ruangan_status') == 'OK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
+                                                </label>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="kondisi_ruangan_status"
+                                                        value="NOK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('kondisi_ruangan_status') == 'NOK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
+                                                </label>
+                                            </div>
+                                            @error('kondisi_ruangan_status')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">ID</label>
-                                            <input type="text" name="approvers[0][nik]"
-                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
-                                                value="{{ old('approvers.0.nik') }}" placeholder="ID Approval">
-                                            @error('approvers.0.nik')
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Foto (Opsional)
+                                            </label>
+                                            <div id="kondisi_ruangan_photos_container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Kondisi Kunci -->
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">b. Kondisi Kunci
+                                        Ruang/Shelter</label>
+                                    <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                        <strong>Operational Standard:</strong> Kuat, Mudah dibuka
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="text" name="kondisi_kunci_result"
+                                                placeholder="Result / Hasil pemeriksaan"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
+                                                value="{{ old('kondisi_kunci_result') }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Status <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="flex flex-wrap gap-4">
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="kondisi_kunci_status"
+                                                        value="OK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('kondisi_kunci_status') == 'OK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
+                                                </label>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="kondisi_kunci_status"
+                                                        value="NOK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('kondisi_kunci_status') == 'NOK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span
+                                                        class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
+                                                </label>
+                                            </div>
+                                            @error('kondisi_kunci_status')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Foto (Opsional)
+                                            </label>
+                                            <div id="kondisi_kunci_photos_container"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Submit -->
-                            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
-                                <button type="submit"
-                                    class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <i data-lucide="save" class="w-4 h-4 mr-2"></i>
-                                    Simpan
-                                </button>
-                                <a href="{{ route('pm-shelter.index') }}"
-                                    class="inline-flex items-center justify-center px-6 py-3 bg-gray-300 border border-transparent rounded-md font-semibold text-sm text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:outline-none focus:border-gray-400 focus:ring ring-gray-200 transition ease-in-out duration-150">
-                                    <i data-lucide="x" class="w-4 h-4 mr-2"></i>
-                                    Batal
-                                </a>
+                        <!-- Fasilitas Ruangan -->
+                        <div class="mb-6 sm:mb-8">
+                            <h3
+                                class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
+                                2. Fasilitas Ruangan
+                            </h3>
+
+                            <div class="space-y-3 sm:space-y-4">
+                                <!-- Layout Tata Ruang -->
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">a. Layout / Tata
+                                        Ruang</label>
+                                    <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                        <strong>Operational Standard:</strong> Sesuai fungsi, kemudahan perawatan,
+                                        kenyamanan penggunaan, keindahan
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="text" name="layout_tata_ruang_result"
+                                                placeholder="Result / Hasil pemeriksaan"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
+                                                value="{{ old('layout_tata_ruang_result') }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Status <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="flex flex-wrap gap-4">
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="layout_tata_ruang_status"
+                                                        value="OK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('layout_tata_ruang_status') == 'OK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
+                                                </label>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="layout_tata_ruang_status"
+                                                        value="NOK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('layout_tata_ruang_status') == 'NOK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span
+                                                        class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
+                                                </label>
+                                            </div>
+                                            @error('layout_tata_ruang_status')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Foto (Opsional)
+                                            </label>
+                                            <div id="layout_tata_ruang_photos_container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Kontrol Keamanan -->
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">b. Kontrol
+                                        Keamanan</label>
+                                    <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                        <strong>Operational Standard:</strong> Aman, dan Termonitor
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="text" name="kontrol_keamanan_result"
+                                                placeholder="Result / Hasil pemeriksaan"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
+                                                value="{{ old('kontrol_keamanan_result') }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Status <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="flex flex-wrap gap-4">
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="kontrol_keamanan_status"
+                                                        value="OK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('kontrol_keamanan_status') == 'OK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
+                                                </label>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="kontrol_keamanan_status"
+                                                        value="NOK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('kontrol_keamanan_status') == 'NOK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span
+                                                        class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
+                                                </label>
+                                            </div>
+                                            @error('kontrol_keamanan_status')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Foto (Opsional)
+                                            </label>
+                                            <div id="kontrol_keamanan_photos_container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Aksesibilitas -->
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">c.
+                                        Aksesibilitas</label>
+                                    <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                        <strong>Operational Standard:</strong> Alur pergerakan orang mudah dan tidak
+                                        membahayakan, kemudahan akses ke perangkat
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="text" name="aksesibilitas_result"
+                                                placeholder="Result / Hasil pemeriksaan"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
+                                                value="{{ old('aksesibilitas_result') }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Status <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="flex flex-wrap gap-4">
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="aksesibilitas_status"
+                                                        value="OK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('aksesibilitas_status') == 'OK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
+                                                </label>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="aksesibilitas_status"
+                                                        value="NOK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('aksesibilitas_status') == 'NOK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span
+                                                        class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
+                                                </label>
+                                            </div>
+                                            @error('aksesibilitas_status')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Foto (Opsional)
+                                            </label>
+                                            <div id="aksesibilitas_photos_container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Aspek Teknis -->
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">d. Aspek
+                                        Teknis</label>
+                                    <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                        <strong>Operational Standard:</strong> Tersedia power, penangkal petir,
+                                        grounding, pencahayaan, AC, Fire Protection, dan Termonitor
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="text" name="aspek_teknis_result"
+                                                placeholder="Result / Hasil pemeriksaan"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
+                                                value="{{ old('aspek_teknis_result') }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Status <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="flex flex-wrap gap-4">
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="aspek_teknis_status"
+                                                        value="OK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('aspek_teknis_status') == 'OK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
+                                                </label>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="aspek_teknis_status"
+                                                        value="NOK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('aspek_teknis_status') == 'NOK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span
+                                                        class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
+                                                </label>
+                                            </div>
+                                            @error('aspek_teknis_status')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Foto (Opsional)
+                                            </label>
+                                            <div id="aspek_teknis_photos_container"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+
+                        <!-- Room Temperature Section -->
+                        <div class="mb-6 sm:mb-8">
+                            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
+                                3. Suhu Ruangan
+                            </h3>
+
+                            <div class="space-y-3 sm:space-y-4">
+                                <!-- Room Temperature 1 -->
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">a. Pengukuran Suhu 1</label>
+                                    <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                        <strong>Operational Standard:</strong> 18°C - 27°C
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="text" name="room_temp_1_result"
+                                                placeholder="Result / Hasil pengukuran (contoh: 25°C)"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
+                                                value="{{ old('room_temp_1_result') }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Status <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="flex flex-wrap gap-4">
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="room_temp_1_status"
+                                                        value="OK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('room_temp_1_status') == 'OK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
+                                                </label>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="room_temp_1_status"
+                                                        value="NOK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('room_temp_1_status') == 'NOK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
+                                                </label>
+                                            </div>
+                                            @error('room_temp_1_status')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Foto (Opsional)
+                                            </label>
+                                            <div id="room_temp_1_photos_container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Room Temperature 2 -->
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">b. Pengukuran Suhu 2</label>
+                                    <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                        <strong>Operational Standard:</strong> 18°C - 27°C
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="text" name="room_temp_2_result"
+                                                placeholder="Result / Hasil pengukuran (contoh: 24°C)"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
+                                                value="{{ old('room_temp_2_result') }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Status <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="flex flex-wrap gap-4">
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="room_temp_2_status"
+                                                        value="OK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('room_temp_2_status') == 'OK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
+                                                </label>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="room_temp_2_status"
+                                                        value="NOK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('room_temp_2_status') == 'NOK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
+                                                </label>
+                                            </div>
+                                            @error('room_temp_2_status')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Foto (Opsional)
+                                            </label>
+                                            <div id="room_temp_2_photos_container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Room Temperature 3 -->
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">c. Pengukuran Suhu 3</label>
+                                    <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                        <strong>Operational Standard:</strong> 18°C - 27°C
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="text" name="room_temp_3_result"
+                                                placeholder="Result / Hasil pengukuran (contoh: 26°C)"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
+                                                value="{{ old('room_temp_3_result') }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Status <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="flex flex-wrap gap-4">
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="room_temp_3_status"
+                                                        value="OK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('room_temp_3_status') == 'OK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
+                                                </label>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="room_temp_3_status"
+                                                        value="NOK"
+                                                        class="form-radio text-blue-600 focus:ring-blue-500"
+                                                        {{ old('room_temp_3_status') == 'NOK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
+                                                </label>
+                                            </div>
+                                            @error('room_temp_3_status')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Foto (Opsional)
+                                            </label>
+                                            <div id="room_temp_3_photos_container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-6 sm:mb-8">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Catatan / Additional
+                                Informations</label>
+                            <textarea name="notes" rows="3"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                                placeholder="Tambahkan catatan atau informasi tambahan di sini...">{{ old('notes') }}</textarea>
+                        </div>
+
+                        <!-- Executors -->
+                        <div class="mb-6 sm:mb-8">
+                            <h3
+                                class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
+                                Pelaksana</h3>
+                            <div id="executors-container">
+                                <div class="mb-4">
+                                    <button type="button" onclick="addExecutorField()"
+                                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm sm:text-base w-full sm:w-auto">
+                                        <i data-lucide="user-plus" class="w-4 h-4 inline mr-1"></i> Tambah
+                                        Pelaksana
+                                    </button>
+                                </div>
+                                <div id="executor-fields" class="space-y-3"></div>
+                            </div>
+                        </div>
+
+                        <!-- Verifikator -->
+                        <div class="mb-6 sm:mb-8">
+                            <h3
+                                class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
+                                Verifikator</h3>
+                            <div class="border rounded-lg p-4 bg-gray-50">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                                            Nama <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" name="verifikator[name]"
+                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                                            value="{{ old('verifikator.name') }}"
+                                            placeholder="Nama verifikator" required>
+                                        @error('verifikator.name')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">NIK</label>
+                                        <input type="text" name="verifikator[nik]"
+                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                                            value="{{ old('verifikator.nik') }}" placeholder="NIK verifikator">
+                                        @error('verifikator.nik')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Head of Sub Dept -->
+                        <div class="mb-6 sm:mb-8">
+                            <h3
+                                class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
+                                Head of Sub Dept</h3>
+                            <div class="border rounded-lg p-4 bg-gray-50">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                                            Nama <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" name="head_of_sub_dept[name]"
+                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                                            value="{{ old('head_of_sub_dept.name') }}"
+                                            placeholder="Nama Head of Sub Dept" required>
+                                        @error('head_of_sub_dept.name')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">NIK</label>
+                                        <input type="text" name="head_of_sub_dept[nik]"
+                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                                            value="{{ old('head_of_sub_dept.nik') }}" placeholder="NIK Head of Sub Dept">
+                                        @error('head_of_sub_dept.nik')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
+                            <button type="submit"
+                                class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                <i data-lucide="save" class="w-4 h-4 mr-2"></i>
+                                Simpan
+                            </button>
+                            <a href="{{ route('pm-shelter.index') }}"
+                                class="inline-flex items-center justify-center px-6 py-3 bg-gray-300 border border-transparent rounded-md font-semibold text-sm text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:outline-none focus:border-gray-400 focus:ring ring-gray-200 transition ease-in-out duration-150">
+                                <i data-lucide="x" class="w-4 h-4 mr-2"></i>
+                                Batal
+                            </a>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -527,16 +719,10 @@
                                placeholder="Nama pelaksana" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
-                        <input type="text" name="executors[${executorIndex}][department]"
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mitra</label>
+                        <input type="text" name="executors[${executorIndex}][mitra]"
                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
-                               placeholder="Nama departemen">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Sub Departemen</label>
-                        <input type="text" name="executors[${executorIndex}][sub_department]"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
-                               placeholder="Nama sub departemen">
+                               placeholder="Nama mitra">
                     </div>
                 </div>
             `;
@@ -559,15 +745,15 @@
             addExecutorField();
 
             // Initialize photo managers untuk setiap field
-            photoManagers['kondisi_ruangan_photos'] = new PhotoManager('kondisi_ruangan_photos_container',
-                'kondisi_ruangan_photos');
+            photoManagers['kondisi_ruangan_photos'] = new PhotoManager('kondisi_ruangan_photos_container', 'kondisi_ruangan_photos');
             photoManagers['kondisi_kunci_photos'] = new PhotoManager('kondisi_kunci_photos_container', 'kondisi_kunci_photos');
-            photoManagers['layout_tata_ruang_photos'] = new PhotoManager('layout_tata_ruang_photos_container',
-                'layout_tata_ruang_photos');
-            photoManagers['kontrol_keamanan_photos'] = new PhotoManager('kontrol_keamanan_photos_container',
-                'kontrol_keamanan_photos');
+            photoManagers['layout_tata_ruang_photos'] = new PhotoManager('layout_tata_ruang_photos_container', 'layout_tata_ruang_photos');
+            photoManagers['kontrol_keamanan_photos'] = new PhotoManager('kontrol_keamanan_photos_container', 'kontrol_keamanan_photos');
             photoManagers['aksesibilitas_photos'] = new PhotoManager('aksesibilitas_photos_container', 'aksesibilitas_photos');
             photoManagers['aspek_teknis_photos'] = new PhotoManager('aspek_teknis_photos_container', 'aspek_teknis_photos');
+            photoManagers['room_temp_1_photos'] = new PhotoManager('room_temp_1_photos_container', 'room_temp_1_photos');
+            photoManagers['room_temp_2_photos'] = new PhotoManager('room_temp_2_photos_container', 'room_temp_2_photos');
+            photoManagers['room_temp_3_photos'] = new PhotoManager('room_temp_3_photos_container', 'room_temp_3_photos');
 
             // Initialize auto-save
             initAutoSave();

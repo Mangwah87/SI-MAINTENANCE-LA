@@ -62,7 +62,7 @@ class PmShelterController extends Controller
                 'central_id' => 'required|exists:central,id',
                 'date' => 'required|date',
                 'time' => 'required',
-                'brand_type' => 'nullable|string|max:255',
+                'brand_type' => 'required|in:Shelter,Outdoor Cabinet,Pole Outdoor Cabinet',
                 'reg_number' => 'nullable|string|max:255',
                 'serial_number' => 'nullable|string|max:255',
                 'kondisi_ruangan_result' => 'nullable|string',
@@ -77,33 +77,48 @@ class PmShelterController extends Controller
                 'aksesibilitas_status' => 'required|in:OK,NOK',
                 'aspek_teknis_result' => 'nullable|string',
                 'aspek_teknis_status' => 'required|in:OK,NOK',
+                'room_temp_1_result' => 'nullable|string',
+                'room_temp_1_status' => 'required|in:OK,NOK',
+                'room_temp_2_result' => 'nullable|string',
+                'room_temp_2_status' => 'required|in:OK,NOK',
+                'room_temp_3_result' => 'nullable|string',
+                'room_temp_3_status' => 'required|in:OK,NOK',
                 'kondisi_ruangan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
                 'kondisi_kunci_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
                 'layout_tata_ruang_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
                 'kontrol_keamanan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
                 'aksesibilitas_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
                 'aspek_teknis_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
+                'room_temp_1_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
+                'room_temp_2_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
+                'room_temp_3_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:3000',
                 'kondisi_ruangan_photo_metadata.*' => 'nullable|string',
                 'kondisi_kunci_photo_metadata.*' => 'nullable|string',
                 'layout_tata_ruang_photo_metadata.*' => 'nullable|string',
                 'kontrol_keamanan_photo_metadata.*' => 'nullable|string',
                 'aksesibilitas_photo_metadata.*' => 'nullable|string',
                 'aspek_teknis_photo_metadata.*' => 'nullable|string',
+                'room_temp_1_photo_metadata.*' => 'nullable|string',
+                'room_temp_2_photo_metadata.*' => 'nullable|string',
+                'room_temp_3_photo_metadata.*' => 'nullable|string',
                 'notes' => 'nullable|string',
                 'executors.*.name' => 'required|string|max:255',
-                'executors.*.department' => 'nullable|string|max:255',
-                'executors.*.sub_department' => 'nullable|string|max:255',
-                'approvers.*.name' => 'required|string|max:255',
-                'approvers.*.nik' => 'nullable|string|max:255',
+                'executors.*.mitra' => 'nullable|string|max:255',
+                'executors.*.signature' => 'nullable|string|max:255',
+                'verifikator.name' => 'required|string|max:255',
+                'verifikator.nik' => 'nullable|string|max:255',
+                'head_of_sub_dept.name' => 'required|string|max:255',
+                'head_of_sub_dept.nik' => 'nullable|string|max:255',
             ], [
                 'central_id.required' => 'Lokasi sentral wajib dipilih.',
                 'central_id.exists' => 'Lokasi sentral tidak valid.',
+                'brand_type.required' => 'Type wajib dipilih.',
+                'brand_type.in' => 'Type tidak valid.',
             ]);
 
             $validated['user_id'] = auth()->id();
 
-
-
+            // Process executors
             $executors = [];
             if ($request->has('executors')) {
                 foreach ($request->executors as $executor) {
@@ -114,16 +129,13 @@ class PmShelterController extends Controller
             }
             $validated['executors'] = $executors;
 
-            $approvers = [];
-            if ($request->has('approvers')) {
-                foreach ($request->approvers as $approver) {
-                    if (!empty($approver['name'])) {
-                        $approvers[] = $approver;
-                    }
-                }
-            }
-            $validated['approvers'] = $approvers;
+            // Process verifikator
+            $validated['verifikator'] = $request->verifikator;
 
+            // Process head_of_sub_dept
+            $validated['head_of_sub_dept'] = $request->head_of_sub_dept;
+
+            // Process photos
             $validated['photos'] = $this->processAllPhotos($request);
 
             $pmShelter = PmShelter::create($validated);
@@ -150,7 +162,7 @@ class PmShelterController extends Controller
                 'central_id' => 'required|exists:central,id',
                 'date' => 'required|date',
                 'time' => 'required',
-                'brand_type' => 'nullable|string|max:255',
+                'brand_type' => 'required|in:Shelter,Outdoor Cabinet,Pole Outdoor Cabinet',
                 'reg_number' => 'nullable|string|max:255',
                 'serial_number' => 'nullable|string|max:255',
                 'kondisi_ruangan_result' => 'nullable|string',
@@ -165,37 +177,55 @@ class PmShelterController extends Controller
                 'aksesibilitas_status' => 'required|in:OK,NOK',
                 'aspek_teknis_result' => 'nullable|string',
                 'aspek_teknis_status' => 'required|in:OK,NOK',
+                'room_temp_1_result' => 'nullable|string',
+                'room_temp_1_status' => 'required|in:OK,NOK',
+                'room_temp_2_result' => 'nullable|string',
+                'room_temp_2_status' => 'required|in:OK,NOK',
+                'room_temp_3_result' => 'nullable|string',
+                'room_temp_3_status' => 'required|in:OK,NOK',
                 'kondisi_ruangan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
                 'kondisi_kunci_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
                 'layout_tata_ruang_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
                 'kontrol_keamanan_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
                 'aksesibilitas_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
                 'aspek_teknis_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'room_temp_1_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'room_temp_2_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'room_temp_3_photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
                 'kondisi_ruangan_photo_metadata.*' => 'nullable|string',
                 'kondisi_kunci_photo_metadata.*' => 'nullable|string',
                 'layout_tata_ruang_photo_metadata.*' => 'nullable|string',
                 'kontrol_keamanan_photo_metadata.*' => 'nullable|string',
                 'aksesibilitas_photo_metadata.*' => 'nullable|string',
                 'aspek_teknis_photo_metadata.*' => 'nullable|string',
+                'room_temp_1_photo_metadata.*' => 'nullable|string',
+                'room_temp_2_photo_metadata.*' => 'nullable|string',
+                'room_temp_3_photo_metadata.*' => 'nullable|string',
                 'removed_kondisi_ruangan_photos.*' => 'nullable|string',
                 'removed_kondisi_kunci_photos.*' => 'nullable|string',
                 'removed_layout_tata_ruang_photos.*' => 'nullable|string',
                 'removed_kontrol_keamanan_photos.*' => 'nullable|string',
                 'removed_aksesibilitas_photos.*' => 'nullable|string',
                 'removed_aspek_teknis_photos.*' => 'nullable|string',
+                'removed_room_temp_1_photos.*' => 'nullable|string',
+                'removed_room_temp_2_photos.*' => 'nullable|string',
+                'removed_room_temp_3_photos.*' => 'nullable|string',
                 'notes' => 'nullable|string',
                 'executors.*.name' => 'required|string|max:255',
-                'executors.*.department' => 'nullable|string|max:255',
-                'executors.*.sub_department' => 'nullable|string|max:255',
-                'approvers.*.name' => 'required|string|max:255',
-                'approvers.*.nik' => 'nullable|string|max:255',
+                'executors.*.mitra' => 'nullable|string|max:255',
+                'executors.*.signature' => 'nullable|string|max:255',
+                'verifikator.name' => 'required|string|max:255',
+                'verifikator.nik' => 'nullable|string|max:255',
+                'head_of_sub_dept.name' => 'required|string|max:255',
+                'head_of_sub_dept.nik' => 'nullable|string|max:255',
             ], [
                 'central_id.required' => 'Lokasi sentral wajib dipilih.',
                 'central_id.exists' => 'Lokasi sentral tidak valid.',
+                'brand_type.required' => 'Type wajib dipilih.',
+                'brand_type.in' => 'Type tidak valid.',
             ]);
 
-
-
+            // Process executors
             $executors = [];
             if ($request->has('executors')) {
                 foreach ($request->executors as $executor) {
@@ -206,16 +236,13 @@ class PmShelterController extends Controller
             }
             $validated['executors'] = $executors;
 
-            $approvers = [];
-            if ($request->has('approvers')) {
-                foreach ($request->approvers as $approver) {
-                    if (!empty($approver['name'])) {
-                        $approvers[] = $approver;
-                    }
-                }
-            }
-            $validated['approvers'] = $approvers;
+            // Process verifikator
+            $validated['verifikator'] = $request->verifikator;
 
+            // Process head_of_sub_dept
+            $validated['head_of_sub_dept'] = $request->head_of_sub_dept;
+
+            // Handle existing photos
             $existingPhotos = $pmShelter->photos ?? [];
             $removedPaths = $this->getRemovedPhotoPaths($request);
 
@@ -288,7 +315,6 @@ class PmShelterController extends Controller
         return $pdf->stream($fileName);
     }
 
-
     private function processAllPhotos(Request $request): array
     {
         $allPhotos = [];
@@ -299,7 +325,10 @@ class PmShelterController extends Controller
             'layout_tata_ruang_photos',
             'kontrol_keamanan_photos',
             'aksesibilitas_photos',
-            'aspek_teknis_photos'
+            'aspek_teknis_photos',
+            'room_temp_1_photos',
+            'room_temp_2_photos',
+            'room_temp_3_photos'
         ];
 
         foreach ($photoFields as $fieldName) {
@@ -342,7 +371,10 @@ class PmShelterController extends Controller
             'removed_layout_tata_ruang_photos',
             'removed_kontrol_keamanan_photos',
             'removed_aksesibilitas_photos',
-            'removed_aspek_teknis_photos'
+            'removed_aspek_teknis_photos',
+            'removed_room_temp_1_photos',
+            'removed_room_temp_2_photos',
+            'removed_room_temp_3_photos'
         ];
 
         foreach ($removedFields as $field) {
