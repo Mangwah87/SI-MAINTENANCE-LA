@@ -217,6 +217,14 @@ document.addEventListener('DOMContentLoaded', () => {
             currentStream = await navigator.mediaDevices.getUserMedia(constraints);
             video.srcObject = currentStream;
             currentFacingMode = facingMode;
+
+            // Mirror video preview only for front camera
+            if (facingMode === 'user') {
+                video.style.transform = 'scaleX(-1)';
+            } else {
+                video.style.transform = 'none';
+            }
+
             video.onloadedmetadata = () => video.play();
         } catch (err) {
             console.error('Error accessing camera:', err);

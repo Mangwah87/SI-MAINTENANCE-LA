@@ -172,35 +172,55 @@
                     </div>
                 @endif
 
-                {{-- Personnel (Tidak Berubah) --}}
+                {{-- Personnel --}}
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">4. Pelaksana & Approver</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="border p-3 rounded-lg bg-gray-50">
-                            <p class="text-sm text-gray-600">Pelaksana 1</p>
-                            <p class="font-semibold mt-1">{{ $maintenance->technician_1_name }}</p>
-                            <p class="text-xs text-gray-500 mt-2">{{ $maintenance->technician_1_department ?? '-' }}</p>
-                        </div>
-                        <div class="border p-3 rounded-lg bg-gray-50">
-                            <p class="text-sm text-gray-600">Pelaksana 2</p>
-                            <p class="font-semibold mt-1">{{ $maintenance->technician_2_name ?? '-' }}</p>
-                            <p class="text-xs text-gray-500 mt-2">{{ $maintenance->technician_2_department ?? '-' }}</p>
-                        </div>
-                        <div class="border p-3 rounded-lg bg-gray-50">
-                            <p class="text-sm text-gray-600">Pelaksana 3</p>
-                            <p class="font-semibold mt-1">{{ $maintenance->technician_3_name ?? '-' }}</p>
-                            <p class="text-xs text-gray-500 mt-2">{{ $maintenance->technician_3_department ?? '-' }}</p>
-                        </div>
-                        <div class="border p-3 rounded-lg bg-gray-50 md:col-start-3">
-                            <p class="text-sm text-gray-600">Mengetahui (Approver)</p>
-                            <p class="font-semibold mt-1">{{ $maintenance->approver_name ?? '-' }}</p>
-                            {{-- [BARU] Tampilkan NIK --}}
-                            <p class="text-xs text-gray-500 mt-2">
-                                {{ $maintenance->approver_department ?? '-' }}
-                                @if($maintenance->approver_nik)
-                                    (NIK: {{ $maintenance->approver_nik }})
+                    <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">4. Pelaksana & Mengetahui</h3>
+
+                    <!-- Executor Section -->
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-md mb-2">Pelaksana (Executor)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @for($i = 1; $i <= 4; $i++)
+                                @if($maintenance->{'executor_'.$i})
+                                    <div class="border p-3 rounded-lg bg-gray-50">
+                                        <p class="text-sm text-gray-600">Pelaksana {{ $i }}</p>
+                                        <p class="font-semibold mt-1">{{ $maintenance->{'executor_'.$i} }}</p>
+                                        @if($maintenance->{'mitra_internal_'.$i})
+                                            <p class="text-xs text-gray-500 mt-2">
+                                                <span class="px-2 py-1 rounded {{ $maintenance->{'mitra_internal_'.$i} == 'Internal' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
+                                                    {{ $maintenance->{'mitra_internal_'.$i} }}
+                                                </span>
+                                            </p>
+                                        @endif
+                                    </div>
                                 @endif
-                            </p>
+                            @endfor
+                        </div>
+                    </div>
+
+                    <!-- Verifikator & Head of Sub Department -->
+                    <div>
+                        <h4 class="font-semibold text-md mb-2">Mengetahui</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @if($maintenance->verifikator)
+                                <div class="border p-3 rounded-lg bg-gray-50">
+                                    <p class="text-sm text-gray-600">Verifikator</p>
+                                    <p class="font-semibold mt-1">{{ $maintenance->verifikator }}</p>
+                                    @if($maintenance->verifikator_nik)
+                                        <p class="text-xs text-gray-500 mt-2">NIK: {{ $maintenance->verifikator_nik }}</p>
+                                    @endif
+                                </div>
+                            @endif
+
+                            @if($maintenance->head_of_sub_department)
+                                <div class="border p-3 rounded-lg bg-gray-50">
+                                    <p class="text-sm text-gray-600">Head of Sub Department</p>
+                                    <p class="font-semibold mt-1">{{ $maintenance->head_of_sub_department }}</p>
+                                    @if($maintenance->head_of_sub_department_nik)
+                                        <p class="text-xs text-gray-500 mt-2">NIK: {{ $maintenance->head_of_sub_department_nik }}</p>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -55,7 +55,7 @@
                                             </span>
                                         </div>
                                         <h3 class="font-semibold text-gray-900 mb-1">
-                                            <i data-lucide="map-pin" class="w-4 h-4 inline text-red-500"></i> {{-- --}}
+                                            <i data-lucide="map-pin" class="w-4 h-4 inline text-red-500"></i>
                                             {{ $maintenance->location ?? '-' }}
                                         </h3>
                                         <p class="text-sm text-gray-600 flex items-center">

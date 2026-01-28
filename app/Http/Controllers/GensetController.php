@@ -13,6 +13,15 @@ use Illuminate\Support\Arr;
 
 class GensetController extends Controller
 {
+    // --- TAMBAHKAN BAGIAN INI ---
+    public function __construct()
+    {
+        // Naikkan limit memori ke 512MB (atau -1 untuk unlimited jika perlu)
+        ini_set('memory_limit', '512M');
+
+        // Naikkan waktu eksekusi agar tidak timeout saat memproses gambar/PDF
+        ini_set('max_execution_time', 300); // 300 detik = 5 menit
+    }
     public function index()
     {
         $maintenances = GensetMaintenance::with('user')
@@ -20,7 +29,7 @@ class GensetController extends Controller
             ->latest('maintenance_date')
             ->paginate(10);
 
-       
+
 
         return view('genset.index', compact('maintenances'));
     }
@@ -35,7 +44,6 @@ class GensetController extends Controller
 
         // Group by area untuk tampilan yang lebih rapi
         $centralsByArea = $centrals->groupBy('area');
-
         return view('genset.create', compact('centralsByArea'));
     }
 
@@ -79,7 +87,9 @@ class GensetController extends Controller
             $location = strtoupper(substr(str_replace(' ', '', $validatedData['location']), 0, 5));
             $validatedData['doc_number'] = sprintf(
                 'FM-LAP/%s/%s/%s/%s',
-                $location, 'GENSET', $date->format('Y'),
+                $location,
+                'GENSET',
+                $date->format('Y'),
                 GensetMaintenance::whereYear('maintenance_date', $date->year)->count() + 1
             );
 
@@ -101,17 +111,18 @@ class GensetController extends Controller
     {
         try {
             $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
+                ->findOrFail($id);
             $validatedData = $this->validateRequest($request);
 
             // 1. Ambil gambar yang ada di DB
             $existingImages = $maintenance->images ?? [];
-            if (!is_array($existingImages)) $existingImages = [];
+            if (!is_array($existingImages))
+                $existingImages = [];
 
             // 2. Hapus gambar yang ditandai untuk dihapus
             $imagesToDelete = $request->input('delete_images', []);
             if (!empty($imagesToDelete) && is_array($imagesToDelete)) {
-                $existingImages = array_filter($existingImages, function($img) use ($imagesToDelete) {
+                $existingImages = array_filter($existingImages, function ($img) use ($imagesToDelete) {
                     if (isset($img['path']) && in_array($img['path'], $imagesToDelete)) {
                         if (Storage::disk('public')->exists($img['path'])) {
                             Storage::disk('public')->delete($img['path']);
@@ -187,7 +198,7 @@ class GensetController extends Controller
     {
         try {
             $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
+                ->findOrFail($id);
 
             // Hapus semua gambar terkait dari storage
             if ($maintenance->images && is_array($maintenance->images)) {
@@ -211,14 +222,14 @@ class GensetController extends Controller
     public function show($id)
     {
         $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
+            ->findOrFail($id);
         return view('genset.show', compact('maintenance'));
     }
 
     public function edit($id)
     {
         $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
+            ->findOrFail($id);
 
         // Ambil data central untuk dropdown
         $centrals = DB::table('central')
@@ -233,14 +244,69 @@ class GensetController extends Controller
 
     public function pdf($id)
     {
-        $maintenance = GensetMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
-        $pdf = PDF::loadView('genset.pdf_template', compact('maintenance'));
-        $pdf->setPaper('letter', 'portrait');
+        try {
+            $maintenance = GensetMaintenance::findOrFail($id);
 
-        $safeDocNumber = str_replace('/', '-', $maintenance->doc_number);
-        $fileName = 'genset-maintenance-' . $safeDocNumber . '.pdf';
-        return $pdf->stream($fileName);
+            // Increase memory limit for PDF generation with images
+            ini_set('memory_limit', '768M');
+            ini_set('max_execution_time', '300');
+
+            // Force garbage collection
+            gc_collect_cycles();
+
+            // Limit images to prevent memory exhaustion (max 15 images)
+            if (isset($maintenance->images) && is_array($maintenance->images)) {
+                if (count($maintenance->images) > 15) {
+                    $maintenance->images = array_slice($maintenance->images, 0, 15);
+                }
+            }
+
+            // Format date and time for filename
+            $date_time = date('Y-m-d_H-i-s', strtotime($maintenance->maintenance_date));
+            $location = str_replace(' ', '-', substr($maintenance->location, 0, 10));
+
+            $pdf = PDF::loadView('genset.pdf_template', compact('maintenance'));
+
+            // Set PDF options for better performance
+            $pdf->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => false,
+                'defaultFont' => 'Arial',
+                'enable_css_float' => true,
+                'debugCss' => false,
+                'debugLayout' => false,
+                'chroot' => public_path(),
+            ]);
+
+            $pdf->setPaper('letter', 'portrait');
+
+            $fileName = "FM-LAP-D2-SOP-003-006--{$date_time}-{$location}.pdf";
+
+            // Stream PDF and clean up
+            $response = $pdf->stream($fileName);
+
+            // Force garbage collection after PDF generation
+            unset($pdf, $maintenance);
+            gc_collect_cycles();
+
+            return $response;
+        } catch (\Exception $e) {
+            // Clean up on error
+            gc_collect_cycles();
+
+            Log::error('Genset PDF Generation Error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
+            // Check if it's a memory error
+            $errorMessage = $e->getMessage();
+            if (strpos($errorMessage, 'memory') !== false || strpos($errorMessage, 'exhausted') !== false) {
+                return redirect()->back()
+                    ->with('error', 'Gagal membuat PDF: Memory tidak cukup. Data memiliki terlalu banyak gambar atau gambar terlalu besar. Silakan hubungi administrator.');
+            }
+
+            return redirect()->back()
+                ->with('error', 'Gagal membuat PDF: ' . $e->getMessage());
+        }
     }
 
     // --- Helper Methods ---
@@ -253,15 +319,25 @@ class GensetController extends Controller
             'brand_type' => 'nullable|string',
             'capacity' => 'nullable|string',
             'notes' => 'nullable|string',
-            'technician_1_name' => 'required|string',
-            'technician_1_department' => 'nullable|string',
-            'technician_2_name' => 'nullable|string',
-            'technician_2_department' => 'nullable|string',
-            'technician_3_name' => 'nullable|string',
-            'technician_3_department' => 'nullable|string',
-            'approver_name' => 'nullable|string',
-            'approver_department' => 'nullable|string',
-            'approver_nik' => 'nullable|string',
+
+            // New executor structure (4 executors)
+            'executor_1' => 'required|string',
+            'mitra_internal_1' => 'nullable|string',
+            'executor_2' => 'nullable|string',
+            'mitra_internal_2' => 'nullable|string',
+            'executor_3' => 'nullable|string',
+            'mitra_internal_3' => 'nullable|string',
+            'executor_4' => 'nullable|string',
+            'mitra_internal_4' => 'nullable|string',
+
+            // Verifikator
+            'verifikator' => 'nullable|string',
+            'verifikator_nik' => 'nullable|string',
+
+            // Head of Sub Department
+            'head_of_sub_department' => 'nullable|string',
+            'head_of_sub_department_nik' => 'nullable|string',
+
             'images' => 'nullable|array',
             'images.*' => 'nullable|json',
             'delete_images' => 'nullable|array',
@@ -281,7 +357,8 @@ class GensetController extends Controller
 
     private function saveBase64Image($imageData)
     {
-        if (empty($imageData)) return null;
+        if (empty($imageData))
+            return null;
         if (!preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
             Log::error('Invalid image format');
             return null;
@@ -289,7 +366,8 @@ class GensetController extends Controller
 
         $imageData = substr($imageData, strpos($imageData, ',') + 1);
         $type = strtolower($type[1]);
-        if (!in_array($type, ['jpg', 'jpeg', 'png'])) $type = 'jpg';
+        if (!in_array($type, ['jpg', 'jpeg', 'png']))
+            $type = 'jpg';
 
         $decodedImage = base64_decode($imageData);
         if ($decodedImage === false) {

@@ -264,7 +264,7 @@
                     <div style="font-size: 14pt; font-weight: bold;">Distribusi</div>
                 </td>
                 <td width="25%" rowspan="4" class="text-center" style="vertical-align: middle;">
-                    <img src="{{ public_path('assets/images/Lintasarta_Logo_Logogram.png') }}" style="width: 80px;">
+                    <img src="{{ public_path('assets/images/logo2.jpg') }}" style="width: 80px;">
                 </td>
             </tr>
             <tr><td style="font-size: 10pt; vertical-align: top;">Versi</td><td style="font-size: 10pt; vertical-align: top;">: 1.0</td></tr>

@@ -46,8 +46,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div class="border-l-4 border-blue-500 pl-3 rounded-md">
                         <p class="text-sm text-gray-600">Location</p>
-                        <p class="text-lg text-gray-800">
-                            {{ $maintenance->central->nama ?? $maintenance->location }}
+                        <p class="text-gray-900">
+                            @if($maintenance->central)
+                                {{ $maintenance->central->id_sentral }} - {{ $maintenance->central->nama }}
+                            @else
+                                {{ $maintenance->location }}
+                            @endif
                         </p>
                     </div>
                     <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-2 rounded">
@@ -122,6 +126,26 @@
                     <td class="border p-2 text-center">
                         <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_battery_connection == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                             {{ $maintenance->status_battery_connection }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="border p-2">d. Rectifier Module Installed</td>
+                    <td class="border p-2 font-semibold">{{ $maintenance->rectifier_module_installed ?? '-' }}</td>
+                    <td class="border p-2 text-xs md:text-sm text-gray-600">Properly Installed</td>
+                    <td class="border p-2 text-center">
+                        <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_rectifier_module_installed == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $maintenance->status_rectifier_module_installed }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="border p-2">e. Alarm Module Rectifier</td>
+                    <td class="border p-2 font-semibold">{{ $maintenance->alarm_modul_rectifier ?? '-' }}</td>
+                    <td class="border p-2 text-xs md:text-sm text-gray-600">Normal Condition</td>
+                    <td class="border p-2 text-center">
+                        <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_alarm_modul_rectifier == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $maintenance->status_alarm_modul_rectifier }}
                         </span>
                     </td>
                 </tr>
@@ -267,19 +291,9 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">d. Battery Temperature</td>
-                                <td class="border p-2 font-semibold">{{ $maintenance->battery_temperature ?? '-' }} °C</td>
-                                <td class="border p-2 text-xs md:text-sm text-gray-600">0-30 °C</td>
-                                <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_battery_temperature == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_battery_temperature }}
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="border p-2">e. Charging Voltage DC</td>
+                                <td class="border p-2">d. Charging Voltage DC</td>
                                 <td class="border p-2 font-semibold">{{ $maintenance->charging_voltage_dc ?? '-' }} VDC</td>
-                                <td class="border p-2 text-xs md:text-sm text-gray-600">48 ~ 55.3 VDC</td>
+                                <td class="border p-2 text-xs md:text-sm text-gray-600">54-58 VDC</td>
                                 <td class="border p-2 text-center">
                                     <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_charging_voltage_dc == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                         {{ $maintenance->status_charging_voltage_dc }}
@@ -287,7 +301,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="border p-2">f. Charging Current DC</td>
+                                <td class="border p-2">e. Charging Current DC</td>
                                 <td class="border p-2 font-semibold">{{ $maintenance->charging_current_dc ?? '-' }} A</td>
                                 <td class="border p-2 text-xs md:text-sm text-gray-600">Max 10% Battery Capacity (AH)</td>
                                 <td class="border p-2 text-center">
@@ -335,84 +349,268 @@
             </div>
 
             <!-- 3. Backup Tests -->
-            <div class="mb-6">
-                <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">3. Backup Tests</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full border text-sm md:text-base">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="border p-2 text-left text-xs md:text-sm">Activity</th>
-                                <th class="border p-2 text-left text-xs md:text-sm">Result</th>
-                                <th class="border p-2 text-left text-xs md:text-sm">Operational Standard</th>
-                                <th class="border p-2 text-center text-xs md:text-sm">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="border p-2">a. Rectifier (turnoff test)</td>
-                                <td class="border p-2 font-semibold">{{ $maintenance->backup_test_rectifier ?? '-' }}</td>
-                                <td class="border p-2 text-xs md:text-sm text-gray-600">Rectifier Normal Operations</td>
-                                <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_backup_test_rectifier == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_backup_test_rectifier }}
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="border p-2">b. Battery Voltage (Backup Mode)
-                                    <div class="text-xs text-gray-600 mt-1">
-                                        - Measurement I ( at the beginning ) Min 48 VDC
-                                    </div>
-                                    <div class="text-xs text-gray-600">
-                                        - Measurement II ( 15th minutes )
-                                    </div>
-                                </td>
+<div class="mb-6">
+    <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">3. Backup Tests</h3>
+    <div class="overflow-x-auto">
+        <table class="w-full border text-sm md:text-base">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border p-2 text-left text-xs md:text-sm">Activity</th>
+                    <th class="border p-2 text-left text-xs md:text-sm">Result</th>
+                    <th class="border p-2 text-left text-xs md:text-sm">Operational Standard</th>
+                    <th class="border p-2 text-center text-xs md:text-sm">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="border p-2">Rectifier Switching test, from the main source (PLN) to back up mode, by turning off Rectifier input MCB</td>
+                    <td class="border p-2 font-semibold">{{ $maintenance->backup_test_rectifier ?? '-' }}</td>
+                    <td class="border p-2 text-xs md:text-sm text-gray-600">-</td>
+                    <td class="border p-2 text-center">
+                        <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_backup_test_rectifier == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $maintenance->status_backup_test_rectifier }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-                                <td class="border p-2 font-semibold">
-                                    <div> {{ $maintenance->backup_test_voltage_measurement1 ?? '-' }} VDC</div>
-                                    <div class="mt-1"> {{ $maintenance->backup_test_voltage_measurement2 ?? '-' }} VDC</div>
-                                </td>
-                                <td class="border p-2 text-xs md:text-sm text-gray-600">
-                                    <div>Min 48 VDC</div>
-                                    <div class="mt-1">Min 42 VDC</div>
-                                </td>
-                                <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ $maintenance->status_backup_test_voltage == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_backup_test_voltage }}
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                @if(collect($maintenance->images ?? [])->whereIn('category', ['backup', 'rectifier_test', 'battery_voltage'])->isNotEmpty())
-                <div class="mt-4">
-                    <p class="text-sm font-medium text-gray-700 mb-2">Documentation Images:</p>
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        @foreach(collect($maintenance->images ?? [])->whereIn('category', ['backup', 'rectifier_test', 'battery_voltage']) as $image)
-                        <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition">
-                            @if(isset($image['path']) && file_exists(storage_path('app/public/' . $image['path'])))
-                            <img src="{{ asset('storage/' . $image['path']) }}"
-                                alt="{{ ucwords(str_replace('_', ' ', $image['category'] ?? '')) }}"
-                                class="w-full h-32 md:h-40 object-cover cursor-pointer"
-                                onclick="window.open('{{ asset('storage/' . $image['path']) }}', '_blank')">
-                            @else
-                            <div class="w-full h-32 md:h-40 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
-                                Image not found
-                            </div>
-                            @endif
-                            <div class="p-2 bg-gray-50">
-                                <p class="text-xs text-gray-600 mb-1">{{ ucwords(str_replace('_', ' ', $image['category'] ?? '')) }}</p>
-                                <a href="{{ asset('storage/' . ($image['path'] ?? '')) }}"
-                                    target="_blank"
-                                    class="text-xs text-blue-600 hover:text-blue-800 hover:underline">View Full Size</a>
-                            </div>
-                        </div>
-                        @endforeach
+    {{-- Rectifier Test Images --}}
+    @php
+        $rectifierTestImages = collect($maintenance->images ?? [])->filter(function($image) {
+            return isset($image['category']) && $image['category'] === 'rectifier_test';
+        });
+    @endphp
+
+    @if($rectifierTestImages->isNotEmpty())
+    <div class="mt-4">
+        <p class="text-sm font-medium text-gray-700 mb-2">
+            <span class="inline-flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                a. Rectifier Switching Test Images ({{ $rectifierTestImages->count() }})
+            </span>
+        </p>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            @foreach($rectifierTestImages as $index => $image)
+            <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition bg-white">
+                @php
+                    $imagePath = $image['path'] ?? '';
+                    $fullPath = storage_path('app/public/' . $imagePath);
+                    $imageExists = !empty($imagePath) && file_exists($fullPath);
+                @endphp
+
+                @if($imageExists)
+                    <img src="{{ asset('storage/' . $imagePath) }}"
+                        alt="Rectifier Test {{ $index + 1 }}"
+                        class="w-full h-32 md:h-40 object-cover cursor-pointer hover:opacity-90 transition"
+                        onclick="openImageModal(this.src, 'Rectifier Test {{ $index + 1 }}')"
+                        loading="lazy">
+                @else
+                    <div class="w-full h-32 md:h-40 bg-gray-200 flex flex-col items-center justify-center text-gray-500 text-xs">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Image not found
                     </div>
-                </div>
                 @endif
+
+                <div class="p-2 bg-gray-50">
+                    @if($imageExists)
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-gray-600">Photo {{ $index + 1 }}</span>
+                            @if(isset($image['lat']) && isset($image['lng']))
+                                <span class="text-xs text-green-600 font-semibold" title="GPS Tagged">📍 GPS</span>
+                            @endif
+                        </div>
+
+                        @if(isset($image['timestamp']))
+                            <p class="text-[10px] text-gray-500 mb-1">
+                                🕐 {{ \Carbon\Carbon::parse($image['timestamp'])->format('d M Y H:i') }}
+                            </p>
+                        @endif
+
+                        <a href="{{ asset('storage/' . $imagePath) }}"
+                            target="_blank"
+                            class="inline-flex items-center text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                            View Full Size
+                        </a>
+                    @endif
+                </div>
             </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    {{-- Battery Voltage Measurement I Images --}}
+    @php
+        $batteryVoltageM1Images = collect($maintenance->images ?? [])->filter(function($image) {
+            return isset($image['category']) && $image['category'] === 'battery_voltage_m1';
+        });
+    @endphp
+
+    @if($batteryVoltageM1Images->isNotEmpty())
+    <div class="mt-4">
+        <p class="text-sm font-medium text-gray-700 mb-2">
+            <span class="inline-flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                b. Battery Voltage - Measurement I (at the beginning) Images ({{ $batteryVoltageM1Images->count() }})
+            </span>
+        </p>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            @foreach($batteryVoltageM1Images as $index => $image)
+            <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition bg-white">
+                @php
+                    $imagePath = $image['path'] ?? '';
+                    $fullPath = storage_path('app/public/' . $imagePath);
+                    $imageExists = !empty($imagePath) && file_exists($fullPath);
+                @endphp
+
+                @if($imageExists)
+                    <img src="{{ asset('storage/' . $imagePath) }}"
+                        alt="Battery Voltage M1 {{ $index + 1 }}"
+                        class="w-full h-32 md:h-40 object-cover cursor-pointer hover:opacity-90 transition"
+                        onclick="openImageModal(this.src, 'Battery Voltage Measurement I - Photo {{ $index + 1 }}')"
+                        loading="lazy">
+                @else
+                    <div class="w-full h-32 md:h-40 bg-gray-200 flex flex-col items-center justify-center text-gray-500 text-xs">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Image not found
+                    </div>
+                @endif
+
+                <div class="p-2 bg-gray-50">
+                    @if($imageExists)
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-gray-600">Measurement I - Photo {{ $index + 1 }}</span>
+                            @if(isset($image['lat']) && isset($image['lng']))
+                                <span class="text-xs text-green-600 font-semibold" title="GPS Tagged">📍 GPS</span>
+                            @endif
+                        </div>
+
+                        @if(isset($image['timestamp']))
+                            <p class="text-[10px] text-gray-500 mb-1">
+                                🕐 {{ \Carbon\Carbon::parse($image['timestamp'])->format('d M Y H:i') }}
+                            </p>
+                        @endif
+
+                        @if(isset($image['address']))
+                            <p class="text-[10px] text-gray-500 mb-2 truncate" title="{{ $image['address'] }}">
+                                📍 {{ $image['address'] }}
+                            </p>
+                        @endif
+
+                        <a href="{{ asset('storage/' . $imagePath) }}"
+                            target="_blank"
+                            class="inline-flex items-center text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                            View Full Size
+                        </a>
+                    @endif
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    {{-- Battery Voltage Measurement II Images --}}
+    @php
+        $batteryVoltageM2Images = collect($maintenance->images ?? [])->filter(function($image) {
+            return isset($image['category']) && $image['category'] === 'battery_voltage_m2';
+        });
+    @endphp
+
+    @if($batteryVoltageM2Images->isNotEmpty())
+    <div class="mt-4">
+        <p class="text-sm font-medium text-gray-700 mb-2">
+            <span class="inline-flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                b. Battery Voltage - Measurement II (15th minutes) Images ({{ $batteryVoltageM2Images->count() }})
+            </span>
+        </p>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            @foreach($batteryVoltageM2Images as $index => $image)
+            <div class="border rounded overflow-hidden shadow-sm hover:shadow-md transition bg-white">
+                @php
+                    $imagePath = $image['path'] ?? '';
+                    $fullPath = storage_path('app/public/' . $imagePath);
+                    $imageExists = !empty($imagePath) && file_exists($fullPath);
+                @endphp
+
+                @if($imageExists)
+                    <img src="{{ asset('storage/' . $imagePath) }}"
+                        alt="Battery Voltage M2 {{ $index + 1 }}"
+                        class="w-full h-32 md:h-40 object-cover cursor-pointer hover:opacity-90 transition"
+                        onclick="openImageModal(this.src, 'Battery Voltage Measurement II - Photo {{ $index + 1 }}')"
+                        loading="lazy">
+                @else
+                    <div class="w-full h-32 md:h-40 bg-gray-200 flex flex-col items-center justify-center text-gray-500 text-xs">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Image not found
+                    </div>
+                @endif
+
+                <div class="p-2 bg-gray-50">
+                    @if($imageExists)
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-gray-600">Measurement II - Photo {{ $index + 1 }}</span>
+                            @if(isset($image['lat']) && isset($image['lng']))
+                                <span class="text-xs text-green-600 font-semibold" title="GPS Tagged">📍 GPS</span>
+                            @endif
+                        </div>
+
+                        @if(isset($image['timestamp']))
+                            <p class="text-[10px] text-gray-500 mb-1">
+                                🕐 {{ \Carbon\Carbon::parse($image['timestamp'])->format('d M Y H:i') }}
+                            </p>
+                        @endif
+
+                        @if(isset($image['address']))
+                            <p class="text-[10px] text-gray-500 mb-2 truncate" title="{{ $image['address'] }}">
+                                📍 {{ $image['address'] }}
+                            </p>
+                        @endif
+
+                        <a href="{{ asset('storage/' . $imagePath) }}"
+                            target="_blank"
+                            class="inline-flex items-center text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                            View Full Size
+                        </a>
+                    @endif
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    {{-- No Images Message --}}
+    @if($rectifierTestImages->isEmpty() && $batteryVoltageM1Images->isEmpty() && $batteryVoltageM2Images->isEmpty())
+    <div class="mt-4 p-3 bg-gray-100 border border-gray-300 rounded">
+        <p class="text-sm text-gray-600 text-center">No backup test images available</p>
+    </div>
+    @endif
+</div>
 
             <!-- 4. Power Alarm Monitoring Test -->
             <div class="mb-6">

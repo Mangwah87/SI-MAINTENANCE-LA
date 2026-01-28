@@ -39,57 +39,57 @@ class UpsMaintenanceController extends Controller
         $validated = $request->validate([
             'central_id' => 'required|exists:central,id',
             'date_time' => 'required|date',
-            'brand_type' => 'required|string|max:255',
-            'capacity' => 'required|string|max:255',
+            'brand_type' => 'nullable|string|max:255',
+            'capacity' => 'nullable|string|max:255',
             'reg_number' => 'nullable|string|max:255',
             'sn' => 'nullable|string|max:255',
 
-            'env_condition' => 'required|string|max:255',
-            'led_display' => 'required|string|max:255',
-            'battery_connection' => 'required|string|max:255',
+            'env_condition' => 'nullable|string|max:255',
+            'led_display' => 'nullable|string|max:255',
+            'battery_connection' => 'nullable|string|max:255',
 
             'status_env_condition' => 'nullable|in:OK,NOK',
             'status_led_display' => 'nullable|in:OK,NOK',
             'status_battery_connection' => 'nullable|in:OK,NOK',
 
-            'ac_input_voltage_rs' => 'required|numeric',
-            'ac_input_voltage_st' => 'required|numeric',
-            'ac_input_voltage_tr' => 'required|numeric',
-            'status_ac_input_voltage' => 'required|in:OK,NOK',
+            'ac_input_voltage_rs' => 'nullable|numeric',
+            'ac_input_voltage_st' => 'nullable|numeric',
+            'ac_input_voltage_tr' => 'nullable|numeric',
+            'status_ac_input_voltage' => 'nullable|in:OK,NOK',
 
-            'ac_output_voltage_rs' => 'required|numeric',
-            'ac_output_voltage_st' => 'required|numeric',
-            'ac_output_voltage_tr' => 'required|numeric',
-            'status_ac_output_voltage' => 'required|in:OK,NOK',
+            'ac_output_voltage_rs' => 'nullable|numeric',
+            'ac_output_voltage_st' => 'nullable|numeric',
+            'ac_output_voltage_tr' => 'nullable|numeric',
+            'status_ac_output_voltage' => 'nullable|in:OK,NOK',
 
-            'ac_current_input_r' => 'required|numeric',
-            'ac_current_input_s' => 'required|numeric',
-            'ac_current_input_t' => 'required|numeric',
-            'status_ac_current_input' => 'required|in:OK,NOK',
+            'ac_current_input_r' => 'nullable|numeric',
+            'ac_current_input_s' => 'nullable|numeric',
+            'ac_current_input_t' => 'nullable|numeric',
+            'status_ac_current_input' => 'nullable|in:OK,NOK',
 
-            'ac_current_output_r' => 'required|numeric',
-            'ac_current_output_s' => 'required|numeric',
-            'ac_current_output_t' => 'required|numeric',
-            'status_ac_current_output' => 'required|in:OK,NOK',
+            'ac_current_output_r' => 'nullable|numeric',
+            'ac_current_output_s' => 'nullable|numeric',
+            'ac_current_output_t' => 'nullable|numeric',
+            'status_ac_current_output' => 'nullable|in:OK,NOK',
 
-            'ups_temperature' => 'required|numeric',
-            'status_ups_temperature' => 'required|in:OK,NOK',
+            'ups_temperature' => 'nullable|numeric',
+            'status_ups_temperature' => 'nullable|in:OK,NOK',
 
-            'output_frequency' => 'required|numeric',
-            'status_output_frequency' => 'required|in:OK,NOK',
+            'output_frequency' => 'nullable|numeric',
+            'status_output_frequency' => 'nullable|in:OK,NOK',
 
-            'charging_voltage' => 'required|numeric',
-            'status_charging_voltage' => 'required|in:OK,NOK',
+            'charging_voltage' => 'nullable|numeric',
+            'status_charging_voltage' => 'nullable|in:OK,NOK',
 
-            'charging_current' => 'required|numeric',
-            'status_charging_current' => 'required|in:OK,NOK',
+            'charging_current' => 'nullable|numeric',
+            'status_charging_current' => 'nullable|in:OK,NOK',
 
             'notes' => 'nullable|string',
 
-            'executor_1' => 'required|string|max:255',
+            'executor_1' => 'nullable|string|max:255',
             'executor_2' => 'nullable|string|max:255',
             'executor_3' => 'nullable|string|max:255',
-            'supervisor' => 'required|string|max:255',
+            'supervisor' => 'nullable|string|max:255',
             'supervisor_id_number' => 'nullable|string|max:255',
 
             'department' => 'nullable|string|max:255',
@@ -364,7 +364,11 @@ class UpsMaintenanceController extends Controller
     {
         $upsMaintenance->load('central');
         $maintenance = $upsMaintenance;
+        // Format date and time for filename
+            $date_time = date('Y-m-d', strtotime($maintenance->date_time));
+            $centralId = $maintenance->central->id_sentral ?? 'unknown';
+
         $pdf = PDF::loadView('ups3.upsdetail_pdf', compact('maintenance'));
-        return $pdf->stream('preventive_maintenance_ups_'.$maintenance->id.'.pdf');
+        return $pdf->stream("FM-LAP-D2-SOP-003-002-{$date_time}-{$centralId}.pdf");
     }
 }

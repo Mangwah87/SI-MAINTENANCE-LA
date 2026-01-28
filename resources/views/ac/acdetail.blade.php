@@ -64,9 +64,9 @@
                 </div>
             </div>
 
-            {{-- Visual Check --}}
+            {{-- Physical Check --}}
             <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">1. Visual Check</h3>
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">1. Physical Check</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full border">
                         <thead class="bg-gray-100">
@@ -83,8 +83,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->environment_condition }}</td>
                                 <td class="border p-2 text-sm text-gray-600">No dust</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_environment_condition ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_environment_condition ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_environment_condition ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_environment_condition ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -93,8 +93,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->filter }}</td>
                                 <td class="border p-2 text-sm text-gray-600">Clean, No dust</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_filter ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_filter ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_filter ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_filter ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -103,8 +103,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->evaporator }}</td>
                                 <td class="border p-2 text-sm text-gray-600">Clean, No dust</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_evaporator ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_evaporator ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_evaporator ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_evaporator ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -113,8 +113,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->led_display }}</td>
                                 <td class="border p-2 text-sm text-gray-600">Normal</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_led_display ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_led_display ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_led_display ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_led_display ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -123,8 +123,8 @@
                                 <td class="border p-2 font-semibold">{{ $maintenance->air_flow }}</td>
                                 <td class="border p-2 text-sm text-gray-600">Fan operates normally, cool air flow</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_air_flow ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_air_flow ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_air_flow ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_air_flow ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -133,9 +133,9 @@
                 </div>
             </div>
 
-            {{-- Room Temperature --}}
+            {{-- PSI Pressure --}}
             <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">2. Room Temperature Shelter/ODC</h3>
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">2. PSI Pressure</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full border">
                         <thead class="bg-gray-100">
@@ -148,22 +148,12 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="border p-2">a. Shelter/Ruangan (ODC)</td>
-                                <td class="border p-2 font-semibold">{{ $maintenance->temp_shelter }} °C</td>
-                                <td class="border p-2 text-sm text-gray-600">≤ 22 °C Shelter/Ruangan</td>
+                                <td class="border p-2">Standard PSI Pressure Form Type Freon</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->psi_pressure ?? '-' }} psi</td>
+                                <td class="border p-2 text-sm text-gray-600">R32: 140 psi - 150 psi / R410: 140 psi - 150 psi</td>
                                 <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_temp_shelter ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_temp_shelter ?? 'OK' }}
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="border p-2">b. Outdoor Cabinet (ODC)</td>
-                                <td class="border p-2 font-semibold">{{ $maintenance->temp_outdoor_cabinet }} °C</td>
-                                <td class="border p-2 text-sm text-gray-600">≤ 28 °C Outdoor Cabinet (ODC)</td>
-                                <td class="border p-2 text-center">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_temp_outdoor_cabinet ?? 'OK') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $maintenance->status_temp_outdoor_cabinet ?? 'OK' }}
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_psi_pressure ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_psi_pressure ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -172,59 +162,59 @@
                 </div>
             </div>
 
-            {{-- Input Current Air Cond - Show All 7 Standards --}}
+            {{-- Input Current Air Cond --}}
             <div class="mb-6">
                 <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">3. Input Current Air Cond</h3>
                 <div class="overflow-x-auto">
-                    <table class="w-full border-collapse">
+                    <table class="w-full border">
                         <thead class="bg-gray-100">
                             <tr>
-                                <th class="border border-gray-300 p-2 text-left">AC Unit</th>
-                                <th class="border border-gray-300 p-2 text-left">Input Current (Amp)</th>
-                                <th class="border border-gray-300 p-2 text-left">Operational Standard</th>
-                                <th class="border border-gray-300 p-2 text-center">Status</th>
+                                <th class="border p-2 text-left">Activity</th>
+                                <th class="border p-2 text-left">Result</th>
+                                <th class="border p-2 text-left">Operational Standard</th>
+                                <th class="border p-2 text-center">Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                // Define all AC standards
-                                $acStandards = [
-                                    1 => ['label' => '', 'standard' => '¾-1 PK ≤ 4 A'],
-                                    2 => ['label' => '', 'standard' => '2 PK ≤ 10 A'],
-                                    3 => ['label' => '', 'standard' => '2.5 PK ≤ 13.5 A'],
-                                    4 => ['label' => '', 'standard' => '5-7 PK ≤ 8 A / Phase'],
-                                    5 => ['label' => '', 'standard' => '10 PK ≤ 15 A / Phase'],
-                                    6 => ['label' => '', 'standard' => '15 PK ≤ 25 A / Phase'],
-                                    7 => ['label' => '', 'standard' => '']
-                                ];
-                            @endphp
+                            <tr>
+                                <td class="border p-2">Input Current AC</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->input_current_ac ?? '-' }} A</td>
+                                <td class="border p-2 text-sm text-gray-600">¾-1 PK ≤ 4 A | 2 PK ≤ 10 A</td>
+                                <td class="border p-2 text-center">
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_input_current_ac ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_input_current_ac ?? '-' }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-                            @foreach($acStandards as $acNum => $acInfo)
-                                @php
-                                    $currentField = "ac{$acNum}_current";
-                                    $statusField = "status_ac{$acNum}";
-                                    $currentValue = $maintenance->{$currentField} ?? null;
-                                    $statusValue = $maintenance->{$statusField} ?? '-';
-
-                                    // Determine if this is the last row for border styling
-                                    $isLast = ($acNum === 7);
-                                    $borderClass = $isLast ? 'border border-gray-300' : 'border-l border-r border-t border-gray-300';
-                                @endphp
-                                <tr class="{{ $currentValue ? 'bg-white' : 'bg-gray-50' }}">
-                                    <td class="{{ $borderClass }} p-2 font-semibold">AC {{ $acNum }} = {{ $acInfo['label'] }}</td>
-                                    <td class="{{ $borderClass }} p-2">{{ $currentValue ? $currentValue . ' Amp' : '-' }}</td>
-                                    <td class="{{ $borderClass }} p-2 text-sm text-gray-600">{{ $acInfo['standard'] }}</td>
-                                    <td class="{{ $borderClass }} p-2 text-center">
-                                        @if($currentValue)
-                                            <span class="px-2 py-1 rounded text-xs font-semibold {{ $statusValue === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                {{ $statusValue }}
-                                            </span>
-                                        @else
-                                            <span class="text-gray-400">-</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
+            {{-- Output Temperature AC --}}
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">4. Output Temperature AC</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="border p-2 text-left">Activity</th>
+                                <th class="border p-2 text-left">Result</th>
+                                <th class="border p-2 text-left">Operational Standard</th>
+                                <th class="border p-2 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border p-2">Output Temperature AC</td>
+                                <td class="border p-2 font-semibold">{{ $maintenance->output_temperature_ac ?? '-' }} °C</td>
+                                <td class="border p-2 text-sm text-gray-600">16 - 20°C</td>
+                                <td class="border p-2 text-center">
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ ($maintenance->status_output_temperature_ac ?? '-') === 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $maintenance->status_output_temperature_ac ?? '-' }}
+                                    </span>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -328,33 +318,37 @@
 
             {{-- Personnel --}}
             <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-3 bg-indigo-50 p-2 rounded">Pelaksana / Mengetahui</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="border p-3 rounded">
-                        <p class="text-sm text-gray-600">Pelaksana 1</p>
-                        <p class="font-semibold mt-1">{{ $maintenance->executor_1 ?? '-' }}</p>
-                        @if($maintenance->executor_1)
-                            <p class="text-xs text-gray-500 mt-2">Departemen: {{ $maintenance->department ?? '-' }} | Sub Dept: {{ $maintenance->sub_department ?? '-' }}</p>
+                <h3 class="text-lg font-semibold mb-3 bg-indigo-50 p-2 rounded">Pelaksana</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    @for($i = 1; $i <= 4; $i++)
+                        <div class="border p-3 rounded">
+                            <p class="text-sm text-gray-600">Pelaksana {{ $i }}</p>
+                            <p class="font-semibold mt-1">{{ $maintenance->{'executor_'.$i} ?? '-' }}</p>
+                            @if($maintenance->{'executor_'.$i})
+                                <p class="text-xs text-gray-500 mt-1">{{ $maintenance->{'mitra_internal_'.$i} ?? '-' }}</p>
+                            @endif
+                        </div>
+                    @endfor
+                </div>
+            </div>
+
+            {{-- Mengetahui --}}
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 bg-indigo-50 p-2 rounded">Mengetahui</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="border p-3 rounded bg-blue-50">
+                        <p class="text-sm text-gray-600">Verifikator</p>
+                        <p class="font-semibold mt-1">{{ $maintenance->verifikator ?? '-' }}</p>
+                        @if($maintenance->verifikator_nik)
+                            <p class="text-xs text-gray-500 mt-1">NIK: {{ $maintenance->verifikator_nik }}</p>
                         @endif
                     </div>
-                    <div class="border p-3 rounded">
-                        <p class="text-sm text-gray-600">Pelaksana 2</p>
-                        <p class="font-semibold mt-1">{{ $maintenance->executor_2 ?? '-' }}</p>
-                        @if($maintenance->executor_2)
-                            <p class="text-xs text-gray-500 mt-2">Departemen: {{ $maintenance->department ?? '-' }} | Sub Dept: {{ $maintenance->sub_department ?? '-' }}</p>
+                    <div class="border p-3 rounded bg-blue-50">
+                        <p class="text-sm text-gray-600">Head of Sub Department</p>
+                        <p class="font-semibold mt-1">{{ $maintenance->head_of_sub_department ?? '-' }}</p>
+                        @if($maintenance->head_of_sub_department_nik)
+                            <p class="text-xs text-gray-500 mt-1">NIK: {{ $maintenance->head_of_sub_department_nik }}</p>
                         @endif
-                    </div>
-                    <div class="border p-3 rounded">
-                        <p class="text-sm text-gray-600">Pelaksana 3</p>
-                        <p class="font-semibold mt-1">{{ $maintenance->executor_3 ?? '-' }}</p>
-                        @if($maintenance->executor_3)
-                            <p class="text-xs text-gray-500 mt-2">Departemen: {{ $maintenance->department ?? '-' }} | Sub Dept: {{ $maintenance->sub_department ?? '-' }}</p>
-                        @endif
-                    </div>
-                    <div class="border p-3 rounded bg-blue-50 md:col-span-3">
-                        <p class="text-sm text-gray-600">Mengetahui (Supervisor)</p>
-                        <p class="font-semibold mt-1">{{ $maintenance->supervisor ?? '-' }}</p>
-                        <p class="text-xs text-gray-500 mt-2">ID: {{ $maintenance->supervisor_id_number ?? '-' }}</p>
                     </div>
                 </div>
             </div>
@@ -401,3 +395,4 @@
         });
     </script>
 </x-app-layout>
+

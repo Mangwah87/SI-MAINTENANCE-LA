@@ -87,7 +87,9 @@ class ReportController extends Controller
                         'type' => 'Maintenance Battery',
                         'icon' => 'battery-charging',
                         'tanggal' => $item->maintenance_date,
-                        'lokasi' => $item->location ?? '-',
+                        'lokasi' => $item->central
+                            ? $item->central->id_sentral . ' - ' . $item->central->nama
+                            : $item->location,
                         'teknisi' => $item->technician_name ?? '-',
                         'status' => 'Completed',
                         'created_by' => $item->user->name ?? '-',
@@ -113,7 +115,9 @@ class ReportController extends Controller
                         'type' => 'Maintenance Rectifier',
                         'icon' => 'git-compare-arrows',
                         'tanggal' => $item->date_time,
-                        'lokasi' => $item->location ?? '-',
+                        'lokasi' => $item->central
+                            ? $item->central->id_sentral . ' - ' . $item->central->nama
+                            : $item->location,
                         'teknisi' => $item->executor_1 ?? '-',
                         'status' => 'Completed',
                         'created_by' => $item->user->name ?? '-',
@@ -127,19 +131,36 @@ class ReportController extends Controller
 
         // 3. Genset Maintenance
         if ($formType == 'all' || $formType == 'genset') {
-            $gensets = GensetMaintenance::with('user')
+            $gensets = GensetMaintenance::with(['user', 'central']) // <--- Tambahkan 'central' di sini
                 ->when($dateFrom && !$dateTo, fn($q) => $q->whereDate('maintenance_date', '=', $dateFrom))
                 ->when($dateFrom && $dateTo, fn($q) => $q->whereDate('maintenance_date', '>=', $dateFrom))
                 ->when($dateTo, fn($q) => $q->whereDate('maintenance_date', '<=', $dateTo))
-                ->when($location, fn($q) => $q->where('location', 'like', "%$location%"))
+                ->when($location, function ($q) use ($location) {
+                    // Filter lokasi bisa berdasarkan ID di tabel genset atau Nama di tabel central
+                    $q->where('location', 'like', "%$location%")
+                      ->orWhereHas('central', function ($query) use ($location) {
+                          $query->where('nama', 'like', "%$location%")
+                                ->orWhere('id_sentral', 'like', "%$location%");
+                      });
+                })
                 ->get()
                 ->map(function ($item) {
+                    // --- LOGIKA PENAMPILAN LOKASI ---
+                    $lokasiTampil = '-';
+
+                    if ($item->central) {
+                        $lokasiTampil = $item->central->id_sentral . ' - ' . $item->central->nama . ' - ' . $item->central->area;
+                    } else {
+                        $lokasiTampil = $item->location ?? '-';
+                    }
+                    // --------------------------------
+
                     return [
                         'id' => $item->id,
                         'type' => 'Maintenance Genset',
                         'icon' => 'zap',
                         'tanggal' => $item->maintenance_date,
-                        'lokasi' => $item->location ?? '-',
+                        'lokasi' => $lokasiTampil, // <--- Gunakan variabel yang sudah diproses
                         'teknisi' => $item->technician_1_name ?? '-',
                         'status' => 'Completed',
                         'created_by' => $item->user->name ?? '-',

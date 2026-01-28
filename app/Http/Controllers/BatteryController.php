@@ -11,10 +11,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-
 class BatteryController extends Controller
 {
-    private $maxImageSizeKB = 1024; // 1MB = 1024KB
+    private $maxImageSizeKB = 1024;
     private $maxImageSizeBytes;
 
     public function __construct()
@@ -22,24 +21,17 @@ class BatteryController extends Controller
         $this->maxImageSizeBytes = $this->maxImageSizeKB * 1024;
     }
 
-    /**
-     * Display a listing of the resource with filtering
-     */
     public function index(Request $request)
     {
         $query = BatteryMaintenance::query();
-
-        // FILTER BY USER_ID
         $query->where('user_id', auth()->id());
 
         if ($request->filled('location')) {
             $query->where('location', 'like', '%' . $request->location . '%');
         }
-
         if ($request->filled('date_from')) {
             $query->whereDate('maintenance_date', '>=', $request->date_from);
         }
-
         if ($request->filled('date_to')) {
             $query->whereDate('maintenance_date', '<=', $request->date_to);
         }
@@ -48,12 +40,10 @@ class BatteryController extends Controller
             ->orderBy('maintenance_date', 'desc')
             ->paginate(10);
 
-        // Ambil data central untuk filter
         $centrals = DB::table('central')
             ->orderBy('area')
             ->orderBy('nama')
             ->get();
-
         $centralsByArea = $centrals->groupBy('area');
 
         return view('battery.index', compact('maintenances', 'centralsByArea'));
@@ -61,13 +51,10 @@ class BatteryController extends Controller
 
     public function create()
     {
-        // Ambil data central dari database, urutkan berdasarkan area dan nama
         $centrals = DB::table('central')
             ->orderBy('area')
             ->orderBy('nama')
             ->get();
-
-        // Group by area untuk tampilan yang lebih rapi
         $centralsByArea = $centrals->groupBy('area');
 
         return view('battery.create', compact('centralsByArea'));
@@ -77,30 +64,50 @@ class BatteryController extends Controller
     {
         try {
             $validated = $request->validate([
-                'location' => 'required|string|max:255',
+                'location' => 'required|string|exists:central,id',
                 'maintenance_date' => 'required|date',
                 'battery_temperature' => 'nullable|numeric',
                 'company' => 'nullable|string|max:255',
+                'battery_brand' => 'required|string|max:255',
+                'battery_type' => 'nullable|string|max:255',
+                'end_device_batt' => 'nullable|string|max:255',
                 'notes' => 'nullable|string',
 
-                // Validasi Pelaksana
+                // Rectifier Test
+                'rectifier_test_backup_voltage' => 'nullable|numeric|min:0|max:100',
+                'rectifier_test_backup_voltage_status' => 'nullable|in:OK,NOK',
+                'rectifier_test_measurement_1' => 'nullable|numeric|min:0|max:100',
+                'rectifier_test_measurement_1_status' => 'nullable|in:OK,NOK',
+                'rectifier_test_measurement_2' => 'nullable|numeric|min:0|max:100',
+                'rectifier_test_measurement_2_status' => 'nullable|in:OK,NOK',
+                'rectifier_test_status' => 'nullable|in:OK,NOK',
+
+                // Pelaksana
                 'technician_1_name' => 'required|string|max:255',
                 'technician_1_company' => 'required|string|max:255',
                 'technician_2_name' => 'nullable|string|max:255',
                 'technician_2_company' => 'nullable|string|max:255',
                 'technician_3_name' => 'nullable|string|max:255',
                 'technician_3_company' => 'nullable|string|max:255',
+                'technician_4_name' => 'nullable|string|max:255',
+                'technician_4_company' => 'nullable|string|max:255',
 
-                // Validasi Supervisor
-                'supervisor' => 'nullable|string|max:255',
-                'supervisor_id' => 'nullable|string|max:100',
+                // Verifikator & Head of Sub Dept
+                'verifikator_name' => 'nullable|string|max:255',
+                'verifikator_company' => 'nullable|string|max:255',
+                'verifikator_nim' => 'nullable|string|max:50',
+                'head_of_sub_dept' => 'nullable|string|max:255',
+                'head_of_sub_dept_nim' => 'nullable|string|max:50',
 
-                // Validasi Readings
+                // Readings
                 'readings' => 'required|array|min:1',
                 'readings.*.bank_number' => 'required|integer|min:1',
                 'readings.*.battery_brand' => 'required|string|max:255',
+                'readings.*.battery_type' => 'nullable|string|max:255',
+                'readings.*.end_device_batt' => 'nullable|string|max:255',
                 'readings.*.battery_number' => 'required|integer|min:1',
-                'readings.*.voltage' => 'required|numeric|min:0|max:20|regex:/^\d+(\.\d{1,2})?$/',
+                'readings.*.voltage' => 'required|numeric|min:0|max:100|regex:/^\d+(\.\d{1,2})?$/',
+                'readings.*.soh' => 'nullable|numeric|min:0|max:100|regex:/^\d+(\.\d{1,2})?$/',
                 'readings.*.photo_data' => 'nullable|string',
                 'readings.*.photo_latitude' => 'nullable|numeric',
                 'readings.*.photo_longitude' => 'nullable|numeric',
@@ -128,8 +135,20 @@ class BatteryController extends Controller
                 'technician_2_company' => $validated['technician_2_company'] ?? null,
                 'technician_3_name' => $validated['technician_3_name'] ?? null,
                 'technician_3_company' => $validated['technician_3_company'] ?? null,
-                'supervisor' => $validated['supervisor'] ?? null,
-                'supervisor_id' => $validated['supervisor_id'] ?? null,
+                'technician_4_name' => $validated['technician_4_name'] ?? null,
+                'technician_4_company' => $validated['technician_4_company'] ?? null,
+                'verifikator_name' => $validated['verifikator_name'] ?? null,
+                'verifikator_company' => $validated['verifikator_company'] ?? null,
+                'verifikator_nim' => $validated['verifikator_nim'] ?? null,
+                'head_of_sub_dept' => $validated['head_of_sub_dept'] ?? null,
+                'head_of_sub_dept_nim' => $validated['head_of_sub_dept_nim'] ?? null,
+                'rectifier_test_backup_voltage' => $validated['rectifier_test_backup_voltage'] ?? null,
+                'rectifier_test_backup_voltage_status' => $validated['rectifier_test_backup_voltage_status'] ?? null,
+                'rectifier_test_measurement_1' => $validated['rectifier_test_measurement_1'] ?? null,
+                'rectifier_test_measurement_1_status' => $validated['rectifier_test_measurement_1_status'] ?? null,
+                'rectifier_test_measurement_2' => $validated['rectifier_test_measurement_2'] ?? null,
+                'rectifier_test_measurement_2_status' => $validated['rectifier_test_measurement_2_status'] ?? null,
+                'rectifier_test_status' => $validated['rectifier_test_status'] ?? null,
             ]);
 
             foreach ($validated['readings'] as $reading) {
@@ -137,8 +156,11 @@ class BatteryController extends Controller
                     'battery_maintenance_id' => $maintenance->id,
                     'bank_number' => $reading['bank_number'],
                     'battery_brand' => $reading['battery_brand'],
+                    'battery_type' => $reading['battery_type'] ?? null,
+                    'end_device_batt' => $reading['end_device_batt'] ?? null,
                     'battery_number' => $reading['battery_number'],
                     'voltage' => $reading['voltage'],
+                    'soh' => $reading['soh'] ?? null,
                 ];
 
                 if (!empty($reading['photo_data'])) {
@@ -177,7 +199,7 @@ class BatteryController extends Controller
     public function show(string $id)
     {
         $maintenance = BatteryMaintenance::with([
-             'central',
+            'central',
             'readings' => function ($query) {
                 $query->orderBy('bank_number')->orderBy('battery_number');
             },
@@ -192,17 +214,15 @@ class BatteryController extends Controller
 
     public function edit(string $id)
     {
-        $maintenance = BatteryMaintenance::with('readings')
+        $maintenance = BatteryMaintenance::with(['central', 'readings'])
             ->where('id', $id)
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        // Ambil data central untuk dropdown
         $centrals = DB::table('central')
             ->orderBy('area')
             ->orderBy('nama')
             ->get();
-
         $centralsByArea = $centrals->groupBy('area');
 
         return view('battery.edit', compact('maintenance', 'centralsByArea'));
@@ -212,26 +232,51 @@ class BatteryController extends Controller
     {
         try {
             $validated = $request->validate([
-                'location' => 'required|string|max:255',
+                'location' => 'required|string|exists:central,id',
                 'maintenance_date' => 'required|date',
                 'battery_temperature' => 'nullable|numeric',
                 'company' => 'nullable|string|max:255',
                 'battery_brand' => 'required|string|max:255',
+                'battery_type' => 'nullable|string|max:255',
+                'end_device_batt' => 'nullable|string|max:255',
                 'notes' => 'nullable|string',
+
+                // Rectifier Test
+                'rectifier_test_backup_voltage' => 'nullable|numeric|min:0|max:100',
+                'rectifier_test_backup_voltage_status' => 'nullable|in:OK,NOK',
+                'rectifier_test_measurement_1' => 'nullable|numeric|min:0|max:100',
+                'rectifier_test_measurement_1_status' => 'nullable|in:OK,NOK',
+                'rectifier_test_measurement_2' => 'nullable|numeric|min:0|max:100',
+                'rectifier_test_measurement_2_status' => 'nullable|in:OK,NOK',
+                'rectifier_test_status' => 'nullable|in:OK,NOK',
+
+                // Pelaksana
                 'technician_1_name' => 'required|string|max:255',
                 'technician_1_company' => 'required|string|max:255',
                 'technician_2_name' => 'nullable|string|max:255',
                 'technician_2_company' => 'nullable|string|max:255',
                 'technician_3_name' => 'nullable|string|max:255',
                 'technician_3_company' => 'nullable|string|max:255',
-                'supervisor' => 'nullable|string|max:255',
-                'supervisor_id' => 'nullable|string|max:100',
+                'technician_4_name' => 'nullable|string|max:255',
+                'technician_4_company' => 'nullable|string|max:255',
+
+                // Verifikator & Head of Sub Dept
+                'verifikator_name' => 'nullable|string|max:255',
+                'verifikator_company' => 'nullable|string|max:255',
+                'verifikator_nim' => 'nullable|string|max:50',
+                'head_of_sub_dept' => 'nullable|string|max:255',
+                'head_of_sub_dept_nim' => 'nullable|string|max:50',
+
+                // Readings
                 'readings' => 'required|array|min:1',
                 'readings.*.id' => 'nullable|integer|exists:battery_readings,id',
                 'readings.*.bank_number' => 'required|integer|min:1',
                 'readings.*.battery_number' => 'required|integer|min:1',
-                'readings.*.voltage' => 'required|numeric|min:0|max:20|regex:/^\d+(\.\d{1,2})?$/',
+                'readings.*.voltage' => 'required|numeric|min:0|max:65|regex:/^\d+(\.\d{1,2})?$/',
+                'readings.*.soh' => 'nullable|numeric|min:0|max:100|regex:/^\d+(\.\d{1,2})?$/',
                 'readings.*.battery_brand' => 'required|string|max:255',
+                'readings.*.battery_type' => 'nullable|string|max:255',
+                'readings.*.end_device_batt' => 'nullable|string|max:255',
                 'readings.*.photo_data' => 'nullable|string',
                 'readings.*.photo_latitude' => 'nullable|numeric',
                 'readings.*.photo_longitude' => 'nullable|numeric',
@@ -257,14 +302,26 @@ class BatteryController extends Controller
                 'technician_2_company' => $validated['technician_2_company'] ?? null,
                 'technician_3_name' => $validated['technician_3_name'] ?? null,
                 'technician_3_company' => $validated['technician_3_company'] ?? null,
-                'supervisor' => $validated['supervisor'] ?? null,
-                'supervisor_id' => $validated['supervisor_id'] ?? null,
+                'technician_4_name' => $validated['technician_4_name'] ?? null,
+                'technician_4_company' => $validated['technician_4_company'] ?? null,
+                'verifikator_name' => $validated['verifikator_name'] ?? null,
+                'verifikator_company' => $validated['verifikator_company'] ?? null,
+                'verifikator_nim' => $validated['verifikator_nim'] ?? null,
+                'head_of_sub_dept' => $validated['head_of_sub_dept'] ?? null,
+                'head_of_sub_dept_nim' => $validated['head_of_sub_dept_nim'] ?? null,
+                'rectifier_test_backup_voltage' => $validated['rectifier_test_backup_voltage'] ?? null,
+                'rectifier_test_backup_voltage_status' => $validated['rectifier_test_backup_voltage_status'] ?? null,
+                'rectifier_test_measurement_1' => $validated['rectifier_test_measurement_1'] ?? null,
+                'rectifier_test_measurement_1_status' => $validated['rectifier_test_measurement_1_status'] ?? null,
+                'rectifier_test_measurement_2' => $validated['rectifier_test_measurement_2'] ?? null,
+                'rectifier_test_measurement_2_status' => $validated['rectifier_test_measurement_2_status'] ?? null,
+                'rectifier_test_status' => $validated['rectifier_test_status'] ?? null,
                 'technician_name' => $validated['technician_1_name'],
             ]);
 
             $keptReadingIds = [];
 
-            foreach ($validated['readings'] as $index => $readingData) {
+            foreach ($validated['readings'] as $readingData) {
                 if (isset($readingData['id']) && !empty($readingData['id'])) {
                     $reading = BatteryReading::find($readingData['id']);
 
@@ -275,7 +332,10 @@ class BatteryController extends Controller
                             'bank_number' => $readingData['bank_number'],
                             'battery_number' => $readingData['battery_number'],
                             'voltage' => $readingData['voltage'],
+                            'soh' => $readingData['soh'] ?? null,
                             'battery_brand' => $readingData['battery_brand'],
+                            'battery_type' => $readingData['battery_type'] ?? null,
+                            'end_device_batt' => $readingData['end_device_batt'] ?? null,
                         ];
 
                         $shouldKeepPhoto = isset($readingData['keep_photo']) &&
@@ -325,7 +385,10 @@ class BatteryController extends Controller
                         'bank_number' => $readingData['bank_number'],
                         'battery_number' => $readingData['battery_number'],
                         'voltage' => $readingData['voltage'],
+                        'soh' => $readingData['soh'] ?? null,
                         'battery_brand' => $readingData['battery_brand'],
+                        'battery_type' => $readingData['battery_type'] ?? null,
+                        'end_device_batt' => $readingData['end_device_batt'] ?? null,
                     ];
 
                     if (!empty($readingData['photo_data'])) {
@@ -400,32 +463,29 @@ class BatteryController extends Controller
     public function pdf(string $id)
     {
         $maintenance = BatteryMaintenance::with([
+            'central',
             'readings' => function ($query) {
                 $query->orderBy('bank_number')->orderBy('battery_number');
             },
             'user'
         ])
             ->where('id', $id)
-            ->where('user_id', auth()->id())
             ->firstOrFail();
 
         $pdf = Pdf::loadView('battery.pdf', compact('maintenance'))
             ->setPaper('a4', 'portrait');
 
         $formattedDate = date('Y-m-d', strtotime($maintenance->maintenance_date));
-        $filename = 'Battery-Maintenance-' . $maintenance->location . '-' . $formattedDate . '.pdf';
+        $locationName = $maintenance->central ? $maintenance->central->nama : 'Unknown';
+        $filename = 'Battery-Maintenance-' . $locationName . '-' . $formattedDate . '.pdf';
 
         return $pdf->stream($filename);
     }
 
-    /**
-     * Compress image to target size (max 1MB) using native GD
-     */
     private function compressImage($imageData, $maxSizeKB = 1024)
     {
         try {
             $image = imagecreatefromstring($imageData);
-
             if ($image === false) {
                 Log::error('Failed to create image from string');
                 return $imageData;
@@ -433,8 +493,6 @@ class BatteryController extends Controller
 
             $originalWidth = imagesx($image);
             $originalHeight = imagesy($image);
-
-            // Calculate new dimensions (max 1920px)
             $maxDimension = 1920;
             $newWidth = $originalWidth;
             $newHeight = $originalHeight;
@@ -465,7 +523,6 @@ class BatteryController extends Controller
                 $image = $resizedImage;
             }
 
-            // Compress dengan kualitas yang bervariasi
             $quality = 90;
             $minQuality = 60;
             $maxSizeBytes = $maxSizeKB * 1024;
@@ -475,7 +532,6 @@ class BatteryController extends Controller
             $compressed = ob_get_clean();
             $currentSize = strlen($compressed);
 
-            // Turunkan kualitas bertahap hingga ukuran <= target
             while ($currentSize > $maxSizeBytes && $quality > $minQuality) {
                 $quality -= 5;
                 ob_start();
@@ -485,7 +541,6 @@ class BatteryController extends Controller
             }
 
             imagedestroy($image);
-
             $finalSizeKB = round($currentSize / 1024, 2);
             Log::info("Battery image compressed to {$finalSizeKB}KB with quality {$quality}%");
 
@@ -497,13 +552,9 @@ class BatteryController extends Controller
         }
     }
 
-    /**
-     * Save base64 image with compression
-     */
     private function saveBase64ImageCompressed($base64String, $maintenanceId, $bankNumber, $batteryNumber)
     {
         try {
-            // Extract base64 data
             if (preg_match('/^data:image\/(\w+);base64,/', $base64String, $type)) {
                 $base64String = substr($base64String, strpos($base64String, ',') + 1);
                 $base64String = str_replace(' ', '+', $base64String);
@@ -513,14 +564,11 @@ class BatteryController extends Controller
                     throw new \Exception('Base64 decode failed');
                 }
 
-                // Log ukuran sebelum kompresi
                 $originalSizeKB = strlen($imageData) / 1024;
                 Log::info("Original battery image size: {$originalSizeKB}KB");
 
-                // Kompresi gambar
                 $compressedImage = $this->compressImage($imageData, $this->maxImageSizeKB);
 
-                // Log ukuran setelah kompresi
                 $compressedSizeKB = strlen($compressedImage) / 1024;
                 $savedPercent = round((1 - $compressedSizeKB / $originalSizeKB) * 100, 1);
                 Log::info("Compressed battery image size: {$compressedSizeKB}KB (saved {$savedPercent}%)");
@@ -529,11 +577,9 @@ class BatteryController extends Controller
                 throw new \Exception('Invalid image data');
             }
 
-            // Generate unique filename (selalu .jpg karena hasil kompresi)
             $filename = 'battery_' . $maintenanceId . '_' . $bankNumber . '_' . $batteryNumber . '_' . time() . '.jpg';
             $path = 'battery_photos/' . $filename;
 
-            // Save to storage
             Storage::disk('public')->put($path, $compressedImage);
 
             return $path;

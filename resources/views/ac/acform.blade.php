@@ -44,7 +44,7 @@
                                 </div>
 
                                 <div id="videoSection" class="flex-1 flex bg-black relative mx-4 mt-2 rounded">
-                                    <video id="video" class="w-full" playsinline autoplay muted style="transform: scaleX(-1);"></video>
+                                    <video id="video" class="w-full" playsinline autoplay muted></video>
                                 </div>
 
                                 <div id="capturedImage" class="hidden mx-4 mt-2">
@@ -112,11 +112,11 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                 <div class="sm:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Lokasi Sentral <span class="text-red-500">*</span>
+                                        Lokasi Sentral
                                     </label>
                                     <select name="central_id" id="central_id"
                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
-                                           required>
+                                          >
                                         <option value="">-- Pilih Lokasi Sentral --</option>
                                         @foreach($centrals as $central)
                                             <option value="{{ $central->id }}"
@@ -132,7 +132,7 @@
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Tanggal <span class="text-red-500">*</span>
+                                        Tanggal
                                     </label>
                                     @php
                                         $dateValue = '';
@@ -150,13 +150,13 @@
                                     @endphp
                                     <input type="date" id="date_input" name="date"
                                         value="{{ $dateValue }}"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                     @error('date') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Waktu <span class="text-red-500">*</span>
+                                        Waktu
                                     </label>
                                     @php
                                         $timeValue = '';
@@ -174,7 +174,7 @@
                                     @endphp
                                     <input type="time" id="time_input" name="time"
                                         value="{{ $timeValue }}"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                     @error('time') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
@@ -183,23 +183,23 @@
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Brand / Type <span class="text-red-500">*</span>
+                                        Brand / Type
                                     </label>
                                     <input type="text" name="brand_type"
                                         value="{{ old('brand_type', safeGetValue($maintenance ?? null, 'brand_type')) }}"
                                         placeholder="Contoh: Daikin Split 2PK"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                     @error('brand_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Kapasitas <span class="text-red-500">*</span>
+                                        Kapasitas (...PK)
                                     </label>
                                     <input type="text" name="capacity"
                                         value="{{ old('capacity', safeGetValue($maintenance ?? null, 'capacity')) }}"
                                         placeholder="Contoh: 2 PK"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base" required>
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                                     @error('capacity') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
@@ -223,15 +223,15 @@
                             </div>
                         </div>
 
-                        <!-- Visual Check -->
+                        <!-- Physical Check -->
                         <div class="mb-6 sm:mb-8">
                             <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
-                                1. Visual Check
+                                1. Physical Check
                             </h3>
 
                             <div class="space-y-3 sm:space-y-4">
                                 @php
-                                    $visualChecks = [
+                                    $physicalChecks = [
                                         ['environment_condition', 'a. Environment Condition', 'Contoh: Bersih, tidak berdebu', 'No dust'],
                                         ['filter', 'b. Filter', 'Contoh: Bersih, tidak tersumbat', 'Clean, No dust'],
                                         ['evaporator', 'c. Evaporator', 'Contoh: Bersih, tidak ada kebocoran', 'Clean, No dust'],
@@ -239,7 +239,7 @@
                                         ['air_flow', 'e. Air Flow', 'Contoh: Normal, cool air flow', 'Fan operates normally, cool air flow'],
                                     ];
                                 @endphp
-                                @foreach($visualChecks as $check)
+                                @foreach($physicalChecks as $check)
                                     <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ $check[1] }}</label>
                                         <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
@@ -251,26 +251,26 @@
                                                 <input type="text" name="{{ $check[0] }}"
                                                        value="{{ old($check[0], safeGetValue($maintenance ?? null, $check[0])) }}"
                                                        placeholder="{{ $check[2] }}"
-                                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base">
                                             </div>
 
                                             <div>
                                                 <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Status <span class="text-red-500">*</span>
+                                                    Status
                                                 </label>
                                                 <div class="flex flex-wrap gap-4">
                                                     @foreach(['OK', 'NOK'] as $status)
                                                         <label class="inline-flex items-center cursor-pointer">
                                                             <input type="radio" name="status_{{ $check[0] }}" value="{{ $status }}"
-                                                                   {{ old("status_{$check[0]}", safeGetValue($maintenance ?? null, "status_{$check[0]}", 'OK')) == $status ? 'checked' : '' }}
-                                                                   class="form-radio {{ $status === 'OK' ? 'text-blue-600 focus:ring-blue-500' : 'text-blue-600 focus:ring-blue-500' }}" required>
+                                                                   {{ old("status_{$check[0]}", safeGetValue($maintenance ?? null, "status_{$check[0]}")) == $status ? 'checked' : '' }}
+                                                                   class="form-radio text-blue-600 focus:ring-blue-500">
                                                             <span class="ml-2 text-sm sm:text-base text-gray-700">{{ $status }}</span>
                                                         </label>
                                                     @endforeach
                                                 </div>
                                             </div>
 
-                                            <div class="image-upload-section" data-field-name="visual_check_{{ $check[0] }}">
+                                            <div class="image-upload-section" data-field-name="physical_check_{{ $check[0] }}">
                                                 <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">Foto (Opsional)</label>
                                                 <div class="flex gap-2 mb-2">
                                                     <button type="button" class="upload-local-btn px-3 py-1.5 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload Gambar</button>
@@ -279,7 +279,7 @@
                                                 <input type="file" class="file-input hidden" accept="image/*" multiple>
                                                 <div class="preview-container grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                                                     @if(isset($maintenance))
-                                                        @foreach(getExistingImages($maintenance, 'visual_check_'.$check[0]) as $img)
+                                                        @foreach(getExistingImages($maintenance, 'physical_check_'.$check[0]) as $img)
                                                             @if(isset($img['path']))
                                                                 <div class="relative group existing-image" data-path="{{ $img['path'] }}">
                                                                     <img src="{{ asset('storage/' . $img['path']) }}" class="w-full h-20 object-cover rounded border">
@@ -296,51 +296,50 @@
                             </div>
                         </div>
 
-                        <!-- Room Temperature -->
+                        <!-- PSI Pressure -->
                         <div class="mb-6 sm:mb-8">
                             <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
-                                2. Room Temperature Shelter/ODC
+                                2. PSI Pressure
                             </h3>
 
                             <div class="space-y-3 sm:space-y-4">
                                 @php
-                                    $temperatures = [
-                                        ['temp_shelter', 'a. Shelter/Ruangan (ODC)', '°C', '22', '≤ 22 °C Shelter/Ruangan', 'status_temp_shelter'],
-                                        ['temp_outdoor_cabinet', 'b. Outdoor Cabinet (ODC)', '°C', '28', '≤ 28 °C Outdoor Cabinet (ODC)', 'status_temp_outdoor_cabinet'],
+                                    $psiPressures = [
+                                        ['psi_pressure', 'Standard PSI Pressure Form Type Freon', 'psi', '140-150', 'R32: 140 psi - 150 psi / R410: 140 psi - 150 psi', 'status_psi_pressure'],
                                     ];
                                 @endphp
-                                @foreach($temperatures as $temp)
+                                @foreach($psiPressures as $psi)
                                     <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ $temp[1] }}</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ $psi[1] }}</label>
                                         <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
-                                            <strong>Operational Standard:</strong> {{ $temp[4] }}
+                                            <strong>Operational Standard:</strong> {{ $psi[4] }}
                                         </div>
 
                                         <div class="space-y-3">
                                             <div>
-                                                <input type="number" step="0.01" name="{{ $temp[0] }}"
-                                                       value="{{ old($temp[0], safeGetValue($maintenance ?? null, $temp[0])) }}"
-                                                       placeholder="{{ $temp[3] }}"
-                                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" required>
+                                                <input type="number" step="0.01" name="{{ $psi[0] }}"
+                                                       value="{{ old($psi[0], safeGetValue($maintenance ?? null, $psi[0])) }}"
+                                                       placeholder="Masukkan nilai {{ $psi[3] }} {{ $psi[2] }}"
+                                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base">
                                             </div>
 
                                             <div>
                                                 <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
-                                                    Status <span class="text-red-500">*</span>
+                                                    Status
                                                 </label>
                                                 <div class="flex flex-wrap gap-4">
                                                     @foreach(['OK', 'NOK'] as $status)
                                                         <label class="inline-flex items-center cursor-pointer">
-                                                            <input type="radio" name="{{ $temp[5] }}" value="{{ $status }}"
-                                                                   {{ old($temp[5], safeGetValue($maintenance ?? null, $temp[5], 'OK')) == $status ? 'checked' : '' }}
-                                                                   class="form-radio {{ $status === 'OK' ? 'text-blue-600 focus:ring-blue-500' : 'text-blue-600 focus:ring-blue-500' }}" required>
+                                                            <input type="radio" name="{{ $psi[5] }}" value="{{ $status }}"
+                                                                   {{ old($psi[5], safeGetValue($maintenance ?? null, $psi[5])) == $status ? 'checked' : '' }}
+                                                                   class="form-radio text-blue-600 focus:ring-blue-500">
                                                             <span class="ml-2 text-sm sm:text-base text-gray-700">{{ $status }}</span>
                                                         </label>
                                                     @endforeach
                                                 </div>
                                             </div>
 
-                                            <div class="image-upload-section" data-field-name="temperature_{{ $temp[0] }}">
+                                            <div class="image-upload-section" data-field-name="psi_pressure_{{ $psi[0] }}">
                                                 <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">Foto (Opsional)</label>
                                                 <div class="flex gap-2 mb-2">
                                                     <button type="button" class="upload-local-btn px-3 py-1.5 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload Gambar</button>
@@ -349,7 +348,7 @@
                                                 <input type="file" class="file-input hidden" accept="image/*" multiple>
                                                 <div class="preview-container grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                                                     @if(isset($maintenance))
-                                                        @foreach(getExistingImages($maintenance, 'temperature_'.$temp[0]) as $img)
+                                                        @foreach(getExistingImages($maintenance, 'psi_pressure_'.$psi[0]) as $img)
                                                             @if(isset($img['path']))
                                                                 <div class="relative group existing-image" data-path="{{ $img['path'] }}">
                                                                     <img src="{{ asset('storage/' . $img['path']) }}" class="w-full h-20 object-cover rounded border">
@@ -373,66 +372,117 @@
                             </h3>
 
                             <div class="space-y-3 sm:space-y-4">
-                                @for($i = 1; $i <= 7; $i++)
-                                    <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">AC {{ $i }}</label>
-                                        <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
-                                            <strong>Operational Standard:</strong>
-                                            @if($i == 1) ¾-1 PK ≤ 4 A
-                                            @elseif($i == 2) 2 PK ≤ 10 A
-                                            @elseif($i == 3) 2.5 PK ≤ 13.5 A
-                                            @elseif($i == 4) 5-7 PK ≤ 8 A / Phase
-                                            @elseif($i == 5) 10 PK ≤ 15 A / Phase
-                                            @elseif($i == 6) 15 PK ≤ 25 A / Phase
-                                            @elseif($i == 7) AC 7
-                                            @endif
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Input Current AC</label>
+                                    <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                        <strong>Operational Standard:</strong><br>
+                                        ¾-1 PK ≤ 4 A | 2 PK ≤ 10 A
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="number" step="0.01" name="input_current_ac"
+                                                   value="{{ old('input_current_ac', safeGetValue($maintenance ?? null, 'input_current_ac')) }}"
+                                                   placeholder="Masukkan nilai dalam Ampere (A)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base">
                                         </div>
 
-                                        <div class="space-y-3">
-                                            <div>
-                                                <input type="number" step="0.01" name="ac{{ $i }}_current"
-                                                       value="{{ old("ac{$i}_current", safeGetValue($maintenance ?? null, "ac{$i}_current")) }}"
-                                                       placeholder="Contoh: 5.4"
-                                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base">
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">Status</label>
+                                            <div class="flex flex-wrap gap-4">
+                                                @foreach(['OK', 'NOK'] as $status)
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="radio" name="status_input_current_ac" value="{{ $status }}"
+                                                               {{ old('status_input_current_ac', safeGetValue($maintenance ?? null, 'status_input_current_ac')) == $status ? 'checked' : '' }}
+                                                               class="form-radio text-blue-600 focus:ring-blue-500">
+                                                        <span class="ml-2 text-sm sm:text-base text-gray-700">{{ $status }}</span>
+                                                    </label>
+                                                @endforeach
                                             </div>
+                                        </div>
 
-                                            <div>
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">Status</label>
-                                                <div class="flex flex-wrap gap-4">
-                                                    @foreach(['OK', 'NOK'] as $status)
-                                                        <label class="inline-flex items-center cursor-pointer">
-                                                            <input type="radio" name="status_ac{{ $i }}" value="{{ $status }}"
-                                                                   {{ old("status_ac{$i}", safeGetValue($maintenance ?? null, "status_ac{$i}")) == $status ? 'checked' : '' }}
-                                                                   class="form-radio {{ $status === 'OK' ? 'text-blue-600 focus:ring-blue-500' : 'text-blue-600 focus:ring-blue-500' }}">
-                                                            <span class="ml-2 text-sm sm:text-base text-gray-700">{{ $status }}</span>
-                                                        </label>
+                                        <div class="image-upload-section" data-field-name="input_current_ac">
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">Foto (Opsional)</label>
+                                            <div class="flex gap-2 mb-2">
+                                                <button type="button" class="upload-local-btn px-3 py-1.5 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload Gambar</button>
+                                                <button type="button" class="camera-btn px-3 py-1.5 bg-green-500 text-white rounded text-xs hover:bg-green-600">Ambil Foto</button>
+                                            </div>
+                                            <input type="file" class="file-input hidden" accept="image/*" multiple>
+                                            <div class="preview-container grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                                                @if(isset($maintenance))
+                                                    @foreach(getExistingImages($maintenance, 'input_current_ac') as $img)
+                                                        @if(isset($img['path']))
+                                                            <div class="relative group existing-image" data-path="{{ $img['path'] }}">
+                                                                <img src="{{ asset('storage/' . $img['path']) }}" class="w-full h-20 object-cover rounded border">
+                                                                <button type="button" class="delete-existing-btn absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">×</button>
+                                                            </div>
+                                                        @endif
                                                     @endforeach
-                                                </div>
-                                            </div>
-
-                                            <div class="image-upload-section" data-field-name="ac_current_ac{{ $i }}">
-                                                <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">Foto (Opsional)</label>
-                                                <div class="flex gap-2 mb-2">
-                                                    <button type="button" class="upload-local-btn px-3 py-1.5 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload Gambar</button>
-                                                    <button type="button" class="camera-btn px-3 py-1.5 bg-green-500 text-white rounded text-xs hover:bg-green-600">Ambil Foto</button>
-                                                </div>
-                                                <input type="file" class="file-input hidden" accept="image/*" multiple>
-                                                <div class="preview-container grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                                                    @if(isset($maintenance))
-                                                        @foreach(getExistingImages($maintenance, 'ac_current_ac'.$i) as $img)
-                                                            @if(isset($img['path']))
-                                                                <div class="relative group existing-image" data-path="{{ $img['path'] }}">
-                                                                    <img src="{{ asset('storage/' . $img['path']) }}" class="w-full h-20 object-cover rounded border">
-                                                                    <button type="button" class="delete-existing-btn absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">×</button>
-                                                                </div>
-                                                            @endif
-                                                        @endforeach
-                                                    @endif
-                                                </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
-                                @endfor
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Output Temperature AC -->
+                        <div class="mb-6 sm:mb-8">
+                            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
+                                4. Output Temperature AC
+                            </h3>
+
+                            <div class="space-y-3 sm:space-y-4">
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Output Temperature AC</label>
+                                    <div class="mb-3 p-2 bg-blue-50 rounded text-xs sm:text-sm text-gray-600">
+                                        <strong>Operational Standard:</strong> 16 - 20°C
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="number" step="0.01" name="output_temperature_ac"
+                                                   value="{{ old('output_temperature_ac', safeGetValue($maintenance ?? null, 'output_temperature_ac')) }}"
+                                                   placeholder="Masukkan nilai dalam °C"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">Status</label>
+                                            <div class="flex flex-wrap gap-4">
+                                                @foreach(['OK', 'NOK'] as $status)
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="radio" name="status_output_temperature_ac" value="{{ $status }}"
+                                                               {{ old('status_output_temperature_ac', safeGetValue($maintenance ?? null, 'status_output_temperature_ac')) == $status ? 'checked' : '' }}
+                                                               class="form-radio text-blue-600 focus:ring-blue-500">
+                                                        <span class="ml-2 text-sm sm:text-base text-gray-700">{{ $status }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+
+                                        <div class="image-upload-section" data-field-name="output_temperature_ac">
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">Foto (Opsional)</label>
+                                            <div class="flex gap-2 mb-2">
+                                                <button type="button" class="upload-local-btn px-3 py-1.5 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Upload Gambar</button>
+                                                <button type="button" class="camera-btn px-3 py-1.5 bg-green-500 text-white rounded text-xs hover:bg-green-600">Ambil Foto</button>
+                                            </div>
+                                            <input type="file" class="file-input hidden" accept="image/*" multiple>
+                                            <div class="preview-container grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                                                @if(isset($maintenance))
+                                                    @foreach(getExistingImages($maintenance, 'output_temperature_ac') as $img)
+                                                        @if(isset($img['path']))
+                                                            <div class="relative group existing-image" data-path="{{ $img['path'] }}">
+                                                                <img src="{{ asset('storage/' . $img['path']) }}" class="w-full h-20 object-cover rounded border">
+                                                                <button type="button" class="delete-existing-btn absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">×</button>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -447,67 +497,81 @@
                         <!-- Personnel -->
                         <div class="mb-6 sm:mb-8">
                             <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">Pelaksana</h3>
-                            <div class="space-y-3 sm:space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Pelaksana 1</label>
-                                    <input type="text" name="executor_1"
-                                           value="{{ old('executor_1', safeGetValue($maintenance ?? null, 'executor_1')) }}"
-                                           placeholder="Nama teknisi pelaksana (opsional)"
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
-                                </div>
+                            <div class="space-y-4">
+                                @for($i = 1; $i <= 4; $i++)
+                                    <div class="border rounded-lg p-4 bg-gray-50">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Pelaksana {{ $i }}</label>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Pelaksana 2</label>
-                                    <input type="text" name="executor_2"
-                                           value="{{ old('executor_2', safeGetValue($maintenance ?? null, 'executor_2')) }}"
-                                           placeholder="Nama teknisi pendamping (opsional)"
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
-                                </div>
+                                        <div class="space-y-3">
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Nama</label>
+                                                <input type="text" name="executor_{{ $i }}"
+                                                       value="{{ old('executor_'.$i, safeGetValue($maintenance ?? null, 'executor_'.$i)) }}"
+                                                       placeholder="Nama pelaksana (opsional)"
+                                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                            </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Pelaksana 3</label>
-                                    <input type="text" name="executor_3"
-                                           value="{{ old('executor_3', safeGetValue($maintenance ?? null, 'executor_3')) }}"
-                                           placeholder="Nama teknisi tambahan (opsional)"
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
-                                    <input type="text" name="department"
-                                           value="{{ old('department', safeGetValue($maintenance ?? null, 'department')) }}"
-                                           placeholder="Nama department (opsional)"
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Sub Department</label>
-                                    <input type="text" name="sub_department"
-                                           value="{{ old('sub_department', safeGetValue($maintenance ?? null, 'sub_department')) }}"
-                                           placeholder="Nama sub department (opsional)"
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
-                                </div>
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Mitra/Internal</label>
+                                                <select name="mitra_internal_{{ $i }}"
+                                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                                    <option value="">-- Pilih --</option>
+                                                    <option value="Mitra" {{ old('mitra_internal_'.$i, safeGetValue($maintenance ?? null, 'mitra_internal_'.$i)) == 'Mitra' ? 'selected' : '' }}>Mitra</option>
+                                                    <option value="Internal" {{ old('mitra_internal_'.$i, safeGetValue($maintenance ?? null, 'mitra_internal_'.$i)) == 'Internal' ? 'selected' : '' }}>Internal</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endfor
                             </div>
                         </div>
 
-                        <!-- Supervisor -->
+                        <!-- Mengetahui -->
                         <div class="mb-6 sm:mb-8">
                             <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">Mengetahui</h3>
-                            <div class="space-y-3 sm:space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Supervisor</label>
-                                    <input type="text" name="supervisor"
-                                           value="{{ old('supervisor', safeGetValue($maintenance ?? null, 'supervisor')) }}"
-                                           placeholder="Nama supervisor (opsional)"
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                            <div class="space-y-4">
+                                <!-- Verifikator -->
+                                <div class="border rounded-lg p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Verifikator</label>
+
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">Nama</label>
+                                            <input type="text" name="verifikator"
+                                                   value="{{ old('verifikator', safeGetValue($maintenance ?? null, 'verifikator')) }}"
+                                                   placeholder="Nama verifikator (opsional)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">NIK</label>
+                                            <input type="text" name="verifikator_nik"
+                                                   value="{{ old('verifikator_nik', safeGetValue($maintenance ?? null, 'verifikator_nik')) }}"
+                                                   placeholder="NIK verifikator (opsional)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">ID Supervisor</label>
-                                    <input type="text" name="supervisor_id_number"
-                                           value="{{ old('supervisor_id_number', safeGetValue($maintenance ?? null, 'supervisor_id_number')) }}"
-                                           placeholder="Nomor ID supervisor (opsional)"
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                <!-- Head of Sub Department -->
+                                <div class="border rounded-lg p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Head of Sub Department</label>
+
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">Nama</label>
+                                            <input type="text" name="head_of_sub_department"
+                                                   value="{{ old('head_of_sub_department', safeGetValue($maintenance ?? null, 'head_of_sub_department')) }}"
+                                                   placeholder="Nama Head of Sub Department (opsional)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">NIK</label>
+                                            <input type="text" name="head_of_sub_department_nik"
+                                                   value="{{ old('head_of_sub_department_nik', safeGetValue($maintenance ?? null, 'head_of_sub_department_nik')) }}"
+                                                   placeholder="NIK Head of Sub Department (opsional)"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

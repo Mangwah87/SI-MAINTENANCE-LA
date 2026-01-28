@@ -13,10 +13,10 @@ use App\Http\Controllers\GroundingController;
 use App\Http\Controllers\CablePanelMaintenanceController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\InverterController;
+use App\Http\Controllers\PoleController;
 use App\Http\Controllers\DokumentasiController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\CentralController;
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RectifierMaintenanceController;
 
@@ -134,9 +134,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [RectifierMaintenanceController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/export-pdf', [RectifierMaintenanceController::class, 'exportPdf'])->name('export-pdf');
 
-        Route::get('/rectifier/{id}/debug-images', [RectifierMaintenanceController::class, 'debugImages'])
-            ->name('rectifier.debug-images')
-            ->middleware('auth');
+        Route::get('/{id}/debug-images', [RectifierMaintenanceController::class, 'debugImages'])->name('debug-images');
     });
     // PMPermohonan Routes
     Route::prefix('pm-permohonan')->name('pm-permohonan.')->group(function () {
@@ -155,6 +153,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('tindak-lanjut', TindakLanjutController::class);
     Route::get('tindak-lanjut/{tindakLanjut}/pdf', [TindakLanjutController::class, 'generatePdf'])
         ->name('tindak-lanjut.pdf');
+
+    // Inventory Device Routes
+    Route::resource('inventory-device', \App\Http\Controllers\InventoryDeviceController::class);
+    Route::get('inventory-device/{inventoryDevice}/pdf', [\App\Http\Controllers\InventoryDeviceController::class, 'generatePdf'])
+        ->name('inventory-device.pdf');
 
     // AC Maintenance Routes (Grouped under 'ac' prefix)
     Route::prefix('ac')->name('ac.')->group(function () {
@@ -204,6 +207,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/pdf', [InverterController::class, 'generatePdf'])->name('pdf');
     });
 
+    // Pole Routes
+    Route::prefix('pole')->name('pole.')->group(function () {
+        Route::get('/', [PoleController::class, 'index'])->name('index');
+        Route::get('/create', [PoleController::class, 'create'])->name('create');
+        Route::post('/', [PoleController::class, 'store'])->name('store');
+        Route::get('/{id}', [PoleController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [PoleController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [PoleController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PoleController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/pdf', [PoleController::class, 'pdf'])->name('pdf');
+    });
+
 
     // Dokumentasi Routes
     Route::prefix('dokumentasi')->name('dokumentasi.')->group(function () {
@@ -218,20 +233,19 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('central')->name('central.')->group(function () {
-        // Semua user bisa lihat list
+
         Route::get('/', [CentralController::class, 'index'])->name('index');
 
-        // Hanya superadmin yang bisa create, edit, delete
         Route::middleware('superadmin')->group(function () {
-            Route::get('/create', [CentralController::class, 'create'])->name('create'); // ✅ PINDAH KE ATAS
+            Route::get('/create', [CentralController::class, 'create'])->name('create');
             Route::post('/', [CentralController::class, 'store'])->name('store');
             Route::get('/{central}/edit', [CentralController::class, 'edit'])->name('edit');
             Route::put('/{central}', [CentralController::class, 'update'])->name('update');
             Route::delete('/{central}', [CentralController::class, 'destroy'])->name('destroy');
         });
 
-        // Route dengan parameter dinamis di AKHIR
-        Route::get('/{central}', [CentralController::class, 'show'])->name('show'); // ✅ PINDAH KE BAWAH
+
+        Route::get('/{central}', [CentralController::class, 'show'])->name('show');
     });
 
     Route::get('/reports/all-forms', [ReportController::class, 'index'])->name('reports.all-forms');

@@ -13,6 +13,15 @@ use Illuminate\Support\Arr;
 
 class GroundingController extends Controller
 {
+    // --- TAMBAHKAN BAGIAN INI ---
+    public function __construct()
+    {
+        // Naikkan limit memori ke 512MB (atau -1 untuk unlimited jika perlu)
+        ini_set('memory_limit', '512M');
+        
+        // Naikkan waktu eksekusi agar tidak timeout saat memproses gambar/PDF
+        ini_set('max_execution_time', 300); // 300 detik = 5 menit
+    }
     /**
      * Display a listing of the resource.
      */
@@ -203,8 +212,7 @@ class GroundingController extends Controller
      */
     public function pdf($id) // Use $id directly
     {
-        $maintenance = GroundingMaintenance::where('user_id', auth()->id())
-                                           ->findOrFail($id);
+        $maintenance = GroundingMaintenance::findOrFail($id);
         $pdf = PDF::loadView('grounding.pdf_template', compact('maintenance')); // View path: grounding.pdf_template
         $pdf->setPaper('a4', 'portrait');
         $safeDocNumber = str_replace(['/', '\\'], '-', $maintenance->doc_number); // Sanitize filename

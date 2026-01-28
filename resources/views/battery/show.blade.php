@@ -5,14 +5,14 @@
         </h2>
     </x-slot>
 
-    <div class="container mx-auto p-4 md:p-6 max-w-6xl">
+    <div class="container mx-auto p-4 md:p-6 max-w-7xl">
         <div class="bg-white rounded-lg shadow-lg p-4 md:p-6">
             <!-- Header Section -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b-2 gap-4">
                 <div>
                     <h2 class="text-xl md:text-2xl font-bold text-gray-800">Detail Battery Maintenance</h2>
                     <div class="text-xs md:text-sm text-gray-600 mt-2">
-                        <p>No. Dok: FM-LAP-D2-SOP-003-013 | Versi: 1.0 | Hal: 1 dari 1 | Label: Internal</p>
+                        <p>No. Dok: FM-LAP-D2-SOP-003-013 | Versi: 1.0 | Label: Internal</p>
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-2 w-full md:w-auto">
@@ -23,16 +23,15 @@
                         </svg>
                         Edit
                     </a>
-                    <a href="{{ route('battery.pdf', $maintenance->id) }}"
-                        target="_blank"
-                        class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition" target="_blank">
+                    <a href="{{ route('battery.pdf', $maintenance->id) }}" target="_blank"
+                        class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                         Cetak PDF
                     </a>
                     <a href="{{ route('battery.index') }}"
-                        class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-2 bg-gray-600 text-white text-sm rounded">
+                        class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
@@ -42,7 +41,7 @@
             </div>
 
             @if(session('success'))
-            <div class="mb-6 bg-grey-50 border-l-4 border-grey-500 text-grey-700 p-4 rounded-lg shadow-sm">
+            <div class="mb-6 bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-sm">
                 <div class="flex items-center">
                     <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
@@ -54,46 +53,122 @@
 
             <!-- Informasi Dokumen -->
             <div class="mb-6">
-                <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Informasi Dokumen</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                    <!-- <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-2 rounded">
-                        <p class="text-xs md:text-sm text-gray-600">No. Dokumen</p>
-                        <p class="font-semibold text-sm md:text-base text-blue-700">{{ $maintenance->doc_number }}</p>
-                    </div> -->
-                    <div class="border-l-4 border-blue-500 pl-3 rounded-md">
-                        <p class="text-sm text-gray-600">Location</p>
-                        <p class="text-lg text-gray-800">
+                <h3 class="text-base md:text-lg font-semibold mb-3 p-3 rounded-lg border-l-4 border-blue-500">
+                    Informasi Dokumen
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-3 rounded">
+                        <p class="text-xs md:text-sm text-gray-600">Location</p>
+                        <p class="font-semibold text-sm md:text-base text-gray-800">
                             {{ $maintenance->central->nama ?? $maintenance->location }}
                         </p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-2 rounded">
+                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-3 rounded">
                         <p class="text-xs md:text-sm text-gray-600">Date / Time</p>
                         <p class="font-semibold text-sm md:text-base">{{ $maintenance->maintenance_date->format('d/m/Y H:i') }} WIB</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-2 rounded">
+                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-3 rounded">
                         <p class="text-xs md:text-sm text-gray-600">Battery Temperature</p>
                         <p class="font-semibold text-sm md:text-base">{{ $maintenance->battery_temperature ? $maintenance->battery_temperature . ' °C' : '-' }}</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-2 rounded">
-                        <p class="text-xs md:text-sm text-gray-600">Battery Brand</p>
-                        <p class="font-semibold text-sm md:text-base">
-                            @if($maintenance->readings->isNotEmpty())
-                            {{ $maintenance->readings->first()->battery_brand ?? '-' }}
-                            @else
-                            -
-                            @endif
-                        </p>
-                    </div>
-                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-2 rounded">
+                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-3 rounded">
                         <p class="text-xs md:text-sm text-gray-600">Company</p>
                         <p class="font-semibold text-sm md:text-base">{{ $maintenance->company ?? '-' }}</p>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-2 rounded">
+                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-3 rounded">
                         <p class="text-xs md:text-sm text-gray-600">Total Battery</p>
-                        <p class="font-semibold text-sm md:text-base">{{ $maintenance->readings->count() }} Battery</p>
+                        <p class="font-semibold text-sm md:text-base text-blue-600">{{ $maintenance->readings->count() }} Battery</p>
+                    </div>
+                    <div class="border-l-4 border-blue-500 pl-3 bg-gray-50 p-3 rounded">
+                        <p class="text-xs md:text-sm text-gray-600">Total Banks</p>
+                        <p class="font-semibold text-sm md:text-base text-blue-600">{{ $maintenance->readings->groupBy('bank_number')->count() }} Bank</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Rectifier Switching Test Section -->
+            @if($maintenance->rectifier_test_backup_voltage ||
+                $maintenance->rectifier_test_measurement_1 ||
+                $maintenance->rectifier_test_measurement_2 ||
+                $maintenance->rectifier_test_status)
+            <div class="mb-6">
+                <h3 class="text-base md:text-lg font-semibold mb-3  p-3 rounded-lg border-l-4 border-yellow-500">
+                    Rectifier Switching Test
+                </h3>
+                <div class="bg-white border rounded-lg overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="border p-3 text-left text-xs md:text-sm font-semibold">Description</th>
+                                    <th class="border p-3 text-center text-xs md:text-sm font-semibold">Result</th>
+                                    <th class="border p-3 text-center text-xs md:text-sm font-semibold">Operational Standard</th>
+                                    <th class="border p-3 text-center text-xs md:text-sm font-semibold">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-gray-50">
+                                    <td class="border p-3 font-semibold" colspan="3">
+                                        Rectifier Switching test, from the main source (PLN) to back up mode
+                                    </td>
+                                    <td class="border p-3 text-center">
+                                        -
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="border p-3 pl-6">a. Battery voltage (on Backup Mode)</td>
+                                    <td class="border p-3 text-center font-semibold">
+                                        {{ $maintenance->rectifier_test_backup_voltage ? number_format($maintenance->rectifier_test_backup_voltage, 2) . ' VDC' : '-' }}
+                                    </td>
+                                    <td class="border p-3 text-center text-gray-600">Min 49 VDC</td>
+                                    <td class="border p-3 text-center">
+                                        @if($maintenance->rectifier_test_backup_voltage_status == 'OK')
+                                        <span class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">OK</span>
+                                        @elseif($maintenance->rectifier_test_backup_voltage_status == 'NOK')
+                                        <span class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">NOK</span>
+                                        @else
+                                        -
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="border p-3 pl-6">b. Measurement I (at the beginning)</td>
+                                    <td class="border p-3 text-center font-semibold">
+                                        {{ $maintenance->rectifier_test_measurement_1 ? number_format($maintenance->rectifier_test_measurement_1, 2) . ' VDC' : '-' }}
+                                    </td>
+                                    <td class="border p-3 text-center text-gray-600">Min 49 VDC</td>
+                                    <td class="border p-3 text-center">
+                                        @if($maintenance->rectifier_test_measurement_1_status == 'OK')
+                                        <span class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">OK</span>
+                                        @elseif($maintenance->rectifier_test_measurement_1_status == 'NOK')
+                                        <span class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">NOK</span>
+                                        @else
+                                        -
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="border p-3 pl-6">c. Measurement II (15th minutes)</td>
+                                    <td class="border p-3 text-center font-semibold">
+                                        {{ $maintenance->rectifier_test_measurement_2 ? number_format($maintenance->rectifier_test_measurement_2, 2) . ' VDC' : '-' }}
+                                    </td>
+                                    <td class="border p-3 text-center text-gray-600">Min 48 VDC</td>
+                                    <td class="border p-3 text-center">
+                                        @if($maintenance->rectifier_test_measurement_2_status == 'OK')
+                                        <span class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">OK</span>
+                                        @elseif($maintenance->rectifier_test_measurement_2_status == 'NOK')
+                                        <span class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">NOK</span>
+                                        @else
+                                        -
+                                        @endif
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <!-- Battery Readings by Bank -->
             @php
@@ -101,24 +176,50 @@
             @endphp
 
             @foreach($readingsByBank as $bankNumber => $readings)
+            @php
+                $firstReading = $readings->first();
+            @endphp
             <div class="mb-6">
-                <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Bank {{ $bankNumber }} - {{ $readings->first()->battery_brand }}</h3>
+                <h3 class="text-base md:text-lg font-semibold mb-3  p-3 rounded-lg border-l-4 border-purple-500">
+                    Bank {{ $bankNumber }} - {{ $firstReading->battery_brand ?? '-' }}
+                </h3>
+
+                <!-- Info Bank -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                    <div class=" border border-gray-200 p-3 rounded-lg">
+                        <p class="text-xs text-gray-600">Battery Type</p>
+                        <p class="font-semibold text-sm">{{ $firstReading->battery_type ?? '-' }}</p>
+                    </div>
+                    <div class=" border border-gray-200 p-3 rounded-lg">
+                        <p class="text-xs text-gray-600">Battery Brand</p>
+                        <p class="font-semibold text-sm">{{ $firstReading->battery_brand ?? '-' }}</p>
+                    </div>
+                    <div class=" border border-gray-200 p-3 rounded-lg">
+                        <p class="text-xs text-gray-600">End Device Battery</p>
+                        <p class="font-semibold text-sm">{{ $firstReading->end_device_batt ?? '-' }}</p>
+                    </div>
+                </div>
+
                 <div class="overflow-x-auto">
                     <table class="w-full border text-sm md:text-base">
-                        <thead class="bg-gray-100">
+                        <thead class="bg-gradient-to-r from-gray-100 to-gray-200">
                             <tr>
-                                <th class="border p-2 text-left text-xs md:text-sm">No</th>
-                                <th class="border p-2 text-left text-xs md:text-sm">Voltage (VDC)</th>
-                                <th class="border p-2 text-left text-xs md:text-sm">Operational Standard</th>
-                                <th class="border p-2 text-center text-xs md:text-sm">Status</th>
-                                <th class="border p-2 text-center text-xs md:text-sm">Foto</th>
+                                <th class="border p-2 text-left text-xs md:text-sm font-semibold">No</th>
+                                <th class="border p-2 text-left text-xs md:text-sm font-semibold">Voltage (VDC)</th>
+                                <th class="border p-2 text-left text-xs md:text-sm font-semibold">SOH (%)</th>
+                                <th class="border p-2 text-left text-xs md:text-sm font-semibold">Operational Standard</th>
+                                <th class="border p-2 text-center text-xs md:text-sm font-semibold">Status</th>
+                                <th class="border p-2 text-center text-xs md:text-sm font-semibold">Foto</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($readings->sortBy('battery_number') as $reading)
-                            <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                <td class="border p-2 font-semibold">{{ $reading->battery_number }}</td>
-                                <td class="border p-2 font-semibold">{{ number_format($reading->voltage, 2) }} VDC</td>
+                            <tr class="hover:bg-blue-50 transition-colors duration-150">
+                                <td class="border p-2 font-semibold text-gray-700">{{ $reading->battery_number }}</td>
+                                <td class="border p-2 font-bold text-black-600">{{ number_format($reading->voltage, 2) }} VDC</td>
+                                <td class="border p-2 font-semibold {{ $reading->soh >= 80 ? 'text-black-600' : ($reading->soh >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
+                                    {{ $reading->soh ? number_format($reading->soh, 2) . '%' : '-' }}
+                                </td>
                                 <td class="border p-2 text-xs md:text-sm text-gray-600">Min 10.0 VDC</td>
                                 <td class="border p-2 text-center">
                                     @if($reading->voltage >= 12.0)
@@ -136,10 +237,10 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
-                                        Lihat Foto
+                                        Lihat
                                     </button>
                                     @else
-                                    <span class="text-xs text-gray-400">Tidak ada foto</span>
+                                    <span class="text-xs text-gray-400">No photo</span>
                                     @endif
                                 </td>
                             </tr>
@@ -153,61 +254,115 @@
             <!-- Notes Section -->
             @if($maintenance->notes)
             <div class="mb-6">
-                <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Notes / Additional Informations</h3>
-                <div class="border p-3 md:p-4 rounded bg-gray-50">
-                    <p class="whitespace-pre-wrap text-sm md:text-base">{{ $maintenance->notes }}</p>
+                <h3 class="text-base md:text-lg font-semibold mb-3 p-3 rounded-lg border-l-4 border-gray-500">
+                    Notes / Additional Informations
+                </h3>
+                <div class="border p-4 rounded-lg  border-grey-200">
+                    <p class="whitespace-pre-wrap text-sm md:text-base text-gray-700">{{ $maintenance->notes }}</p>
                 </div>
             </div>
             @endif
 
-            <!-- Pelaksana Information -->
+            <!-- Tim Pelaksana & Verifikasi -->
             <div class="mb-6">
-                <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Pelaksana</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-                    @if($maintenance->technician_1_name)
-                    <div class="border p-3 rounded bg-gray-50">
-                        <p class="text-xs md:text-sm text-gray-600">Pelaksana 1</p>
-                        <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->technician_1_name }}</p>
-                        <p class="text-xs text-gray-500 mt-2">Department: {{ $maintenance->technician_1_company ?? '-' }}</p>
-                    </div>
-                    @endif
+                <h3 class="text-base md:text-lg font-semibold mb-3  p-3 rounded-lg border-l-4 border-green-500">
+                    Tim Pelaksana & Verifikasi
+                </h3>
 
-                    @if($maintenance->technician_2_name)
-                    <div class="border p-3 rounded bg-gray-50">
-                        <p class="text-xs md:text-sm text-gray-600">Pelaksana 2</p>
-                        <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->technician_2_name }}</p>
-                        <p class="text-xs text-gray-500 mt-2">Department: {{ $maintenance->technician_2_company ?? '-' }}</p>
-                    </div>
-                    @endif
-
-                    @if($maintenance->technician_3_name)
-                    <div class="border p-3 rounded bg-gray-50">
-                        <p class="text-xs md:text-sm text-gray-600">Pelaksana 3</p>
-                        <p class="font-semibold mt-1 text-sm md:text-base">{{ $maintenance->technician_3_name }}</p>
-                        <p class="text-xs text-gray-500 mt-2">Department: {{ $maintenance->technician_3_company ?? '-' }}</p>
-                    </div>
-                    @endif
-                </div>
-            </div>
-            <!-- Supervisor/Mengetahui Section -->
-            @if($maintenance->supervisor || $maintenance->supervisor_id)
-            <div class="mb-6">
-                <h3 class="text-base md:text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Mengetahui</h3>
-                <div class="border p-3 rounded bg-gray-50">
-                    @if($maintenance->supervisor)
-                        <p class="font-semibold text-sm md:text-base">{{ $maintenance->supervisor }}</p>
-                        <p class="text-xs text-gray-500 mt-1">Supervisor / Atasan</p>
-                    @endif
-
-                    @if($maintenance->supervisor_id)
-                        <div class="mt-2 pt-2 border-t border-gray-200">
-                            <p class="text-xs text-gray-600">ID Supervisor</p>
-                            <p class="font-medium text-sm">{{ $maintenance->supervisor_id }}</p>
+                <!-- Executor -->
+                <div class="mb-4">
+                    <h4 class="font-semibold text-sm text-gray-700 mb-3  p-2 rounded">Executor (Pelaksana)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                        @if($maintenance->technician_1_name)
+                        <div class="border border-blue-200 p-3 rounded-lg bg-blue-50 hover:shadow-md transition">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold mr-2">1</span>
+                                <p class="text-xs text-gray-600">Pelaksana 1</p>
+                            </div>
+                            <p class="font-semibold text-sm text-gray-800">{{ $maintenance->technician_1_name }}</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ $maintenance->technician_1_company ?? '-' }}</p>
                         </div>
+                        @endif
+
+                        @if($maintenance->technician_2_name)
+                        <div class="border border-blue-200 p-3 rounded-lg bg-blue-50 hover:shadow-md transition">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold mr-2">2</span>
+                                <p class="text-xs text-gray-600">Pelaksana 2</p>
+                            </div>
+                            <p class="font-semibold text-sm text-gray-800">{{ $maintenance->technician_2_name }}</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ $maintenance->technician_2_company ?? '-' }}</p>
+                        </div>
+                        @endif
+
+                        @if($maintenance->technician_3_name)
+                        <div class="border border-blue-200 p-3 rounded-lg bg-blue-50 hover:shadow-md transition">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold mr-2">3</span>
+                                <p class="text-xs text-gray-600">Pelaksana 3</p>
+                            </div>
+                            <p class="font-semibold text-sm text-gray-800">{{ $maintenance->technician_3_name }}</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ $maintenance->technician_3_company ?? '-' }}</p>
+                        </div>
+                        @endif
+
+                        @if($maintenance->technician_4_name)
+                        <div class="border border-blue-200 p-3 rounded-lg bg-blue-50 hover:shadow-md transition">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold mr-2">4</span>
+                                <p class="text-xs text-gray-600">Pelaksana 4</p>
+                            </div>
+                            <p class="font-semibold text-sm text-gray-800">{{ $maintenance->technician_4_name }}</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ $maintenance->technician_4_company ?? '-' }}</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Verifikator & Head of Sub Dept -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Verifikator -->
+                    @if($maintenance->verifikator_name)
+                    <div>
+                        <h4 class="font-semibold text-sm text-gray-700 mb-3  p-2 rounded">Verifikator</h4>
+                        <div class="border border-green-200 p-4 rounded-lg  hover:shadow-md transition">
+                            <div class="flex items-center mb-2">
+                                <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <p class="text-xs text-gray-600">Verified by</p>
+                            </div>
+                            <p class="font-semibold text-base text-gray-800">{{ $maintenance->verifikator_name }}</p>
+                            <p class="text-xs text-gray-500 mt-1">NIK: {{ $maintenance->verifikator_nim ?? '-' }}</p>
+                            <p class="text-xs text-gray-500">{{ $maintenance->verifikator_company ?? '-' }}</p>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Head of Sub Department -->
+                    @if($maintenance->head_of_sub_dept)
+                    <div>
+                        <h4 class="font-semibold text-sm text-gray-700 mb-3  p-2 rounded">Head of Sub Department</h4>
+                        <div class="border border-purple-200 p-4 rounded-lg  hover:shadow-md transition">
+                            <div class="flex items-center mb-2">
+                                <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <p class="text-xs text-gray-600">Approved by</p>
+                            </div>
+                            <p class="font-semibold text-base text-gray-800">{{ $maintenance->head_of_sub_dept }}</p>
+                            <p class="text-xs text-gray-500 mt-1">NIK: {{ $maintenance->head_of_sub_dept_nim ?? '-' }}</p>
+                        </div>
+                    </div>
                     @endif
                 </div>
             </div>
-            @endif
+
+            <!-- Footer Info -->
+            <div class="mt-6 pt-4 border-t border-gray-200 text-xs text-gray-500 text-center">
+                <p>©HakCipta PT. APLIKARUSA LINTASARTA, Indonesia</p>
+                <p>FM-LAP-D2-SOP-003-013 Formulir Preventive Maintenance Battery</p>
+            </div>
         </div>
     </div>
 
@@ -236,7 +391,6 @@
             <div id="modalInfo" class="mt-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200"></div>
         </div>
     </div>
-
     <style>
         @keyframes fade-in-down {
             0% {

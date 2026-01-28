@@ -13,6 +13,15 @@ use Illuminate\Support\Arr;
 
 class CablePanelMaintenanceController extends Controller
 {
+    // --- TAMBAHKAN BAGIAN INI ---
+    public function __construct()
+    {
+        // Naikkan limit memori ke 512MB (atau -1 untuk unlimited jika perlu)
+        ini_set('memory_limit', '512M');
+        
+        // Naikkan waktu eksekusi agar tidak timeout saat memproses gambar/PDF
+        ini_set('max_execution_time', 300); // 300 detik = 5 menit
+    }
     /**
      * Display a listing of the resource.
      */
@@ -201,8 +210,7 @@ class CablePanelMaintenanceController extends Controller
      */
     public function pdf($id)
     {
-        $maintenance = CablePanelMaintenance::where('user_id', auth()->id())
-                                               ->findOrFail($id);
+        $maintenance = CablePanelMaintenance::findOrFail($id);
         $pdf = PDF::loadView('cable-panel.pdf_template', compact('maintenance')); // Path view baru
         $pdf->setPaper('a4', 'portrait');
         $safeDocNumber = str_replace(['/', '\\'], '-', $maintenance->doc_number); // Sanitize filename
