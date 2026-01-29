@@ -575,7 +575,7 @@ class PhotoManager {
         ctx.lineWidth = 5;
         ctx.strokeText("WITA", witaX, witaY);
         ctx.fillText("WITA", witaX, witaY);
-        
+
         let currentY = timeY + timeFontSize + 25;
         const coordFontSize = Math.floor(width / 38);
         ctx.font = `bold ${coordFontSize}px Arial, sans-serif`;
@@ -667,7 +667,7 @@ class PhotoManager {
             this.renderPhotos();
 
             // Trigger auto-save if function exists
-            if (typeof triggerAutoSave === 'function') {
+            if (typeof triggerAutoSave === "function") {
                 triggerAutoSave();
             }
         };
@@ -683,7 +683,7 @@ class PhotoManager {
         this.renderPhotos();
 
         // Trigger auto-save if function exists
-        if (typeof triggerAutoSave === 'function') {
+        if (typeof triggerAutoSave === "function") {
             triggerAutoSave();
         }
     }
@@ -879,9 +879,9 @@ const photoManagers = {};
 
 // ========== AUTO-SAVE FUNCTIONALITY FOR PM SHELTER ==========
 let dbInstance = null;
-const DB_NAME = 'PMShelterFormDB';
-const STORE_NAME = 'formDrafts';
-const STORAGE_KEY = 'pm_shelter_form_draft';
+const DB_NAME = "PMShelterFormDB";
+const STORE_NAME = "formDrafts";
+const STORAGE_KEY = "pm_shelter_form_draft";
 const AUTO_DELETE_MINUTES = 5;
 
 // Encryption functions
@@ -890,7 +890,7 @@ function encryptData(data) {
         const str = JSON.stringify(data);
         return btoa(unescape(encodeURIComponent(str)));
     } catch (e) {
-        console.error('Encryption error:', e);
+        console.error("Encryption error:", e);
         return null;
     }
 }
@@ -900,7 +900,7 @@ function decryptData(encryptedData) {
         const str = decodeURIComponent(escape(atob(encryptedData)));
         return JSON.parse(str);
     } catch (e) {
-        console.error('Decryption error:', e);
+        console.error("Decryption error:", e);
         return null;
     }
 }
@@ -923,7 +923,7 @@ function initDB() {
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                db.createObjectStore(STORE_NAME, { keyPath: "id" });
             }
         };
     });
@@ -936,20 +936,20 @@ async function saveToIndexedDB(data) {
         const encryptedData = encryptData(data);
 
         if (!encryptedData) {
-            console.error('Failed to encrypt data');
+            console.error("Failed to encrypt data");
             return;
         }
 
-        const transaction = db.transaction([STORE_NAME], 'readwrite');
+        const transaction = db.transaction([STORE_NAME], "readwrite");
         const store = transaction.objectStore(STORE_NAME);
 
         store.put({
             id: STORAGE_KEY,
             data: encryptedData,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         });
     } catch (error) {
-        console.error('Error saving to IndexedDB:', error);
+        console.error("Error saving to IndexedDB:", error);
     }
 }
 
@@ -957,7 +957,7 @@ async function saveToIndexedDB(data) {
 async function getFromIndexedDB() {
     try {
         const db = await initDB();
-        const transaction = db.transaction([STORE_NAME], 'readonly');
+        const transaction = db.transaction([STORE_NAME], "readonly");
         const store = transaction.objectStore(STORE_NAME);
 
         return new Promise((resolve, reject) => {
@@ -975,7 +975,7 @@ async function getFromIndexedDB() {
             request.onerror = () => reject(request.error);
         });
     } catch (error) {
-        console.error('Error getting from IndexedDB:', error);
+        console.error("Error getting from IndexedDB:", error);
         return null;
     }
 }
@@ -984,27 +984,33 @@ async function getFromIndexedDB() {
 async function deleteFromIndexedDB() {
     try {
         const db = await initDB();
-        const transaction = db.transaction([STORE_NAME], 'readwrite');
+        const transaction = db.transaction([STORE_NAME], "readwrite");
         const store = transaction.objectStore(STORE_NAME);
         store.delete(STORAGE_KEY);
     } catch (error) {
-        console.error('Error deleting from IndexedDB:', error);
+        console.error("Error deleting from IndexedDB:", error);
     }
 }
 
 // Save draft
 async function saveDraft() {
-    const form = document.getElementById('pmForm');
+    const form = document.getElementById("pmForm");
     if (!form) return;
 
     const formData = {};
 
-    const inputs = form.querySelectorAll('input:not([type="file"]), select, textarea');
-    inputs.forEach(input => {
-        if (input.name && !input.name.startsWith('_') && !input.name.includes('photo')) {
-            if (input.type === 'checkbox') {
+    const inputs = form.querySelectorAll(
+        'input:not([type="file"]), select, textarea'
+    );
+    inputs.forEach((input) => {
+        if (
+            input.name &&
+            !input.name.startsWith("_") &&
+            !input.name.includes("photo")
+        ) {
+            if (input.type === "checkbox") {
                 formData[input.name] = input.checked;
-            } else if (input.type === 'radio') {
+            } else if (input.type === "radio") {
                 if (input.checked) {
                     formData[input.name] = input.value;
                 }
@@ -1015,14 +1021,14 @@ async function saveDraft() {
     });
 
     const images = [];
-    if (typeof photoManagers !== 'undefined') {
+    if (typeof photoManagers !== "undefined") {
         for (const [fieldName, manager] of Object.entries(photoManagers)) {
             if (manager && manager.photos) {
-                manager.photos.forEach(photo => {
+                manager.photos.forEach((photo) => {
                     images.push({
                         category: fieldName,
                         preview: photo.preview,
-                        metadata: photo.metadata || {}
+                        metadata: photo.metadata || {},
                     });
                 });
             }
@@ -1032,11 +1038,11 @@ async function saveDraft() {
     const draftData = {
         formFields: formData,
         images: images,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
     };
 
     await saveToIndexedDB(draftData);
-    console.log('PM Shelter draft saved');
+    console.log("PM Shelter draft saved");
 }
 
 // Trigger auto-save
@@ -1049,16 +1055,18 @@ async function restoreDraft() {
     const savedData = await getFromIndexedDB();
     if (!savedData || !savedData.formFields) return;
 
-    const form = document.getElementById('pmForm');
+    const form = document.getElementById("pmForm");
     if (!form) return;
 
     for (const [name, value] of Object.entries(savedData.formFields)) {
         const input = form.querySelector(`[name="${name}"]`);
         if (input) {
-            if (input.type === 'checkbox') {
+            if (input.type === "checkbox") {
                 input.checked = value;
-            } else if (input.type === 'radio') {
-                const radio = form.querySelector(`[name="${name}"][value="${value}"]`);
+            } else if (input.type === "radio") {
+                const radio = form.querySelector(
+                    `[name="${name}"][value="${value}"]`
+                );
                 if (radio) radio.checked = true;
             } else {
                 input.value = value;
@@ -1067,22 +1075,29 @@ async function restoreDraft() {
     }
 
     if (savedData.images && savedData.images.length > 0) {
-        savedData.images.forEach(img => {
+        savedData.images.forEach((img) => {
             const manager = photoManagers[img.category];
             if (manager && img.preview) {
-                const file = dataURLtoFile(img.preview, `restored_${Date.now()}.jpg`);
-                manager.addPhoto(file, img.metadata || { taken_at: new Date().toISOString() });
+                const file = dataURLtoFile(
+                    img.preview,
+                    `restored_${Date.now()}.jpg`
+                );
+                manager.addPhoto(
+                    file,
+                    img.metadata || { taken_at: new Date().toISOString() }
+                );
             }
         });
     }
 
-    console.log('PM Shelter draft restored');
+    console.log("PM Shelter draft restored");
 }
 
 // Show restore notification
 function showRestoreNotification(onRestore, onDecline) {
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-4 rounded-lg shadow-2xl z-[9999] max-w-md';
+    const notification = document.createElement("div");
+    notification.className =
+        "fixed top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-4 rounded-lg shadow-2xl z-[9999] max-w-md";
     notification.innerHTML = `
         <div class="flex items-start gap-3">
             <svg class="w-6 h-6 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -1105,12 +1120,12 @@ function showRestoreNotification(onRestore, onDecline) {
 
     document.body.appendChild(notification);
 
-    notification.querySelector('#restoreBtn').addEventListener('click', () => {
+    notification.querySelector("#restoreBtn").addEventListener("click", () => {
         notification.remove();
         onRestore();
     });
 
-    notification.querySelector('#declineBtn').addEventListener('click', () => {
+    notification.querySelector("#declineBtn").addEventListener("click", () => {
         notification.remove();
         onDecline();
     });
@@ -1119,13 +1134,15 @@ function showRestoreNotification(onRestore, onDecline) {
 // Delete draft
 async function deleteDraft() {
     await deleteFromIndexedDB();
-    document.querySelectorAll('.fixed.top-4.right-4').forEach(n => n.remove());
-    console.log('PM Shelter draft deleted');
+    document
+        .querySelectorAll(".fixed.top-4.right-4")
+        .forEach((n) => n.remove());
+    console.log("PM Shelter draft deleted");
 }
 
 // Helper function
 function dataURLtoFile(dataurl, filename) {
-    const arr = dataurl.split(',');
+    const arr = dataurl.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];
     const bstr = atob(arr[1]);
     let n = bstr.length;
@@ -1138,14 +1155,16 @@ function dataURLtoFile(dataurl, filename) {
 
 // Initialize auto-save
 async function initAutoSave() {
-    const form = document.getElementById('pmForm');
+    const form = document.getElementById("pmForm");
     if (!form) return;
 
     // Check if we're in edit mode
-    const isEditMode = form.action.includes('/update/') || form.querySelector('input[name="_method"]');
+    const isEditMode =
+        form.action.includes("/update/") ||
+        form.querySelector('input[name="_method"]');
 
     if (isEditMode) {
-        console.log('Edit mode detected, auto-save disabled');
+        console.log("Edit mode detected, auto-save disabled");
         return;
     }
 
@@ -1158,28 +1177,37 @@ async function initAutoSave() {
         // Auto-delete data older than 5 minutes
         if (minutesSince > AUTO_DELETE_MINUTES) {
             await deleteFromIndexedDB();
-            console.log('Auto-Save: Data expired (>5 minutes), cleared');
+            console.log("Auto-Save: Data expired (>5 minutes), cleared");
         } else {
             // Show restore notification with Pulihkan/Abaikan buttons
-            showRestoreNotification(async () => {
-                // Restore without showing success notification
-                await restoreDraft();
-                console.log('✅ Auto-Save: Data + Images restored', {
-                    fields: savedData.formFields ? Object.keys(savedData.formFields).length : 0,
-                    images: savedData.images ? savedData.images.length : 0
-                });
-            }, async () => {
-                await deleteFromIndexedDB();
-                console.log('Auto-Save: User declined restore, data cleared');
-            });
+            showRestoreNotification(
+                async () => {
+                    // Restore without showing success notification
+                    await restoreDraft();
+                    console.log("✅ Auto-Save: Data + Images restored", {
+                        fields: savedData.formFields
+                            ? Object.keys(savedData.formFields).length
+                            : 0,
+                        images: savedData.images ? savedData.images.length : 0,
+                    });
+                },
+                async () => {
+                    await deleteFromIndexedDB();
+                    console.log(
+                        "Auto-Save: User declined restore, data cleared"
+                    );
+                }
+            );
         }
     }
 
     let saveTimeout;
-    const inputs = form.querySelectorAll('input:not([type="file"]), select, textarea');
+    const inputs = form.querySelectorAll(
+        'input:not([type="file"]), select, textarea'
+    );
 
-    inputs.forEach(input => {
-        input.addEventListener('input', () => {
+    inputs.forEach((input) => {
+        input.addEventListener("input", () => {
             clearTimeout(saveTimeout);
             saveTimeout = setTimeout(() => saveDraft(), 1000);
         });
@@ -1192,19 +1220,24 @@ async function initAutoSave() {
         const diffMinutes = (now - savedTime) / (1000 * 60);
 
         if (diffMinutes < AUTO_DELETE_MINUTES) {
-            const remainingMs = (AUTO_DELETE_MINUTES * 60 * 1000) - (now - savedTime);
+            const remainingMs =
+                AUTO_DELETE_MINUTES * 60 * 1000 - (now - savedTime);
             setTimeout(async () => {
                 await deleteFromIndexedDB();
-                console.log('Draft auto-deleted after ' + AUTO_DELETE_MINUTES + ' minutes');
+                console.log(
+                    "Draft auto-deleted after " +
+                        AUTO_DELETE_MINUTES +
+                        " minutes"
+                );
             }, remainingMs);
         }
     }
 
     // Clear draft on successful submit
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener("submit", async (e) => {
         setTimeout(async () => {
             await deleteFromIndexedDB();
-            console.log('Draft cleared after successful submit');
+            console.log("Draft cleared after successful submit");
         }, 100);
     });
 }

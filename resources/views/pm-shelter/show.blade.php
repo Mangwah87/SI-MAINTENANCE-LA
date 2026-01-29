@@ -133,11 +133,14 @@
                                     @endif
                                 </td>
                                 <td class="border p-2 text-center">
-                                    @if ($pmShelter->kondisi_ruangan_photos && count($pmShelter->kondisi_ruangan_photos) > 0)
-                                        <button onclick="showPhotos('kondisi_ruangan')"
+                                    @php
+                                        $kondisiRuanganPhotos = collect($pmShelter->photos ?? [])->where('field', 'kondisi_ruangan_photos');
+                                    @endphp
+                                    @if ($kondisiRuanganPhotos->count() > 0)
+                                        <button onclick="showPhotos('kondisi_ruangan_photos')"
                                             class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
                                             <i data-lucide="image" class="w-3 h-3"></i> Lihat
-                                            ({{ count($pmShelter->kondisi_ruangan_photos) }})
+                                            ({{ $kondisiRuanganPhotos->count() }})
                                         </button>
                                     @else
                                         -
@@ -158,11 +161,14 @@
                                     @endif
                                 </td>
                                 <td class="border p-2 text-center">
-                                    @if ($pmShelter->kondisi_kunci_photos && count($pmShelter->kondisi_kunci_photos) > 0)
-                                        <button onclick="showPhotos('kondisi_kunci')"
+                                    @php
+                                        $kondisiKunciPhotos = collect($pmShelter->photos ?? [])->where('field', 'kondisi_kunci_photos');
+                                    @endphp
+                                    @if ($kondisiKunciPhotos->count() > 0)
+                                        <button onclick="showPhotos('kondisi_kunci_photos')"
                                             class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
                                             <i data-lucide="image" class="w-3 h-3"></i> Lihat
-                                            ({{ count($pmShelter->kondisi_kunci_photos) }})
+                                            ({{ $kondisiKunciPhotos->count() }})
                                         </button>
                                     @else
                                         -
@@ -203,11 +209,14 @@
                                     @endif
                                 </td>
                                 <td class="border p-2 text-center">
-                                    @if ($pmShelter->layout_tata_ruang_photos && count($pmShelter->layout_tata_ruang_photos) > 0)
-                                        <button onclick="showPhotos('layout_tata_ruang')"
+                                    @php
+                                        $layoutPhotos = collect($pmShelter->photos ?? [])->where('field', 'layout_tata_ruang_photos');
+                                    @endphp
+                                    @if ($layoutPhotos->count() > 0)
+                                        <button onclick="showPhotos('layout_tata_ruang_photos')"
                                             class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
                                             <i data-lucide="image" class="w-3 h-3"></i> Lihat
-                                            ({{ count($pmShelter->layout_tata_ruang_photos) }})
+                                            ({{ $layoutPhotos->count() }})
                                         </button>
                                     @else
                                         -
@@ -229,11 +238,14 @@
                                     @endif
                                 </td>
                                 <td class="border p-2 text-center">
-                                    @if ($pmShelter->kontrol_keamanan_photos && count($pmShelter->kontrol_keamanan_photos) > 0)
-                                        <button onclick="showPhotos('kontrol_keamanan')"
+                                    @php
+                                        $kontrolPhotos = collect($pmShelter->photos ?? [])->where('field', 'kontrol_keamanan_photos');
+                                    @endphp
+                                    @if ($kontrolPhotos->count() > 0)
+                                        <button onclick="showPhotos('kontrol_keamanan_photos')"
                                             class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
                                             <i data-lucide="image" class="w-3 h-3"></i> Lihat
-                                            ({{ count($pmShelter->kontrol_keamanan_photos) }})
+                                            ({{ $kontrolPhotos->count() }})
                                         </button>
                                     @else
                                         -
@@ -255,11 +267,14 @@
                                     @endif
                                 </td>
                                 <td class="border p-2 text-center">
-                                    @if ($pmShelter->aksesibilitas_photos && count($pmShelter->aksesibilitas_photos) > 0)
-                                        <button onclick="showPhotos('aksesibilitas')"
+                                    @php
+                                        $aksesibilitasPhotos = collect($pmShelter->photos ?? [])->where('field', 'aksesibilitas_photos');
+                                    @endphp
+                                    @if ($aksesibilitasPhotos->count() > 0)
+                                        <button onclick="showPhotos('aksesibilitas_photos')"
                                             class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
                                             <i data-lucide="image" class="w-3 h-3"></i> Lihat
-                                            ({{ count($pmShelter->aksesibilitas_photos) }})
+                                            ({{ $aksesibilitasPhotos->count() }})
                                         </button>
                                     @else
                                         -
@@ -280,11 +295,117 @@
                                     @endif
                                 </td>
                                 <td class="border p-2 text-center">
-                                    @if ($pmShelter->aspek_teknis_photos && count($pmShelter->aspek_teknis_photos) > 0)
-                                        <button onclick="showPhotos('aspek_teknis')"
+                                    @php
+                                        $aspekTeknisPhotos = collect($pmShelter->photos ?? [])->where('field', 'aspek_teknis_photos');
+                                    @endphp
+                                    @if ($aspekTeknisPhotos->count() > 0)
+                                        <button onclick="showPhotos('aspek_teknis_photos')"
                                             class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
                                             <i data-lucide="image" class="w-3 h-3"></i> Lihat
-                                            ({{ count($pmShelter->aspek_teknis_photos) }})
+                                            ({{ $aspekTeknisPhotos->count() }})
+                                        </button>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- Room Temperature --}}
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">3. Suhu Ruangan</h3>
+                <div class="overflow-auto">
+                    <table class="w-full border">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="border p-2 text-left w-1/4">Item Pemeriksaan</th>
+                                <th class="border p-2 text-left w-1/3">Hasil</th>
+                                <th class="border p-2 text-center">Status</th>
+                                <th class="border p-2 text-center">Foto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border p-2">a. Shelter Room </td>
+                                <td class="border p-2 font-semibold">{{ $pmShelter->room_temp_1_result ?? '-' }}</td>
+                                <td class="border p-2 text-center">
+                                    @if ($pmShelter->room_temp_1_status)
+                                        <span
+                                            class="px-2 py-1 rounded text-xs font-semibold {{ $pmShelter->room_temp_1_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                            {{ $pmShelter->room_temp_1_status }}
+                                        </span>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="border p-2 text-center">
+                                    @php
+                                        $roomTemp1Photos = collect($pmShelter->photos ?? [])->where('field', 'room_temp_1_photos');
+                                    @endphp
+                                    @if ($roomTemp1Photos->count() > 0)
+                                        <button onclick="showPhotos('room_temp_1_photos')"
+                                            class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
+                                            <i data-lucide="image" class="w-3 h-3"></i> Lihat
+                                            ({{ $roomTemp1Photos->count() }})
+                                        </button>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">b. Outdoor Cabinet</td>
+                                <td class="border p-2 font-semibold">{{ $pmShelter->room_temp_2_result ?? '-' }}</td>
+                                <td class="border p-2 text-center">
+                                    @if ($pmShelter->room_temp_2_status)
+                                        <span
+                                            class="px-2 py-1 rounded text-xs font-semibold {{ $pmShelter->room_temp_2_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                            {{ $pmShelter->room_temp_2_status }}
+                                        </span>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="border p-2 text-center">
+                                    @php
+                                        $roomTemp2Photos = collect($pmShelter->photos ?? [])->where('field', 'room_temp_2_photos');
+                                    @endphp
+                                    @if ($roomTemp2Photos->count() > 0)
+                                        <button onclick="showPhotos('room_temp_2_photos')"
+                                            class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
+                                            <i data-lucide="image" class="w-3 h-3"></i> Lihat
+                                            ({{ $roomTemp2Photos->count() }})
+                                        </button>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2">c. Pole Outdoor Cabinet</td>
+                                <td class="border p-2 font-semibold">{{ $pmShelter->room_temp_3_result ?? '-' }}</td>
+                                <td class="border p-2 text-center">
+                                    @if ($pmShelter->room_temp_3_status)
+                                        <span
+                                            class="px-2 py-1 rounded text-xs font-semibold {{ $pmShelter->room_temp_3_status == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                            {{ $pmShelter->room_temp_3_status }}
+                                        </span>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="border p-2 text-center">
+                                    @php
+                                        $roomTemp3Photos = collect($pmShelter->photos ?? [])->where('field', 'room_temp_3_photos');
+                                    @endphp
+                                    @if ($roomTemp3Photos->count() > 0)
+                                        <button onclick="showPhotos('room_temp_3_photos')"
+                                            class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 shadow-sm hover:bg-blue-200 transition">
+                                            <i data-lucide="image" class="w-3 h-3"></i> Lihat
+                                            ({{ $roomTemp3Photos->count() }})
                                         </button>
                                     @else
                                         -
@@ -311,36 +432,46 @@
                 <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Pelaksana</h3>
 
                 @if ($pmShelter->executors && count($pmShelter->executors) > 0)
-                    <div
-                        class="grid grid-cols-1 md:grid-cols-{{ count($pmShelter->executors) > 2 ? '3' : '2' }} gap-4 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-{{ count($pmShelter->executors) > 2 ? '3' : '2' }} gap-4 mb-4">
                         @foreach ($pmShelter->executors as $index => $executor)
                             <div class="border p-3 rounded">
                                 <p class="text-sm text-gray-600">Pelaksana {{ $index + 1 }}</p>
                                 <p class="font-semibold mt-1">{{ $executor['name'] ?? '-' }}</p>
-                                <p class="text-xs text-gray-500 mt-2">
-                                    Departemen: {{ $executor['department'] ?? '-' }} |
-                                    Sub Dept: {{ $executor['sub_department'] ?? '-' }}
-                                </p>
+                                @if(isset($executor['mitra']))
+                                    <p class="text-xs text-gray-500 mt-2">Mitra: {{ $executor['mitra'] }}</p>
+                                @endif
                             </div>
                         @endforeach
                     </div>
                 @endif
+            </div>
 
-                @if ($pmShelter->approvers && count($pmShelter->approvers) > 0 && !empty($pmShelter->approvers[0]['name']))
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Mengetahui</h3>
+            {{-- Mengetahui (Verifikator & Head of Sub Dept) --}}
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 bg-blue-50 p-2 rounded">Mengetahui</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {{-- Verifikator --}}
+                    @if ($pmShelter->verifikator)
                         <div class="border p-3 rounded">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                                <div class="font-semibold">
-                                    {{ $pmShelter->approvers[0]['name'] ?? '-' }}
-                                    <p class="text-md text-gray-500 mt-2">
-                                        ID : {{ $pmShelter->approvers[0]['nik'] ?? '-' }}
-                                    </p>
-                                </div>
-                            </div>
+                            <p class="text-sm text-gray-600">Verifikator</p>
+                            <p class="font-semibold mt-1">{{ $pmShelter->verifikator['name'] ?? '-' }}</p>
+                            @if(isset($pmShelter->verifikator['nik']))
+                                <p class="text-xs text-gray-500 mt-2">NIK: {{ $pmShelter->verifikator['nik'] }}</p>
+                            @endif
                         </div>
-                    </div>
-                @endif
+                    @endif
+
+                    {{-- Head of Sub Department --}}
+                    @if ($pmShelter->head_of_sub_dept)
+                        <div class="border p-3 rounded">
+                            <p class="text-sm text-gray-600">Head of Sub Department</p>
+                            <p class="font-semibold mt-1">{{ $pmShelter->head_of_sub_dept['name'] ?? '-' }}</p>
+                            @if(isset($pmShelter->head_of_sub_dept['nik']))
+                                <p class="text-xs text-gray-500 mt-2">NIK: {{ $pmShelter->head_of_sub_dept['nik'] }}</p>
+                            @endif
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
@@ -364,22 +495,31 @@
 
     @push('scripts')
         <script>
+            // Prepare photo data dari struktur baru (photos array dengan field identifier)
+            const allPhotos = @json($pmShelter->photos ?? []);
+            
             const photoData = {
-                kondisi_ruangan: @json($pmShelter->kondisi_ruangan_photos ?? []),
-                kondisi_kunci: @json($pmShelter->kondisi_kunci_photos ?? []),
-                layout_tata_ruang: @json($pmShelter->layout_tata_ruang_photos ?? []),
-                kontrol_keamanan: @json($pmShelter->kontrol_keamanan_photos ?? []),
-                aksesibilitas: @json($pmShelter->aksesibilitas_photos ?? []),
-                aspek_teknis: @json($pmShelter->aspek_teknis_photos ?? [])
+                kondisi_ruangan_photos: allPhotos.filter(p => p.field === 'kondisi_ruangan_photos'),
+                kondisi_kunci_photos: allPhotos.filter(p => p.field === 'kondisi_kunci_photos'),
+                layout_tata_ruang_photos: allPhotos.filter(p => p.field === 'layout_tata_ruang_photos'),
+                kontrol_keamanan_photos: allPhotos.filter(p => p.field === 'kontrol_keamanan_photos'),
+                aksesibilitas_photos: allPhotos.filter(p => p.field === 'aksesibilitas_photos'),
+                aspek_teknis_photos: allPhotos.filter(p => p.field === 'aspek_teknis_photos'),
+                room_temp_1_photos: allPhotos.filter(p => p.field === 'room_temp_1_photos'),
+                room_temp_2_photos: allPhotos.filter(p => p.field === 'room_temp_2_photos'),
+                room_temp_3_photos: allPhotos.filter(p => p.field === 'room_temp_3_photos')
             };
 
             const titleMap = {
-                kondisi_ruangan: 'Kondisi Ruangan',
-                kondisi_kunci: 'Kondisi Kunci Ruang/Shelter',
-                layout_tata_ruang: 'Layout / Tata Ruang',
-                kontrol_keamanan: 'Kontrol Keamanan',
-                aksesibilitas: 'Aksesibilitas',
-                aspek_teknis: 'Aspek Teknis'
+                kondisi_ruangan_photos: 'Kondisi Ruangan',
+                kondisi_kunci_photos: 'Kondisi Kunci Ruang/Shelter',
+                layout_tata_ruang_photos: 'Layout / Tata Ruang',
+                kontrol_keamanan_photos: 'Kontrol Keamanan',
+                aksesibilitas_photos: 'Aksesibilitas',
+                aspek_teknis_photos: 'Aspek Teknis',
+                room_temp_1_photos: 'Suhu Ruangan 1',
+                room_temp_2_photos: 'Suhu Ruangan 2',
+                room_temp_3_photos: 'Suhu Ruangan 3'
             };
 
             function showPhotos(category) {

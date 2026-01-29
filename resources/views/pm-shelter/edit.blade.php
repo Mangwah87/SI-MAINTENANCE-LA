@@ -67,10 +67,20 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Brand/Type</label>
-                                    <input type="text" name="brand_type"
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        Brand/Type <span class="text-red-500">*</span>
+                                    </label>
+                                    <select name="brand_type"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
-                                        value="{{ old('brand_type', $pmShelter->brand_type) }}">
+                                        required>
+                                        <option value="">-- Pilih Type --</option>
+                                        <option value="Shelter" {{ old('brand_type', $pmShelter->brand_type) == 'Shelter' ? 'selected' : '' }}>Shelter</option>
+                                        <option value="Outdoor Cabinet" {{ old('brand_type', $pmShelter->brand_type) == 'Outdoor Cabinet' ? 'selected' : '' }}>Outdoor Cabinet</option>
+                                        <option value="Pole Outdoor Cabinet" {{ old('brand_type', $pmShelter->brand_type) == 'Pole Outdoor Cabinet' ? 'selected' : '' }}>Pole Outdoor Cabinet</option>
+                                    </select>
+                                    @error('brand_type')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
                                 </div>
 
                                 <div>
@@ -377,6 +387,135 @@
                             </div>
                         </div>
 
+                        <!-- Room Temperature Section -->
+                        <div class="mb-6 sm:mb-8">
+                            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
+                                3. Suhu Ruangan
+                            </h3>
+
+                            <div class="space-y-3 sm:space-y-4">
+                                <!-- Room Temp 1 -->
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">a. Suhu Ruangan 1</label>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="text" name="room_temp_1_result"
+                                                placeholder="Result / Hasil pemeriksaan (contoh: 25°C)"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
+                                                value="{{ old('room_temp_1_result', $pmShelter->room_temp_1_result) }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Status <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="flex flex-wrap gap-4">
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="room_temp_1_status" value="OK"
+                                                        class="form-radio text-green-600 focus:ring-green-500"
+                                                        {{ old('room_temp_1_status', $pmShelter->room_temp_1_status) == 'OK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
+                                                </label>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="room_temp_1_status" value="NOK"
+                                                        class="form-radio text-red-600 focus:ring-red-500"
+                                                        {{ old('room_temp_1_status', $pmShelter->room_temp_1_status) == 'NOK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Foto (Opsional)
+                                            </label>
+                                            <div id="room_temp_1_photos_container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Room Temp 2 -->
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">b. Suhu Ruangan 2</label>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="text" name="room_temp_2_result"
+                                                placeholder="Result / Hasil pemeriksaan (contoh: 26°C)"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
+                                                value="{{ old('room_temp_2_result', $pmShelter->room_temp_2_result) }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Status <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="flex flex-wrap gap-4">
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="room_temp_2_status" value="OK"
+                                                        class="form-radio text-green-600 focus:ring-green-500"
+                                                        {{ old('room_temp_2_status', $pmShelter->room_temp_2_status) == 'OK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
+                                                </label>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="room_temp_2_status" value="NOK"
+                                                        class="form-radio text-red-600 focus:ring-red-500"
+                                                        {{ old('room_temp_2_status', $pmShelter->room_temp_2_status) == 'NOK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Foto (Opsional)
+                                            </label>
+                                            <div id="room_temp_2_photos_container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Room Temp 3 -->
+                                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">c. Suhu Ruangan 3</label>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <input type="text" name="room_temp_3_result"
+                                                placeholder="Result / Hasil pemeriksaan (contoh: 24°C)"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
+                                                value="{{ old('room_temp_3_result', $pmShelter->room_temp_3_result) }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Status <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="flex flex-wrap gap-4">
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="room_temp_3_status" value="OK"
+                                                        class="form-radio text-green-600 focus:ring-green-500"
+                                                        {{ old('room_temp_3_status', $pmShelter->room_temp_3_status) == 'OK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">OK</span>
+                                                </label>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="room_temp_3_status" value="NOK"
+                                                        class="form-radio text-red-600 focus:ring-red-500"
+                                                        {{ old('room_temp_3_status', $pmShelter->room_temp_3_status) == 'NOK' ? 'checked' : '' }}
+                                                        required>
+                                                    <span class="ml-2 text-sm sm:text-base text-gray-700">NOK</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                                                Foto (Opsional)
+                                            </label>
+                                            <div id="room_temp_3_photos_container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Notes -->
                         <div class="mb-6 sm:mb-8">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Catatan / Additional
@@ -422,22 +561,12 @@
                                                             placeholder="Nama pelaksana" required>
                                                     </div>
                                                     <div>
-                                                        <label
-                                                            class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-1">Mitra</label>
                                                         <input type="text"
-                                                            name="executors[{{ $index }}][department]"
-                                                            value="{{ $executor['department'] ?? '' }}"
+                                                            name="executors[{{ $index }}][mitra]"
+                                                            value="{{ $executor['mitra'] ?? '' }}"
                                                             class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
-                                                            placeholder="Nama departemen">
-                                                    </div>
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-700 mb-1">Sub
-                                                            Departemen</label>
-                                                        <input type="text"
-                                                            name="executors[{{ $index }}][sub_department]"
-                                                            value="{{ $executor['sub_department'] ?? '' }}"
-                                                            class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base"
-                                                            placeholder="Nama sub departemen">
+                                                            placeholder="Nama mitra">
                                                     </div>
                                                 </div>
                                             </div>
@@ -447,33 +576,67 @@
                             </div>
                         </div>
 
-                        <!-- Approver -->
+                        <!-- Mengetahui (Verifikator & Head of Sub Dept) -->
                         <div class="mb-6 sm:mb-8">
                             <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-700 border-b pb-2">
                                 Mengetahui</h3>
-                            <div class="border rounded-lg p-4 bg-gray-50">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                                            Nama <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="text" name="approvers[0][name]"
-                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
-                                            value="{{ old('approvers.0.name', $pmShelter->approvers[0]['name'] ?? '') }}"
-                                            placeholder="Nama yang mengetahui" required>
-                                        @error('approvers.0.name')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Verifikator -->
+                                <div class="border rounded-lg p-4 bg-gray-50">
+                                    <h4 class="font-medium text-gray-700 mb-3 text-sm">Verifikator</h4>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                                Nama <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" name="verifikator[name]"
+                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                                                value="{{ old('verifikator.name', $pmShelter->verifikator['name'] ?? '') }}"
+                                                placeholder="Nama verifikator" required>
+                                            @error('verifikator.name')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">NIK</label>
+                                            <input type="text" name="verifikator[nik]"
+                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                                                value="{{ old('verifikator.nik', $pmShelter->verifikator['nik'] ?? '') }}"
+                                                placeholder="NIK verifikator">
+                                            @error('verifikator.nik')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">ID</label>
-                                        <input type="text" name="approvers[0][nik]"
-                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
-                                            value="{{ old('approvers.0.nik', $pmShelter->approvers[0]['nik'] ?? '') }}"
-                                            placeholder="ID Approval">
-                                        @error('approvers.0.nik')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
+                                </div>
+
+                                <!-- Head of Sub Department -->
+                                <div class="border rounded-lg p-4 bg-gray-50">
+                                    <h4 class="font-medium text-gray-700 mb-3 text-sm">Head of Sub Department</h4>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                                Nama <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" name="head_of_sub_dept[name]"
+                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                                                value="{{ old('head_of_sub_dept.name', $pmShelter->head_of_sub_dept['name'] ?? '') }}"
+                                                placeholder="Nama head of sub dept" required>
+                                            @error('head_of_sub_dept.name')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">NIK</label>
+                                            <input type="text" name="head_of_sub_dept[nik]"
+                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                                                value="{{ old('head_of_sub_dept.nik', $pmShelter->head_of_sub_dept['nik'] ?? '') }}"
+                                                placeholder="NIK head of sub dept">
+                                            @error('head_of_sub_dept.nik')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -526,16 +689,10 @@
                                placeholder="Nama pelaksana" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
-                        <input type="text" name="executors[${executorIndex}][department]" 
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mitra</label>
+                        <input type="text" name="executors[${executorIndex}][mitra]" 
                                class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" 
-                               placeholder="Nama departemen">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Sub Departemen</label>
-                        <input type="text" name="executors[${executorIndex}][sub_department]" 
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base" 
-                               placeholder="Nama sub departemen">
+                               placeholder="Nama mitra">
                     </div>
                 </div>
             `;
@@ -554,36 +711,54 @@
                 });
             }
 
-            // Initialize photo managers dengan existing photos
+            // Get existing photos filtered by field
+            const allPhotos = @json($pmShelter->photos ?? []);
+            
+            // Initialize photo managers dengan existing photos yang sudah di-filter
             photoManagers['kondisi_ruangan_photos'] = new PhotoManager(
                 'kondisi_ruangan_photos_container',
                 'kondisi_ruangan_photos',
-                @json($pmShelter->kondisi_ruangan_photos ?? [])
+                allPhotos.filter(p => p.field === 'kondisi_ruangan_photos')
             );
             photoManagers['kondisi_kunci_photos'] = new PhotoManager(
                 'kondisi_kunci_photos_container',
                 'kondisi_kunci_photos',
-                @json($pmShelter->kondisi_kunci_photos ?? [])
+                allPhotos.filter(p => p.field === 'kondisi_kunci_photos')
             );
             photoManagers['layout_tata_ruang_photos'] = new PhotoManager(
                 'layout_tata_ruang_photos_container',
                 'layout_tata_ruang_photos',
-                @json($pmShelter->layout_tata_ruang_photos ?? [])
+                allPhotos.filter(p => p.field === 'layout_tata_ruang_photos')
             );
             photoManagers['kontrol_keamanan_photos'] = new PhotoManager(
                 'kontrol_keamanan_photos_container',
                 'kontrol_keamanan_photos',
-                @json($pmShelter->kontrol_keamanan_photos ?? [])
+                allPhotos.filter(p => p.field === 'kontrol_keamanan_photos')
             );
             photoManagers['aksesibilitas_photos'] = new PhotoManager(
                 'aksesibilitas_photos_container',
                 'aksesibilitas_photos',
-                @json($pmShelter->aksesibilitas_photos ?? [])
+                allPhotos.filter(p => p.field === 'aksesibilitas_photos')
             );
             photoManagers['aspek_teknis_photos'] = new PhotoManager(
                 'aspek_teknis_photos_container',
                 'aspek_teknis_photos',
-                @json($pmShelter->aspek_teknis_photos ?? [])
+                allPhotos.filter(p => p.field === 'aspek_teknis_photos')
+            );
+            photoManagers['room_temp_1_photos'] = new PhotoManager(
+                'room_temp_1_photos_container',
+                'room_temp_1_photos',
+                allPhotos.filter(p => p.field === 'room_temp_1_photos')
+            );
+            photoManagers['room_temp_2_photos'] = new PhotoManager(
+                'room_temp_2_photos_container',
+                'room_temp_2_photos',
+                allPhotos.filter(p => p.field === 'room_temp_2_photos')
+            );
+            photoManagers['room_temp_3_photos'] = new PhotoManager(
+                'room_temp_3_photos_container',
+                'room_temp_3_photos',
+                allPhotos.filter(p => p.field === 'room_temp_3_photos')
             );
 
             // Initialize Lucide icons

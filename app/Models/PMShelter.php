@@ -31,17 +31,27 @@ class PMShelter extends Model
         'aksesibilitas_status',
         'aspek_teknis_result',
         'aspek_teknis_status',
+        'room_temp_1_result',
+        'room_temp_1_status',
+        'room_temp_2_result',
+        'room_temp_2_status',
+        'room_temp_3_result',
+        'room_temp_3_status',
         'photos',
         'notes',
         'executors',
         'approvers',
+        'verifikator',
+        'head_of_sub_dept',
     ];
 
     protected $casts = [
         'date' => 'date',
         'photos' => 'array',
         'executors' => 'array',
-        'approvers' => 'array'
+        'approvers' => 'array',
+        'verifikator' => 'array',
+        'head_of_sub_dept' => 'array',
     ];
 
     public function user()
@@ -49,7 +59,7 @@ class PMShelter extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Tambahkan relasi ke Central
+    // Relasi ke Central
     public function central()
     {
         return $this->belongsTo(Central::class);
@@ -84,6 +94,22 @@ class PMShelter extends Model
     public function getAspekTeknisPhotosAttribute()
     {
         return $this->filterPhotosByField('aspek_teknis_photos');
+    }
+
+    // Accessor untuk Room Temperature Photos
+    public function getRoomTemp1PhotosAttribute()
+    {
+        return $this->filterPhotosByField('room_temp_1_photos');
+    }
+
+    public function getRoomTemp2PhotosAttribute()
+    {
+        return $this->filterPhotosByField('room_temp_2_photos');
+    }
+
+    public function getRoomTemp3PhotosAttribute()
+    {
+        return $this->filterPhotosByField('room_temp_3_photos');
     }
 
     private function filterPhotosByField($fieldName)
